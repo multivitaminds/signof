@@ -8,6 +8,7 @@ import {
   Calendar,
   Database,
   Inbox,
+  Brain,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -31,6 +32,7 @@ const NAV_ITEMS: NavItem[] = [
   { path: '/calendar', label: 'Calendar', icon: Calendar },
   { path: '/data', label: 'Databases', icon: Database },
   { path: '/inbox', label: 'Inbox', icon: Inbox },
+  { path: '/ai', label: 'AI', icon: Brain },
 ]
 
 export default function Sidebar() {

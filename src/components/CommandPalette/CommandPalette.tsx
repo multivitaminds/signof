@@ -11,6 +11,7 @@ import {
   Plus,
   Home,
   ArrowRight,
+  Brain,
 } from 'lucide-react'
 import { useAppStore } from '../../stores/useAppStore'
 import './CommandPalette.css'
@@ -73,6 +74,28 @@ export default function CommandPalette() {
         category: 'action',
         shortcut: '⌘D',
       },
+      {
+        id: 'new-memory',
+        label: 'Add memory entry',
+        description: 'Store knowledge in AI context memory',
+        icon: Brain,
+        action: () => {
+          navigate('/ai/memory?action=add')
+          closeCommandPalette()
+        },
+        category: 'action',
+      },
+      {
+        id: 'new-team',
+        label: 'Create agent team',
+        description: 'Build a team of AI agents',
+        icon: Brain,
+        action: () => {
+          navigate('/ai/agents?action=new')
+          closeCommandPalette()
+        },
+        category: 'action',
+      },
       // Navigation
       {
         id: 'nav-home',
@@ -130,6 +153,26 @@ export default function CommandPalette() {
         icon: Database,
         action: () => {
           navigate('/data')
+          closeCommandPalette()
+        },
+        category: 'navigation',
+      },
+      {
+        id: 'nav-ai-memory',
+        label: 'Go to AI Memory',
+        icon: Brain,
+        action: () => {
+          navigate('/ai/memory')
+          closeCommandPalette()
+        },
+        category: 'navigation',
+      },
+      {
+        id: 'nav-ai-agents',
+        label: 'Go to Agent Teams',
+        icon: Brain,
+        action: () => {
+          navigate('/ai/agents')
           closeCommandPalette()
         },
         category: 'navigation',

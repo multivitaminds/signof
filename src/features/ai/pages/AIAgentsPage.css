@@ -1,0 +1,17 @@
+.ai-agents-page {
+  height: 100%;
+}
+
+.ai-agents-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.ai-agents-page__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}

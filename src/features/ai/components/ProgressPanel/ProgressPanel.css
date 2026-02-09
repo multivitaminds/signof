@@ -1,0 +1,89 @@
+.progress-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: var(--space-3) 0;
+}
+
+.progress-panel__step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  position: relative;
+}
+
+.progress-panel__line {
+  position: absolute;
+  left: calc(var(--space-3) + 9px);
+  top: calc(var(--space-2) + 22px);
+  width: 2px;
+  height: calc(100% - 4px);
+  background-color: var(--border-color);
+}
+
+.progress-panel__step--completed .progress-panel__line {
+  background-color: var(--color-success);
+}
+
+.progress-panel__icon-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.progress-panel__icon {
+  flex-shrink: 0;
+}
+
+.progress-panel__icon--completed {
+  color: var(--color-success);
+}
+
+.progress-panel__icon--running {
+  color: var(--color-primary);
+  animation: progress-spin 1s linear infinite;
+}
+
+.progress-panel__icon--pending {
+  color: var(--text-muted);
+}
+
+.progress-panel__icon--error {
+  color: var(--color-danger);
+}
+
+@keyframes progress-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.progress-panel__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.progress-panel__label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+}
+
+.progress-panel__step--pending .progress-panel__label {
+  color: var(--text-muted);
+}
+
+.progress-panel__output {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: var(--leading-normal);
+}
