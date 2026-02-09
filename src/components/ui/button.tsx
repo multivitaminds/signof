@@ -1,47 +1,89 @@
-import { forwardRef, type ButtonHTMLAttributes } from "react";
-import { cn } from "@/lib/utils";
+import { forwardRef } from 'react'
+import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import './Button.css'
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive";
-type ButtonSize = "sm" | "md" | "lg";
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'coral'
+export type ButtonSize = 'sm' | 'md' | 'lg'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
+  variant?: ButtonVariant
+  size?: ButtonSize
+  loading?: boolean
+  icon?: ReactNode
+  iconPosition?: 'left' | 'right'
+  fullWidth?: boolean
+  children?: ReactNode
 }
 
-const variantStyles: Record<ButtonVariant, string> = {
-  primary: "bg-accent text-accent-foreground hover:bg-accent-hover shadow-sm",
-  secondary:
-    "bg-surface text-foreground border border-border-strong hover:bg-muted shadow-sm",
-  ghost: "text-foreground hover:bg-muted",
-  destructive:
-    "bg-red-600 text-white hover:bg-red-700 shadow-sm dark:bg-red-700 dark:hover:bg-red-800",
-};
-
-const sizeStyles: Record<ButtonSize, string> = {
-  sm: "h-8 px-3 text-sm gap-1.5",
-  md: "h-9 px-4 text-sm gap-2",
-  lg: "h-10 px-5 text-base gap-2",
-};
-
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", size = "md", disabled, ...props }, ref) => {
+  (
+    {
+      variant = 'primary',
+      size = 'md',
+      loading = false,
+      icon,
+      iconPosition = 'left',
+      fullWidth = false,
+      disabled,
+      className = '',
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const classes = [
+      'btn',
+      `btn--${variant}`,
+      `btn--${size}`,
+      fullWidth && 'btn--full-width',
+      loading && 'btn--loading',
+      icon && !children && 'btn--icon-only',
+      className,
+    ]
+      .filter(Boolean)
+      .join(' ')
+
     return (
       <button
         ref={ref}
-        className={cn(
-          "inline-flex items-center justify-center rounded-[var(--radius-md)] font-medium transition-colors focus-ring",
-          "disabled:opacity-50 disabled:pointer-events-none",
-          variantStyles[variant],
-          sizeStyles[size],
-          className
-        )}
-        disabled={disabled}
+        className={classes}
+        disabled={disabled || loading}
         {...props}
-      />
-    );
+      >
+        {loading && (
+          <span className="btn__spinner" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" className="btn__spinner-svg">
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                className="btn__spinner-track"
+              />
+              <path
+                d="M12 2a10 10 0 0 1 10 10"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                className="btn__spinner-indicator"
+              />
+            </svg>
+          </span>
+        )}
+        {icon && iconPosition === 'left' && !loading && (
+          <span className="btn__icon btn__icon--left">{icon}</span>
+        )}
+        {children && <span className="btn__label">{children}</span>}
+        {icon && iconPosition === 'right' && !loading && (
+          <span className="btn__icon btn__icon--right">{icon}</span>
+        )}
+      </button>
+    )
   }
-);
-Button.displayName = "Button";
+)
 
-export default Button;
+Button.displayName = 'Button'
+
+export default Button

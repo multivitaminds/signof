@@ -1,0 +1,115 @@
+/* ─── Base Badge ─────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1, 4px);
+  font-family: var(--font-sans);
+  font-weight: var(--font-medium, 500);
+  border-radius: var(--radius-full, 9999px);
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+/* ─── Sizes ──────────────────────────────────────────────────── */
+.badge--sm {
+  height: 20px;
+  padding: 0 var(--space-2, 8px);
+  font-size: var(--text-xs, 0.75rem);
+}
+
+.badge--md {
+  height: 24px;
+  padding: 0 var(--space-3, 12px);
+  font-size: var(--text-xs, 0.75rem);
+}
+
+/* ─── Variants ───────────────────────────────────────────────── */
+.badge--default {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+}
+
+.badge--primary {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.badge--success,
+.badge--completed {
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
+}
+
+.badge--warning,
+.badge--pending {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning-dark);
+}
+
+.badge--danger {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger-dark);
+}
+
+.badge--info {
+  background-color: var(--color-info-light);
+  color: var(--color-info-dark);
+}
+
+.badge--draft {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-600);
+}
+
+/* ─── Dot Indicator ──────────────────────────────────────────── */
+.badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+}
+
+.badge--dot {
+  padding-left: var(--space-2, 8px);
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  .badge--default {
+    background-color: var(--color-gray-800);
+    color: var(--color-gray-300);
+  }
+
+  .badge--primary {
+    background-color: rgba(79, 70, 229, 0.2);
+    color: #A5B4FC;
+  }
+
+  .badge--success,
+  .badge--completed {
+    background-color: rgba(0, 184, 148, 0.2);
+    color: #6EE7B7;
+  }
+
+  .badge--warning,
+  .badge--pending {
+    background-color: rgba(253, 203, 110, 0.2);
+    color: #FCD34D;
+  }
+
+  .badge--danger {
+    background-color: rgba(225, 112, 85, 0.2);
+    color: #FCA5A5;
+  }
+
+  .badge--info {
+    background-color: rgba(116, 185, 255, 0.2);
+    color: #93C5FD;
+  }
+
+  .badge--draft {
+    background-color: var(--color-gray-700);
+    color: var(--color-gray-400);
+  }
+}

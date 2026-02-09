@@ -1,0 +1,151 @@
+.document-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+  padding: 1rem 0;
+}
+
+.document-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-fast), transform 100ms ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.document-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.document-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.document-card__name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.document-card__date {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.document-card__signers {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.document-card__signer {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.document-card__signer-icon {
+  font-size: 0.85rem;
+  width: 1rem;
+  text-align: center;
+}
+
+.document-card__signer--signed .document-card__signer-icon {
+  color: var(--color-success);
+}
+
+.document-card__signer--declined .document-card__signer-icon {
+  color: var(--color-danger);
+}
+
+.document-card__signer--pending .document-card__signer-icon {
+  color: var(--text-muted);
+}
+
+.document-card__signer-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.document-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.document-card__btn {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), opacity var(--transition-fast);
+}
+
+.document-card__btn:hover {
+  opacity: 0.85;
+}
+
+.document-card__btn--sign {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.document-card__btn--view {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.document-card__btn--delete {
+  background: none;
+  color: var(--color-danger);
+  border-color: var(--color-danger-light);
+  margin-left: auto;
+}
+
+.document-card__btn--delete:hover {
+  background: var(--color-danger-light);
+}
+
+/* ─── Empty State ──────────────────────────────────────────── */
+.document-list__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 2rem;
+}
+
+.document-list__empty p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .document-list {
+    grid-template-columns: 1fr;
+  }
+}

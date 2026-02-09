@@ -1,0 +1,121 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 var(--space-5, 24px);
+  background: var(--bg-primary, #FFFFFF);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+}
+
+.topbar__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary, #1F2937);
+  margin: 0;
+}
+
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+}
+
+.topbar__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  color: var(--text-secondary, #6B7280);
+  cursor: pointer;
+  transition: all var(--motion-micro, 100ms) ease-out;
+  position: relative;
+}
+
+.topbar__icon-btn:hover {
+  background: var(--bg-secondary, #F3F4F6);
+  color: var(--text-primary, #1F2937);
+}
+
+.topbar__icon-btn--badge {
+  position: relative;
+}
+
+.topbar__badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--signof-coral, #E94560);
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topbar__user-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  margin-left: var(--space-2, 8px);
+}
+
+.topbar__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--signof-navy, #1A1A2E);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--motion-micro, 100ms) ease-out;
+}
+
+.topbar__user-btn:hover .topbar__avatar {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(26, 26, 46, 0.2);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .topbar {
+    background: var(--bg-primary, #0F0F1A);
+    border-bottom-color: var(--border-color, #334155);
+  }
+
+  .topbar__title {
+    color: var(--text-primary, #F1F5F9);
+  }
+
+  .topbar__icon-btn {
+    color: var(--text-secondary, #94A3B8);
+  }
+
+  .topbar__icon-btn:hover {
+    background: var(--bg-secondary, #1A1A2E);
+    color: var(--text-primary, #F1F5F9);
+  }
+}

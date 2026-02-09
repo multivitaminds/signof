@@ -1,43 +1,91 @@
-import { forwardRef, type InputHTMLAttributes } from "react";
-import { cn } from "@/lib/utils";
+import { forwardRef, useId } from 'react'
+import type { InputHTMLAttributes, ReactNode } from 'react'
+import './Input.css'
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  error?: string;
+export type InputSize = 'sm' | 'md' | 'lg'
+
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
+  label?: string
+  error?: string
+  hint?: string
+  size?: InputSize
+  leftIcon?: ReactNode
+  rightIcon?: ReactNode
+  fullWidth?: boolean
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, id, ...props }, ref) => {
-    const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
+  (
+    {
+      label,
+      error,
+      hint,
+      size = 'md',
+      leftIcon,
+      rightIcon,
+      fullWidth = false,
+      className = '',
+      id,
+      ...props
+    },
+    ref
+  ) => {
+    const generatedId = useId()
+    const inputId = id || generatedId
+    const hasError = Boolean(error)
+
+    const wrapperClasses = [
+      'input-wrapper',
+      fullWidth && 'input-wrapper--full-width',
+      className,
+    ]
+      .filter(Boolean)
+      .join(' ')
+
+    const inputClasses = [
+      'input',
+      `input--${size}`,
+      hasError && 'input--error',
+      leftIcon && 'input--with-left-icon',
+      rightIcon && 'input--with-right-icon',
+    ]
+      .filter(Boolean)
+      .join(' ')
+
     return (
-      <div className="space-y-1.5">
+      <div className={wrapperClasses}>
         {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-sm font-medium text-foreground"
-          >
+          <label htmlFor={inputId} className="input__label">
             {label}
           </label>
         )}
-        <input
-          ref={ref}
-          id={inputId}
-          className={cn(
-            "flex h-9 w-full rounded-[var(--radius-md)] border bg-surface px-3 py-1.5 text-sm text-foreground",
-            "placeholder:text-muted-foreground",
-            "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
-            "disabled:opacity-50 disabled:cursor-not-allowed",
-            "transition-colors",
-            error && "border-red-500 focus:ring-red-500",
-            className
-          )}
-          {...props}
-        />
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        <div className="input__container">
+          {leftIcon && <span className="input__icon input__icon--left">{leftIcon}</span>}
+          <input
+            ref={ref}
+            id={inputId}
+            className={inputClasses}
+            aria-invalid={hasError}
+            aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
+            {...props}
+          />
+          {rightIcon && <span className="input__icon input__icon--right">{rightIcon}</span>}
+        </div>
+        {error && (
+          <p id={`${inputId}-error`} className="input__error" role="alert">
+            {error}
+          </p>
+        )}
+        {hint && !error && (
+          <p id={`${inputId}-hint`} className="input__hint">
+            {hint}
+          </p>
+        )}
       </div>
-    );
+    )
   }
-);
-Input.displayName = "Input";
+)
 
-export default Input;
+Input.displayName = 'Input'
+
+export default Input

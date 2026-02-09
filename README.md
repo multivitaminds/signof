@@ -1,88 +1,85 @@
-# SignOf
+# SignOf ✓
 
-A modern digital signature platform built with Next.js, React, and TypeScript.
+**The Everything Platform** — one app replacing Notion, Linear, Asana, DocuSign, PandaDoc, Calendly, and Airtable.
 
-## Overview
+## Current State
 
-SignOf is a web application designed to streamline the digital signature process, providing a seamless experience for document signing and management.
+A working document signing application with:
+
+- **Dashboard** — stat cards showing total, pending, and completed documents
+- **Document Upload** — drag-and-drop with file type/size validation (PDF, PNG, JPG up to 10MB)
+- **Signature Capture** — HTML5 Canvas with DPR-aware rendering, touch support, stroke undo
+- **Document Lifecycle** — Draft → Pending → Completed with signer tracking
+- **Dark Mode** — automatic via `prefers-color-scheme`
+- **Responsive** — mobile-friendly layouts across all components
+- **Tested** — ~25 test cases across 5 components using Vitest + React Testing Library
+
+## Quick Start
+
+```bash
+npm install
+npm run dev        # → localhost:5173
+```
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production build (tsc + vite) |
+| `npm run preview` | Preview production build |
+| `npm run lint` | ESLint check |
+| `npm run lint:fix` | Auto-fix lint issues |
+| `npm run test` | Tests (watch mode) |
+| `npm run test:run` | Tests (single run) |
+| `npm run test:coverage` | Tests with coverage |
+| `npm run typecheck` | TypeScript check |
+| `npm run check` | All checks (typecheck + lint + test) |
 
 ## Tech Stack
 
-- **Framework**: Next.js 16.1.6
-- **UI Library**: React 19.2.3
-- **Language**: TypeScript 5
-- **Styling**: Tailwind CSS 4
-- **Linting**: ESLint 9 with Next.js config
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 20 or higher
-- npm, yarn, pnpm, or bun
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/multivitaminds/signof.git
-cd signof
-```
-
-2. Install dependencies:
-```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-```
-
-3. Run the development server:
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
-
-## Available Scripts
-
-- `npm run dev` - Starts the development server
-- `npm run build` - Creates an optimized production build
-- `npm start` - Runs the production server
-- `npm run lint` - Runs ESLint for code quality checks
+- **React 19** + **TypeScript 5.9** (strict mode)
+- **Vite 7** — fast builds, HMR
+- **Vitest 4** + **React Testing Library** — testing
+- **ESLint 9** — flat config with typescript-eslint
+- **CSS Custom Properties** — component-scoped stylesheets with dark mode
 
 ## Project Structure
 
 ```
-signof/
-├── src/
-│   └── app/
-│       ├── layout.tsx    # Root layout component
-│       ├── page.tsx      # Home page
-│       ├── globals.css   # Global styles
-│       └── favicon.ico   # App icon
-├── public/               # Static assets
-├── design-references/    # Design files (not tracked in git)
-└── package.json          # Dependencies and scripts
+src/
+├── main.tsx                    # App entry
+├── App.tsx                     # Root — state, modals, document CRUD
+├── index.css                   # Global styles, CSS vars, dark mode
+├── types/
+│   └── index.ts                # Document, Signer, SignatureData types
+├── components/
+│   ├── Header/                 # Sticky nav — logo, tagline, doc count
+│   ├── Dashboard/              # Stat cards + document grid
+│   ├── DocumentList/           # Card grid with status badges + actions
+│   ├── DocumentUpload/         # Drag-and-drop upload zone
+│   └── SignaturePad/           # Canvas-based signature capture
+└── test/
+    └── setup.ts                # Vitest + jest-dom setup
 ```
 
-## Development
+## Roadmap
 
-This project uses:
-- Next.js App Router for routing
-- TypeScript for type safety
-- Tailwind CSS for styling
-- React Compiler for optimized builds
+SignOf will expand into 8 modules:
 
-## Contributing
+| Module | Status |
+|--------|--------|
+| Documents & E-Signatures | ✅ Active |
+| Workspace & Knowledge Hub | Planned |
+| Project & Issue Tracking | Planned |
+| Scheduling & Calendar | Planned |
+| Relational Databases | Planned |
+| Settings & Admin | Planned |
+| Auth & Onboarding | Planned |
+| AI Agent Teams | Planned |
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Design sourced from **680 user flows** across 7 platforms via Mobbin.com. See `docs/DESIGN_SPEC.md` for the complete specification.
 
 ## License
 
-Private - All rights reserved.
+Proprietary. All rights reserved.

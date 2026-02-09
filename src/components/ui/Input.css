@@ -1,0 +1,159 @@
+/* ─── Input Wrapper ──────────────────────────────────────────── */
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 4px);
+}
+
+.input-wrapper--full-width {
+  width: 100%;
+}
+
+/* ─── Label ──────────────────────────────────────────────────── */
+.input__label {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--text-primary);
+}
+
+/* ─── Container ──────────────────────────────────────────────── */
+.input__container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* ─── Base Input ─────────────────────────────────────────────── */
+.input {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  transition: all var(--motion-micro, 100ms) ease-out;
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.input:hover:not(:disabled):not(:focus) {
+  border-color: var(--color-gray-300);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.input:disabled {
+  background-color: var(--bg-secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ─── Sizes ──────────────────────────────────────────────────── */
+.input--sm {
+  height: 32px;
+  padding: 0 var(--space-3, 12px);
+}
+
+.input--md {
+  height: 40px;
+  padding: 0 var(--space-3, 12px);
+}
+
+.input--lg {
+  height: 48px;
+  padding: 0 var(--space-4, 16px);
+  font-size: var(--text-base, 1rem);
+}
+
+/* ─── With Icons ─────────────────────────────────────────────── */
+.input--with-left-icon {
+  padding-left: 40px;
+}
+
+.input--with-right-icon {
+  padding-right: 40px;
+}
+
+.input--sm.input--with-left-icon {
+  padding-left: 32px;
+}
+
+.input--sm.input--with-right-icon {
+  padding-right: 32px;
+}
+
+.input--lg.input--with-left-icon {
+  padding-left: 48px;
+}
+
+.input--lg.input--with-right-icon {
+  padding-right: 48px;
+}
+
+/* ─── Icons ──────────────────────────────────────────────────── */
+.input__icon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.input__icon--left {
+  left: var(--space-3, 12px);
+}
+
+.input__icon--right {
+  right: var(--space-3, 12px);
+}
+
+/* ─── Error State ────────────────────────────────────────────── */
+.input--error {
+  border-color: var(--color-danger);
+}
+
+.input--error:focus {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px rgba(225, 112, 85, 0.1);
+}
+
+.input__error {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-danger);
+  margin: 0;
+}
+
+/* ─── Hint ───────────────────────────────────────────────────── */
+.input__hint {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  .input {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+  }
+
+  .input:hover:not(:disabled):not(:focus) {
+    border-color: var(--color-gray-500);
+  }
+
+  .input:focus {
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  }
+
+  .input:disabled {
+    background-color: var(--bg-tertiary);
+  }
+}
