@@ -105,12 +105,10 @@
 }
 
 /* ─── Dark Mode ──────────────────────────────────────────────── */
-@media (prefers-color-scheme: dark) {
-  .avatar {
-    background-color: var(--bg-secondary);
-  }
+[data-theme="dark"] .avatar {
+  background-color: var(--bg-secondary);
+}
 
-  .avatar__status {
-    border-color: var(--bg-primary);
-  }
+[data-theme="dark"] .avatar__status {
+  border-color: var(--bg-primary);
 }

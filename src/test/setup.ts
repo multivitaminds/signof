@@ -1,5 +1,26 @@
 import '@testing-library/jest-dom/vitest'
 
+// ─── localStorage mock (jsdom doesn't provide a full implementation) ──
+const localStorageMock = (() => {
+  let store: Record<string, string> = {}
+  return {
+    getItem: (key: string) => store[key] ?? null,
+    setItem: (key: string, value: string) => { store[key] = String(value) },
+    removeItem: (key: string) => { delete store[key] },
+    clear: () => { store = {} },
+    get length() { return Object.keys(store).length },
+    key: (i: number) => Object.keys(store)[i] ?? null,
+  }
+})()
+
+Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+
+// ─── Clear persisted state between tests ────────────────────────────
+beforeEach(() => {
+  localStorageMock.clear()
+  document.documentElement.removeAttribute('data-theme')
+})
+
 // ─── Canvas mock (for SignaturePad and any future canvas components) ──
 HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
   clearRect: vi.fn(),

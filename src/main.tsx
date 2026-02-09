@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout'
 import HomePage from './pages/HomePage'
 import DocumentsPage from './pages/DocumentsPage'
+import NotFoundPage from './pages/NotFoundPage'
 import {
   PagesPage,
   ProjectsPage,
@@ -33,6 +34,7 @@ createRoot(root).render(
           <Route path="data/*" element={<DatabasesPage />} />
           <Route path="inbox" element={<InboxPage />} />
           <Route path="settings/*" element={<SettingsPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

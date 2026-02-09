@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom'
-import { Bell, Search, User } from 'lucide-react'
+import { Bell, Search, User, Sun, Moon, Monitor, Menu } from 'lucide-react'
 import { useAppStore } from '../../../stores/useAppStore'
+import { useTheme } from '../../../hooks/useTheme'
 import './TopBar.css'
 
 const ROUTE_TITLES: Record<string, string> = {
@@ -14,9 +15,22 @@ const ROUTE_TITLES: Record<string, string> = {
   '/settings': 'Settings',
 }
 
+const THEME_ICON = {
+  light: Sun,
+  dark: Moon,
+  system: Monitor,
+} as const
+
+const THEME_LABEL = {
+  light: 'Light mode',
+  dark: 'Dark mode',
+  system: 'System theme',
+} as const
+
 export default function TopBar() {
   const location = useLocation()
-  const { openCommandPalette } = useAppStore()
+  const { openCommandPalette, openMobileSidebar } = useAppStore()
+  const { theme, cycleTheme } = useTheme()
 
   const getPageTitle = () => {
     // Exact match first
@@ -30,9 +44,19 @@ export default function TopBar() {
     return prefix ? ROUTE_TITLES[prefix] : 'SignOf'
   }
 
+  const ThemeIcon = THEME_ICON[theme]
+
   return (
     <header className="topbar">
       <div className="topbar__left">
+        {/* Hamburger — mobile only */}
+        <button
+          className="topbar__icon-btn topbar__hamburger"
+          onClick={openMobileSidebar}
+          aria-label="Open menu"
+        >
+          <Menu size={20} />
+        </button>
         <h1 className="topbar__title">{getPageTitle()}</h1>
       </div>
 
@@ -45,6 +69,16 @@ export default function TopBar() {
           title="Search (⌘K)"
         >
           <Search size={20} />
+        </button>
+
+        {/* Theme Toggle */}
+        <button
+          className="topbar__icon-btn"
+          onClick={cycleTheme}
+          aria-label={THEME_LABEL[theme]}
+          title={THEME_LABEL[theme]}
+        >
+          <ThemeIcon size={20} />
         </button>
 
         {/* Notifications */}

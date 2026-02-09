@@ -99,23 +99,32 @@
   box-shadow: 0 2px 8px rgba(26, 26, 46, 0.2);
 }
 
+/* Hamburger — hidden on desktop */
+.topbar__hamburger {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .topbar__hamburger {
+    display: flex;
+  }
+}
+
 /* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .topbar {
-    background: var(--bg-primary, #0F0F1A);
-    border-bottom-color: var(--border-color, #334155);
-  }
+[data-theme="dark"] .topbar {
+  background: var(--bg-primary, #0F0F1A);
+  border-bottom-color: var(--border-color, #334155);
+}
 
-  .topbar__title {
-    color: var(--text-primary, #F1F5F9);
-  }
+[data-theme="dark"] .topbar__title {
+  color: var(--text-primary, #F1F5F9);
+}
 
-  .topbar__icon-btn {
-    color: var(--text-secondary, #94A3B8);
-  }
+[data-theme="dark"] .topbar__icon-btn {
+  color: var(--text-secondary, #94A3B8);
+}
 
-  .topbar__icon-btn:hover {
-    background: var(--bg-secondary, #1A1A2E);
-    color: var(--text-primary, #F1F5F9);
-  }
+[data-theme="dark"] .topbar__icon-btn:hover {
+  background: var(--bg-secondary, #1A1A2E);
+  color: var(--text-primary, #F1F5F9);
 }

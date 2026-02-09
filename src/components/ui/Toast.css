@@ -141,9 +141,7 @@
 }
 
 /* ─── Dark Mode ──────────────────────────────────────────────── */
-@media (prefers-color-scheme: dark) {
-  .toast {
-    background-color: var(--signof-dark);
-    border-color: var(--border-color);
-  }
+[data-theme="dark"] .toast {
+  background-color: var(--signof-dark);
+  border-color: var(--border-color);
 }

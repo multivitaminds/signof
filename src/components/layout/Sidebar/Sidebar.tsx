@@ -35,14 +35,28 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function Sidebar() {
   const location = useLocation()
-  const { sidebarExpanded, toggleSidebar, openCommandPalette } = useAppStore()
+  const {
+    sidebarExpanded,
+    toggleSidebar,
+    openCommandPalette,
+    mobileSidebarOpen,
+    closeMobileSidebar,
+  } = useAppStore()
 
   const handleSearchClick = useCallback(() => {
     openCommandPalette()
   }, [openCommandPalette])
 
+  const handleNavClick = useCallback(() => {
+    closeMobileSidebar()
+  }, [closeMobileSidebar])
+
+  const mobileClass = mobileSidebarOpen ? ' sidebar--mobile-open' : ''
+
   return (
-    <aside className={`sidebar ${sidebarExpanded ? 'sidebar--expanded' : 'sidebar--collapsed'}`}>
+    <aside
+      className={`sidebar ${sidebarExpanded ? 'sidebar--expanded' : 'sidebar--collapsed'}${mobileClass}`}
+    >
       {/* Header */}
       <div className="sidebar__header">
         {sidebarExpanded ? (
@@ -96,15 +110,16 @@ export default function Sidebar() {
         <ul className="sidebar__nav-list">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon
-            const isActive = location.pathname === item.path || 
+            const isActive = location.pathname === item.path ||
               (item.path !== '/' && location.pathname.startsWith(item.path))
-            
+
             return (
               <li key={item.path} className="sidebar__nav-item">
                 <NavLink
                   to={item.path}
                   className={`sidebar__nav-link ${isActive ? 'sidebar__nav-link--active' : ''}`}
                   title={!sidebarExpanded ? item.label : undefined}
+                  onClick={handleNavClick}
                 >
                   <Icon size={20} className="sidebar__nav-icon" />
                   {sidebarExpanded && (
@@ -126,6 +141,7 @@ export default function Sidebar() {
           to="/settings"
           className={`sidebar__nav-link ${location.pathname.startsWith('/settings') ? 'sidebar__nav-link--active' : ''}`}
           title={!sidebarExpanded ? 'Settings' : undefined}
+          onClick={handleNavClick}
         >
           <Settings size={20} className="sidebar__nav-icon" />
           {sidebarExpanded && (

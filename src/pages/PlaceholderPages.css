@@ -47,8 +47,6 @@
 }
 
 /* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .placeholder-page__title {
-    color: var(--text-primary, #F1F5F9);
-  }
+[data-theme="dark"] .placeholder-page__title {
+  color: var(--text-primary, #F1F5F9);
 }

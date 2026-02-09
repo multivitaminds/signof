@@ -1,0 +1,86 @@
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: var(--space-6, 32px);
+}
+
+.not-found__code {
+  font-size: var(--text-5xl, 4rem);
+  font-weight: var(--font-extrabold, 800);
+  background: linear-gradient(135deg, var(--signof-coral, #E94560), var(--color-primary, #4F46E5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: var(--space-4, 16px);
+}
+
+.not-found__title {
+  font-size: var(--text-2xl, 1.5rem);
+  font-weight: var(--font-bold, 700);
+  color: var(--text-primary, #1F2937);
+  margin: 0 0 var(--space-3, 12px);
+}
+
+.not-found__description {
+  font-size: var(--text-base, 1rem);
+  color: var(--text-secondary, #6B7280);
+  max-width: 400px;
+  margin: 0 0 var(--space-6, 32px);
+  line-height: var(--leading-relaxed, 1.625);
+}
+
+.not-found__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+}
+
+.not-found__link {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2, 8px) var(--space-5, 24px);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-medium, 500);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all var(--motion-micro, 100ms) ease-out;
+}
+
+.not-found__link--primary {
+  background: var(--color-primary, #4F46E5);
+  color: white;
+}
+
+.not-found__link--primary:hover {
+  background: var(--color-primary-hover, #4338CA);
+}
+
+.not-found__link--secondary {
+  background: var(--bg-tertiary, #E9ECEF);
+  color: var(--text-primary, #1F2937);
+}
+
+.not-found__link--secondary:hover {
+  background: var(--border-color, #DEE2E6);
+}
+
+/* Dark mode */
+[data-theme="dark"] .not-found__title {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .not-found__link--secondary {
+  background: var(--bg-secondary, #1A1A2E);
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .not-found__link--secondary:hover {
+  background: var(--bg-tertiary, #16213E);
+}

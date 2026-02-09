@@ -18,9 +18,22 @@
   padding: var(--space-5, 24px);
 }
 
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .app-layout {
-    background: var(--bg-primary, #0F0F1A);
+/* Mobile backdrop */
+.app-layout__backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .app-layout__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: var(--z-modal-backdrop, 40);
   }
+}
+
+/* Dark mode */
+[data-theme="dark"] .app-layout {
+  background: var(--bg-primary, #0F0F1A);
 }

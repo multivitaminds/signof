@@ -10,6 +10,11 @@ interface AppState {
   toggleSidebar: () => void
   setSidebarWidth: (width: number) => void
 
+  // Mobile sidebar
+  mobileSidebarOpen: boolean
+  openMobileSidebar: () => void
+  closeMobileSidebar: () => void
+
   // Theme
   theme: Theme
   setTheme: (theme: Theme) => void
@@ -34,6 +39,11 @@ export const useAppStore = create<AppState>()(
       toggleSidebar: () =>
         set((state) => ({ sidebarExpanded: !state.sidebarExpanded })),
       setSidebarWidth: (width) => set({ sidebarWidth: width }),
+
+      // Mobile sidebar
+      mobileSidebarOpen: false,
+      openMobileSidebar: () => set({ mobileSidebarOpen: true }),
+      closeMobileSidebar: () => set({ mobileSidebarOpen: false }),
 
       // Theme
       theme: 'system',

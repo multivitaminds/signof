@@ -180,17 +180,15 @@
 }
 
 /* ─── Dark Mode ──────────────────────────────────────────────── */
-@media (prefers-color-scheme: dark) {
-  .btn--secondary {
-    background-color: var(--bg-secondary);
-    border-color: var(--border-color);
-  }
+[data-theme="dark"] .btn--secondary {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color);
+}
 
-  .btn--secondary:hover:not(:disabled) {
-    background-color: var(--bg-tertiary);
-  }
+[data-theme="dark"] .btn--secondary:hover:not(:disabled) {
+  background-color: var(--bg-tertiary);
+}
 
-  .btn--ghost:hover:not(:disabled) {
-    background-color: var(--bg-secondary);
-  }
+[data-theme="dark"] .btn--ghost:hover:not(:disabled) {
+  background-color: var(--bg-secondary);
 }
