@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import {
   type Document,
   type Signer,
+  ACTIVE_STATUSES,
   DocumentStatus,
   SignerStatus,
 } from '../types'
@@ -68,16 +69,20 @@ const SAMPLE_DOCUMENTS: Document[] = [
 
 interface DocumentState {
   documents: Document[]
-  
+
   // Actions
   addDocument: (file: File) => Document
   deleteDocument: (docId: string) => void
   signDocument: (docId: string, dataUrl: string) => void
+  signAsSigner: (docId: string, signerId: string, dataUrl: string) => void
+  sendDocument: (docId: string) => void
+  addSigner: (docId: string, name: string, email: string) => void
+  removeSigner: (docId: string, signerId: string) => void
   getDocument: (docId: string) => Document | undefined
-  
+
   // Computed
   totalCount: number
-  pendingCount: number
+  inProgressCount: number
   completedCount: number
 }
 
@@ -89,21 +94,12 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     const newDoc: Document = {
       id: generateId(),
       name: file.name,
-      status: DocumentStatus.Pending,
+      status: DocumentStatus.Draft,
       createdAt: timestamp,
       updatedAt: timestamp,
       fileUrl: URL.createObjectURL(file),
       fileType: file.type,
-      signers: [
-        {
-          id: generateId(),
-          name: 'You',
-          email: 'you@example.com',
-          status: SignerStatus.Pending,
-          signedAt: null,
-          order: 1,
-        },
-      ],
+      signers: [],
       signatures: [],
       audit: [{ action: 'created', timestamp, userId: 'you' }],
     }
@@ -151,6 +147,130 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     }))
   },
 
+  signAsSigner: (docId: string, signerId: string, dataUrl: string) => {
+    const timestamp = now()
+    set((state) => ({
+      documents: state.documents.map((doc) => {
+        if (doc.id !== docId) return doc
+        const signer = doc.signers.find((s) => s.id === signerId)
+        const updatedSigners = doc.signers.map((s) =>
+          s.id === signerId ? { ...s, status: SignerStatus.Signed as typeof s.status, signedAt: timestamp } : s
+        )
+        const allSigned = updatedSigners.every(
+          (s) => s.status === SignerStatus.Signed
+        )
+        return {
+          ...doc,
+          signers: updatedSigners,
+          status: allSigned ? DocumentStatus.Completed : DocumentStatus.Signed,
+          updatedAt: timestamp,
+          signatures: [
+            ...doc.signatures,
+            { dataUrl, timestamp, signerId },
+          ],
+          audit: [
+            ...doc.audit,
+            { action: 'signed', timestamp, userId: signerId, detail: `Signed by ${signer?.name ?? 'Unknown'}` },
+            ...(allSigned
+              ? [{ action: 'completed', timestamp, userId: 'system', detail: 'All signers have signed' }]
+              : []),
+          ],
+        }
+      }),
+    }))
+  },
+
+  sendDocument: (docId: string) => {
+    const timestamp = now()
+    set((state) => ({
+      documents: state.documents.map((doc) => {
+        if (doc.id !== docId) return doc
+        return {
+          ...doc,
+          status: DocumentStatus.Sent,
+          updatedAt: timestamp,
+          audit: [
+            ...doc.audit,
+            { action: 'sent', timestamp, userId: 'you', detail: `Sent to ${doc.signers.length} signers` },
+          ],
+        }
+      }),
+    }))
+    // Simulate delivery after 2s
+    setTimeout(() => {
+      const ts = now()
+      set((state) => ({
+        documents: state.documents.map((doc) => {
+          if (doc.id !== docId || doc.status !== DocumentStatus.Sent) return doc
+          return {
+            ...doc,
+            status: DocumentStatus.Delivered,
+            updatedAt: ts,
+            audit: [
+              ...doc.audit,
+              { action: 'delivered', timestamp: ts, userId: 'system', detail: 'Delivered to all recipients' },
+            ],
+          }
+        }),
+      }))
+    }, 2000)
+    // Simulate viewed after 5s (2 + 3)
+    setTimeout(() => {
+      const ts = now()
+      set((state) => ({
+        documents: state.documents.map((doc) => {
+          if (doc.id !== docId || doc.status !== DocumentStatus.Delivered) return doc
+          return {
+            ...doc,
+            status: DocumentStatus.Viewed,
+            updatedAt: ts,
+            audit: [
+              ...doc.audit,
+              { action: 'viewed', timestamp: ts, userId: 'system', detail: 'Viewed by recipients' },
+            ],
+          }
+        }),
+      }))
+    }, 5000)
+  },
+
+  addSigner: (docId: string, name: string, email: string) => {
+    const timestamp = now()
+    set((state) => ({
+      documents: state.documents.map((doc) => {
+        if (doc.id !== docId) return doc
+        const maxOrder = doc.signers.reduce((max, s) => Math.max(max, s.order), 0)
+        const newSigner: Signer = {
+          id: generateId(),
+          name,
+          email,
+          status: SignerStatus.Pending,
+          signedAt: null,
+          order: maxOrder + 1,
+        }
+        return {
+          ...doc,
+          signers: [...doc.signers, newSigner],
+          updatedAt: timestamp,
+        }
+      }),
+    }))
+  },
+
+  removeSigner: (docId: string, signerId: string) => {
+    const timestamp = now()
+    set((state) => ({
+      documents: state.documents.map((doc) => {
+        if (doc.id !== docId) return doc
+        return {
+          ...doc,
+          signers: doc.signers.filter((s) => s.id !== signerId),
+          updatedAt: timestamp,
+        }
+      }),
+    }))
+  },
+
   getDocument: (docId: string) => {
     return get().documents.find((d) => d.id === docId)
   },
@@ -159,9 +279,10 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     return get().documents.length
   },
 
-  get pendingCount() {
-    return get().documents.filter((d) => d.status === DocumentStatus.Pending)
-      .length
+  get inProgressCount() {
+    return get().documents.filter((d) =>
+      (ACTIVE_STATUSES as string[]).includes(d.status)
+    ).length
   },
 
   get completedCount() {

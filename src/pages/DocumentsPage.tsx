@@ -2,18 +2,33 @@ import { useState, useCallback } from 'react'
 import Dashboard from '../components/Dashboard/Dashboard'
 import DocumentUpload from '../components/DocumentUpload/DocumentUpload'
 import SignaturePad from '../components/SignaturePad/SignaturePad'
+import AddSigners from '../components/AddSigners/AddSigners'
+import SigningCeremony from '../components/SigningCeremony/SigningCeremony'
+import CompletionCertificate from '../components/CompletionCertificate/CompletionCertificate'
+import AuditTimeline from '../components/AuditTimeline/AuditTimeline'
 import { useDocumentStore } from '../stores/useDocumentStore'
-import { type Document } from '../types'
+import { SignerStatus, type Document } from '../types'
 import './DocumentsPage.css'
 
-type ModalView = 'none' | 'upload' | 'sign' | 'view'
+type ModalView = 'none' | 'upload' | 'sign' | 'view' | 'add-signers' | 'ceremony' | 'certificate'
 
 export default function DocumentsPage() {
-  const { documents, addDocument, deleteDocument, signDocument, getDocument } =
-    useDocumentStore()
+  const {
+    documents,
+    addDocument,
+    deleteDocument,
+    signDocument,
+    signAsSigner,
+    sendDocument,
+    addSigner,
+    removeSigner,
+    getDocument,
+  } = useDocumentStore()
   const [modalView, setModalView] = useState<ModalView>('none')
   const [signingDocId, setSigningDocId] = useState<string | null>(null)
+  const [signingSignerId, setSigningSignerId] = useState<string | null>(null)
   const [viewingDoc, setViewingDoc] = useState<Document | null>(null)
+  const [pendingUploadDocId, setPendingUploadDocId] = useState<string | null>(null)
 
   const handleNewDocument = useCallback(() => {
     setModalView('upload')
@@ -21,16 +36,42 @@ export default function DocumentsPage() {
 
   const handleUpload = useCallback(
     (file: File) => {
-      addDocument(file)
-      setModalView('none')
+      const doc = addDocument(file)
+      setPendingUploadDocId(doc.id)
+      setModalView('add-signers')
     },
     [addDocument]
   )
 
-  const handleSign = useCallback((docId: string) => {
-    setSigningDocId(docId)
-    setModalView('sign')
-  }, [])
+  const handleSign = useCallback(
+    (docId: string) => {
+      const doc = getDocument(docId)
+      if (!doc) return
+      const pendingSigner = doc.signers.find(
+        (s) => s.status === SignerStatus.Pending
+      )
+      if (pendingSigner) {
+        setSigningDocId(docId)
+        setSigningSignerId(pendingSigner.id)
+        setModalView('ceremony')
+      } else {
+        setSigningDocId(docId)
+        setModalView('sign')
+      }
+    },
+    [getDocument]
+  )
+
+  const handleCeremonyComplete = useCallback(
+    (dataUrl: string) => {
+      if (!signingDocId || !signingSignerId) return
+      signAsSigner(signingDocId, signingSignerId, dataUrl)
+      setModalView('none')
+      setSigningDocId(null)
+      setSigningSignerId(null)
+    },
+    [signingDocId, signingSignerId, signAsSigner]
+  )
 
   const handleSaveSignature = useCallback(
     (dataUrl: string) => {
@@ -60,10 +101,58 @@ export default function DocumentsPage() {
     [getDocument]
   )
 
+  const handleSend = useCallback(
+    (docId: string) => {
+      sendDocument(docId)
+    },
+    [sendDocument]
+  )
+
+  const handleCertificate = useCallback(
+    (docId: string) => {
+      const doc = getDocument(docId)
+      if (doc) {
+        setViewingDoc(doc)
+        setModalView('certificate')
+      }
+    },
+    [getDocument]
+  )
+
+  const handleAddSignerForUpload = useCallback(
+    (name: string, email: string) => {
+      if (!pendingUploadDocId) return
+      addSigner(pendingUploadDocId, name, email)
+    },
+    [pendingUploadDocId, addSigner]
+  )
+
+  const handleRemoveSignerForUpload = useCallback(
+    (signerId: string) => {
+      if (!pendingUploadDocId) return
+      removeSigner(pendingUploadDocId, signerId)
+    },
+    [pendingUploadDocId, removeSigner]
+  )
+
+  const handleSendFromSigners = useCallback(() => {
+    if (!pendingUploadDocId) return
+    sendDocument(pendingUploadDocId)
+    setModalView('none')
+    setPendingUploadDocId(null)
+  }, [pendingUploadDocId, sendDocument])
+
+  const handleSaveAsDraft = useCallback(() => {
+    setModalView('none')
+    setPendingUploadDocId(null)
+  }, [])
+
   const closeModal = useCallback(() => {
     setModalView('none')
     setSigningDocId(null)
+    setSigningSignerId(null)
     setViewingDoc(null)
+    setPendingUploadDocId(null)
   }, [])
 
   return (
@@ -74,6 +163,8 @@ export default function DocumentsPage() {
         onSign={handleSign}
         onDelete={handleDelete}
         onView={handleView}
+        onSend={handleSend}
+        onCertificate={handleCertificate}
       />
 
       {modalView === 'upload' && (
@@ -96,6 +187,36 @@ export default function DocumentsPage() {
               </button>
             </div>
             <DocumentUpload onUpload={handleUpload} onCancel={closeModal} />
+          </div>
+        </div>
+      )}
+
+      {modalView === 'add-signers' && pendingUploadDocId && (
+        <div
+          className="modal-overlay"
+          onClick={closeModal}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Add Signers"
+        >
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Add Signers</h2>
+              <button
+                className="modal-close"
+                onClick={closeModal}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+            <AddSigners
+              document={getDocument(pendingUploadDocId)!}
+              onAddSigner={handleAddSignerForUpload}
+              onRemoveSigner={handleRemoveSignerForUpload}
+              onSend={handleSendFromSigners}
+              onSaveDraft={handleSaveAsDraft}
+            />
           </div>
         </div>
       )}
@@ -123,6 +244,59 @@ export default function DocumentsPage() {
               Draw your signature below to sign this document.
             </p>
             <SignaturePad onSave={handleSaveSignature} onCancel={closeModal} />
+          </div>
+        </div>
+      )}
+
+      {modalView === 'ceremony' && signingDocId && signingSignerId && (
+        <div
+          className="modal-overlay"
+          onClick={closeModal}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Signing Ceremony"
+        >
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Sign Document</h2>
+              <button
+                className="modal-close"
+                onClick={closeModal}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+            <SigningCeremony
+              document={getDocument(signingDocId)!}
+              signer={getDocument(signingDocId)!.signers.find(s => s.id === signingSignerId)!}
+              onComplete={handleCeremonyComplete}
+              onCancel={closeModal}
+            />
+          </div>
+        </div>
+      )}
+
+      {modalView === 'certificate' && viewingDoc && (
+        <div
+          className="modal-overlay"
+          onClick={closeModal}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Completion Certificate"
+        >
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Completion Certificate</h2>
+              <button
+                className="modal-close"
+                onClick={closeModal}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+            <CompletionCertificate document={viewingDoc} onClose={closeModal} />
           </div>
         </div>
       )}
@@ -163,18 +337,10 @@ export default function DocumentsPage() {
                 <span className="view-label">Type</span>
                 <span>{viewingDoc.fileType}</span>
               </div>
-              {viewingDoc.signers.length > 0 && (
-                <div className="view-signers">
-                  <span className="view-label">Signers</span>
-                  <ul>
-                    {viewingDoc.signers.map((s) => (
-                      <li key={s.id}>
-                        {s.name} — <em>{s.status}</em>
-                        {s.signedAt &&
-                          ` (${new Date(s.signedAt).toLocaleDateString()})`}
-                      </li>
-                    ))}
-                  </ul>
+              {viewingDoc.audit.length > 0 && (
+                <div className="view-audit">
+                  <span className="view-label">Activity</span>
+                  <AuditTimeline entries={viewingDoc.audit} />
                 </div>
               )}
               {viewingDoc.signatures.length > 0 && (

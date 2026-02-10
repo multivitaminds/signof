@@ -1,0 +1,106 @@
+.add-signers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.add-signers__header h2 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+/* ─── Form ─────────────────────────────────────────────── */
+
+.add-signers__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.add-signers__input-group {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
+.add-signers__input {
+  flex: 1;
+  min-width: 0;
+}
+
+.add-signers__add-btn {
+  white-space: nowrap;
+}
+
+.add-signers__error {
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+/* ─── Signer List ──────────────────────────────────────── */
+
+.add-signers__signer-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.add-signers__signer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.add-signers__signer-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.add-signers__signer-name {
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+}
+
+.add-signers__signer-email {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.add-signers__remove-btn {
+  font-size: var(--text-xl);
+  line-height: 1;
+  padding: var(--space-1) var(--space-2);
+  color: var(--text-muted);
+}
+
+.add-signers__remove-btn:hover {
+  color: var(--color-danger);
+}
+
+/* ─── Actions ──────────────────────────────────────────── */
+
+.add-signers__actions {
+  display: flex;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-color);
+}
+
+/* ─── Responsive ───────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .add-signers__input-group {
+    flex-direction: column;
+  }
+
+  .add-signers__add-btn {
+    width: 100%;
+  }
+}

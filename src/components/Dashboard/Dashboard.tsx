@@ -1,4 +1,4 @@
-import { type Document, DocumentStatus } from '../../types'
+import { type Document, ACTIVE_STATUSES, DocumentStatus } from '../../types'
 import DocumentList from '../DocumentList/DocumentList'
 import './Dashboard.css'
 
@@ -8,6 +8,8 @@ interface DashboardProps {
   onSign: (docId: string) => void
   onDelete: (docId: string) => void
   onView: (docId: string) => void
+  onSend?: (docId: string) => void
+  onCertificate?: (docId: string) => void
 }
 
 function Dashboard({
@@ -16,10 +18,12 @@ function Dashboard({
   onSign,
   onDelete,
   onView,
+  onSend,
+  onCertificate,
 }: DashboardProps) {
   const totalCount = documents.length
-  const pendingCount = documents.filter(
-    (doc) => doc.status === DocumentStatus.Pending
+  const inProgressCount = documents.filter((doc) =>
+    (ACTIVE_STATUSES as string[]).includes(doc.status)
   ).length
   const completedCount = documents.filter(
     (doc) => doc.status === DocumentStatus.Completed
@@ -34,8 +38,8 @@ function Dashboard({
             <span className="stat-label">Total Documents</span>
           </div>
           <div className="stat-card stat-card--pending" role="listitem">
-            <span className="stat-number">{pendingCount}</span>
-            <span className="stat-label">Pending Signatures</span>
+            <span className="stat-number">{inProgressCount}</span>
+            <span className="stat-label">In Progress</span>
           </div>
           <div className="stat-card stat-card--completed" role="listitem">
             <span className="stat-number">{completedCount}</span>
@@ -51,6 +55,8 @@ function Dashboard({
         onSign={onSign}
         onDelete={onDelete}
         onView={onView}
+        onSend={onSend}
+        onCertificate={onCertificate}
       />
     </section>
   )

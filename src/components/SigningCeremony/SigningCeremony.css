@@ -1,0 +1,184 @@
+/* ─── SigningCeremony ──────────────────────────────────────────── */
+
+.signing-ceremony {
+  max-width: 600px;
+  width: 100%;
+}
+
+/* ─── Step Indicator ─────────────────────────────────────────── */
+
+.signing-ceremony__step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.signing-ceremony__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.signing-ceremony__step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-gray-200);
+  color: var(--color-gray-500);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  transition: all var(--transition-fast);
+}
+
+.signing-ceremony__step-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-medium);
+  transition: color var(--transition-fast);
+}
+
+.signing-ceremony__step--active .signing-ceremony__step-number {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.signing-ceremony__step--active .signing-ceremony__step-label {
+  color: var(--color-primary);
+  font-weight: var(--font-semibold);
+}
+
+.signing-ceremony__step--completed .signing-ceremony__step-number {
+  background-color: var(--color-success);
+  color: #ffffff;
+}
+
+.signing-ceremony__step--completed .signing-ceremony__step-label {
+  color: var(--color-success-dark);
+}
+
+/* ─── Content Area ───────────────────────────────────────────── */
+
+.signing-ceremony__content {
+  padding: var(--space-2) 0;
+}
+
+.signing-ceremony__content h2 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+}
+
+/* ─── Identity Step ──────────────────────────────────────────── */
+
+.signing-ceremony__identity-text {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.signing-ceremony__document-name {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-5);
+}
+
+/* ─── Agreement Step ─────────────────────────────────────────── */
+
+.signing-ceremony__checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  cursor: pointer;
+  margin-bottom: var(--space-3);
+}
+
+.signing-ceremony__checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.signing-ceremony__legal-text {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-5);
+  padding: var(--space-3);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+/* ─── Sign Step ──────────────────────────────────────────────── */
+
+.signing-ceremony__sign {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ─── Confirmation Step ──────────────────────────────────────── */
+
+.signing-ceremony__confirmation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-6) 0;
+}
+
+.signing-ceremony__checkmark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-success);
+  margin-bottom: var(--space-4);
+}
+
+.signing-ceremony__checkmark span {
+  color: #ffffff;
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  line-height: 1;
+}
+
+.signing-ceremony__confirmation h2 {
+  color: var(--color-success-dark);
+}
+
+.signing-ceremony__confirmation-detail {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.signing-ceremony__confirmation-time {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin-bottom: var(--space-5);
+}
+
+/* ─── Actions ────────────────────────────────────────────────── */
+
+.signing-ceremony__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}

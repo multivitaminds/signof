@@ -1,0 +1,73 @@
+.audit-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.audit-timeline--empty {
+  min-height: 0;
+}
+
+/* ─── Entry ────────────────────────────────────────────── */
+
+.audit-timeline__entry {
+  display: flex;
+  gap: var(--space-3);
+  position: relative;
+}
+
+/* ─── Marker (dot + line) ──────────────────────────────── */
+
+.audit-timeline__marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 12px;
+  padding-top: 4px;
+}
+
+.audit-timeline__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.audit-timeline__line {
+  width: 2px;
+  flex: 1;
+  background-color: var(--border-color);
+  margin-top: var(--space-1);
+  margin-bottom: var(--space-1);
+}
+
+/* ─── Content ──────────────────────────────────────────── */
+
+.audit-timeline__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-bottom: var(--space-5);
+  min-width: 0;
+}
+
+.audit-timeline__entry:last-child .audit-timeline__content {
+  padding-bottom: 0;
+}
+
+.audit-timeline__action {
+  font-weight: var(--font-medium);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+.audit-timeline__time {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.audit-timeline__detail {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+}

@@ -1,0 +1,126 @@
+/* ─── CompletionCertificate ────────────────────────────────────── */
+
+.completion-certificate {
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.completion-certificate__border {
+  border: 4px double var(--color-warning);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  background-color: var(--bg-primary);
+}
+
+/* ─── Header ─────────────────────────────────────────────────── */
+
+.completion-certificate__header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.completion-certificate__brand {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-primary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-2);
+}
+
+.completion-certificate__title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+/* ─── Body ───────────────────────────────────────────────────── */
+
+.completion-certificate__body {
+  margin-bottom: var(--space-6);
+}
+
+.completion-certificate__document-name {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+/* ─── Signers Table ──────────────────────────────────────────── */
+
+.completion-certificate__signers-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--space-5);
+}
+
+.completion-certificate__signers-table th,
+.completion-certificate__signers-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  font-size: var(--text-sm);
+}
+
+.completion-certificate__signers-table th {
+  font-weight: var(--font-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: var(--text-xs);
+  letter-spacing: 0.05em;
+}
+
+.completion-certificate__signers-table td {
+  color: var(--text-primary);
+}
+
+.completion-certificate__signature-img {
+  max-width: 120px;
+  max-height: 40px;
+  object-fit: contain;
+}
+
+.completion-certificate__no-signature {
+  color: var(--text-muted);
+}
+
+/* ─── Completion Date ────────────────────────────────────────── */
+
+.completion-certificate__completion-date {
+  text-align: center;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* ─── Actions ────────────────────────────────────────────────── */
+
+.completion-certificate__actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-color);
+}
+
+/* ─── Print Styles ───────────────────────────────────────────── */
+
+@media print {
+  .completion-certificate__actions {
+    display: none;
+  }
+
+  .completion-certificate {
+    max-width: 100%;
+  }
+
+  .completion-certificate__border {
+    border-color: #b8860b;
+    box-shadow: none;
+  }
+}

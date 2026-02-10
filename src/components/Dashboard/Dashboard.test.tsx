@@ -55,7 +55,7 @@ describe('Dashboard', () => {
       <Dashboard documents={SAMPLE_DOCS} onNewDocument={noop} onSign={noop} onDelete={noop} onView={noop} />
     )
     expect(screen.getByText('Total Documents')).toBeInTheDocument()
-    expect(screen.getByText('Pending Signatures')).toBeInTheDocument()
+    expect(screen.getByText('In Progress')).toBeInTheDocument()
     const completedElements = screen.getAllByText('Completed')
     expect(completedElements.length).toBeGreaterThanOrEqual(1)
     const statNumbers = screen.getAllByText(/^[0-3]$/)

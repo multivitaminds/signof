@@ -4,6 +4,12 @@ import DocumentList from './DocumentList'
 import { DocumentStatus, SignerStatus } from '../../types'
 import type { Document, Signer } from '../../types'
 
+vi.mock('../StatusProgress/StatusProgress', () => ({
+  default: ({ currentStatus }: { currentStatus: string }) => (
+    <div data-testid="status-progress">{currentStatus}</div>
+  ),
+}))
+
 const makeSigner = (overrides: Partial<Signer> = {}): Signer => ({
   id: 's1',
   name: 'Alice',
@@ -67,14 +73,17 @@ describe('DocumentList', () => {
     expect(screen.getByText('Bob')).toBeInTheDocument()
   })
 
-  it('shows a Sign button only for pending documents', () => {
+  it('shows Sign button for all active statuses', () => {
     const docs = [
       makeDoc({ id: '1', status: DocumentStatus.Pending }),
-      makeDoc({ id: '2', status: DocumentStatus.Draft }),
-      makeDoc({ id: '3', status: DocumentStatus.Completed }),
+      makeDoc({ id: '2', status: DocumentStatus.Sent }),
+      makeDoc({ id: '3', status: DocumentStatus.Delivered }),
+      makeDoc({ id: '4', status: DocumentStatus.Viewed }),
+      makeDoc({ id: '5', status: DocumentStatus.Draft }),
+      makeDoc({ id: '6', status: DocumentStatus.Completed }),
     ]
     render(<DocumentList documents={docs} onSign={noop} onDelete={noop} onView={noop} />)
-    expect(screen.getAllByRole('button', { name: 'Sign' })).toHaveLength(1)
+    expect(screen.getAllByRole('button', { name: 'Sign' })).toHaveLength(4)
   })
 
   it('calls onSign with the correct docId', async () => {
@@ -102,5 +111,68 @@ describe('DocumentList', () => {
     render(<DocumentList documents={[doc]} onSign={noop} onDelete={onDelete} onView={noop} />)
     await user.click(screen.getByRole('button', { name: 'Delete' }))
     expect(onDelete).toHaveBeenCalledWith('del-1')
+  })
+
+  it('shows Send button for draft docs with signers', () => {
+    const doc = makeDoc({
+      id: 'draft-send',
+      status: DocumentStatus.Draft,
+      signers: [makeSigner()],
+    })
+    const onSend = vi.fn()
+    render(<DocumentList documents={[doc]} onSign={noop} onDelete={noop} onView={noop} onSend={onSend} />)
+    expect(screen.getByRole('button', { name: 'Send' })).toBeInTheDocument()
+  })
+
+  it('does not show Send button for draft docs without signers', () => {
+    const doc = makeDoc({
+      id: 'draft-no-send',
+      status: DocumentStatus.Draft,
+      signers: [],
+    })
+    const onSend = vi.fn()
+    render(<DocumentList documents={[doc]} onSign={noop} onDelete={noop} onView={noop} onSend={onSend} />)
+    expect(screen.queryByRole('button', { name: 'Send' })).not.toBeInTheDocument()
+  })
+
+  it('calls onSend with the correct docId', async () => {
+    const user = userEvent.setup()
+    const onSend = vi.fn()
+    const doc = makeDoc({
+      id: 'send-1',
+      status: DocumentStatus.Draft,
+      signers: [makeSigner()],
+    })
+    render(<DocumentList documents={[doc]} onSign={noop} onDelete={noop} onView={noop} onSend={onSend} />)
+    await user.click(screen.getByRole('button', { name: 'Send' }))
+    expect(onSend).toHaveBeenCalledWith('send-1')
+  })
+
+  it('shows Certificate button for completed docs', () => {
+    const doc = makeDoc({
+      id: 'cert-1',
+      status: DocumentStatus.Completed,
+    })
+    const onCertificate = vi.fn()
+    render(<DocumentList documents={[doc]} onSign={noop} onDelete={noop} onView={noop} onCertificate={onCertificate} />)
+    expect(screen.getByRole('button', { name: 'Certificate' })).toBeInTheDocument()
+  })
+
+  it('calls onCertificate with the correct docId', async () => {
+    const user = userEvent.setup()
+    const onCertificate = vi.fn()
+    const doc = makeDoc({
+      id: 'cert-2',
+      status: DocumentStatus.Completed,
+    })
+    render(<DocumentList documents={[doc]} onSign={noop} onDelete={noop} onView={noop} onCertificate={onCertificate} />)
+    await user.click(screen.getByRole('button', { name: 'Certificate' }))
+    expect(onCertificate).toHaveBeenCalledWith('cert-2')
+  })
+
+  it('renders StatusProgress for each document', () => {
+    const docs = [makeDoc({ id: '1' }), makeDoc({ id: '2' })]
+    render(<DocumentList documents={docs} onSign={noop} onDelete={noop} onView={noop} />)
+    expect(screen.getAllByTestId('status-progress')).toHaveLength(2)
   })
 })

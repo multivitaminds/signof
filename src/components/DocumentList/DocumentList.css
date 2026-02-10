@@ -125,8 +125,81 @@
   margin-left: auto;
 }
 
+.document-card__btn--send {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.document-card__btn--certificate {
+  background: var(--color-success);
+  color: #fff;
+}
+
 .document-card__btn--delete:hover {
   background: var(--color-danger-light);
+}
+
+/* ─── Status Badge Colors ─────────────────────────────────── */
+.status-sent {
+  background: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.status-delivered {
+  background: #CFFAFE;
+  color: #0E7490;
+}
+
+.status-viewed {
+  background: #EDE9FE;
+  color: #7C3AED;
+}
+
+.status-signed {
+  background: #D1FAE5;
+  color: #059669;
+}
+
+.status-declined {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.status-voided {
+  background: #F3F4F6;
+  color: #6B7280;
+}
+
+@media (prefers-color-scheme: dark) {
+  .status-sent {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93C5FD;
+  }
+
+  .status-delivered {
+    background: rgba(14, 116, 144, 0.2);
+    color: #67E8F9;
+  }
+
+  .status-viewed {
+    background: rgba(124, 58, 237, 0.2);
+    color: #C4B5FD;
+  }
+
+  .status-signed {
+    background: rgba(5, 150, 105, 0.2);
+    color: #6EE7B7;
+  }
+
+  .status-declined {
+    background: rgba(220, 38, 38, 0.2);
+    color: #FCA5A5;
+  }
+
+  .status-voided {
+    background: rgba(107, 114, 128, 0.2);
+    color: #9CA3AF;
+  }
 }
 
 /* ─── Empty State ──────────────────────────────────────────── */

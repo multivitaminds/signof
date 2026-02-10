@@ -88,3 +88,25 @@ export const STATUS_LABELS: Record<DocumentStatus, string> = {
   [DocumentStatus.Declined]: 'Declined',
   [DocumentStatus.Voided]: 'Voided',
 }
+
+/** Ordered signing flow for progress display */
+export const SIGNING_FLOW_STATUSES: DocumentStatus[] = [
+  DocumentStatus.Draft,
+  DocumentStatus.Sent,
+  DocumentStatus.Delivered,
+  DocumentStatus.Viewed,
+  DocumentStatus.Signed,
+  DocumentStatus.Completed,
+]
+
+/** Human-readable labels for audit actions */
+export const ACTION_LABELS: Record<string, string> = {
+  created: 'Document Created',
+  sent: 'Document Sent',
+  delivered: 'Document Delivered',
+  viewed: 'Document Viewed',
+  signed: 'Document Signed',
+  completed: 'All Signatures Complete',
+  declined: 'Signature Declined',
+  voided: 'Document Voided',
+}

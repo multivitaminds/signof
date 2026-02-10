@@ -1,4 +1,5 @@
-import { type Document, DocumentStatus, SignerStatus, STATUS_LABELS } from '../../types'
+import { type Document, ACTIVE_STATUSES, DocumentStatus, SignerStatus, STATUS_LABELS } from '../../types'
+import StatusProgress from '../StatusProgress/StatusProgress'
 import './DocumentList.css'
 
 interface DocumentListProps {
@@ -6,6 +7,8 @@ interface DocumentListProps {
   onSign: (docId: string) => void
   onDelete: (docId: string) => void
   onView: (docId: string) => void
+  onSend?: (docId: string) => void
+  onCertificate?: (docId: string) => void
 }
 
 function formatDate(dateString: string): string {
@@ -27,7 +30,11 @@ function getSignerStatusIcon(status: SignerStatus): string {
   }
 }
 
-function DocumentList({ documents, onSign, onDelete, onView }: DocumentListProps) {
+function isActiveStatus(status: DocumentStatus): boolean {
+  return (ACTIVE_STATUSES as string[]).includes(status)
+}
+
+function DocumentList({ documents, onSign, onDelete, onView, onSend, onCertificate }: DocumentListProps) {
   if (documents.length === 0) {
     return (
       <div className="document-list__empty">
@@ -55,6 +62,8 @@ function DocumentList({ documents, onSign, onDelete, onView }: DocumentListProps
 
           <p className="document-card__date">{formatDate(doc.createdAt)}</p>
 
+          <StatusProgress currentStatus={doc.status} />
+
           {doc.signers.length > 0 && (
             <ul className="document-card__signers">
               {doc.signers.map((signer) => (
@@ -69,12 +78,28 @@ function DocumentList({ documents, onSign, onDelete, onView }: DocumentListProps
           )}
 
           <div className="document-card__actions">
-            {doc.status === DocumentStatus.Pending && (
+            {doc.status === DocumentStatus.Draft && doc.signers.length > 0 && onSend && (
+              <button
+                className="document-card__btn document-card__btn--send"
+                onClick={() => onSend(doc.id)}
+              >
+                Send
+              </button>
+            )}
+            {isActiveStatus(doc.status) && (
               <button
                 className="document-card__btn document-card__btn--sign"
                 onClick={() => onSign(doc.id)}
               >
                 Sign
+              </button>
+            )}
+            {doc.status === DocumentStatus.Completed && onCertificate && (
+              <button
+                className="document-card__btn document-card__btn--certificate"
+                onClick={() => onCertificate(doc.id)}
+              >
+                Certificate
               </button>
             )}
             <button

@@ -11,15 +11,15 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 import { useDocumentStore } from '../stores/useDocumentStore'
-import { DocumentStatus } from '../types'
+import { ACTIVE_STATUSES, DocumentStatus } from '../types'
 import './HomePage.css'
 
 export default function HomePage() {
   const documents = useDocumentStore((state) => state.documents)
-  
+
   const stats = {
     total: documents.length,
-    pending: documents.filter((d) => d.status === DocumentStatus.Pending).length,
+    inProgress: documents.filter((d) => (ACTIVE_STATUSES as string[]).includes(d.status)).length,
     completed: documents.filter((d) => d.status === DocumentStatus.Completed).length,
   }
 
@@ -61,8 +61,8 @@ export default function HomePage() {
             <Clock size={20} />
           </div>
           <div className="stat-card__content">
-            <span className="stat-card__value">{stats.pending}</span>
-            <span className="stat-card__label">Pending Signatures</span>
+            <span className="stat-card__value">{stats.inProgress}</span>
+            <span className="stat-card__label">In Progress</span>
           </div>
         </div>
         <div className="stat-card">
