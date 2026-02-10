@@ -26,7 +26,7 @@ export interface SchedulingState {
   addBooking: (booking: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>) => Booking
   updateBooking: (id: string, updates: Partial<Booking>) => void
   cancelBooking: (id: string, reason?: string) => void
-  rescheduleBooking: (id: string, newDate: string, newStartTime: string, newEndTime: string) => void
+  rescheduleBooking: (id: string, newDate: string, newStartTime: string, newEndTime: string, reason?: string) => void
   getBookingsForDate: (date: string) => Booking[]
   getBookingsForEventType: (eventTypeId: string) => Booking[]
 
@@ -125,7 +125,7 @@ export const useSchedulingStore = create<SchedulingState>((set, get) => ({
     }))
   },
 
-  rescheduleBooking: (id, newDate, newStartTime, newEndTime) => {
+  rescheduleBooking: (id, newDate, newStartTime, newEndTime, reason) => {
     set((state) => ({
       bookings: state.bookings.map((b) =>
         b.id === id
@@ -135,6 +135,7 @@ export const useSchedulingStore = create<SchedulingState>((set, get) => ({
               startTime: newStartTime,
               endTime: newEndTime,
               status: BookingStatus.Rescheduled,
+              rescheduleReason: reason,
               updatedAt: now(),
             }
           : b

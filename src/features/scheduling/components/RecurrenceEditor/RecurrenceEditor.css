@@ -1,0 +1,131 @@
+.recurrence-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.recurrence-editor__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.recurrence-editor__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+}
+
+.recurrence-editor__sublabel {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+}
+
+.recurrence-editor__select {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+
+.recurrence-editor__select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.recurrence-editor__days {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.recurrence-editor__day-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all var(--motion-fast) var(--ease-out);
+}
+
+.recurrence-editor__day-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.recurrence-editor__day-btn--active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.recurrence-editor__day-btn--active:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: #fff;
+}
+
+.recurrence-editor__end-input {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.recurrence-editor__number-input,
+.recurrence-editor__date-input {
+  width: 100%;
+  max-width: 200px;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+
+.recurrence-editor__number-input:focus,
+.recurrence-editor__date-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.recurrence-editor__preview {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-style: italic;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+/* ─── Dark mode ──────────────────────────────────────────── */
+[data-theme="dark"] .recurrence-editor__select,
+[data-theme="dark"] .recurrence-editor__number-input,
+[data-theme="dark"] .recurrence-editor__date-input {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .recurrence-editor__preview {
+  background-color: var(--bg-tertiary);
+}

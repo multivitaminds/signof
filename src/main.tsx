@@ -30,6 +30,7 @@ const SchedulingLayout = lazy(() => import('./features/scheduling/pages/Scheduli
 const EventTypesPage = lazy(() => import('./features/scheduling/pages/EventTypesPage'))
 const SchedulingCalendarPage = lazy(() => import('./features/scheduling/pages/SchedulingCalendarPage'))
 const BookingsPage = lazy(() => import('./features/scheduling/pages/BookingsPage'))
+const PublicBookingPage = lazy(() => import('./features/scheduling/pages/PublicBookingPage'))
 
 const DatabasesLayout = lazy(() => import('./features/databases/pages/DatabasesLayout'))
 const DatabaseListPage = lazy(() => import('./features/databases/pages/DatabaseListPage'))
@@ -52,6 +53,8 @@ const TaxDashboard = lazy(() => import('./features/tax/pages/TaxDashboard'))
 const TaxDocumentsPage = lazy(() => import('./features/tax/pages/TaxDocumentsPage'))
 const TaxFormsPage = lazy(() => import('./features/tax/pages/TaxFormsPage'))
 const TaxFilingPage = lazy(() => import('./features/tax/pages/TaxFilingPage'))
+
+const DocumentAnalyticsPage = lazy(() => import('./features/documents/components/DocumentAnalytics/DocumentAnalytics'))
 
 const DeveloperLayout = lazy(() => import('./features/developer/pages/DeveloperLayout'))
 const ApiDocsPage = lazy(() => import('./features/developer/pages/ApiDocsPage'))
@@ -81,6 +84,9 @@ createRoot(root).render(
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
 
+        {/* Public booking page (outside main layout, standalone) */}
+        <Route path="/book/:slug" element={<Suspense fallback={LazyFallback}><PublicBookingPage /></Suspense>} />
+
         {/* Main app */}
         <Route path="/" element={<AppLayout />}>
           <Route index element={<HomePage />} />
@@ -101,6 +107,7 @@ createRoot(root).render(
           </Route>
 
           {/* Documents (DocuSign / PandaDoc) */}
+          <Route path="documents/analytics" element={<Suspense fallback={LazyFallback}><DocumentAnalyticsPage /></Suspense>} />
           <Route path="documents/*" element={<DocumentsPage />} />
 
           {/* Scheduling (Calendly) */}

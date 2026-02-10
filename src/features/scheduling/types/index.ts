@@ -56,6 +56,25 @@ export const DayOfWeek = {
 
 export type DayOfWeek = (typeof DayOfWeek)[keyof typeof DayOfWeek]
 
+// ─── Recurrence Types ───────────────────────────────────────────
+
+export const RecurrenceFrequency = {
+  Daily: 'daily',
+  Weekly: 'weekly',
+  Biweekly: 'biweekly',
+  Monthly: 'monthly',
+} as const
+
+export type RecurrenceFrequency = (typeof RecurrenceFrequency)[keyof typeof RecurrenceFrequency]
+
+export interface RecurrenceRule {
+  frequency: RecurrenceFrequency
+  interval: number
+  daysOfWeek?: DayOfWeek[]
+  endDate?: string        // ISO date string YYYY-MM-DD
+  maxOccurrences?: number
+}
+
 // ─── Core Interfaces ────────────────────────────────────────────
 
 export interface TimeRange {
@@ -101,6 +120,7 @@ export interface EventType {
   dateOverrides: DateOverride[]
   customQuestions: CustomQuestion[]
   maxAttendees: number
+  recurrence?: RecurrenceRule
   isActive: boolean
   createdAt: string
   updatedAt: string
@@ -124,6 +144,7 @@ export interface Booking {
   attendees: Attendee[]
   notes: string
   cancelReason?: string
+  rescheduleReason?: string
   createdAt: string
   updatedAt: string
 }
@@ -162,3 +183,40 @@ export const LOCATION_LABELS: Record<LocationType, string> = {
   [LocationType.GoogleMeet]: 'Google Meet',
   [LocationType.MicrosoftTeams]: 'Microsoft Teams',
 }
+
+export const RECURRENCE_LABELS: Record<RecurrenceFrequency, string> = {
+  [RecurrenceFrequency.Daily]: 'Daily',
+  [RecurrenceFrequency.Weekly]: 'Weekly',
+  [RecurrenceFrequency.Biweekly]: 'Bi-weekly',
+  [RecurrenceFrequency.Monthly]: 'Monthly',
+}
+
+export const DAY_OF_WEEK_SHORT_LABELS: Record<DayOfWeek, string> = {
+  [DayOfWeek.Monday]: 'M',
+  [DayOfWeek.Tuesday]: 'T',
+  [DayOfWeek.Wednesday]: 'W',
+  [DayOfWeek.Thursday]: 'T',
+  [DayOfWeek.Friday]: 'F',
+  [DayOfWeek.Saturday]: 'S',
+  [DayOfWeek.Sunday]: 'S',
+}
+
+export const DAY_OF_WEEK_FULL_LABELS: Record<DayOfWeek, string> = {
+  [DayOfWeek.Monday]: 'Monday',
+  [DayOfWeek.Tuesday]: 'Tuesday',
+  [DayOfWeek.Wednesday]: 'Wednesday',
+  [DayOfWeek.Thursday]: 'Thursday',
+  [DayOfWeek.Friday]: 'Friday',
+  [DayOfWeek.Saturday]: 'Saturday',
+  [DayOfWeek.Sunday]: 'Sunday',
+}
+
+export const ALL_DAYS_OF_WEEK: DayOfWeek[] = [
+  DayOfWeek.Monday,
+  DayOfWeek.Tuesday,
+  DayOfWeek.Wednesday,
+  DayOfWeek.Thursday,
+  DayOfWeek.Friday,
+  DayOfWeek.Saturday,
+  DayOfWeek.Sunday,
+]

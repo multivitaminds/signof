@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════════════════════════
+   Breadcrumbs — Path-based navigation with truncation
+   ═══════════════════════════════════════════════════════════════ */
+
 .breadcrumbs__list {
   display: flex;
   align-items: center;
@@ -5,12 +9,14 @@
   padding: 0;
   margin: 0;
   gap: var(--space-1, 4px);
+  overflow: hidden;
 }
 
 .breadcrumbs__item {
   display: flex;
   align-items: center;
   gap: var(--space-1, 4px);
+  min-width: 0;
 }
 
 .breadcrumbs__link {
@@ -19,6 +25,10 @@
   font-size: 0.875rem;
   font-weight: 500;
   transition: color var(--motion-micro, 100ms) ease-out;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
 }
 
 .breadcrumbs__link:hover {
@@ -29,14 +39,35 @@
   color: var(--text-primary, #1F2937);
   font-size: 0.875rem;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
 }
 
 .breadcrumbs__separator {
   color: var(--text-muted, #9CA3AF);
   user-select: none;
+  flex-shrink: 0;
 }
 
-/* Dark mode */
+.breadcrumbs__ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted, #9CA3AF);
+  width: 24px;
+  height: 20px;
+  border-radius: var(--radius-sm, 4px);
+  flex-shrink: 0;
+}
+
+.breadcrumbs__ellipsis:hover {
+  background: var(--bg-secondary, #F3F4F6);
+  color: var(--text-secondary, #6B7280);
+}
+
+/* ─── Dark mode ─────────────────────────────────────────────── */
 [data-theme="dark"] .breadcrumbs__link {
   color: var(--text-secondary, #94A3B8);
 }
@@ -51,4 +82,13 @@
 
 [data-theme="dark"] .breadcrumbs__separator {
   color: var(--text-muted, #64748B);
+}
+
+[data-theme="dark"] .breadcrumbs__ellipsis {
+  color: var(--text-muted, #64748B);
+}
+
+[data-theme="dark"] .breadcrumbs__ellipsis:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary, #94A3B8);
 }

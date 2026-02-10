@@ -1,7 +1,8 @@
-import { Bell, Search, User, Sun, Moon, Monitor, Menu } from 'lucide-react'
+import { Search, User, Sun, Moon, Monitor, Menu } from 'lucide-react'
 import { useAppStore } from '../../../stores/useAppStore'
 import { useTheme } from '../../../hooks/useTheme'
 import Breadcrumbs from '../../Breadcrumbs/Breadcrumbs'
+import NotificationCenter from '../../NotificationCenter/NotificationCenter'
 import './TopBar.css'
 
 const THEME_ICON = {
@@ -58,14 +59,7 @@ export default function TopBar() {
         </button>
 
         {/* Notifications */}
-        <button
-          className="topbar__icon-btn topbar__icon-btn--badge"
-          aria-label="Notifications"
-          title="Notifications"
-        >
-          <Bell size={20} />
-          <span className="topbar__badge">3</span>
-        </button>
+        <NotificationCenter />
 
         {/* User Menu */}
         <button

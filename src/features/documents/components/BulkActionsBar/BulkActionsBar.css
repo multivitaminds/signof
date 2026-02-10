@@ -1,0 +1,169 @@
+/* ─── BulkActionsBar ──────────────────────────────────────────── */
+
+.bulk-actions-bar {
+  position: fixed;
+  bottom: var(--space-6, 1.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  animation: bulk-actions-bar-slide-up 200ms ease-out;
+}
+
+@keyframes bulk-actions-bar-slide-up {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.bulk-actions-bar__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  background: var(--bg-primary, #FFFFFF);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-xl, 1rem);
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1));
+}
+
+/* ─── Count ──────────────────────────────────────────────────── */
+
+.bulk-actions-bar__count {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--color-primary, #4F46E5);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── Divider ────────────────────────────────────────────────── */
+
+.bulk-actions-bar__divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-color, #E2E8F0);
+  flex-shrink: 0;
+}
+
+/* ─── Actions ────────────────────────────────────────────────── */
+
+.bulk-actions-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+}
+
+.bulk-actions-bar__action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--text-primary, #1A1A2E);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.bulk-actions-bar__action-btn:hover {
+  background: var(--bg-secondary, #F8FAFC);
+}
+
+.bulk-actions-bar__action-btn--danger {
+  color: var(--color-danger, #DC2626);
+}
+
+.bulk-actions-bar__action-btn--danger:hover {
+  background: #FEF2F2;
+}
+
+/* ─── Dismiss ────────────────────────────────────────────────── */
+
+.bulk-actions-bar__dismiss-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-md, 0.5rem);
+  color: var(--text-muted, #94A3B8);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.bulk-actions-bar__dismiss-btn:hover {
+  background: var(--bg-secondary, #F8FAFC);
+  color: var(--text-primary, #1A1A2E);
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────── */
+
+[data-theme="dark"] .bulk-actions-bar__inner {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .bulk-actions-bar__divider {
+  background: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .bulk-actions-bar__action-btn {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .bulk-actions-bar__action-btn:hover {
+  background: var(--bg-tertiary, #2D2D44);
+}
+
+[data-theme="dark"] .bulk-actions-bar__action-btn--danger {
+  color: #F87171;
+}
+
+[data-theme="dark"] .bulk-actions-bar__action-btn--danger:hover {
+  background: #450A0A;
+}
+
+[data-theme="dark"] .bulk-actions-bar__dismiss-btn:hover {
+  background: var(--bg-tertiary, #2D2D44);
+  color: var(--text-primary, #F1F5F9);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .bulk-actions-bar {
+    left: var(--space-4, 1rem);
+    right: var(--space-4, 1rem);
+    transform: none;
+  }
+
+  .bulk-actions-bar__inner {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .bulk-actions-bar__actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .bulk-actions-bar__action-btn span {
+    display: none;
+  }
+}

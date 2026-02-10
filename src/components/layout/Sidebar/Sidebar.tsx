@@ -22,6 +22,8 @@ import {
   Table,
   Receipt,
   Code2,
+  Star,
+  ChevronDown,
 } from 'lucide-react'
 import { useAppStore } from '../../../stores/useAppStore'
 import { useDocumentStore } from '../../../stores/useDocumentStore'
@@ -30,6 +32,7 @@ import { useProjectStore } from '../../../features/projects/stores/useProjectSto
 import { useInboxStore } from '../../../features/inbox/stores/useInboxStore'
 import PageTree from '../../../features/workspace/components/PageTree/PageTree'
 import { ACTIVE_STATUSES } from '../../../types'
+import type { FavoriteItem } from '../../../types'
 import './Sidebar.css'
 
 interface NavItem {
@@ -83,6 +86,33 @@ export default function Sidebar() {
     [inboxNotifications]
   )
 
+  // Merge workspace favorited pages into the favorites list
+  const workspaceFavorites = useMemo(() => {
+    const favPages: FavoriteItem[] = Object.values(pagesMap)
+      .filter((p) => p.isFavorite && !p.trashedAt)
+      .sort((a, b) => a.title.localeCompare(b.title))
+      .map((p) => ({
+        id: `ws-page-${p.id}`,
+        path: `/pages/${p.id}`,
+        label: p.title || 'Untitled',
+        icon: p.icon || 'file',
+      }))
+    return favPages
+  }, [pagesMap])
+
+  const allFavorites = useMemo(() => {
+    // Merge: app store favorites first, then workspace page favorites (deduplicated)
+    const existingPaths = new Set(favorites.map((f) => f.path))
+    const combined = [...favorites]
+    for (const wf of workspaceFavorites) {
+      if (!existingPaths.has(wf.path)) {
+        combined.push(wf)
+      }
+    }
+    return combined
+  }, [favorites, workspaceFavorites])
+
+  const [favoritesCollapsed, setFavoritesCollapsed] = useState(false)
   const [newMenuOpen, setNewMenuOpen] = useState(false)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   const dragIndexRef = useRef<number | null>(null)
@@ -261,42 +291,60 @@ export default function Sidebar() {
       )}
 
       {/* Favorites */}
-      {sidebarExpanded && favorites.length > 0 && (
+      {sidebarExpanded && (
         <div className="sidebar__favorites">
-          <div className="sidebar__section-label">Favorites</div>
-          <ul className="sidebar__nav-list">
-            {favorites.map((fav, index) => (
-              <li
-                key={fav.id}
-                className={`sidebar__nav-item sidebar__favorite-item ${dragOverIndex === index ? 'sidebar__favorite-item--drag-over' : ''}`}
-                draggable
-                onDragStart={() => handleDragStart(index)}
-                onDragOver={(e) => handleDragOver(e, index)}
-                onDrop={() => handleDrop(index)}
-                onDragEnd={handleDragEnd}
-              >
-                <NavLink
-                  to={fav.path}
-                  className={`sidebar__nav-link ${location.pathname === fav.path ? 'sidebar__nav-link--active' : ''}`}
-                  onClick={handleNavClick}
-                >
-                  <FileText size={20} className="sidebar__nav-icon" />
-                  <span className="sidebar__nav-label">{fav.label}</span>
-                </NavLink>
-                <button
-                  className="sidebar__favorite-remove"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    removeFavorite(fav.id)
-                  }}
-                  aria-label={`Remove ${fav.label} from favorites`}
-                >
-                  <X size={14} />
-                </button>
-              </li>
-            ))}
-          </ul>
+          <button
+            className="sidebar__section-toggle"
+            onClick={() => setFavoritesCollapsed((prev) => !prev)}
+            aria-expanded={!favoritesCollapsed}
+            aria-label={favoritesCollapsed ? 'Expand favorites' : 'Collapse favorites'}
+          >
+            <ChevronDown
+              size={14}
+              className={`sidebar__section-chevron${favoritesCollapsed ? ' sidebar__section-chevron--collapsed' : ''}`}
+            />
+            <Star size={12} className="sidebar__section-star" />
+            <span className="sidebar__section-label-text">Favorites</span>
+          </button>
+          {!favoritesCollapsed && (
+            allFavorites.length > 0 ? (
+              <ul className="sidebar__nav-list">
+                {allFavorites.map((fav, index) => (
+                  <li
+                    key={fav.id}
+                    className={`sidebar__nav-item sidebar__favorite-item ${dragOverIndex === index ? 'sidebar__favorite-item--drag-over' : ''}`}
+                    draggable
+                    onDragStart={() => handleDragStart(index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDrop={() => handleDrop(index)}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <NavLink
+                      to={fav.path}
+                      className={`sidebar__nav-link ${location.pathname === fav.path ? 'sidebar__nav-link--active' : ''}`}
+                      onClick={handleNavClick}
+                    >
+                      <Star size={16} className="sidebar__nav-icon sidebar__star-icon" />
+                      <span className="sidebar__nav-label">{fav.label}</span>
+                    </NavLink>
+                    <button
+                      className="sidebar__favorite-remove"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        removeFavorite(fav.id)
+                      }}
+                      aria-label={`Remove ${fav.label} from favorites`}
+                    >
+                      <X size={14} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="sidebar__favorites-empty">No favorites yet</p>
+            )
+          )}
         </div>
       )}
 

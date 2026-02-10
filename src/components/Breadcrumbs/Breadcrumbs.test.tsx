@@ -20,7 +20,7 @@ describe('Breadcrumbs', () => {
     )
   })
 
-  it('renders "Home › Pages" for /pages', () => {
+  it('renders "Home > Pages" for /pages', () => {
     renderWithRouter('/pages')
     expect(screen.getByText('Home')).toBeInTheDocument()
     expect(screen.getByText('Pages')).toBeInTheDocument()
@@ -32,7 +32,7 @@ describe('Breadcrumbs', () => {
     )
   })
 
-  it('renders "Home › AI › Memory" for /ai/memory', () => {
+  it('renders "Home > AI > Memory" for /ai/memory', () => {
     renderWithRouter('/ai/memory')
     expect(screen.getByText('Home')).toBeInTheDocument()
     expect(screen.getByText('AI')).toBeInTheDocument()
@@ -56,5 +56,29 @@ describe('Breadcrumbs', () => {
   it('has correct aria-label="Breadcrumbs"', () => {
     renderWithRouter('/')
     expect(screen.getByLabelText('Breadcrumbs')).toBeInTheDocument()
+  })
+
+  it('shows ellipsis for long paths (more than 4 segments)', () => {
+    renderWithRouter('/settings/members/some-id/details')
+    // Should show Home, "...", and the last 3 segments
+    expect(screen.getByLabelText('Collapsed breadcrumbs')).toBeInTheDocument()
+    expect(screen.getByText('Home')).toBeInTheDocument()
+    // Last segment should be non-clickable
+    expect(screen.getByText('details').closest('span')).toHaveClass(
+      'breadcrumbs__current'
+    )
+  })
+
+  it('does not show ellipsis for short paths', () => {
+    renderWithRouter('/pages')
+    expect(screen.queryByLabelText('Collapsed breadcrumbs')).not.toBeInTheDocument()
+  })
+
+  it('resolves document IDs to document names', () => {
+    // With no matching document in the store, it should just show the raw ID
+    renderWithRouter('/documents/some-doc-id')
+    expect(screen.getByText('Documents')).toBeInTheDocument()
+    // The last segment will be the raw id since there's no document with that id
+    expect(screen.getByText('some-doc-id')).toBeInTheDocument()
   })
 })

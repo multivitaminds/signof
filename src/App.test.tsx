@@ -42,9 +42,9 @@ describe('SignOf App', () => {
     expect(screen.getByText('SignOf')).toBeInTheDocument()
   })
 
-  it('renders the home page welcome message', () => {
+  it('renders the home page welcome banner', () => {
     renderWithRouter()
-    expect(screen.getByText(/Welcome to SignOf/i)).toBeInTheDocument()
+    expect(screen.getByText(/Good (morning|afternoon|evening)/)).toBeInTheDocument()
   })
 
   it('shows the command palette shortcut', () => {

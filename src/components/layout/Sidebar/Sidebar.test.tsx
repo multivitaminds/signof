@@ -82,9 +82,10 @@ describe('Sidebar', () => {
     expect(screen.getByText('Test Page')).toBeInTheDocument()
   })
 
-  it('does not render favorites section when empty', () => {
+  it('renders favorites section with empty state when no favorites', () => {
     renderSidebar()
-    expect(screen.queryByText('Favorites')).not.toBeInTheDocument()
+    expect(screen.getByText('Favorites')).toBeInTheDocument()
+    expect(screen.getByText('No favorites yet')).toBeInTheDocument()
   })
 
   it('removes a favorite on X click', async () => {
