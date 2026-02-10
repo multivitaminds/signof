@@ -20,11 +20,14 @@ import {
   Upload,
   CalendarPlus,
   Table,
+  Receipt,
+  Code2,
 } from 'lucide-react'
 import { useAppStore } from '../../../stores/useAppStore'
 import { useDocumentStore } from '../../../stores/useDocumentStore'
 import { useWorkspaceStore } from '../../../features/workspace/stores/useWorkspaceStore'
 import { useProjectStore } from '../../../features/projects/stores/useProjectStore'
+import { useInboxStore } from '../../../features/inbox/stores/useInboxStore'
 import PageTree from '../../../features/workspace/components/PageTree/PageTree'
 import { ACTIVE_STATUSES } from '../../../types'
 import './Sidebar.css'
@@ -42,6 +45,7 @@ const NEW_MENU_ITEMS = [
   { id: 'document', label: 'New Document', icon: Upload, path: '/documents?action=upload' },
   { id: 'event', label: 'New Event', icon: CalendarPlus, path: '/calendar/new' },
   { id: 'database', label: 'New Database', icon: Table, path: '/data/new' },
+  { id: 'filing', label: 'New Tax Filing', icon: Receipt, path: '/tax/filing' },
 ]
 
 export default function Sidebar() {
@@ -73,6 +77,12 @@ export default function Sidebar() {
     return issues.filter((i) => i.status !== 'done' && i.status !== 'cancelled').length
   })
 
+  const inboxNotifications = useInboxStore((s) => s.notifications)
+  const unreadCount = useMemo(
+    () => inboxNotifications.filter((n) => !n.read).length,
+    [inboxNotifications]
+  )
+
   const [newMenuOpen, setNewMenuOpen] = useState(false)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   const dragIndexRef = useRef<number | null>(null)
@@ -86,8 +96,10 @@ export default function Sidebar() {
     { path: '/documents', label: 'Documents', icon: FileSignature, badge: pendingCount || undefined },
     { path: '/calendar', label: 'Calendar', icon: Calendar },
     { path: '/data', label: 'Databases', icon: Database },
-    { path: '/inbox', label: 'Inbox', icon: Inbox, badge: 3 },
+    { path: '/inbox', label: 'Inbox', icon: Inbox, badge: unreadCount || undefined },
     { path: '/ai', label: 'AI', icon: Brain },
+    { path: '/tax', label: 'Tax', icon: Receipt },
+    { path: '/developer', label: 'Developer', icon: Code2 },
   ]
 
   const handleSearchClick = useCallback(() => {

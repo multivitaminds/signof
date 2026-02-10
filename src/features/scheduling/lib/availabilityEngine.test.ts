@@ -7,7 +7,7 @@ import {
   doRangesOverlap,
 } from './availabilityEngine'
 import type { EventType, Booking, TimeRange } from '../types'
-import { EventTypeCategory, BookingStatus, DEFAULT_SCHEDULE } from '../types'
+import { EventTypeCategory, LocationType, BookingStatus, DEFAULT_SCHEDULE } from '../types'
 
 // ─── Test helpers ───────────────────────────────────────────────
 
@@ -25,6 +25,7 @@ function makeEventType(overrides: Partial<EventType> = {}): EventType {
     maxBookingsPerDay: 10,
     minimumNoticeMinutes: 0,
     schedulingWindowDays: 60,
+    location: LocationType.Zoom,
     schedule: DEFAULT_SCHEDULE,
     dateOverrides: [],
     customQuestions: [],

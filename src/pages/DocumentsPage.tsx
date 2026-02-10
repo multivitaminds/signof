@@ -3,7 +3,7 @@ import Dashboard from '../components/Dashboard/Dashboard'
 import DocumentUpload from '../components/DocumentUpload/DocumentUpload'
 import SignaturePad from '../components/SignaturePad/SignaturePad'
 import AddSigners from '../components/AddSigners/AddSigners'
-import SigningCeremony from '../components/SigningCeremony/SigningCeremony'
+import SigningCeremony from '../features/documents/components/SigningCeremony/SigningCeremony'
 import CompletionCertificate from '../components/CompletionCertificate/CompletionCertificate'
 import AuditTimeline from '../components/AuditTimeline/AuditTimeline'
 import { useDocumentStore } from '../stores/useDocumentStore'
@@ -249,32 +249,12 @@ export default function DocumentsPage() {
       )}
 
       {modalView === 'ceremony' && signingDocId && signingSignerId && (
-        <div
-          className="modal-overlay"
-          onClick={closeModal}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Signing Ceremony"
-        >
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Sign Document</h2>
-              <button
-                className="modal-close"
-                onClick={closeModal}
-                aria-label="Close"
-              >
-                &times;
-              </button>
-            </div>
-            <SigningCeremony
-              document={getDocument(signingDocId)!}
-              signer={getDocument(signingDocId)!.signers.find(s => s.id === signingSignerId)!}
-              onComplete={handleCeremonyComplete}
-              onCancel={closeModal}
-            />
-          </div>
-        </div>
+        <SigningCeremony
+          document={getDocument(signingDocId)!}
+          signer={getDocument(signingDocId)!.signers.find(s => s.id === signingSignerId)!}
+          onComplete={handleCeremonyComplete}
+          onCancel={closeModal}
+        />
       )}
 
       {modalView === 'certificate' && viewingDoc && (

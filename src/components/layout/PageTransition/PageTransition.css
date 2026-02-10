@@ -1,0 +1,26 @@
+/* ═══════════════════════════════════════════════════════════
+   PageTransition — Fade-in + slide-up on route change
+   Wraps <Outlet /> in AppLayout, keyed by pathname
+   ═══════════════════════════════════════════════════════════ */
+
+.page-transition {
+  animation: pageIn 200ms ease-out both;
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Reduced motion ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .page-transition {
+    animation: none;
+  }
+}

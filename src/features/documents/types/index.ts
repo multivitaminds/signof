@@ -1,4 +1,6 @@
 // ─── Re-exports from core types ─────────────────────────────────────
+import type { FieldType } from '../../../types'
+
 export type {
   DocumentField,
   FieldType,
@@ -14,7 +16,7 @@ export { FieldType as FieldTypeEnum } from '../../../types'
 // ─── Module-specific types ──────────────────────────────────────────
 
 export interface FieldTypeConfig {
-  type: import('../../../types').FieldType
+  type: FieldType
   label: string
   icon: string
   defaultWidth: number
@@ -25,7 +27,7 @@ export interface FieldTypeConfig {
 
 export interface DragState {
   isDragging: boolean
-  fieldType: import('../../../types').FieldType | null
+  fieldType: FieldType | null
   startX: number
   startY: number
 }

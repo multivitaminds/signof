@@ -1,0 +1,88 @@
+.gallery-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-4, 1rem);
+}
+
+.gallery-view__card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-lg, 12px);
+  background: var(--bg-primary, #fff);
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  transition: all 150ms ease;
+}
+
+.gallery-view__card:hover {
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.1));
+  border-color: var(--color-primary, #4F46E5);
+}
+
+.gallery-view__card-cover {
+  height: 80px;
+  background: linear-gradient(135deg, var(--color-primary-light, #EEF2FF), var(--bg-secondary, #F9FAFB));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted, #9CA3AF);
+}
+
+.gallery-view__card-body {
+  padding: var(--space-3, 0.75rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 0.25rem);
+}
+
+.gallery-view__card-title {
+  font-size: var(--text-base, 1rem);
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gallery-view__card-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  font-size: var(--text-xs, 0.75rem);
+}
+
+.gallery-view__card-label {
+  color: var(--text-muted, #9CA3AF);
+  min-width: 60px;
+}
+
+.gallery-view__card-value {
+  color: var(--text-secondary, #6B7280);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gallery-view__add-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 0.5rem);
+  min-height: 160px;
+  border: 2px dashed var(--border-color, #E5E7EB);
+  border-radius: var(--radius-lg, 12px);
+  background: none;
+  color: var(--text-muted, #9CA3AF);
+  cursor: pointer;
+  font-size: var(--text-sm, 0.875rem);
+  transition: all 150ms ease;
+}
+
+.gallery-view__add-card:hover {
+  color: var(--color-primary, #4F46E5);
+  border-color: var(--color-primary, #4F46E5);
+}

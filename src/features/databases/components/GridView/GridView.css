@@ -1,0 +1,190 @@
+.grid-view {
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-view__table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-lg, 12px);
+}
+
+.grid-view__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.grid-view__header {
+  text-align: left;
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  font-weight: 500;
+  color: var(--text-secondary, #6B7280);
+  font-size: var(--text-xs, 0.75rem);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  background: var(--bg-secondary, #F9FAFB);
+  position: sticky;
+  top: 0;
+  white-space: nowrap;
+}
+
+.grid-view__header-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+}
+
+.grid-view__row-num {
+  width: 40px;
+  text-align: center;
+  color: var(--text-muted, #9CA3AF);
+  font-size: var(--text-xs, 0.75rem);
+  padding: var(--space-2, 0.5rem);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+.grid-view__row {
+  transition: background 100ms ease;
+}
+
+.grid-view__row:hover {
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+.grid-view__cell {
+  padding: 0;
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  height: 36px;
+  vertical-align: middle;
+}
+
+.grid-view__cell-text {
+  display: block;
+  padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+  cursor: text;
+  min-height: 36px;
+  line-height: 36px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary, #111827);
+}
+
+.grid-view__cell-placeholder {
+  color: var(--text-muted, #9CA3AF);
+}
+
+.grid-view__cell-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 var(--space-3, 0.75rem);
+  border: 2px solid var(--color-primary, #4F46E5);
+  background: var(--bg-primary, #fff);
+  color: var(--text-primary, #111827);
+  font-size: inherit;
+  font-family: inherit;
+  outline: none;
+  border-radius: 0;
+}
+
+.grid-view__cell-select {
+  width: 100%;
+  height: 36px;
+  padding: 0 var(--space-2, 0.5rem);
+  border: 2px solid var(--color-primary, #4F46E5);
+  background: var(--bg-primary, #fff);
+  color: var(--text-primary, #111827);
+  font-size: inherit;
+  font-family: inherit;
+  outline: none;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.grid-view__checkbox {
+  width: 16px;
+  height: 16px;
+  margin: 0 var(--space-3, 0.75rem);
+  accent-color: var(--color-primary, #4F46E5);
+  cursor: pointer;
+}
+
+.grid-view__tag {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  margin: 0 var(--space-2, 0.5rem);
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+
+.grid-view__tag:hover {
+  opacity: 0.8;
+}
+
+.grid-view__link {
+  display: block;
+  padding: 0 var(--space-3, 0.75rem);
+  color: var(--color-primary, #4F46E5);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.grid-view__link:hover {
+  text-decoration: underline;
+}
+
+.grid-view__add-field {
+  width: 40px;
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+.grid-view__add-field-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted, #9CA3AF);
+  cursor: pointer;
+  padding: var(--space-2, 0.5rem);
+  border-radius: var(--radius-sm, 4px);
+  transition: all 150ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-view__add-field-btn:hover {
+  color: var(--color-primary, #4F46E5);
+  background: var(--bg-primary, #fff);
+}
+
+.grid-view__add-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  margin-top: var(--space-1, 0.25rem);
+  border: none;
+  background: none;
+  color: var(--text-muted, #9CA3AF);
+  cursor: pointer;
+  font-size: var(--text-sm, 0.875rem);
+  border-radius: var(--radius-sm, 4px);
+  transition: all 150ms ease;
+}
+
+.grid-view__add-row:hover {
+  color: var(--color-primary, #4F46E5);
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+[data-theme="dark"] .grid-view__table-wrapper {
+  border-color: var(--border-color, #334155);
+}

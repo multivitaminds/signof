@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react'
-import type { Template, DocumentField, RecipientRole } from '../../../../types'
-import { FieldType } from '../../../../types'
+import type { Template, DocumentField, RecipientRole, FieldType } from '../../../../types'
 import { FIELD_COLORS } from '../../lib/fieldTypes'
 import DocumentCanvas from '../DocumentCanvas/DocumentCanvas'
 import FieldPalette from '../FieldPalette/FieldPalette'

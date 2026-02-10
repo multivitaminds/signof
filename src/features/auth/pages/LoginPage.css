@@ -1,0 +1,179 @@
+/* LoginPage.css — shared by LoginPage and SignupPage */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0A2540 0%, #1B3A5C 40%, #635BFF 100%);
+  padding: var(--space-4, 1rem);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-page::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(99, 91, 255, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.auth-page::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 212, 170, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.auth-page__card {
+  width: 100%;
+  max-width: 420px;
+  padding: var(--space-8, 3rem);
+  background: var(--bg-primary, #fff);
+  border-radius: var(--radius-xl, 16px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  border: none;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(20px);
+}
+
+.auth-page__logo {
+  text-align: center;
+  margin-bottom: var(--space-6, 2rem);
+}
+
+.auth-page__logo-text {
+  font-size: var(--text-2xl, 1.5rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #635BFF, #00D4AA);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-page__title {
+  text-align: center;
+  font-size: var(--text-xl, 1.25rem);
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0;
+}
+
+.auth-page__subtitle {
+  text-align: center;
+  color: var(--text-secondary, #6B7280);
+  font-size: var(--text-sm, 0.875rem);
+  margin: var(--space-1, 0.25rem) 0 var(--space-6, 2rem);
+}
+
+.auth-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+}
+
+.auth-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 0.25rem);
+}
+
+.auth-page__label {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+}
+
+.auth-page__input {
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  background: var(--bg-primary, #fff);
+  transition: border-color 150ms ease;
+}
+
+.auth-page__input:focus {
+  outline: none;
+  border-color: var(--color-primary, #635BFF);
+  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.15);
+}
+
+.auth-page__submit {
+  width: 100%;
+  padding: var(--space-3, 0.75rem);
+  font-size: var(--text-sm, 0.875rem);
+  margin-top: var(--space-2, 0.5rem);
+}
+
+.auth-page__error {
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: var(--radius-md, 8px);
+  color: var(--color-danger, #DC2626);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.auth-page__divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  margin: var(--space-5, 1.5rem) 0;
+  color: var(--text-muted, #9CA3AF);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.auth-page__divider::before,
+.auth-page__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color, #E5E7EB);
+}
+
+.auth-page__social {
+  width: 100%;
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  color: var(--text-primary, #111827);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease;
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.auth-page__social:hover {
+  background: var(--bg-secondary, #F9FAFB);
+  border-color: var(--text-secondary, #6B7280);
+}
+
+.auth-page__footer {
+  text-align: center;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  margin-top: var(--space-4, 1rem);
+}
+
+.auth-page__footer a {
+  color: var(--color-primary, #4F46E5);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-page__footer a:hover {
+  text-decoration: underline;
+}

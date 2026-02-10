@@ -1,5 +1,5 @@
 import { useSchedulingStore } from './useSchedulingStore'
-import { BookingStatus, EventTypeCategory, DEFAULT_SCHEDULE } from '../types'
+import { BookingStatus, EventTypeCategory, LocationType, DEFAULT_SCHEDULE } from '../types'
 import { SAMPLE_EVENT_TYPES, SAMPLE_BOOKINGS } from '../lib/sampleData'
 
 function makeEventTypeInput() {
@@ -15,6 +15,7 @@ function makeEventTypeInput() {
     maxBookingsPerDay: 10,
     minimumNoticeMinutes: 0,
     schedulingWindowDays: 60,
+    location: LocationType.Zoom,
     schedule: DEFAULT_SCHEDULE,
     dateOverrides: [],
     customQuestions: [],
@@ -188,6 +189,43 @@ describe('useSchedulingStore', () => {
     it('returns empty array for event type with no bookings', () => {
       const results = useSchedulingStore.getState().getBookingsForEventType('non-existent')
       expect(results.length).toBe(0)
+    })
+  })
+
+  // ─── Duplicate event type ──────────────────────────────────
+
+  describe('duplicateEventType', () => {
+    it('creates a copy with new id and "(Copy)" suffix', () => {
+      const id = SAMPLE_EVENT_TYPES[0]!.id
+      const result = useSchedulingStore.getState().duplicateEventType(id)
+
+      expect(result).toBeDefined()
+      expect(result!.id).not.toBe(id)
+      expect(result!.name).toBe(`${SAMPLE_EVENT_TYPES[0]!.name} (Copy)`)
+      expect(result!.slug).toBe(`${SAMPLE_EVENT_TYPES[0]!.slug}-copy`)
+
+      const stored = useSchedulingStore.getState().eventTypes
+      expect(stored.find(et => et.id === result!.id)).toBeDefined()
+    })
+
+    it('returns undefined for non-existent id', () => {
+      const result = useSchedulingStore.getState().duplicateEventType('non-existent')
+      expect(result).toBeUndefined()
+    })
+  })
+
+  // ─── Reschedule booking ────────────────────────────────────
+
+  describe('rescheduleBooking', () => {
+    it('updates date, time, and status to rescheduled', () => {
+      const id = SAMPLE_BOOKINGS[0]!.id
+      useSchedulingStore.getState().rescheduleBooking(id, '2026-03-01', '14:00', '14:30')
+
+      const updated = useSchedulingStore.getState().bookings.find(b => b.id === id)
+      expect(updated!.date).toBe('2026-03-01')
+      expect(updated!.startTime).toBe('14:00')
+      expect(updated!.endTime).toBe('14:30')
+      expect(updated!.status).toBe(BookingStatus.Rescheduled)
     })
   })
 })

@@ -19,6 +19,8 @@ interface AppState {
   // Theme
   theme: Theme
   setTheme: (theme: Theme) => void
+  accentColor: string
+  setAccentColor: (color: string) => void
 
   // Command Palette
   commandPaletteOpen: boolean
@@ -65,6 +67,8 @@ export const useAppStore = create<AppState>()(
       // Theme
       theme: 'system',
       setTheme: (theme) => set({ theme }),
+      accentColor: '#4F46E5',
+      setAccentColor: (color) => set({ accentColor: color }),
 
       // Command Palette
       commandPaletteOpen: false,
@@ -120,6 +124,7 @@ export const useAppStore = create<AppState>()(
         sidebarExpanded: state.sidebarExpanded,
         sidebarWidth: state.sidebarWidth,
         theme: state.theme,
+        accentColor: state.accentColor,
         compactMode: state.compactMode,
         recentItems: state.recentItems,
         favorites: state.favorites,

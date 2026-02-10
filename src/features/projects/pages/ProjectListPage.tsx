@@ -1,15 +1,17 @@
-import { useMemo, useCallback } from 'react'
+import { useMemo, useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus } from 'lucide-react'
+import { Plus, BarChart3 } from 'lucide-react'
 import { useProjectStore } from '../stores/useProjectStore'
 import { IssueStatus } from '../types'
 import ProjectCard from '../components/ProjectCard/ProjectCard'
+import ProjectAnalytics from '../components/ProjectAnalytics/ProjectAnalytics'
 import './ProjectListPage.css'
 
 export default function ProjectListPage() {
   const projects = useProjectStore((s) => s.projects)
   const issues = useProjectStore((s) => s.issues)
   const navigate = useNavigate()
+  const [showAnalytics, setShowAnalytics] = useState(false)
 
   const projectList = useMemo(
     () =>
@@ -47,6 +49,10 @@ export default function ProjectListPage() {
     navigate('/projects/new')
   }, [navigate])
 
+  const handleToggleAnalytics = useCallback(() => {
+    setShowAnalytics((prev) => !prev)
+  }, [])
+
   if (projectList.length === 0) {
     return (
       <div className="project-list__empty">
@@ -60,6 +66,21 @@ export default function ProjectListPage() {
 
   return (
     <div className="project-list">
+      <div className="project-list__header">
+        <button
+          className={`project-list__analytics-toggle ${showAnalytics ? 'project-list__analytics-toggle--active' : ''}`}
+          onClick={handleToggleAnalytics}
+          type="button"
+          aria-pressed={showAnalytics}
+          aria-label={showAnalytics ? 'Hide analytics' : 'Show analytics'}
+        >
+          <BarChart3 size={16} />
+          <span>{showAnalytics ? 'Hide Analytics' : 'Show Analytics'}</span>
+        </button>
+      </div>
+
+      {showAnalytics && <ProjectAnalytics />}
+
       <div className="project-list__grid">
         {projectList.map((project) => {
           const counts = issueCounts[project.id] ?? { total: 0, completed: 0 }

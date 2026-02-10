@@ -1,0 +1,100 @@
+.filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.filter-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.filter-bar__btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  background: none;
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-sm, 4px);
+  color: var(--text-secondary, #6B7280);
+  font-size: var(--text-xs, 0.75rem);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.filter-bar__btn:hover {
+  background: var(--bg-secondary, #F9FAFB);
+  color: var(--text-primary, #111827);
+}
+
+.filter-bar__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-3, 0.75rem);
+  background: var(--bg-secondary, #F9FAFB);
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--border-color, #E5E7EB);
+}
+
+.filter-bar__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.filter-bar__select,
+.filter-bar__input {
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-primary, #111827);
+  background: var(--bg-primary, #fff);
+}
+
+.filter-bar__select:focus,
+.filter-bar__input:focus {
+  outline: none;
+  border-color: var(--color-primary, #4F46E5);
+}
+
+.filter-bar__input {
+  flex: 1;
+  min-width: 100px;
+}
+
+.filter-bar__remove {
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  background: none;
+  border: none;
+  color: var(--text-muted, #9CA3AF);
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.filter-bar__remove:hover {
+  color: var(--color-danger, #DC2626);
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.filter-bar__add-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-1, 0.25rem);
+  background: none;
+  border: none;
+  color: var(--text-muted, #9CA3AF);
+  font-size: var(--text-xs, 0.75rem);
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.filter-bar__add-row:hover {
+  color: var(--color-primary, #4F46E5);
+}

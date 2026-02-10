@@ -21,6 +21,26 @@ export default defineConfig({
 
   build: {
     target: 'es2022',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-router': ['react-router-dom'],
+          'vendor-zustand': ['zustand'],
+          'vendor-lucide': ['lucide-react'],
+          'feature-workspace': [
+            './src/features/workspace/stores/useWorkspaceStore.ts',
+          ],
+          'feature-projects': [
+            './src/features/projects/stores/useProjectStore.ts',
+          ],
+          'feature-ai': [
+            './src/features/ai/stores/useMemoryStore.ts',
+            './src/features/ai/stores/useAgentStore.ts',
+          ],
+        },
+      },
+    },
   },
 
   test: {

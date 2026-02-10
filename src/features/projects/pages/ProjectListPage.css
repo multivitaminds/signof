@@ -1,3 +1,49 @@
+.project-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: var(--space-md);
+}
+
+.project-list__analytics-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background var(--motion-fast), color var(--motion-fast),
+    border-color var(--motion-fast);
+}
+
+.project-list__analytics-toggle:hover {
+  border-color: #635BFF;
+  color: #635BFF;
+}
+
+.project-list__analytics-toggle--active {
+  background: #635BFF;
+  border-color: #635BFF;
+  color: #fff;
+}
+
+.project-list__analytics-toggle--active:hover {
+  background: #5851EA;
+  border-color: #5851EA;
+  color: #fff;
+}
+
+.project-list__analytics-toggle:focus-visible {
+  outline: 2px solid #635BFF;
+  outline-offset: 2px;
+}
+
 .project-list__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

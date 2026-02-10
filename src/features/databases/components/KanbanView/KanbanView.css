@@ -1,0 +1,101 @@
+.kanban-view {
+  display: flex;
+  gap: var(--space-4, 1rem);
+  overflow-x: auto;
+  padding-bottom: var(--space-4, 1rem);
+  min-height: 400px;
+}
+
+.kanban-view__column {
+  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-secondary, #F9FAFB);
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-3, 0.75rem);
+}
+
+.kanban-view__column-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding-bottom: var(--space-3, 0.75rem);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+}
+
+.kanban-view__column-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.kanban-view__column-name {
+  color: var(--text-primary, #111827);
+  flex: 1;
+}
+
+.kanban-view__column-count {
+  color: var(--text-muted, #9CA3AF);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 400;
+}
+
+.kanban-view__cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+  flex: 1;
+}
+
+.kanban-view__card {
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  padding: var(--space-3, 0.75rem);
+  cursor: pointer;
+  text-align: left;
+  transition: all 150ms ease;
+}
+
+.kanban-view__card:hover {
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  border-color: var(--color-primary, #4F46E5);
+}
+
+.kanban-view__card-title {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  font-weight: 500;
+}
+
+.kanban-view__add-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-2, 0.5rem);
+  background: none;
+  border: 1px dashed var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  color: var(--text-muted, #9CA3AF);
+  cursor: pointer;
+  font-size: var(--text-sm, 0.875rem);
+  transition: all 150ms ease;
+  justify-content: center;
+}
+
+.kanban-view__add-card:hover {
+  color: var(--color-primary, #4F46E5);
+  border-color: var(--color-primary, #4F46E5);
+  background: var(--bg-primary, #fff);
+}
+
+[data-theme="dark"] .kanban-view__column {
+  background: var(--bg-secondary, #1A1A2E);
+}
+
+[data-theme="dark"] .kanban-view__card {
+  background: var(--bg-tertiary, #16213E);
+  border-color: var(--border-color, #334155);
+}

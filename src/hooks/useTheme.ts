@@ -14,6 +14,7 @@ const CYCLE_ORDER: readonly Theme[] = ['light', 'dark', 'system'] as const
 export function useTheme() {
   const theme = useAppStore((s) => s.theme)
   const setTheme = useAppStore((s) => s.setTheme)
+  const accentColor = useAppStore((s) => s.accentColor)
 
   const resolvedTheme = resolveTheme(theme)
 
@@ -21,6 +22,15 @@ export function useTheme() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', resolvedTheme)
   }, [resolvedTheme])
+
+  // Sync accent color CSS variable
+  useEffect(() => {
+    if (accentColor) {
+      document.documentElement.style.setProperty('--color-primary', accentColor)
+      // Compute a slightly darker hover variant
+      document.documentElement.style.setProperty('--color-primary-hover', accentColor + 'dd')
+    }
+  }, [accentColor])
 
   // Listen for OS theme changes when in 'system' mode
   useEffect(() => {

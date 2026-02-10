@@ -1,0 +1,1095 @@
+/* ═══════════════════════════════════════════════════════════════════
+   SigningCeremony — Full-page multi-step signing overlay
+   Stripe-inspired: primary #635BFF, success #00D4AA
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ─── Full Viewport Overlay ─────────────────────────────────────── */
+
+.signing-ceremony-v2 {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal, 50);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+  overflow-y: auto;
+  animation: signing-ceremony-v2__fade-in var(--motion-normal, 200ms) var(--ease-out, ease-out);
+}
+
+@keyframes signing-ceremony-v2__fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ─── Top Bar ───────────────────────────────────────────────────── */
+
+.signing-ceremony-v2__top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3, 0.75rem) var(--space-5, 1.5rem);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  flex-shrink: 0;
+}
+
+.signing-ceremony-v2__top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+}
+
+.signing-ceremony-v2__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  font-weight: var(--font-semibold, 600);
+  font-size: var(--text-base, 1rem);
+  color: #635BFF;
+}
+
+.signing-ceremony-v2__logo-icon {
+  width: 24px;
+  height: 24px;
+  color: #635BFF;
+}
+
+.signing-ceremony-v2__doc-name {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary);
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signing-ceremony-v2__top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+}
+
+.signing-ceremony-v2__timer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.signing-ceremony-v2__timer-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.signing-ceremony-v2__close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0;
+  transition: all var(--transition-fast);
+}
+
+.signing-ceremony-v2__close-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* ─── Step Indicator ────────────────────────────────────────────── */
+
+.signing-ceremony-v2__steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5, 1.5rem) var(--space-5, 1.5rem) var(--space-4, 1rem);
+  flex-shrink: 0;
+}
+
+.signing-ceremony-v2__steps-inner {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  max-width: 480px;
+}
+
+.signing-ceremony-v2__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  position: relative;
+  flex: 0 0 auto;
+  z-index: 1;
+}
+
+.signing-ceremony-v2__step-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full, 9999px);
+  border: 2px solid var(--color-gray-300, #D1D5DB);
+  background: var(--bg-primary);
+  color: var(--color-gray-400, #9CA3AF);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-semibold, 600);
+  transition: all var(--motion-normal, 200ms) var(--ease-spring, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.signing-ceremony-v2__step-label {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+  white-space: nowrap;
+}
+
+/* Step connector line */
+.signing-ceremony-v2__step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--color-gray-300, #D1D5DB);
+  transition: background var(--motion-normal, 200ms) var(--ease-spring);
+  min-width: 40px;
+  align-self: center;
+  margin-bottom: calc(var(--space-2, 0.5rem) + var(--text-xs, 0.75rem) * 1.5);
+}
+
+.signing-ceremony-v2__step-line--completed {
+  background: #00D4AA;
+}
+
+/* Active step */
+.signing-ceremony-v2__step--active .signing-ceremony-v2__step-circle {
+  border-color: #635BFF;
+  background: #635BFF;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(99, 91, 255, 0.15);
+}
+
+.signing-ceremony-v2__step--active .signing-ceremony-v2__step-label {
+  color: #635BFF;
+  font-weight: var(--font-semibold, 600);
+}
+
+/* Completed step */
+.signing-ceremony-v2__step--completed .signing-ceremony-v2__step-circle {
+  border-color: #00D4AA;
+  background: #00D4AA;
+  color: #ffffff;
+}
+
+.signing-ceremony-v2__step--completed .signing-ceremony-v2__step-label {
+  color: #00D4AA;
+}
+
+/* ─── Content Area ──────────────────────────────────────────────── */
+
+.signing-ceremony-v2__content {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-4, 1rem) var(--space-5, 1.5rem) var(--space-6, 2rem);
+  overflow-y: auto;
+}
+
+.signing-ceremony-v2__content-inner {
+  width: 100%;
+  max-width: 640px;
+  animation: signing-ceremony-v2__slide-up var(--motion-normal, 200ms) var(--ease-out, ease-out);
+}
+
+@keyframes signing-ceremony-v2__slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Step 1: Review ────────────────────────────────────────────── */
+
+.signing-ceremony-v2__review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5, 1.5rem);
+}
+
+.signing-ceremony-v2__review-header {
+  text-align: center;
+}
+
+.signing-ceremony-v2__review-header h2 {
+  font-size: var(--text-2xl, 1.5rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.signing-ceremony-v2__review-header p {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted);
+}
+
+.signing-ceremony-v2__doc-info {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-5, 1.5rem);
+}
+
+.signing-ceremony-v2__doc-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2, 0.5rem) 0;
+}
+
+.signing-ceremony-v2__doc-info-row + .signing-ceremony-v2__doc-info-row {
+  border-top: 1px solid var(--border-color);
+}
+
+.signing-ceremony-v2__doc-info-label {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.signing-ceremony-v2__doc-info-label svg {
+  width: 16px;
+  height: 16px;
+}
+
+.signing-ceremony-v2__doc-info-value {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--text-primary);
+}
+
+.signing-ceremony-v2__fields-list {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-4, 1rem);
+}
+
+.signing-ceremony-v2__fields-list-title {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary);
+  margin-bottom: var(--space-3, 0.75rem);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.signing-ceremony-v2__fields-list-title svg {
+  width: 16px;
+  height: 16px;
+  color: #635BFF;
+}
+
+.signing-ceremony-v2__field-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary);
+}
+
+.signing-ceremony-v2__field-item + .signing-ceremony-v2__field-item {
+  margin-top: var(--space-1, 0.25rem);
+}
+
+.signing-ceremony-v2__field-item-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.signing-ceremony-v2__field-item-label {
+  flex: 1;
+}
+
+.signing-ceremony-v2__field-item-badge {
+  font-size: var(--text-xs, 0.75rem);
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 9999px);
+  background: rgba(99, 91, 255, 0.1);
+  color: #635BFF;
+  font-weight: var(--font-medium, 500);
+}
+
+.signing-ceremony-v2__review-confirm {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-4, 1rem) var(--space-5, 1.5rem);
+}
+
+.signing-ceremony-v2__review-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3, 0.75rem);
+  cursor: pointer;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary);
+  line-height: var(--leading-relaxed, 1.625);
+}
+
+.signing-ceremony-v2__review-checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #635BFF;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.signing-ceremony-v2__legal-notice {
+  margin-top: var(--space-3, 0.75rem);
+  padding: var(--space-3, 0.75rem);
+  background: var(--bg-primary);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed, 1.625);
+}
+
+/* ─── Step 2: Sign ──────────────────────────────────────────────── */
+
+.signing-ceremony-v2__sign {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5, 1.5rem);
+}
+
+.signing-ceremony-v2__sign-header {
+  text-align: center;
+}
+
+.signing-ceremony-v2__sign-header h2 {
+  font-size: var(--text-2xl, 1.5rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.signing-ceremony-v2__sign-header p {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted);
+}
+
+/* Field navigation */
+.signing-ceremony-v2__field-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 12px);
+}
+
+.signing-ceremony-v2__field-counter {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--text-primary);
+}
+
+.signing-ceremony-v2__field-counter span {
+  color: #635BFF;
+}
+
+.signing-ceremony-v2__field-nav-buttons {
+  display: flex;
+  gap: var(--space-2, 0.5rem);
+}
+
+.signing-ceremony-v2__field-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0;
+  transition: all var(--transition-fast);
+}
+
+.signing-ceremony-v2__field-nav-btn:hover:not(:disabled) {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.signing-ceremony-v2__field-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.signing-ceremony-v2__field-nav-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Current field card */
+.signing-ceremony-v2__field-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-5, 1.5rem);
+}
+
+.signing-ceremony-v2__field-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.signing-ceremony-v2__field-card-title {
+  font-size: var(--text-base, 1rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.signing-ceremony-v2__field-card-title svg {
+  width: 18px;
+  height: 18px;
+  color: #635BFF;
+}
+
+.signing-ceremony-v2__field-required-badge {
+  font-size: var(--text-xs, 0.75rem);
+  padding: 2px 10px;
+  border-radius: var(--radius-full, 9999px);
+  background: rgba(255, 90, 90, 0.1);
+  color: var(--color-danger, #FF5A5A);
+  font-weight: var(--font-medium, 500);
+}
+
+/* Signature mode tabs */
+.signing-ceremony-v2__sig-tabs {
+  display: flex;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-1, 0.25rem);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md, 8px);
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.signing-ceremony-v2__sig-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--text-muted);
+  background: transparent;
+  transition: all var(--transition-fast);
+}
+
+.signing-ceremony-v2__sig-tab:hover {
+  color: var(--text-secondary);
+}
+
+.signing-ceremony-v2__sig-tab--active {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-1, 0 1px 3px rgba(0, 0, 0, 0.08));
+}
+
+.signing-ceremony-v2__sig-tab svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Canvas wrapper for draw mode */
+.signing-ceremony-v2__canvas-wrapper {
+  position: relative;
+  width: 100%;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-primary);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.signing-ceremony-v2__canvas-wrapper--has-content {
+  border-style: solid;
+  border-color: #635BFF;
+}
+
+.signing-ceremony-v2__canvas {
+  display: block;
+  width: 100%;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.signing-ceremony-v2__canvas-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  color: var(--text-muted);
+  pointer-events: none;
+  user-select: none;
+}
+
+.signing-ceremony-v2__canvas-placeholder svg {
+  width: 24px;
+  height: 24px;
+}
+
+.signing-ceremony-v2__canvas-placeholder span {
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.signing-ceremony-v2__canvas-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2, 0.5rem);
+  margin-top: var(--space-3, 0.75rem);
+}
+
+.signing-ceremony-v2__canvas-action-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+  background: transparent;
+  border-radius: var(--radius-sm, 4px);
+  transition: all var(--transition-fast);
+}
+
+.signing-ceremony-v2__canvas-action-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.signing-ceremony-v2__canvas-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.signing-ceremony-v2__canvas-action-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Type signature mode */
+.signing-ceremony-v2__type-input-wrapper {
+  position: relative;
+}
+
+.signing-ceremony-v2__type-input {
+  width: 100%;
+  padding: var(--space-4, 1rem);
+  font-size: var(--text-2xl, 1.5rem);
+  font-family: 'Brush Script MT', 'Dancing Script', 'Segoe Script', cursive;
+  text-align: center;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.signing-ceremony-v2__type-input:focus {
+  border-color: #635BFF;
+  border-style: solid;
+}
+
+.signing-ceremony-v2__type-input::placeholder {
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-base, 1rem);
+}
+
+.signing-ceremony-v2__type-preview {
+  margin-top: var(--space-3, 0.75rem);
+  padding: var(--space-4, 1rem);
+  text-align: center;
+  font-family: 'Brush Script MT', 'Dancing Script', 'Segoe Script', cursive;
+  font-size: var(--text-3xl, 2rem);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-secondary);
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Initials pad */
+.signing-ceremony-v2__initials-input {
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
+  padding: var(--space-3, 0.75rem);
+  font-size: var(--text-2xl, 1.5rem);
+  font-family: 'Brush Script MT', 'Dancing Script', 'Segoe Script', cursive;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  outline: none;
+  display: block;
+  transition: border-color var(--transition-fast);
+}
+
+.signing-ceremony-v2__initials-input:focus {
+  border-color: #635BFF;
+  border-style: solid;
+}
+
+.signing-ceremony-v2__initials-input::placeholder {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm, 0.875rem);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* Date field auto-filled */
+.signing-ceremony-v2__date-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-4, 1rem);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--text-primary);
+}
+
+.signing-ceremony-v2__date-display svg {
+  width: 20px;
+  height: 20px;
+  color: #00D4AA;
+}
+
+.signing-ceremony-v2__date-auto-label {
+  display: block;
+  text-align: center;
+  margin-top: var(--space-2, 0.5rem);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+}
+
+/* Text input field */
+.signing-ceremony-v2__text-input {
+  width: 100%;
+  padding: var(--space-3, 0.75rem);
+  font-size: var(--text-base, 1rem);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.signing-ceremony-v2__text-input:focus {
+  border-color: #635BFF;
+}
+
+/* Checkbox field */
+.signing-ceremony-v2__checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-4, 1rem);
+}
+
+.signing-ceremony-v2__checkbox-input {
+  width: 24px;
+  height: 24px;
+  accent-color: #635BFF;
+  cursor: pointer;
+}
+
+.signing-ceremony-v2__checkbox-label-text {
+  font-size: var(--text-base, 1rem);
+  color: var(--text-primary);
+}
+
+/* Dropdown field */
+.signing-ceremony-v2__dropdown {
+  width: 100%;
+  padding: var(--space-3, 0.75rem);
+  font-size: var(--text-base, 1rem);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.signing-ceremony-v2__dropdown:focus {
+  border-color: #635BFF;
+}
+
+/* ─── Step 3: Complete ──────────────────────────────────────────── */
+
+.signing-ceremony-v2__complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-8, 3rem) 0;
+  gap: var(--space-4, 1rem);
+}
+
+.signing-ceremony-v2__success-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-full, 9999px);
+  background: #00D4AA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: signing-ceremony-v2__success-pop var(--motion-smooth, 300ms) var(--ease-spring) both;
+}
+
+@keyframes signing-ceremony-v2__success-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.signing-ceremony-v2__success-icon svg {
+  width: 40px;
+  height: 40px;
+  color: #ffffff;
+  animation: signing-ceremony-v2__check-draw var(--motion-smooth, 300ms) var(--ease-out) 200ms both;
+}
+
+@keyframes signing-ceremony-v2__check-draw {
+  from {
+    stroke-dashoffset: 40;
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.signing-ceremony-v2__complete h2 {
+  font-size: var(--text-2xl, 1.5rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary);
+}
+
+.signing-ceremony-v2__complete-subtitle {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted);
+  max-width: 400px;
+}
+
+.signing-ceremony-v2__complete-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+  margin-top: var(--space-2, 0.5rem);
+  padding: var(--space-4, 1rem) var(--space-6, 2rem);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 12px);
+  width: 100%;
+  max-width: 400px;
+}
+
+.signing-ceremony-v2__complete-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.signing-ceremony-v2__complete-detail-label {
+  color: var(--text-muted);
+}
+
+.signing-ceremony-v2__complete-detail-value {
+  color: var(--text-primary);
+  font-weight: var(--font-medium, 500);
+}
+
+.signing-ceremony-v2__complete-timer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted);
+  margin-top: var(--space-1, 0.25rem);
+}
+
+.signing-ceremony-v2__complete-timer svg {
+  width: 16px;
+  height: 16px;
+}
+
+.signing-ceremony-v2__complete-actions {
+  display: flex;
+  gap: var(--space-3, 0.75rem);
+  margin-top: var(--space-4, 1rem);
+}
+
+/* ─── Bottom Navigation ─────────────────────────────────────────── */
+
+.signing-ceremony-v2__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3, 0.75rem) var(--space-5, 1.5rem);
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  flex-shrink: 0;
+}
+
+.signing-ceremony-v2__footer-left {
+  display: flex;
+  align-items: center;
+}
+
+.signing-ceremony-v2__footer-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+}
+
+/* Primary action button (Next / Finish) */
+.signing-ceremony-v2__btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-5, 1.5rem);
+  background: #635BFF;
+  color: #ffffff;
+  font-weight: var(--font-semibold, 600);
+  font-size: var(--text-sm, 0.875rem);
+  border-radius: var(--radius-md, 8px);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.signing-ceremony-v2__btn-primary:hover:not(:disabled) {
+  background: #5851EA;
+}
+
+.signing-ceremony-v2__btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.signing-ceremony-v2__btn-primary svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Secondary button (Back) */
+.signing-ceremony-v2__btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-5, 1.5rem);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-weight: var(--font-medium, 500);
+  font-size: var(--text-sm, 0.875rem);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.signing-ceremony-v2__btn-secondary:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.signing-ceremony-v2__btn-secondary svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Download button */
+.signing-ceremony-v2__btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-5, 1.5rem);
+  background: #00D4AA;
+  color: #ffffff;
+  font-weight: var(--font-semibold, 600);
+  font-size: var(--text-sm, 0.875rem);
+  border-radius: var(--radius-md, 8px);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.signing-ceremony-v2__btn-download:hover {
+  background: #00C09A;
+}
+
+.signing-ceremony-v2__btn-download svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ─── Responsive ────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .signing-ceremony-v2__top-bar {
+    padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  }
+
+  .signing-ceremony-v2__doc-name {
+    display: none;
+  }
+
+  .signing-ceremony-v2__steps {
+    padding: var(--space-3, 0.75rem) var(--space-3, 0.75rem) var(--space-2, 0.5rem);
+  }
+
+  .signing-ceremony-v2__step-label {
+    font-size: 0.625rem;
+  }
+
+  .signing-ceremony-v2__step-circle {
+    width: 28px;
+    height: 28px;
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .signing-ceremony-v2__step-line {
+    min-width: 20px;
+  }
+
+  .signing-ceremony-v2__content {
+    padding: var(--space-3, 0.75rem);
+  }
+
+  .signing-ceremony-v2__review-header h2,
+  .signing-ceremony-v2__sign-header h2,
+  .signing-ceremony-v2__complete h2 {
+    font-size: var(--text-xl, 1.25rem);
+  }
+
+  .signing-ceremony-v2__footer {
+    padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  }
+
+  .signing-ceremony-v2__complete-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .signing-ceremony-v2__complete-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ─── Dark Mode ─────────────────────────────────────────────────── */
+
+[data-theme="dark"] .signing-ceremony-v2__canvas-wrapper {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .signing-ceremony-v2__canvas-wrapper--has-content {
+  border-color: #635BFF;
+}
+
+[data-theme="dark"] .signing-ceremony-v2__type-input {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .signing-ceremony-v2__type-input:focus {
+  border-color: #635BFF;
+}
+
+[data-theme="dark"] .signing-ceremony-v2__initials-input {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .signing-ceremony-v2__initials-input:focus {
+  border-color: #635BFF;
+}
+
+[data-theme="dark"] .signing-ceremony-v2__sig-tab--active {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .signing-ceremony-v2__field-item-badge {
+  background: rgba(99, 91, 255, 0.2);
+}
+
+[data-theme="dark"] .signing-ceremony-v2__dropdown {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236A7383' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}

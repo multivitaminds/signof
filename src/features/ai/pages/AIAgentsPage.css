@@ -1,5 +1,8 @@
 .ai-agents-page {
   height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-xl);
 }
 
 .ai-agents-page__header {
@@ -10,8 +13,14 @@
 }
 
 .ai-agents-page__title {
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: var(--text-primary);
   margin: 0;
+}
+
+@media (max-width: 640px) {
+  .ai-agents-page {
+    padding: var(--space-md);
+  }
 }

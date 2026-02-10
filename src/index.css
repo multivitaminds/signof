@@ -4,27 +4,27 @@
      Based on 680 flows · 1,147 screens · 75 Mobbin patterns
      ═══════════════════════════════════════════════════════════ */
 
-  /* ─── SignOf Brand Colors ──────────────────────────────── */
-  --signof-navy: #1A1A2E;
+  /* ─── SignOf Brand Colors (Stripe-inspired) ────────────── */
+  --signof-navy: #0A2540;
   --signof-coral: #E94560;
   --signof-coral-hover: #D63B53;
   --signof-blue: #0F3460;
-  --signof-dark: #16213E;
+  --signof-dark: #0A2540;
 
-  /* ─── Primary Colors ───────────────────────────────────── */
-  --color-primary: #4F46E5;
-  --color-primary-hover: #4338CA;
-  --color-primary-light: #E0E7FF;
-  --color-primary-dark: #3730A3;
+  /* ─── Primary Colors (Stripe Purple) ────────────────────── */
+  --color-primary: #635BFF;
+  --color-primary-hover: #5851EA;
+  --color-primary-light: #E8E6FF;
+  --color-primary-dark: #4B44C7;
 
   /* ─── Semantic Colors ──────────────────────────────────── */
-  --color-success: #00B894;
+  --color-success: #00D4AA;
   --color-success-light: #D1FAE5;
   --color-success-dark: #059669;
-  --color-warning: #FDCB6E;
+  --color-warning: #F5A623;
   --color-warning-light: #FEF3C7;
   --color-warning-dark: #D97706;
-  --color-danger: #E17055;
+  --color-danger: #FF5A5A;
   --color-danger-light: #FEE2E2;
   --color-danger-dark: #DC2626;
   --color-info: #74B9FF;
@@ -140,14 +140,14 @@
   --z-toast: 80;
   --z-command: 100;
 
-  /* ─── Surface Colors (Light Mode) ──────────────────────── */
+  /* ─── Surface Colors (Light Mode — Stripe-inspired) ────── */
   --bg-primary: #FFFFFF;
-  --bg-secondary: #F8F9FA;
-  --bg-tertiary: #E9ECEF;
-  --text-primary: #343A40;
-  --text-secondary: #6C757D;
-  --text-muted: #ADB5BD;
-  --border-color: #DEE2E6;
+  --bg-secondary: #F6F9FC;
+  --bg-tertiary: #E3E8EE;
+  --text-primary: #0A2540;
+  --text-secondary: #425466;
+  --text-muted: #8898AA;
+  --border-color: #E6E8EB;
 
   /* ─── Component Tokens ─────────────────────────────────── */
   --header-height: 56px;
@@ -156,16 +156,16 @@
   --content-max-width: 1200px;
 }
 
-/* ─── Dark Mode ────────────────────────────────────────────── */
+/* ─── Dark Mode (Stripe-inspired Dark) ─────────────────────── */
 [data-theme="dark"] {
-  --bg-primary: #0f0f1a;
-  --bg-secondary: #1a1a2e;
-  --bg-tertiary: #16213e;
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border-color: #334155;
-  --color-primary-light: #312e81;
+  --bg-primary: #0A2540;
+  --bg-secondary: #091D33;
+  --bg-tertiary: #0D2B4A;
+  --text-primary: #F6F9FC;
+  --text-secondary: #A3ACB9;
+  --text-muted: #6A7383;
+  --border-color: #1D3A5C;
+  --color-primary-light: #2D2A6E;
   --color-success-light: #064e3b;
   --color-warning-light: #78350f;
   --color-danger-light: #7f1d1d;

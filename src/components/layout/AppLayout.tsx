@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from './Sidebar/Sidebar'
 import TopBar from './TopBar/TopBar'
+import PageTransition from './PageTransition/PageTransition'
 import CommandPalette from '../CommandPalette/CommandPalette'
 import KeyboardShortcutHelp from '../KeyboardShortcutHelp/KeyboardShortcutHelp'
 import { useTheme } from '../../hooks/useTheme'
@@ -18,6 +19,8 @@ const ROUTE_LABELS: Record<string, string> = {
   '/data': 'Databases',
   '/inbox': 'Inbox',
   '/ai': 'AI',
+  '/tax': 'Tax',
+  '/developer': 'Developer',
   '/settings': 'Settings',
 }
 
@@ -58,6 +61,8 @@ export default function AppLayout() {
     { key: 'g', chord: 'g+i', handler: () => navigate('/inbox') },
     { key: 'g', chord: 'g+c', handler: () => navigate('/data') },
     { key: 'g', chord: 'g+b', handler: () => navigate('/ai') },
+    { key: 'g', chord: 'g+t', handler: () => navigate('/tax') },
+    { key: 'g', chord: 'g+x', handler: () => navigate('/developer') },
   ])
 
   // Track recent items on navigation
@@ -81,9 +86,9 @@ export default function AppLayout() {
       <div className="app-layout__main">
         <TopBar />
         <main className="app-layout__content">
-          <div key={location.pathname} className="app-layout__page-transition">
+          <PageTransition key={location.pathname}>
             <Outlet />
-          </div>
+          </PageTransition>
         </main>
       </div>
       <CommandPalette />

@@ -19,12 +19,14 @@ export interface SchedulingState {
   addEventType: (eventType: Omit<EventType, 'id' | 'createdAt' | 'updatedAt'>) => EventType
   updateEventType: (id: string, updates: Partial<EventType>) => void
   deleteEventType: (id: string) => void
+  duplicateEventType: (id: string) => EventType | undefined
   getEventType: (id: string) => EventType | undefined
 
   // Booking actions
   addBooking: (booking: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>) => Booking
   updateBooking: (id: string, updates: Partial<Booking>) => void
   cancelBooking: (id: string, reason?: string) => void
+  rescheduleBooking: (id: string, newDate: string, newStartTime: string, newEndTime: string) => void
   getBookingsForDate: (date: string) => Booking[]
   getBookingsForEventType: (eventTypeId: string) => Booking[]
 
@@ -64,6 +66,24 @@ export const useSchedulingStore = create<SchedulingState>((set, get) => ({
     }))
   },
 
+  duplicateEventType: (id) => {
+    const source = get().eventTypes.find((et) => et.id === id)
+    if (!source) return undefined
+    const timestamp = now()
+    const newEventType: EventType = {
+      ...source,
+      id: generateId(),
+      name: `${source.name} (Copy)`,
+      slug: `${source.slug}-copy`,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    }
+    set((state) => ({
+      eventTypes: [...state.eventTypes, newEventType],
+    }))
+    return newEventType
+  },
+
   getEventType: (id) => {
     return get().eventTypes.find((et) => et.id === id)
   },
@@ -98,6 +118,23 @@ export const useSchedulingStore = create<SchedulingState>((set, get) => ({
               ...b,
               status: BookingStatus.Cancelled,
               cancelReason: reason,
+              updatedAt: now(),
+            }
+          : b
+      ),
+    }))
+  },
+
+  rescheduleBooking: (id, newDate, newStartTime, newEndTime) => {
+    set((state) => ({
+      bookings: state.bookings.map((b) =>
+        b.id === id
+          ? {
+              ...b,
+              date: newDate,
+              startTime: newStartTime,
+              endTime: newEndTime,
+              status: BookingStatus.Rescheduled,
               updatedAt: now(),
             }
           : b

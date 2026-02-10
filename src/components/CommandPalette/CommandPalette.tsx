@@ -19,11 +19,15 @@ import {
   LayoutGrid,
   Keyboard,
   Clock,
+  Receipt,
+  Code2,
 } from 'lucide-react'
 import { useAppStore } from '../../stores/useAppStore'
 import { useDocumentStore } from '../../stores/useDocumentStore'
 import { useWorkspaceStore } from '../../features/workspace/stores/useWorkspaceStore'
 import { useProjectStore } from '../../features/projects/stores/useProjectStore'
+import { useSchedulingStore } from '../../features/scheduling/stores/useSchedulingStore'
+import { useDatabaseStore } from '../../features/databases/stores/useDatabaseStore'
 import { fuzzyMatch, highlightMatches } from '../../lib/fuzzyMatch'
 import './CommandPalette.css'
 
@@ -33,7 +37,7 @@ interface CommandItem {
   description?: string
   icon: React.ComponentType<{ size?: number; className?: string }>
   action: () => void
-  category: 'navigation' | 'action' | 'recent' | 'document' | 'page' | 'project'
+  category: 'navigation' | 'action' | 'recent' | 'document' | 'page' | 'project' | 'event' | 'database'
   shortcut?: string
   score?: number
 }
@@ -71,6 +75,9 @@ export default function CommandPalette() {
   const workspacePages = useMemo(() => Object.values(pagesMap), [pagesMap])
   const projects = useMemo(() => Object.values(projectsMap), [projectsMap])
   const projectIssues = useMemo(() => Object.values(issuesMap), [issuesMap])
+  const eventTypes = useSchedulingStore((s) => s.eventTypes)
+  const databasesArr = useDatabaseStore((s) => s.databases)
+  const databases = useMemo(() => Object.values(databasesArr), [databasesArr])
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -112,6 +119,22 @@ export default function CommandPalette() {
         description: 'Upload and send for signature',
         icon: Plus,
         action: () => navigateAndTrack('/documents?action=upload', 'New Document'),
+        category: 'action',
+      },
+      {
+        id: 'new-event-type',
+        label: 'Create new event type',
+        description: 'Set up a new booking type',
+        icon: Plus,
+        action: () => navigateAndTrack('/calendar/events', 'New Event Type'),
+        category: 'action',
+      },
+      {
+        id: 'new-database',
+        label: 'Create new database',
+        description: 'Build a new relational database',
+        icon: Plus,
+        action: () => navigateAndTrack('/data', 'New Database'),
         category: 'action',
       },
       {
@@ -225,6 +248,22 @@ export default function CommandPalette() {
         action: () => navigateAndTrack('/ai', 'AI'),
         category: 'navigation',
         shortcut: 'G B',
+      },
+      {
+        id: 'nav-tax',
+        label: 'Go to Tax',
+        icon: Receipt,
+        action: () => navigateAndTrack('/tax', 'Tax'),
+        category: 'navigation',
+        shortcut: 'G T',
+      },
+      {
+        id: 'nav-developer',
+        label: 'Go to Developer',
+        icon: Code2,
+        action: () => navigateAndTrack('/developer', 'Developer'),
+        category: 'navigation',
+        shortcut: 'G X',
       },
       {
         id: 'nav-settings',
@@ -341,11 +380,47 @@ export default function CommandPalette() {
       }
     }
 
+    // Search event types (when query length >= 2)
+    if (trimmed.length >= 2) {
+      for (const et of eventTypes) {
+        const match = fuzzyMatch(trimmed, et.name)
+        if (match) {
+          scored.push({
+            id: `event-${et.id}`,
+            label: et.name,
+            description: `Event type · ${et.durationMinutes}min`,
+            icon: Calendar,
+            action: () => navigateAndTrack('/calendar/events', et.name),
+            category: 'event',
+            score: match.score,
+          })
+        }
+      }
+    }
+
+    // Search databases (when query length >= 2)
+    if (trimmed.length >= 2) {
+      for (const db of databases) {
+        const match = fuzzyMatch(trimmed, db.name)
+        if (match) {
+          scored.push({
+            id: `db-${db.id}`,
+            label: db.name,
+            description: `Database · ${db.tables.length} tables`,
+            icon: Database,
+            action: () => navigateAndTrack(`/data/${db.id}`, db.name),
+            category: 'database',
+            score: match.score,
+          })
+        }
+      }
+    }
+
     // Sort by score descending
     scored.sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
 
     return scored
-  }, [query, commands, documents, workspacePages, projects, projectIssues, recentItems, navigateAndTrack])
+  }, [query, commands, documents, workspacePages, projects, projectIssues, eventTypes, databases, recentItems, navigateAndTrack])
 
   // Get matched indices per item for highlighting
   const getMatchIndices = useCallback(
@@ -366,6 +441,8 @@ export default function CommandPalette() {
       document: [] as CommandItem[],
       page: [] as CommandItem[],
       project: [] as CommandItem[],
+      event: [] as CommandItem[],
+      database: [] as CommandItem[],
     }
     filteredItems.forEach((cmd) => {
       groups[cmd.category].push(cmd)
@@ -537,6 +614,8 @@ export default function CommandPalette() {
               {renderGroup('Documents', groupedCommands.document)}
               {renderGroup('Pages', groupedCommands.page)}
               {renderGroup('Projects', groupedCommands.project)}
+              {renderGroup('Events', groupedCommands.event)}
+              {renderGroup('Databases', groupedCommands.database)}
               {renderGroup('Navigation', groupedCommands.navigation)}
             </>
           )}

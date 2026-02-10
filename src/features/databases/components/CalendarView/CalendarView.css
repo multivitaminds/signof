@@ -1,0 +1,100 @@
+.db-calendar-view__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.db-calendar-view__nav-btn {
+  background: none;
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-sm, 4px);
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  cursor: pointer;
+  color: var(--text-secondary, #6B7280);
+  display: flex;
+  align-items: center;
+  transition: all 150ms ease;
+}
+
+.db-calendar-view__nav-btn:hover {
+  background: var(--bg-secondary, #F9FAFB);
+  color: var(--text-primary, #111827);
+}
+
+.db-calendar-view__month {
+  font-weight: 600;
+  font-size: var(--text-lg, 1.125rem);
+  color: var(--text-primary, #111827);
+}
+
+.db-calendar-view__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-lg, 12px);
+  overflow: hidden;
+}
+
+.db-calendar-view__day-header {
+  padding: var(--space-2, 0.5rem);
+  text-align: center;
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--text-muted, #9CA3AF);
+  text-transform: uppercase;
+  background: var(--bg-secondary, #F9FAFB);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+}
+
+.db-calendar-view__cell {
+  min-height: 100px;
+  padding: var(--space-1, 0.25rem);
+  border-right: 1px solid var(--border-color, #E5E7EB);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  cursor: pointer;
+  transition: background 100ms ease;
+}
+
+.db-calendar-view__cell:hover {
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+.db-calendar-view__cell:nth-child(7n) {
+  border-right: none;
+}
+
+.db-calendar-view__cell--empty {
+  background: var(--bg-secondary, #F9FAFB);
+  cursor: default;
+}
+
+.db-calendar-view__day-num {
+  display: block;
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  color: var(--text-secondary, #6B7280);
+  padding: 2px 4px;
+}
+
+.db-calendar-view__event {
+  display: block;
+  width: 100%;
+  padding: 2px 4px;
+  margin-top: 1px;
+  font-size: 11px;
+  background: var(--color-primary, #4F46E5);
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: opacity 150ms ease;
+}
+
+.db-calendar-view__event:hover {
+  opacity: 0.85;
+}

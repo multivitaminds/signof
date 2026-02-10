@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import EventTypeForm from './EventTypeForm'
 import type { EventType } from '../../types'
-import { EventTypeCategory, DEFAULT_SCHEDULE } from '../../types'
+import { EventTypeCategory, LocationType, DEFAULT_SCHEDULE } from '../../types'
 
 const mockEventType: EventType = {
   id: 'et-1',
@@ -17,6 +17,7 @@ const mockEventType: EventType = {
   maxBookingsPerDay: 10,
   minimumNoticeMinutes: 60,
   schedulingWindowDays: 30,
+  location: LocationType.Zoom,
   schedule: DEFAULT_SCHEDULE,
   dateOverrides: [],
   customQuestions: [],

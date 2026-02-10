@@ -1,18 +1,30 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import AIMemoryPage from './AIMemoryPage'
 
+// Mock indexedDB for memory store
+const mockGetAllEntries = vi.fn().mockResolvedValue([])
+vi.mock('../lib/indexedDB', () => ({
+  getAllEntries: () => mockGetAllEntries(),
+  putEntry: vi.fn().mockResolvedValue(undefined),
+  deleteEntry: vi.fn().mockResolvedValue(undefined),
+  clearEntries: vi.fn().mockResolvedValue(undefined),
+  exportAllEntries: vi.fn().mockResolvedValue([]),
+  importEntries: vi.fn().mockResolvedValue(undefined),
+}))
+
 describe('AIMemoryPage', () => {
-  it('renders loading state initially', () => {
+  it('renders the page title', () => {
     render(<AIMemoryPage />)
-    expect(screen.getByLabelText('Loading memory')).toBeInTheDocument()
-    expect(screen.getByText('Loading context memory...')).toBeInTheDocument()
+    expect(screen.getByText('Context Memory')).toBeInTheDocument()
   })
 
-  it('renders placeholder content after hydration', async () => {
+  it('renders the subtitle', () => {
     render(<AIMemoryPage />)
-    await waitFor(() => {
-      expect(screen.getByTestId('memory-explorer-placeholder')).toBeInTheDocument()
-    })
-    expect(screen.getByText('Memory Explorer')).toBeInTheDocument()
+    expect(screen.getByText('1M token organizational memory')).toBeInTheDocument()
+  })
+
+  it('renders the token usage progress bar', () => {
+    render(<AIMemoryPage />)
+    expect(screen.getByRole('progressbar', { name: 'Token usage' })).toBeInTheDocument()
   })
 })

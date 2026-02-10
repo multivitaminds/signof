@@ -1,0 +1,242 @@
+/* ─── TaxDashboard ─────────────────────────────────────────────────── */
+
+.tax-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ─── Overview Cards ──────────────────────────────────────────────── */
+
+.tax-dashboard__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-4);
+}
+
+.tax-dashboard__card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  transition: box-shadow var(--motion-fast) var(--ease-out);
+}
+
+.tax-dashboard__card:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.tax-dashboard__card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.tax-dashboard__card-icon--primary {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.tax-dashboard__card-icon--success {
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
+}
+
+.tax-dashboard__card-icon--warning {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning-dark);
+}
+
+.tax-dashboard__card-icon--info {
+  background-color: var(--color-info-light);
+  color: var(--color-info-dark);
+}
+
+.tax-dashboard__card-icon--muted {
+  background-color: var(--bg-secondary);
+  color: var(--text-muted);
+}
+
+.tax-dashboard__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.tax-dashboard__card-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tax-dashboard__card-value {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.tax-dashboard__card-value--success {
+  color: var(--color-success-dark);
+}
+
+.tax-dashboard__card-value--warning {
+  color: var(--color-warning-dark);
+}
+
+/* ─── Progress Section ────────────────────────────────────────────── */
+
+.tax-dashboard__progress-section {
+  padding: var(--space-5);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.tax-dashboard__progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.tax-dashboard__section-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.tax-dashboard__progress-label {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.tax-dashboard__progress-bar {
+  height: 8px;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.tax-dashboard__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-success));
+  border-radius: var(--radius-full);
+  transition: width var(--motion-smooth) var(--ease-spring);
+  min-width: 0;
+}
+
+/* ─── Two Column Grid ─────────────────────────────────────────────── */
+
+.tax-dashboard__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+
+.tax-dashboard__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+/* ─── Quick Actions ───────────────────────────────────────────────── */
+
+.tax-dashboard__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.tax-dashboard__action-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-4);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  text-align: left;
+  transition:
+    border-color var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out);
+}
+
+.tax-dashboard__action-btn:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.tax-dashboard__action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.tax-dashboard__action-icon--primary {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.tax-dashboard__action-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tax-dashboard__action-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.tax-dashboard__action-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.tax-dashboard__action-arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .tax-dashboard__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tax-dashboard__cards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .tax-dashboard__cards {
+    grid-template-columns: 1fr;
+  }
+}

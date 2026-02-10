@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import WeeklyCalendar from './WeeklyCalendar'
 import type { Booking, EventType } from '../../types'
-import { BookingStatus, EventTypeCategory, DEFAULT_SCHEDULE } from '../../types'
+import { BookingStatus, EventTypeCategory, LocationType, DEFAULT_SCHEDULE } from '../../types'
 
 const mockEventTypes: EventType[] = [
   {
@@ -18,6 +18,7 @@ const mockEventTypes: EventType[] = [
     maxBookingsPerDay: 10,
     minimumNoticeMinutes: 60,
     schedulingWindowDays: 30,
+    location: LocationType.Zoom,
     schedule: DEFAULT_SCHEDULE,
     dateOverrides: [],
     customQuestions: [],

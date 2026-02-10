@@ -33,10 +33,11 @@ function generateTimeSlots(durationMinutes: number): TimeRange[] {
 
 export default function BookingModal({
   eventType,
-  bookings,
+  bookings: _bookings,
   onBook,
   onClose,
 }: BookingModalProps) {
+  void _bookings // reserved for availability filtering
   const [step, setStep] = useState(0)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)

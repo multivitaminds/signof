@@ -1,0 +1,297 @@
+/* ═══════════════════════════════════════════════════════════════
+   AvailabilityEditor — Weekly schedule editor for hosts
+   ═══════════════════════════════════════════════════════════════ */
+
+.availability-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ─── Header ────────────────────────────────────────────────── */
+.availability-editor__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.availability-editor__header-text {
+  flex: 1;
+}
+
+.availability-editor__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-xs);
+}
+
+.availability-editor__subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ─── Days ──────────────────────────────────────────────────── */
+.availability-editor__days {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--border-color);
+}
+
+.availability-editor__day {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-md);
+  background: var(--bg-primary);
+  transition: background var(--motion-fast) var(--ease-out);
+}
+
+.availability-editor__day--disabled {
+  background: var(--bg-secondary);
+}
+
+.availability-editor__day-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.availability-editor__day-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  min-width: 100px;
+}
+
+.availability-editor__day-short {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .availability-editor__day-label {
+    display: none;
+  }
+  .availability-editor__day-short {
+    display: inline;
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    min-width: 40px;
+  }
+}
+
+.availability-editor__day--disabled .availability-editor__day-label,
+.availability-editor__day--disabled .availability-editor__day-short {
+  color: var(--text-muted);
+}
+
+.availability-editor__day-actions {
+  display: flex;
+  gap: var(--space-xs);
+  margin-left: auto;
+}
+
+/* ─── Toggle ────────────────────────────────────────────────── */
+.availability-editor__toggle {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.availability-editor__toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.availability-editor__toggle-slider {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-gray-300);
+  border-radius: var(--radius-full);
+  transition: background-color var(--motion-fast) var(--ease-out);
+}
+
+.availability-editor__toggle-slider::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: #fff;
+  border-radius: var(--radius-full);
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+
+.availability-editor__toggle input:checked + .availability-editor__toggle-slider {
+  background-color: var(--color-primary);
+}
+
+.availability-editor__toggle input:checked + .availability-editor__toggle-slider::before {
+  transform: translateX(16px);
+}
+
+.availability-editor__toggle input:focus-visible + .availability-editor__toggle-slider {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ─── Action Buttons ────────────────────────────────────────── */
+.availability-editor__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  transition: all var(--motion-fast) var(--ease-out);
+}
+
+.availability-editor__action-btn:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+/* ─── Time Ranges ───────────────────────────────────────────── */
+.availability-editor__ranges {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  padding-left: 52px;
+}
+
+.availability-editor__range {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.availability-editor__time-input {
+  width: 120px;
+  padding: 6px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  font-family: var(--font-mono);
+}
+
+.availability-editor__time-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.1);
+}
+
+.availability-editor__range-sep {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-medium);
+}
+
+.availability-editor__remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--text-muted);
+  transition: all var(--motion-fast) var(--ease-out);
+}
+
+.availability-editor__remove-btn:hover {
+  background: var(--color-danger-light);
+  color: var(--color-danger-dark);
+}
+
+.availability-editor__no-ranges {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.availability-editor__add-link {
+  background: none;
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.availability-editor__add-link:hover {
+  color: var(--color-primary-hover);
+}
+
+/* ─── Visual Timeline ───────────────────────────────────────── */
+.availability-editor__timeline {
+  margin-top: var(--space-sm);
+  padding-left: 52px;
+}
+
+.availability-editor__timeline-track {
+  position: relative;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.availability-editor__timeline-block {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  opacity: 0.7;
+}
+
+.availability-editor__timeline-labels {
+  position: relative;
+  height: 16px;
+  margin-top: 2px;
+}
+
+.availability-editor__timeline-label {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: var(--font-medium);
+}
+
+/* ─── Footer ────────────────────────────────────────────────── */
+.availability-editor__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-color);
+}
+
+/* ─── Dark mode adjustments ─────────────────────────────────── */
+[data-theme="dark"] .availability-editor__time-input {
+  background: var(--bg-secondary);
+}

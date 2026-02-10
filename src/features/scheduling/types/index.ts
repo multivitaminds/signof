@@ -8,6 +8,16 @@ export const EventTypeCategory = {
 
 export type EventTypeCategory = (typeof EventTypeCategory)[keyof typeof EventTypeCategory]
 
+export const LocationType = {
+  InPerson: 'in_person',
+  Phone: 'phone',
+  Zoom: 'zoom',
+  GoogleMeet: 'google_meet',
+  MicrosoftTeams: 'microsoft_teams',
+} as const
+
+export type LocationType = (typeof LocationType)[keyof typeof LocationType]
+
 export const BookingStatus = {
   Confirmed: 'confirmed',
   Cancelled: 'cancelled',
@@ -86,6 +96,7 @@ export interface EventType {
   maxBookingsPerDay: number
   minimumNoticeMinutes: number
   schedulingWindowDays: number
+  location: LocationType
   schedule: WeeklySchedule
   dateOverrides: DateOverride[]
   customQuestions: CustomQuestion[]
@@ -141,3 +152,13 @@ export const EVENT_TYPE_COLORS: string[] = [
 ]
 
 export const DURATION_OPTIONS: number[] = [15, 30, 45, 60, 90, 120]
+
+export const BUFFER_OPTIONS: number[] = [0, 5, 10, 15]
+
+export const LOCATION_LABELS: Record<LocationType, string> = {
+  [LocationType.InPerson]: 'In-person',
+  [LocationType.Phone]: 'Phone',
+  [LocationType.Zoom]: 'Zoom',
+  [LocationType.GoogleMeet]: 'Google Meet',
+  [LocationType.MicrosoftTeams]: 'Microsoft Teams',
+}

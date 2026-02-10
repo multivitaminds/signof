@@ -2,6 +2,7 @@ import type { EventType, Booking } from '../types'
 import {
   EventTypeCategory,
   BookingStatus,
+  LocationType,
   DEFAULT_SCHEDULE,
   EVENT_TYPE_COLORS,
 } from '../types'
@@ -20,6 +21,7 @@ export const SAMPLE_EVENT_TYPES: EventType[] = [
     maxBookingsPerDay: 8,
     minimumNoticeMinutes: 60,
     schedulingWindowDays: 30,
+    location: LocationType.Phone,
     schedule: DEFAULT_SCHEDULE,
     dateOverrides: [],
     customQuestions: [],
@@ -41,6 +43,7 @@ export const SAMPLE_EVENT_TYPES: EventType[] = [
     maxBookingsPerDay: 4,
     minimumNoticeMinutes: 120,
     schedulingWindowDays: 60,
+    location: LocationType.Zoom,
     schedule: DEFAULT_SCHEDULE,
     dateOverrides: [],
     customQuestions: [
@@ -75,6 +78,7 @@ export const SAMPLE_EVENT_TYPES: EventType[] = [
     maxBookingsPerDay: 2,
     minimumNoticeMinutes: 30,
     schedulingWindowDays: 14,
+    location: LocationType.GoogleMeet,
     schedule: DEFAULT_SCHEDULE,
     dateOverrides: [],
     customQuestions: [],
@@ -96,6 +100,7 @@ export const SAMPLE_EVENT_TYPES: EventType[] = [
     maxBookingsPerDay: 3,
     minimumNoticeMinutes: 240,
     schedulingWindowDays: 90,
+    location: LocationType.InPerson,
     schedule: DEFAULT_SCHEDULE,
     dateOverrides: [],
     customQuestions: [

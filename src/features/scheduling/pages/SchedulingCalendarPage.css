@@ -1,0 +1,13 @@
+.scheduling-calendar-page__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.scheduling-calendar-page__month {
+  font-weight: 600;
+  font-size: var(--text-lg, 1.125rem);
+  color: var(--text-primary, #111827);
+  margin-left: var(--space-2, 0.5rem);
+}
