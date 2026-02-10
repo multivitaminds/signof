@@ -1,0 +1,30 @@
+.projects-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.projects-layout__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.projects-layout__icon {
+  color: var(--color-primary);
+}
+
+.projects-layout__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.projects-layout__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-lg);
+}

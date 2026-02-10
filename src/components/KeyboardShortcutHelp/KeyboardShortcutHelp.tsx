@@ -41,6 +41,21 @@ const SHORTCUT_SECTIONS: ShortcutSection[] = [
       { keys: ['N'], description: 'New document' },
     ],
   },
+  {
+    title: 'Projects',
+    shortcuts: [
+      { keys: ['C'], description: 'Create issue' },
+      { keys: ['S'], description: 'Set status' },
+      { keys: ['A'], description: 'Set assignee' },
+      { keys: ['P'], description: 'Set priority' },
+      { keys: ['L'], description: 'Set labels' },
+      { keys: ['J'], description: 'Move down' },
+      { keys: ['K'], description: 'Move up' },
+      { keys: ['Space'], description: 'Preview issue' },
+      { keys: ['Enter'], description: 'Open issue' },
+      { keys: ['Esc'], description: 'Close panel' },
+    ],
+  },
 ]
 
 export default function KeyboardShortcutHelp() {

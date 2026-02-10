@@ -6,12 +6,15 @@ import HomePage from './pages/HomePage'
 import DocumentsPage from './pages/DocumentsPage'
 import NotFoundPage from './pages/NotFoundPage'
 import {
-  ProjectsPage,
   CalendarPage,
   DatabasesPage,
   InboxPage,
   SettingsPage,
 } from './pages/PlaceholderPages'
+import ProjectsLayout from './features/projects/pages/ProjectsLayout'
+import ProjectListPage from './features/projects/pages/ProjectListPage'
+import NewProjectPage from './features/projects/pages/NewProjectPage'
+import ProjectDetailPage from './features/projects/pages/ProjectDetailPage'
 import WorkspaceLayout from './features/workspace/pages/WorkspaceLayout'
 import WorkspaceAllPages from './features/workspace/pages/WorkspaceAllPages'
 import NewPagePage from './features/workspace/pages/NewPagePage'
@@ -38,7 +41,11 @@ createRoot(root).render(
             <Route path="new" element={<NewPagePage />} />
             <Route path=":pageId" element={<PageEditorPage />} />
           </Route>
-          <Route path="projects/*" element={<ProjectsPage />} />
+          <Route path="projects" element={<ProjectsLayout />}>
+            <Route index element={<ProjectListPage />} />
+            <Route path="new" element={<NewProjectPage />} />
+            <Route path=":projectId" element={<ProjectDetailPage />} />
+          </Route>
           <Route path="documents/*" element={<DocumentsPage />} />
           <Route path="calendar/*" element={<CalendarPage />} />
           <Route path="data/*" element={<DatabasesPage />} />

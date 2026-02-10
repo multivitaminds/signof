@@ -1,4 +1,4 @@
-import { FolderKanban, Calendar, Database, Inbox, Settings } from 'lucide-react'
+import { Calendar, Database, Inbox, Settings } from 'lucide-react'
 import './PlaceholderPages.css'
 
 interface PlaceholderProps {
@@ -17,16 +17,6 @@ function PlaceholderPage({ title, description, icon: Icon }: PlaceholderProps) {
       <p className="placeholder-page__description">{description}</p>
       <div className="placeholder-page__badge">Coming Soon</div>
     </div>
-  )
-}
-
-export function ProjectsPage() {
-  return (
-    <PlaceholderPage
-      title="Projects"
-      description="Track issues and projects with Linear-speed performance. Kanban boards, list views, and timeline visualization."
-      icon={FolderKanban}
-    />
   )
 }
 

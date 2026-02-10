@@ -23,6 +23,7 @@ import {
 import { useAppStore } from '../../stores/useAppStore'
 import { useDocumentStore } from '../../stores/useDocumentStore'
 import { useWorkspaceStore } from '../../features/workspace/stores/useWorkspaceStore'
+import { useProjectStore } from '../../features/projects/stores/useProjectStore'
 import { fuzzyMatch, highlightMatches } from '../../lib/fuzzyMatch'
 import './CommandPalette.css'
 
@@ -32,7 +33,7 @@ interface CommandItem {
   description?: string
   icon: React.ComponentType<{ size?: number; className?: string }>
   action: () => void
-  category: 'navigation' | 'action' | 'recent' | 'document' | 'page'
+  category: 'navigation' | 'action' | 'recent' | 'document' | 'page' | 'project'
   shortcut?: string
   score?: number
 }
@@ -64,7 +65,12 @@ export default function CommandPalette() {
   } = useAppStore()
   const { theme, setTheme, compactMode, setCompactMode } = useAppStore()
   const documents = useDocumentStore((s) => s.documents)
-  const workspacePages = useWorkspaceStore((s) => Object.values(s.pages))
+  const pagesMap = useWorkspaceStore((s) => s.pages)
+  const projectsMap = useProjectStore((s) => s.projects)
+  const issuesMap = useProjectStore((s) => s.issues)
+  const workspacePages = useMemo(() => Object.values(pagesMap), [pagesMap])
+  const projects = useMemo(() => Object.values(projectsMap), [projectsMap])
+  const projectIssues = useMemo(() => Object.values(issuesMap), [issuesMap])
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -298,11 +304,48 @@ export default function CommandPalette() {
       }
     }
 
+    // Search projects (when query length >= 2)
+    if (trimmed.length >= 2) {
+      for (const project of projects) {
+        const match = fuzzyMatch(trimmed, project.name)
+        if (match) {
+          const issueCount = projectIssues.filter((i) => i.projectId === project.id).length
+          scored.push({
+            id: `proj-${project.id}`,
+            label: project.name,
+            description: `Project · ${issueCount} issue${issueCount !== 1 ? 's' : ''}`,
+            icon: FolderKanban,
+            action: () => navigateAndTrack(`/projects/${project.id}`, project.name),
+            category: 'project',
+            score: match.score,
+          })
+        }
+      }
+
+      for (const issue of projectIssues) {
+        const titleMatch = fuzzyMatch(trimmed, issue.title)
+        const idMatch = fuzzyMatch(trimmed, issue.identifier)
+        const bestScore = Math.max(titleMatch?.score ?? -1, idMatch?.score ?? -1)
+        if (bestScore >= 0) {
+          const project = projects.find((p) => p.id === issue.projectId)
+          scored.push({
+            id: `issue-${issue.id}`,
+            label: `${issue.identifier} ${issue.title}`,
+            description: `${project?.name ?? 'Project'} · ${issue.status}`,
+            icon: FolderKanban,
+            action: () => navigateAndTrack(`/projects/${issue.projectId}`, issue.title),
+            category: 'project',
+            score: bestScore,
+          })
+        }
+      }
+    }
+
     // Sort by score descending
     scored.sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
 
     return scored
-  }, [query, commands, documents, workspacePages, recentItems, navigateAndTrack])
+  }, [query, commands, documents, workspacePages, projects, projectIssues, recentItems, navigateAndTrack])
 
   // Get matched indices per item for highlighting
   const getMatchIndices = useCallback(
@@ -322,6 +365,7 @@ export default function CommandPalette() {
       navigation: [] as CommandItem[],
       document: [] as CommandItem[],
       page: [] as CommandItem[],
+      project: [] as CommandItem[],
     }
     filteredItems.forEach((cmd) => {
       groups[cmd.category].push(cmd)
@@ -492,6 +536,7 @@ export default function CommandPalette() {
               {renderGroup('Quick Actions', groupedCommands.action)}
               {renderGroup('Documents', groupedCommands.document)}
               {renderGroup('Pages', groupedCommands.page)}
+              {renderGroup('Projects', groupedCommands.project)}
               {renderGroup('Navigation', groupedCommands.navigation)}
             </>
           )}

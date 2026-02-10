@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
 import type { BreadcrumbSegment } from '../../types'
 import { useWorkspaceStore } from '../../features/workspace/stores/useWorkspaceStore'
+import { useProjectStore } from '../../features/projects/stores/useProjectStore'
 import './Breadcrumbs.css'
 
 const ROUTE_LABELS: Record<string, string> = {
@@ -16,6 +17,7 @@ const ROUTE_LABELS: Record<string, string> = {
   settings: 'Settings',
   memory: 'Memory',
   agents: 'Agent Teams',
+  new: 'New',
 }
 
 function buildBreadcrumbs(pathname: string): BreadcrumbSegment[] {
@@ -35,9 +37,10 @@ function buildBreadcrumbs(pathname: string): BreadcrumbSegment[] {
 export default function Breadcrumbs() {
   const location = useLocation()
   const pages = useWorkspaceStore((s) => s.pages)
+  const projectsMap = useProjectStore((s) => s.projects)
   const crumbs = buildBreadcrumbs(location.pathname)
 
-  // Resolve page IDs to titles
+  // Resolve page IDs and project IDs to titles
   const resolvedCrumbs = crumbs.map((crumb) => {
     const segments = crumb.path.split('/')
     const lastSegment = segments[segments.length - 1]
@@ -45,6 +48,12 @@ export default function Breadcrumbs() {
       const page = pages[lastSegment]
       if (page) {
         return { ...crumb, label: page.title || 'Untitled' }
+      }
+    }
+    if (segments.includes('projects') && lastSegment && lastSegment !== 'projects' && lastSegment !== 'new') {
+      const project = projectsMap[lastSegment]
+      if (project) {
+        return { ...crumb, label: project.name }
       }
     }
     return crumb

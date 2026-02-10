@@ -1,0 +1,40 @@
+.cycle-burndown {
+  width: 100%;
+}
+
+.cycle-burndown__chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.cycle-burndown__grid {
+  stroke: var(--border-color);
+  stroke-width: 0.5;
+  stroke-dasharray: 2 4;
+}
+
+.cycle-burndown__axis-label {
+  font-size: 10px;
+  fill: var(--text-muted);
+  font-family: var(--font-sans);
+}
+
+.cycle-burndown__line--ideal {
+  stroke: var(--text-muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 4;
+  fill: none;
+}
+
+.cycle-burndown__line--actual {
+  stroke: var(--color-primary);
+  stroke-width: 2;
+  fill: none;
+}
+
+.cycle-burndown__legend-text {
+  font-size: 10px;
+  fill: var(--text-secondary);
+  font-family: var(--font-sans);
+}

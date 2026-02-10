@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useMemo } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
   Home,
@@ -24,6 +24,7 @@ import {
 import { useAppStore } from '../../../stores/useAppStore'
 import { useDocumentStore } from '../../../stores/useDocumentStore'
 import { useWorkspaceStore } from '../../../features/workspace/stores/useWorkspaceStore'
+import { useProjectStore } from '../../../features/projects/stores/useProjectStore'
 import PageTree from '../../../features/workspace/components/PageTree/PageTree'
 import { ACTIVE_STATUSES } from '../../../types'
 import './Sidebar.css'
@@ -64,7 +65,13 @@ export default function Sidebar() {
     (ACTIVE_STATUSES as string[]).includes(d.status)
   ).length
 
-  const workspacePages = useWorkspaceStore((s) => Object.values(s.pages))
+  const pagesMap = useWorkspaceStore((s) => s.pages)
+  const workspacePages = useMemo(() => Object.values(pagesMap), [pagesMap])
+
+  const openIssueCount = useProjectStore((s) => {
+    const issues = Object.values(s.issues)
+    return issues.filter((i) => i.status !== 'done' && i.status !== 'cancelled').length
+  })
 
   const [newMenuOpen, setNewMenuOpen] = useState(false)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
@@ -75,7 +82,7 @@ export default function Sidebar() {
   const NAV_ITEMS: NavItem[] = [
     { path: '/', label: 'Home', icon: Home },
     { path: '/pages', label: 'Pages', icon: FileText },
-    { path: '/projects', label: 'Projects', icon: FolderKanban },
+    { path: '/projects', label: 'Projects', icon: FolderKanban, badge: openIssueCount || undefined },
     { path: '/documents', label: 'Documents', icon: FileSignature, badge: pendingCount || undefined },
     { path: '/calendar', label: 'Calendar', icon: Calendar },
     { path: '/data', label: 'Databases', icon: Database },
