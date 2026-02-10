@@ -74,6 +74,26 @@
   color: var(--color-primary, #4F46E5);
 }
 
+.page-editor__toolbar-btn--comments {
+  position: relative;
+}
+
+.page-editor__comment-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  border-radius: 9999px;
+  background: var(--color-warning, #D97706);
+  color: white;
+}
+
 .page-editor__export-wrapper {
   position: relative;
 }

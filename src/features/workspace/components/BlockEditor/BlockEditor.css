@@ -59,6 +59,22 @@
   min-width: 0;
 }
 
+.block-editor__comment-actions {
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 100ms ease;
+  margin-top: 2px;
+}
+
+.block-editor__block:hover .block-editor__comment-actions {
+  opacity: 1;
+}
+
+/* Always show indicator when comments exist */
+.block-editor__comment-actions:has(.comment-indicator) {
+  opacity: 1;
+}
+
 .block-editor__drop-indicator {
   height: 2px;
   background: var(--color-primary, #4F46E5);
@@ -222,6 +238,23 @@
   position: fixed;
   inset: 0;
   z-index: -1;
+}
+
+/* ─── Block Highlight (from sidebar comment click) ───────────────── */
+
+.block-editor__block--highlighted {
+  background: rgba(79, 70, 229, 0.08);
+  border-radius: var(--radius-sm, 4px);
+  animation: block-highlight-fade 2s ease-out forwards;
+}
+
+@keyframes block-highlight-fade {
+  0% {
+    background: rgba(79, 70, 229, 0.15);
+  }
+  100% {
+    background: transparent;
+  }
 }
 
 /* ─── Dark mode ──────────────────────────────────────────────────── */

@@ -10,6 +10,16 @@ export const HttpMethod = {
 
 export type HttpMethod = (typeof HttpMethod)[keyof typeof HttpMethod]
 
+// ─── API Key Permission ─────────────────────────────────────────────
+
+export const ApiKeyPermission = {
+  Read: 'read',
+  Write: 'write',
+  Admin: 'admin',
+} as const
+
+export type ApiKeyPermission = (typeof ApiKeyPermission)[keyof typeof ApiKeyPermission]
+
 // ─── Webhook Events ──────────────────────────────────────────────────
 
 export const WebhookEvent = {
@@ -17,12 +27,13 @@ export const WebhookEvent = {
   DocumentSigned: 'document.signed',
   DocumentCompleted: 'document.completed',
   DocumentVoided: 'document.voided',
-  SignerCompleted: 'signer.completed',
-  SignerDeclined: 'signer.declined',
-  FilingSubmitted: 'filing.submitted',
-  FilingAccepted: 'filing.accepted',
+  IssueCreated: 'issue.created',
+  IssueUpdated: 'issue.updated',
   BookingCreated: 'booking.created',
   BookingCancelled: 'booking.cancelled',
+  PageCreated: 'page.created',
+  PageUpdated: 'page.updated',
+  MemberJoined: 'member.joined',
 } as const
 
 export type WebhookEvent = (typeof WebhookEvent)[keyof typeof WebhookEvent]
@@ -34,17 +45,20 @@ export const WEBHOOK_EVENT_CATEGORIES: Record<string, WebhookEvent[]> = {
     WebhookEvent.DocumentCompleted,
     WebhookEvent.DocumentVoided,
   ],
-  Signers: [
-    WebhookEvent.SignerCompleted,
-    WebhookEvent.SignerDeclined,
-  ],
-  Filings: [
-    WebhookEvent.FilingSubmitted,
-    WebhookEvent.FilingAccepted,
+  Issues: [
+    WebhookEvent.IssueCreated,
+    WebhookEvent.IssueUpdated,
   ],
   Bookings: [
     WebhookEvent.BookingCreated,
     WebhookEvent.BookingCancelled,
+  ],
+  Pages: [
+    WebhookEvent.PageCreated,
+    WebhookEvent.PageUpdated,
+  ],
+  Team: [
+    WebhookEvent.MemberJoined,
   ],
 }
 
@@ -53,12 +67,13 @@ export const WEBHOOK_EVENT_LABELS: Record<WebhookEvent, string> = {
   [WebhookEvent.DocumentSigned]: 'Document Signed',
   [WebhookEvent.DocumentCompleted]: 'Document Completed',
   [WebhookEvent.DocumentVoided]: 'Document Voided',
-  [WebhookEvent.SignerCompleted]: 'Signer Completed',
-  [WebhookEvent.SignerDeclined]: 'Signer Declined',
-  [WebhookEvent.FilingSubmitted]: 'Filing Submitted',
-  [WebhookEvent.FilingAccepted]: 'Filing Accepted',
+  [WebhookEvent.IssueCreated]: 'Issue Created',
+  [WebhookEvent.IssueUpdated]: 'Issue Updated',
   [WebhookEvent.BookingCreated]: 'Booking Created',
   [WebhookEvent.BookingCancelled]: 'Booking Cancelled',
+  [WebhookEvent.PageCreated]: 'Page Created',
+  [WebhookEvent.PageUpdated]: 'Page Updated',
+  [WebhookEvent.MemberJoined]: 'Member Joined',
 }
 
 // ─── Environment ─────────────────────────────────────────────────────
@@ -98,36 +113,40 @@ export interface ApiEndpoint {
 export interface ApiKey {
   id: string
   name: string
-  key: string
-  environment: Environment
+  keyPrefix: string
+  keyHash: string
+  permissions: ApiKeyPermission[]
   createdAt: string
   lastUsedAt: string | null
+  expiresAt: string | null
+  status: 'active' | 'revoked'
 }
 
 // ─── Webhook ─────────────────────────────────────────────────────────
 
-export interface Webhook {
+export interface WebhookEndpoint {
   id: string
   url: string
+  description: string
   events: WebhookEvent[]
   secret: string
-  active: boolean
-  failureCount: number
+  status: 'active' | 'disabled'
   createdAt: string
-  updatedAt: string
+  lastDeliveryAt: string | null
+  failureCount: number
 }
 
-// ─── Webhook Log ─────────────────────────────────────────────────────
+// ─── Webhook Delivery ───────────────────────────────────────────────
 
-export interface WebhookLog {
+export interface WebhookDelivery {
   id: string
   webhookId: string
   event: WebhookEvent
-  statusCode: number
+  payload: string
+  statusCode: number | null
+  responseBody: string | null
+  deliveredAt: string
   success: boolean
-  timestamp: string
-  requestBody: string
-  responseBody: string
 }
 
 // ─── SDK Language ────────────────────────────────────────────────────

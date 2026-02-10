@@ -8,6 +8,7 @@ import {
 import { useInboxStore } from '../stores/useInboxStore'
 import { NotificationType } from '../types'
 import type { Notification } from '../types'
+import EmptyState from '../../../components/EmptyState/EmptyState'
 import './InboxPage.css'
 
 /* ------------------------------------------------------------------ */
@@ -406,11 +407,11 @@ export default function InboxPage() {
 
       {/* Notification list */}
       {filtered.length === 0 ? (
-        <div className="inbox-page__empty">
-          <Bell size={48} />
-          <h2>{emptyState.title}</h2>
-          <p>{emptyState.desc}</p>
-        </div>
+        <EmptyState
+          icon={<Bell size={36} />}
+          title={emptyState.title}
+          description={emptyState.desc}
+        />
       ) : (
         <div className="inbox-page__list">
           {groups.map((group) => (

@@ -1,11 +1,12 @@
 import { useEffect, useCallback, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { FileText, Clock, Download, FileDown } from 'lucide-react'
+import { FileText, Clock, Download, FileDown, MessageSquare } from 'lucide-react'
 import { useWorkspaceStore } from '../stores/useWorkspaceStore'
 import PageHeader from '../components/PageHeader/PageHeader'
 import BlockEditor from '../components/BlockEditor/BlockEditor'
 import PageProperties from '../components/PageProperties/PageProperties'
 import VersionHistory from '../components/VersionHistory/VersionHistory'
+import CommentsSidebar from '../components/CommentsSidebar/CommentsSidebar'
 import { pageToMarkdown, pageToHTML } from '../lib/exportPage'
 import type { PagePropertyValue } from '../types'
 import './PageEditorPage.css'
@@ -22,8 +23,11 @@ export default function PageEditorPage() {
   const restoreSnapshot = useWorkspaceStore((s) => s.restoreSnapshot)
   const deleteSnapshot = useWorkspaceStore((s) => s.deleteSnapshot)
 
+  const pageComments = useWorkspaceStore((s) => (pageId ? s.comments[pageId] ?? [] : []))
+
   const [showVersionHistory, setShowVersionHistory] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
+  const [showCommentsSidebar, setShowCommentsSidebar] = useState(false)
 
   // Update lastViewedAt on mount
   useEffect(() => {
@@ -119,6 +123,21 @@ export default function PageEditorPage() {
     [pageId, deleteSnapshot]
   )
 
+  const handleCommentClick = useCallback(
+    (blockId: string) => {
+      // Scroll to and highlight the block
+      const blockEl = document.querySelector(`[data-block-id="${blockId}"]`)
+      if (blockEl) {
+        blockEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        blockEl.classList.add('block-editor__block--highlighted')
+        setTimeout(() => {
+          blockEl.classList.remove('block-editor__block--highlighted')
+        }, 2000)
+      }
+    },
+    []
+  )
+
   if (!page) {
     return (
       <div className="page-editor__not-found">
@@ -132,8 +151,11 @@ export default function PageEditorPage() {
   const backlinks = pageId ? getBacklinks(pageId) : []
   const snapshots = pageId ? getPageHistory(pageId) : []
 
+  const openCommentCount = pageComments.filter((c) => !c.resolved).length
+  const hasSidePanel = showVersionHistory || showCommentsSidebar
+
   return (
-    <div className={`page-editor-layout ${showVersionHistory ? 'page-editor-layout--with-history' : ''}`}>
+    <div className={`page-editor-layout ${hasSidePanel ? 'page-editor-layout--with-history' : ''}`}>
       <div className="page-editor">
         {/* Page toolbar */}
         <div className="page-editor__toolbar">
@@ -166,8 +188,24 @@ export default function PageEditorPage() {
               )}
             </div>
             <button
+              className={`page-editor__toolbar-btn page-editor__toolbar-btn--comments ${showCommentsSidebar ? 'page-editor__toolbar-btn--active' : ''}`}
+              onClick={() => {
+                setShowCommentsSidebar(!showCommentsSidebar)
+                if (!showCommentsSidebar) setShowVersionHistory(false)
+              }}
+              title="Comments"
+            >
+              <MessageSquare size={16} />
+              {openCommentCount > 0 && (
+                <span className="page-editor__comment-badge">{openCommentCount}</span>
+              )}
+            </button>
+            <button
               className={`page-editor__toolbar-btn ${showVersionHistory ? 'page-editor__toolbar-btn--active' : ''}`}
-              onClick={() => setShowVersionHistory(!showVersionHistory)}
+              onClick={() => {
+                setShowVersionHistory(!showVersionHistory)
+                if (!showVersionHistory) setShowCommentsSidebar(false)
+              }}
               title="Version history"
             >
               <Clock size={16} />
@@ -220,6 +258,14 @@ export default function PageEditorPage() {
         onRestore={handleRestoreSnapshot}
         onDelete={handleDeleteSnapshot}
         onClose={() => setShowVersionHistory(false)}
+      />
+
+      {/* Comments Sidebar */}
+      <CommentsSidebar
+        isOpen={showCommentsSidebar}
+        pageId={pageId ?? ''}
+        onClose={() => setShowCommentsSidebar(false)}
+        onCommentClick={handleCommentClick}
       />
     </div>
   )

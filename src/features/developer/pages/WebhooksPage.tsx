@@ -4,11 +4,16 @@ import {
   Trash2,
   Eye,
   EyeOff,
-  TestTube2,
+  Send,
+  Copy,
+  Check,
   ToggleLeft,
   ToggleRight,
   ChevronDown,
   ChevronRight,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
 } from 'lucide-react'
 import useDeveloperStore from '../stores/useDeveloperStore'
 import { WEBHOOK_EVENT_LABELS } from '../types'
@@ -29,31 +34,32 @@ function formatDate(iso: string): string {
 function WebhooksPage() {
   const {
     webhooks,
-    webhookLogs,
     createWebhook,
-    updateWebhook,
+    toggleWebhook,
     deleteWebhook,
     testWebhook,
+    getDeliveries,
   } = useDeveloperStore()
 
   const [showCreate, setShowCreate] = useState(false)
   const [revealedSecrets, setRevealedSecrets] = useState<Set<string>>(new Set())
+  const [copiedId, setCopiedId] = useState<string | null>(null)
   const [expandedWebhookId, setExpandedWebhookId] = useState<string | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   const handleCreate = useCallback(
-    (url: string, events: WebhookEvent[]) => {
-      createWebhook(url, events)
+    (url: string, description: string, events: WebhookEvent[]) => {
+      createWebhook(url, description, events)
       setShowCreate(false)
     },
     [createWebhook]
   )
 
   const handleToggleActive = useCallback(
-    (id: string, currentActive: boolean) => {
-      updateWebhook(id, { active: !currentActive })
+    (id: string) => {
+      toggleWebhook(id)
     },
-    [updateWebhook]
+    [toggleWebhook]
   )
 
   const handleDelete = useCallback(
@@ -61,12 +67,15 @@ function WebhooksPage() {
       if (confirmDeleteId === id) {
         deleteWebhook(id)
         setConfirmDeleteId(null)
+        if (expandedWebhookId === id) {
+          setExpandedWebhookId(null)
+        }
       } else {
         setConfirmDeleteId(id)
         setTimeout(() => setConfirmDeleteId(null), 3000)
       }
     },
-    [confirmDeleteId, deleteWebhook]
+    [confirmDeleteId, deleteWebhook, expandedWebhookId]
   )
 
   const handleTest = useCallback(
@@ -85,6 +94,13 @@ function WebhooksPage() {
         next.add(id)
       }
       return next
+    })
+  }, [])
+
+  const handleCopySecret = useCallback((secret: string, id: string) => {
+    navigator.clipboard.writeText(secret).then(() => {
+      setCopiedId(id)
+      setTimeout(() => setCopiedId(null), 2000)
     })
   }, [])
 
@@ -130,14 +146,12 @@ function WebhooksPage() {
 
         {webhooks.map(wh => {
           const isExpanded = expandedWebhookId === wh.id
-          const logsForWebhook = webhookLogs
-            .filter(l => l.webhookId === wh.id)
-            .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+          const deliveries = getDeliveries(wh.id)
 
           return (
             <div
               key={wh.id}
-              className={`webhooks-page__card ${!wh.active ? 'webhooks-page__card--inactive' : ''}`}
+              className={`webhooks-page__card ${wh.status === 'disabled' ? 'webhooks-page__card--inactive' : ''}`}
             >
               <div className="webhooks-page__card-header">
                 <button
@@ -154,21 +168,31 @@ function WebhooksPage() {
                   <div className="webhooks-page__card-url-row">
                     <span
                       className={`webhooks-page__status-dot ${
-                        wh.active
+                        wh.status === 'active'
                           ? 'webhooks-page__status-dot--active'
                           : 'webhooks-page__status-dot--inactive'
                       }`}
                     />
                     <code className="webhooks-page__card-url">{wh.url}</code>
                   </div>
+                  {wh.description && (
+                    <p className="webhooks-page__card-description">{wh.description}</p>
+                  )}
                   <div className="webhooks-page__card-meta">
                     <span>{wh.events.length} events</span>
                     <span className="webhooks-page__separator">|</span>
                     <span>Created {formatDate(wh.createdAt)}</span>
+                    {wh.lastDeliveryAt && (
+                      <>
+                        <span className="webhooks-page__separator">|</span>
+                        <span>Last delivery {formatDate(wh.lastDeliveryAt)}</span>
+                      </>
+                    )}
                     {wh.failureCount > 0 && (
                       <>
                         <span className="webhooks-page__separator">|</span>
                         <span className="webhooks-page__failures">
+                          <AlertTriangle size={12} />
                           {wh.failureCount} failure{wh.failureCount !== 1 ? 's' : ''}
                         </span>
                       </>
@@ -179,12 +203,12 @@ function WebhooksPage() {
                 <div className="webhooks-page__card-actions">
                   <button
                     className="webhooks-page__action-btn"
-                    onClick={() => handleToggleActive(wh.id, wh.active)}
+                    onClick={() => handleToggleActive(wh.id)}
                     type="button"
-                    title={wh.active ? 'Disable' : 'Enable'}
-                    aria-label={wh.active ? 'Disable webhook' : 'Enable webhook'}
+                    title={wh.status === 'active' ? 'Disable' : 'Enable'}
+                    aria-label={wh.status === 'active' ? 'Disable webhook' : 'Enable webhook'}
                   >
-                    {wh.active ? (
+                    {wh.status === 'active' ? (
                       <ToggleRight size={20} className="webhooks-page__toggle--on" />
                     ) : (
                       <ToggleLeft size={20} className="webhooks-page__toggle--off" />
@@ -197,7 +221,7 @@ function WebhooksPage() {
                     title="Send test event"
                     aria-label="Test webhook"
                   >
-                    <TestTube2 size={16} />
+                    <Send size={16} />
                   </button>
                   <button
                     className={`webhooks-page__action-btn ${
@@ -215,11 +239,14 @@ function WebhooksPage() {
 
               {isExpanded && (
                 <div className="webhooks-page__card-details">
+                  {/* Signing Secret */}
                   <div className="webhooks-page__detail-section">
                     <h4 className="webhooks-page__detail-title">Signing Secret</h4>
                     <div className="webhooks-page__secret-row">
                       <code className="webhooks-page__secret-value">
-                        {revealedSecrets.has(wh.id) ? wh.secret : wh.secret.replace(/./g, '\u2022').slice(0, 20) + '...'}
+                        {revealedSecrets.has(wh.id)
+                          ? wh.secret
+                          : '\u2022'.repeat(20) + '...'}
                       </code>
                       <button
                         className="webhooks-page__secret-toggle"
@@ -229,9 +256,18 @@ function WebhooksPage() {
                       >
                         {revealedSecrets.has(wh.id) ? <EyeOff size={14} /> : <Eye size={14} />}
                       </button>
+                      <button
+                        className="webhooks-page__secret-toggle"
+                        onClick={() => handleCopySecret(wh.secret, wh.id)}
+                        type="button"
+                        aria-label="Copy secret"
+                      >
+                        {copiedId === wh.id ? <Check size={14} /> : <Copy size={14} />}
+                      </button>
                     </div>
                   </div>
 
+                  {/* Subscribed Events */}
                   <div className="webhooks-page__detail-section">
                     <h4 className="webhooks-page__detail-title">Subscribed Events</h4>
                     <div className="webhooks-page__event-tags">
@@ -243,56 +279,76 @@ function WebhooksPage() {
                     </div>
                   </div>
 
-                  {logsForWebhook.length > 0 && (
-                    <div className="webhooks-page__detail-section">
+                  {/* Recent Deliveries */}
+                  <div className="webhooks-page__detail-section">
+                    <div className="webhooks-page__deliveries-header">
                       <h4 className="webhooks-page__detail-title">
-                        Recent Deliveries ({logsForWebhook.length})
+                        Recent Deliveries ({deliveries.length})
                       </h4>
+                      <button
+                        className="btn-secondary webhooks-page__test-btn"
+                        onClick={() => handleTest(wh.id)}
+                        type="button"
+                      >
+                        <Send size={14} />
+                        Send Test
+                      </button>
+                    </div>
+
+                    {deliveries.length === 0 ? (
+                      <p className="webhooks-page__no-deliveries">No deliveries yet.</p>
+                    ) : (
                       <table className="webhooks-page__logs-table">
                         <thead>
                           <tr>
-                            <th>Event</th>
-                            <th>Timestamp</th>
                             <th>Status</th>
-                            <th>Result</th>
+                            <th>Event</th>
+                            <th>Response</th>
+                            <th>Timestamp</th>
+                            <th>Payload</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {logsForWebhook.map(log => (
-                            <tr key={log.id}>
+                          {deliveries.slice(0, 10).map(delivery => (
+                            <tr key={delivery.id}>
                               <td>
-                                <code className="webhooks-page__log-event">{log.event}</code>
+                                {delivery.success ? (
+                                  <CheckCircle size={16} className="webhooks-page__delivery-icon--success" />
+                                ) : (
+                                  <XCircle size={16} className="webhooks-page__delivery-icon--failure" />
+                                )}
                               </td>
-                              <td className="webhooks-page__log-time">{formatDate(log.timestamp)}</td>
+                              <td>
+                                <code className="webhooks-page__log-event">{delivery.event}</code>
+                              </td>
                               <td>
                                 <span
                                   className="webhooks-page__log-status"
                                   style={{
-                                    backgroundColor: log.statusCode < 400
+                                    backgroundColor: delivery.statusCode !== null && delivery.statusCode < 400
                                       ? 'var(--color-success)'
                                       : 'var(--color-danger)',
                                   }}
                                 >
-                                  {log.statusCode}
+                                  {delivery.statusCode ?? '---'}
                                 </span>
                               </td>
+                              <td className="webhooks-page__log-time">
+                                {formatDate(delivery.deliveredAt)}
+                              </td>
                               <td>
-                                <span
-                                  className={`webhooks-page__log-result ${
-                                    log.success
-                                      ? 'webhooks-page__log-result--success'
-                                      : 'webhooks-page__log-result--failure'
-                                  }`}
-                                >
-                                  {log.success ? 'Success' : 'Failed'}
-                                </span>
+                                <code className="webhooks-page__log-payload">
+                                  {delivery.payload.length > 50
+                                    ? delivery.payload.slice(0, 50) + '...'
+                                    : delivery.payload}
+                                </code>
                               </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               )}
             </div>

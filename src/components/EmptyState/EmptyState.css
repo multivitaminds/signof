@@ -1,0 +1,114 @@
+/* EmptyState.css — Reusable polished empty state */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-8, 4rem) var(--space-6, 2rem);
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* ─── Icon wrapper ─── */
+
+.empty-state__icon-wrapper {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-primary-light, #EEF2FF);
+  color: var(--color-primary, #4F46E5);
+  margin-bottom: var(--space-5, 1.5rem);
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.empty-state__icon-wrapper svg {
+  width: 36px;
+  height: 36px;
+}
+
+/* ─── Title ─── */
+
+.empty-state__title {
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+  margin: 0 0 var(--space-2, 0.5rem);
+  line-height: var(--leading-tight, 1.25);
+}
+
+/* ─── Description ─── */
+
+.empty-state__description {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted, #9CA3AF);
+  line-height: var(--leading-normal, 1.5);
+  margin: 0 0 var(--space-5, 1.5rem);
+  max-width: 320px;
+}
+
+/* ─── Actions ─── */
+
+.empty-state__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.empty-state__action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-5, 1.5rem);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.empty-state__secondary-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border: none;
+  background: none;
+  color: var(--text-secondary, #6B7280);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--radius-md, 8px);
+  transition: all 150ms ease;
+}
+
+.empty-state__secondary-action:hover {
+  color: var(--text-primary, #111827);
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+/* ─── Dark mode ─── */
+
+[data-theme="dark"] .empty-state__icon-wrapper {
+  background: rgba(79, 70, 229, 0.12);
+  color: #A5B4FC;
+}
+
+[data-theme="dark"] .empty-state__title {
+  color: #F1F5F9;
+}
+
+[data-theme="dark"] .empty-state__description {
+  color: #64748B;
+}
+
+[data-theme="dark"] .empty-state__secondary-action {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .empty-state__secondary-action:hover {
+  color: #F1F5F9;
+  background: rgba(255, 255, 255, 0.05);
+}

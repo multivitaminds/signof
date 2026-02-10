@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/useAuthStore'
+import { useOnboardingStore } from '../stores/useOnboardingStore'
 import {
   ArrowRight,
   ArrowLeft,
@@ -32,6 +33,7 @@ import {
   Sun,
   Moon,
   Monitor,
+  BookOpenCheck,
 } from 'lucide-react'
 import type { OnboardingData } from '../types'
 import './OnboardingPage.css'
@@ -57,9 +59,10 @@ const ROLES = [
 
 const TEAM_SIZES = [
   { label: 'Just me', description: 'Solo workspace' },
-  { label: '2-10', description: 'Small team' },
-  { label: '11-50', description: 'Growing team' },
-  { label: '51-200', description: 'Mid-size org' },
+  { label: '2-5', description: 'Small team' },
+  { label: '6-20', description: 'Growing team' },
+  { label: '21-50', description: 'Mid-size org' },
+  { label: '51-200', description: 'Large org' },
   { label: '200+', description: 'Enterprise' },
 ]
 
@@ -68,10 +71,19 @@ const USE_CASES = [
   { label: 'Project Management', icon: FolderKanban },
   { label: 'Knowledge Base', icon: BookOpen },
   { label: 'Scheduling', icon: CalendarDays },
-  { label: 'Databases', icon: Database },
-  { label: 'AI Assistant', icon: Bot },
-  { label: 'Tax Filing', icon: FileText },
-  { label: 'Developer Tools', icon: Code },
+  { label: 'Database/CRM', icon: Database },
+  { label: 'Team Collaboration', icon: Users },
+  { label: 'Client Portal', icon: FileText },
+  { label: 'Automations', icon: Bot },
+]
+
+const ACCENT_COLORS = [
+  { label: 'Indigo', value: '#4F46E5' },
+  { label: 'Blue', value: '#2563EB' },
+  { label: 'Emerald', value: '#059669' },
+  { label: 'Rose', value: '#E11D48' },
+  { label: 'Amber', value: '#D97706' },
+  { label: 'Purple', value: '#7C3AED' },
 ]
 
 const TOTAL_STEPS = 8
@@ -87,6 +99,7 @@ export default function OnboardingPage() {
   const navigate = useNavigate()
   const completeOnboarding = useAuthStore((s) => s.completeOnboarding)
   const user = useAuthStore((s) => s.user)
+  const onboardingStore = useOnboardingStore()
 
   const [step, setStep] = useState(0)
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward')
@@ -106,6 +119,8 @@ export default function OnboardingPage() {
     inviteEmails: [],
     theme: 'system',
   })
+
+  const [accentColor, setAccentColor] = useState('#4F46E5')
 
   const progressPercent = ((step + 1) / TOTAL_STEPS) * 100
 
@@ -186,14 +201,28 @@ export default function OnboardingPage() {
     }, 300)
   }, [animating])
 
+  const syncToStore = useCallback(() => {
+    onboardingStore.setWorkspace(data.workspaceName, data.workspaceIcon)
+    onboardingStore.setRole(data.role)
+    onboardingStore.setTeamSize(data.teamSize)
+    onboardingStore.setUseCases(data.useCases)
+    onboardingStore.setTheme(data.theme)
+    onboardingStore.setAccentColor(accentColor)
+    for (const email of data.inviteEmails) {
+      onboardingStore.addInviteEmail(email)
+    }
+    onboardingStore.completeOnboarding()
+  }, [data, accentColor, onboardingStore])
+
   const handleNext = useCallback(() => {
     if (step < TOTAL_STEPS - 1) {
       goToStep(step + 1, 'forward')
     } else {
+      syncToStore()
       completeOnboarding(data)
       navigate('/')
     }
-  }, [step, data, completeOnboarding, navigate, goToStep])
+  }, [step, data, completeOnboarding, navigate, goToStep, syncToStore])
 
   const handleBack = useCallback(() => {
     if (step > 0) {
@@ -248,9 +277,11 @@ export default function OnboardingPage() {
                 <span className="onboarding__logo-rest">ignOf</span>
               </div>
             </div>
-            <h1 className="onboarding__title">Welcome to SignOf</h1>
+            <h1 className="onboarding__title">
+              Welcome to SignOf{data.displayName ? `, ${data.displayName.split(' ')[0]}` : ''}
+            </h1>
             <p className="onboarding__subtitle">
-              The everything platform for your team. Let&apos;s get you set up in under a minute.
+              The everything platform for your team. Let&apos;s set up your workspace in under a minute.
             </p>
             <div className="onboarding__field">
               <label className="onboarding__label" htmlFor="display-name">
@@ -326,6 +357,16 @@ export default function OnboardingPage() {
                 ))}
               </div>
             </div>
+            {/* Workspace preview card */}
+            {data.workspaceName.trim() && (
+              <div className="onboarding__preview-card">
+                <span className="onboarding__preview-icon">{data.workspaceIcon}</span>
+                <div className="onboarding__preview-info">
+                  <span className="onboarding__preview-name">{data.workspaceName}</span>
+                  <span className="onboarding__preview-url">signof.com/{data.workspaceSlug}</span>
+                </div>
+              </div>
+            )}
           </div>
         )
 
@@ -382,17 +423,24 @@ export default function OnboardingPage() {
                         <div className="onboarding__size-dot onboarding__size-dot--large" />
                       </div>
                     )}
-                    {label === '2-10' && (
+                    {label === '2-5' && (
                       <div className="onboarding__size-dots">
                         {Array.from({ length: 3 }).map((_, i) => (
                           <div key={i} className="onboarding__size-dot" />
                         ))}
                       </div>
                     )}
-                    {label === '11-50' && (
+                    {label === '6-20' && (
                       <div className="onboarding__size-dots">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <div key={i} className="onboarding__size-dot" />
+                        ))}
+                      </div>
+                    )}
+                    {label === '21-50' && (
+                      <div className="onboarding__size-dots onboarding__size-dots--grid">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                          <div key={i} className="onboarding__size-dot onboarding__size-dot--small" />
                         ))}
                       </div>
                     )}
@@ -511,6 +559,9 @@ export default function OnboardingPage() {
                 ))}
               </div>
             )}
+            <p className="onboarding__email-hint">
+              You can also invite teammates later from Settings.
+            </p>
           </div>
         )
 
@@ -522,7 +573,7 @@ export default function OnboardingPage() {
             </div>
             <h1 className="onboarding__title">Choose your look</h1>
             <p className="onboarding__subtitle">
-              Pick a theme that suits you. You can change it anytime.
+              Pick a theme and accent color. You can change these anytime.
             </p>
             <div className="onboarding__theme-grid">
               <button
@@ -588,6 +639,29 @@ export default function OnboardingPage() {
                 {data.theme === 'system' && <Check size={14} className="onboarding__theme-check" />}
               </button>
             </div>
+
+            {/* Accent color picker */}
+            <div className="onboarding__field" style={{ marginTop: 'var(--space-4, 1rem)' }}>
+              <label className="onboarding__label">Accent color</label>
+              <div className="onboarding__accent-grid">
+                {ACCENT_COLORS.map((color) => (
+                  <button
+                    key={color.value}
+                    type="button"
+                    className={`onboarding__accent-option ${accentColor === color.value ? 'onboarding__accent-option--selected' : ''}`}
+                    onClick={() => setAccentColor(color.value)}
+                    aria-label={`Select ${color.label} accent color`}
+                    style={{ '--accent-swatch': color.value } as React.CSSProperties}
+                  >
+                    <span className="onboarding__accent-swatch" />
+                    <span className="onboarding__accent-label">{color.label}</span>
+                    {accentColor === color.value && (
+                      <Check size={12} className="onboarding__accent-check" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )
 
@@ -650,6 +724,30 @@ export default function OnboardingPage() {
                   {data.theme}
                 </span>
               </div>
+              <div className="onboarding__summary-row">
+                <span className="onboarding__summary-label">Accent</span>
+                <span className="onboarding__summary-value">
+                  <span
+                    className="onboarding__summary-color-dot"
+                    style={{ backgroundColor: accentColor }}
+                  />
+                  {ACCENT_COLORS.find((c) => c.value === accentColor)?.label ?? 'Custom'}
+                </span>
+              </div>
+            </div>
+            <div className="onboarding__ready-actions">
+              <button
+                type="button"
+                className="onboarding__tour-link"
+                onClick={() => {
+                  syncToStore()
+                  completeOnboarding(data)
+                  navigate('/?tour=1')
+                }}
+              >
+                <BookOpenCheck size={16} />
+                Take a tour
+              </button>
             </div>
           </div>
         )
@@ -667,6 +765,16 @@ export default function OnboardingPage() {
           className="onboarding__progress-fill"
           style={{ width: `${progressPercent}%` }}
         />
+      </div>
+
+      {/* Segment indicators */}
+      <div className="onboarding__segments">
+        {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+          <div
+            key={i}
+            className={`onboarding__segment ${i <= step ? 'onboarding__segment--filled' : ''}`}
+          />
+        ))}
       </div>
 
       <div className="onboarding__container">
@@ -715,7 +823,7 @@ export default function OnboardingPage() {
               >
                 {step === TOTAL_STEPS - 1 ? (
                   <>
-                    Launch your workspace
+                    Go to Dashboard
                     <Rocket size={16} />
                   </>
                 ) : (

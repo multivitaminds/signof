@@ -1,10 +1,11 @@
 import { useMemo, useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, BarChart3 } from 'lucide-react'
+import { Plus, BarChart3, FolderKanban } from 'lucide-react'
 import { useProjectStore } from '../stores/useProjectStore'
 import { IssueStatus } from '../types'
 import ProjectCard from '../components/ProjectCard/ProjectCard'
 import ProjectAnalytics from '../components/ProjectAnalytics/ProjectAnalytics'
+import EmptyState from '../../../components/EmptyState/EmptyState'
 import './ProjectListPage.css'
 
 export default function ProjectListPage() {
@@ -55,12 +56,13 @@ export default function ProjectListPage() {
 
   if (projectList.length === 0) {
     return (
-      <div className="project-list__empty">
-        <p>No projects yet. Create one to get started.</p>
-        <button className="btn-primary" onClick={handleNewProject} type="button">
-          New Project
-        </button>
-      </div>
+      <EmptyState
+        icon={<FolderKanban size={36} />}
+        title="Start your first project"
+        description="Track issues, plan sprints, and ship faster with boards, lists, and cycles."
+        action={{ label: 'New Project', onClick: handleNewProject }}
+        secondaryAction={{ label: 'Learn more', onClick: () => navigate('/') }}
+      />
     )
   }
 

@@ -121,6 +121,29 @@ export interface SlashCommandItem {
   keywords: string[]
 }
 
+// ─── Comments ───────────────────────────────────────────────────────
+
+export interface CommentReply {
+  id: string
+  content: string
+  authorName: string
+  authorId: string
+  createdAt: string
+}
+
+export interface BlockComment {
+  id: string
+  blockId: string
+  pageId: string
+  content: string
+  authorName: string
+  authorId: string
+  createdAt: string
+  updatedAt: string
+  resolved: boolean
+  replies: CommentReply[]
+}
+
 // ─── Page Template ──────────────────────────────────────────────────
 
 export interface PageTemplate {

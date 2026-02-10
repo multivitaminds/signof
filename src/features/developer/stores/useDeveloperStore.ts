@@ -1,20 +1,29 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { Environment, WebhookEvent } from '../types'
-import type { ApiKey, Webhook, WebhookLog } from '../types'
+import { ApiKeyPermission, WebhookEvent } from '../types'
+import type { ApiKey, WebhookEndpoint, WebhookDelivery } from '../types'
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
 }
 
-function generateApiKey(env: 'live' | 'test'): string {
-  const prefix = env === 'live' ? 'sk_live_' : 'sk_test_'
+function generateApiKey(): string {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
   let result = ''
   for (let i = 0; i < 32; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length))
   }
-  return prefix + result
+  return 'sk_live_' + result
+}
+
+function hashKey(key: string): string {
+  let hash = 0
+  for (let i = 0; i < key.length; i++) {
+    const chr = key.charCodeAt(i)
+    hash = ((hash << 5) - hash) + chr
+    hash |= 0
+  }
+  return 'hash_' + Math.abs(hash).toString(36)
 }
 
 function generateWebhookSecret(): string {
@@ -30,95 +39,122 @@ const INITIAL_API_KEYS: ApiKey[] = [
   {
     id: 'key_1',
     name: 'Production API Key',
-    key: 'sk_live_a1B2c3D4e5F6g7H8i9J0kLmNoPqRsTuV',
-    environment: Environment.Live as typeof Environment.Live,
+    keyPrefix: 'sk_live_Ab',
+    keyHash: 'hash_prod_a1b2c3',
+    permissions: [
+      ApiKeyPermission.Read as typeof ApiKeyPermission.Read,
+      ApiKeyPermission.Write as typeof ApiKeyPermission.Write,
+      ApiKeyPermission.Admin as typeof ApiKeyPermission.Admin,
+    ],
     createdAt: '2025-11-15T10:30:00Z',
-    lastUsedAt: '2025-12-20T14:22:00Z',
+    lastUsedAt: '2026-02-08T14:22:00Z',
+    expiresAt: null,
+    status: 'active',
   },
   {
     id: 'key_2',
-    name: 'Test Environment Key',
-    key: 'sk_test_xY1z2A3b4C5d6E7f8G9h0IjKlMnOpQrS',
-    environment: Environment.Test as typeof Environment.Test,
+    name: 'CI/CD Pipeline Key',
+    keyPrefix: 'sk_live_Xz',
+    keyHash: 'hash_ci_x9y8z7',
+    permissions: [
+      ApiKeyPermission.Read as typeof ApiKeyPermission.Read,
+    ],
     createdAt: '2025-12-01T09:00:00Z',
-    lastUsedAt: '2025-12-22T11:45:00Z',
+    lastUsedAt: '2026-01-15T11:45:00Z',
+    expiresAt: '2025-12-31T23:59:59Z',
+    status: 'revoked',
   },
 ]
 
-const INITIAL_WEBHOOKS: Webhook[] = [
+const INITIAL_WEBHOOKS: WebhookEndpoint[] = [
   {
     id: 'wh_1',
     url: 'https://api.example.com/webhooks/signof',
+    description: 'Production webhook for document events',
     events: [
       WebhookEvent.DocumentCreated as typeof WebhookEvent.DocumentCreated,
       WebhookEvent.DocumentCompleted as typeof WebhookEvent.DocumentCompleted,
-      WebhookEvent.SignerCompleted as typeof WebhookEvent.SignerCompleted,
+      WebhookEvent.DocumentSigned as typeof WebhookEvent.DocumentSigned,
     ],
     secret: 'whsec_t3s7s3cr3tk3yv4lu3h3r3',
-    active: true,
-    failureCount: 0,
+    status: 'active',
     createdAt: '2025-11-20T08:00:00Z',
-    updatedAt: '2025-12-18T16:30:00Z',
+    lastDeliveryAt: '2026-02-08T10:25:00Z',
+    failureCount: 1,
+  },
+  {
+    id: 'wh_2',
+    url: 'https://hooks.slack.com/services/T00/B00/xxx',
+    description: 'Slack notifications for bookings',
+    events: [
+      WebhookEvent.BookingCreated as typeof WebhookEvent.BookingCreated,
+      WebhookEvent.BookingCancelled as typeof WebhookEvent.BookingCancelled,
+    ],
+    secret: 'whsec_sl4ckn0t1f1c4t10ns3c',
+    status: 'active',
+    createdAt: '2026-01-05T12:00:00Z',
+    lastDeliveryAt: '2026-02-07T09:30:00Z',
+    failureCount: 0,
   },
 ]
 
-const INITIAL_WEBHOOK_LOGS: WebhookLog[] = [
+const INITIAL_DELIVERIES: WebhookDelivery[] = [
   {
-    id: 'log_1',
+    id: 'del_1',
     webhookId: 'wh_1',
     event: WebhookEvent.DocumentCreated as typeof WebhookEvent.DocumentCreated,
+    payload: '{"event":"document.created","data":{"id":"doc_abc","name":"Contract.pdf","created_at":"2026-02-08T10:15:00Z"}}',
     statusCode: 200,
-    success: true,
-    timestamp: '2025-12-22T10:15:00Z',
-    requestBody: '{"event":"document.created","data":{"id":"doc_abc","name":"Contract.pdf"}}',
     responseBody: '{"received":true}',
+    deliveredAt: '2026-02-08T10:15:00Z',
+    success: true,
   },
   {
-    id: 'log_2',
+    id: 'del_2',
     webhookId: 'wh_1',
-    event: WebhookEvent.SignerCompleted as typeof WebhookEvent.SignerCompleted,
+    event: WebhookEvent.DocumentSigned as typeof WebhookEvent.DocumentSigned,
+    payload: '{"event":"document.signed","data":{"id":"doc_abc","signer":"sig_123"}}',
     statusCode: 200,
-    success: true,
-    timestamp: '2025-12-22T10:20:00Z',
-    requestBody: '{"event":"signer.completed","data":{"signerId":"sig_123","documentId":"doc_abc"}}',
     responseBody: '{"received":true}',
+    deliveredAt: '2026-02-08T10:20:00Z',
+    success: true,
   },
   {
-    id: 'log_3',
+    id: 'del_3',
     webhookId: 'wh_1',
     event: WebhookEvent.DocumentCompleted as typeof WebhookEvent.DocumentCompleted,
+    payload: '{"event":"document.completed","data":{"id":"doc_abc"}}',
     statusCode: 500,
-    success: false,
-    timestamp: '2025-12-22T10:25:00Z',
-    requestBody: '{"event":"document.completed","data":{"id":"doc_abc"}}',
     responseBody: '{"error":"Internal server error"}',
+    deliveredAt: '2026-02-08T10:25:00Z',
+    success: false,
   },
   {
-    id: 'log_4',
-    webhookId: 'wh_1',
-    event: WebhookEvent.DocumentCreated as typeof WebhookEvent.DocumentCreated,
+    id: 'del_4',
+    webhookId: 'wh_2',
+    event: WebhookEvent.BookingCreated as typeof WebhookEvent.BookingCreated,
+    payload: '{"event":"booking.created","data":{"id":"bk_001","event_type":"consultation"}}',
     statusCode: 200,
+    responseBody: '{"ok":true}',
+    deliveredAt: '2026-02-07T09:30:00Z',
     success: true,
-    timestamp: '2025-12-21T15:40:00Z',
-    requestBody: '{"event":"document.created","data":{"id":"doc_def","name":"NDA.pdf"}}',
-    responseBody: '{"received":true}',
   },
 ]
 
 export interface DeveloperState {
   apiKeys: ApiKey[]
-  webhooks: Webhook[]
-  webhookLogs: WebhookLog[]
-  selectedEnvironment: Environment
+  webhooks: WebhookEndpoint[]
+  deliveries: WebhookDelivery[]
 
-  createApiKey: (name: string, environment: Environment) => void
+  createApiKey: (name: string, permissions: ApiKeyPermission[], expiresAt?: string | null) => string
+  revokeApiKey: (id: string) => void
   deleteApiKey: (id: string) => void
-  rollApiKey: (id: string) => void
-  createWebhook: (url: string, events: WebhookEvent[]) => void
-  updateWebhook: (id: string, updates: Partial<Pick<Webhook, 'url' | 'events' | 'active'>>) => void
+  createWebhook: (url: string, description: string, events: WebhookEvent[]) => void
+  updateWebhook: (id: string, updates: Partial<Pick<WebhookEndpoint, 'url' | 'description' | 'events'>>) => void
   deleteWebhook: (id: string) => void
+  toggleWebhook: (id: string) => void
   testWebhook: (id: string) => void
-  setEnvironment: (env: Environment) => void
+  getDeliveries: (webhookId: string) => WebhookDelivery[]
 }
 
 const useDeveloperStore = create<DeveloperState>()(
@@ -126,45 +162,48 @@ const useDeveloperStore = create<DeveloperState>()(
     (set, get) => ({
       apiKeys: INITIAL_API_KEYS,
       webhooks: INITIAL_WEBHOOKS,
-      webhookLogs: INITIAL_WEBHOOK_LOGS,
-      selectedEnvironment: Environment.Test as typeof Environment.Test,
+      deliveries: INITIAL_DELIVERIES,
 
-      createApiKey: (name, environment) => {
+      createApiKey: (name, permissions, expiresAt = null) => {
+        const fullKey = generateApiKey()
         const newKey: ApiKey = {
           id: generateId(),
           name,
-          key: generateApiKey(environment),
-          environment,
+          keyPrefix: fullKey.slice(0, 10),
+          keyHash: hashKey(fullKey),
+          permissions,
           createdAt: new Date().toISOString(),
           lastUsedAt: null,
+          expiresAt: expiresAt ?? null,
+          status: 'active',
         }
         set(state => ({ apiKeys: [...state.apiKeys, newKey] }))
+        return fullKey
+      },
+
+      revokeApiKey: (id) => {
+        set(state => ({
+          apiKeys: state.apiKeys.map(k =>
+            k.id === id ? { ...k, status: 'revoked' as const } : k
+          ),
+        }))
       },
 
       deleteApiKey: (id) => {
         set(state => ({ apiKeys: state.apiKeys.filter(k => k.id !== id) }))
       },
 
-      rollApiKey: (id) => {
-        set(state => ({
-          apiKeys: state.apiKeys.map(k =>
-            k.id === id
-              ? { ...k, key: generateApiKey(k.environment), lastUsedAt: null }
-              : k
-          ),
-        }))
-      },
-
-      createWebhook: (url, events) => {
-        const newWebhook: Webhook = {
+      createWebhook: (url, description, events) => {
+        const newWebhook: WebhookEndpoint = {
           id: generateId(),
           url,
+          description,
           events,
           secret: generateWebhookSecret(),
-          active: true,
-          failureCount: 0,
+          status: 'active',
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          lastDeliveryAt: null,
+          failureCount: 0,
         }
         set(state => ({ webhooks: [...state.webhooks, newWebhook] }))
       },
@@ -172,9 +211,7 @@ const useDeveloperStore = create<DeveloperState>()(
       updateWebhook: (id, updates) => {
         set(state => ({
           webhooks: state.webhooks.map(wh =>
-            wh.id === id
-              ? { ...wh, ...updates, updatedAt: new Date().toISOString() }
-              : wh
+            wh.id === id ? { ...wh, ...updates } : wh
           ),
         }))
       },
@@ -182,7 +219,17 @@ const useDeveloperStore = create<DeveloperState>()(
       deleteWebhook: (id) => {
         set(state => ({
           webhooks: state.webhooks.filter(wh => wh.id !== id),
-          webhookLogs: state.webhookLogs.filter(log => log.webhookId !== id),
+          deliveries: state.deliveries.filter(d => d.webhookId !== id),
+        }))
+      },
+
+      toggleWebhook: (id) => {
+        set(state => ({
+          webhooks: state.webhooks.map(wh =>
+            wh.id === id
+              ? { ...wh, status: (wh.status === 'active' ? 'disabled' : 'active') as 'active' | 'disabled' }
+              : wh
+          ),
         }))
       },
 
@@ -192,34 +239,41 @@ const useDeveloperStore = create<DeveloperState>()(
         if (!webhook) return
 
         const testEvent = webhook.events[0] ?? WebhookEvent.DocumentCreated
-        const success = Math.random() > 0.2
-        const newLog: WebhookLog = {
+        const success = Math.random() > 0.3
+        const timestamp = new Date().toISOString()
+        const newDelivery: WebhookDelivery = {
           id: generateId(),
           webhookId: id,
           event: testEvent,
-          statusCode: success ? 200 : 500,
-          success,
-          timestamp: new Date().toISOString(),
-          requestBody: JSON.stringify({
+          payload: JSON.stringify({
             event: testEvent,
-            data: { test: true, timestamp: new Date().toISOString() },
+            data: { test: true, timestamp },
           }),
+          statusCode: success ? 200 : 500,
           responseBody: success
             ? '{"received":true}'
             : '{"error":"Connection timeout"}',
+          deliveredAt: timestamp,
+          success,
         }
         set(state => ({
-          webhookLogs: [newLog, ...state.webhookLogs],
+          deliveries: [newDelivery, ...state.deliveries],
           webhooks: state.webhooks.map(wh =>
             wh.id === id
-              ? { ...wh, failureCount: success ? wh.failureCount : wh.failureCount + 1 }
+              ? {
+                  ...wh,
+                  lastDeliveryAt: timestamp,
+                  failureCount: success ? wh.failureCount : wh.failureCount + 1,
+                }
               : wh
           ),
         }))
       },
 
-      setEnvironment: (env) => {
-        set({ selectedEnvironment: env })
+      getDeliveries: (webhookId) => {
+        return get().deliveries
+          .filter(d => d.webhookId === webhookId)
+          .sort((a, b) => new Date(b.deliveredAt).getTime() - new Date(a.deliveredAt).getTime())
       },
     }),
     {
@@ -227,8 +281,7 @@ const useDeveloperStore = create<DeveloperState>()(
       partialize: (state) => ({
         apiKeys: state.apiKeys,
         webhooks: state.webhooks,
-        webhookLogs: state.webhookLogs,
-        selectedEnvironment: state.selectedEnvironment,
+        deliveries: state.deliveries,
       }),
     }
   )

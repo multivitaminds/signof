@@ -1,7 +1,10 @@
 import { useState, useCallback } from 'react'
+import { Play, Loader2 } from 'lucide-react'
 import { HttpMethod } from '../types'
 import type { ApiEndpoint } from '../types'
+import useDeveloperStore from '../stores/useDeveloperStore'
 import EndpointCard from '../components/EndpointCard/EndpointCard'
+import CodeBlock from '../components/CodeBlock/CodeBlock'
 import './ApiDocsPage.css'
 
 const BASE_URL = 'https://api.signof.io'
@@ -344,134 +347,6 @@ for (const signer of signers.data) {
 for signer in signers.data:
     print(f"{signer.name}: {signer.status}")`,
   },
-  // ── Filings ───────────────────────────────────────────────
-  {
-    id: 'filing-list',
-    method: HttpMethod.Get as typeof HttpMethod.Get,
-    path: '/api/v1/filings',
-    description: 'List all tax filings',
-    category: 'Filings',
-    parameters: [
-      { name: 'tax_year', type: 'integer', required: false, description: 'Filter by tax year' },
-      { name: 'type', type: 'string', required: false, description: 'Filter by form type (1099-NEC, W-9, etc.)' },
-      { name: 'status', type: 'string', required: false, description: 'Filter by status: draft, submitted, accepted, rejected' },
-    ],
-    requestBody: null,
-    responseBody: `{
-  "data": [
-    {
-      "id": "fil_001",
-      "type": "1099-NEC",
-      "tax_year": 2025,
-      "status": "submitted",
-      "payer": { "name": "Acme Corp", "tin": "**-***1234" },
-      "payee": { "name": "John Doe", "tin": "***-**-5678" },
-      "amount": 50000.00,
-      "submitted_at": "2025-12-15T10:00:00Z"
-    }
-  ],
-  "has_more": false,
-  "total": 1
-}`,
-    curlExample: `curl -X GET "${BASE_URL}/api/v1/filings?tax_year=2025&type=1099-NEC" \\
-  -H "Authorization: Bearer sk_live_..."`,
-    jsExample: `const filings = await signof.filings.list({
-  tax_year: 2025,
-  type: '1099-NEC',
-});
-
-console.log(filings.data);`,
-    pythonExample: `filings = client.filings.list(
-    tax_year=2025,
-    type="1099-NEC",
-)
-
-print(filings.data)`,
-  },
-  {
-    id: 'filing-create',
-    method: HttpMethod.Post as typeof HttpMethod.Post,
-    path: '/api/v1/filings',
-    description: 'Create a new filing',
-    category: 'Filings',
-    parameters: [],
-    requestBody: `{
-  "type": "1099-NEC",
-  "tax_year": 2025,
-  "payer": {
-    "name": "Acme Corp",
-    "tin": "12-3456789",
-    "address": "123 Main St, San Francisco, CA 94102"
-  },
-  "payee": {
-    "name": "John Doe",
-    "tin": "123-45-6789",
-    "address": "456 Oak Ave, Portland, OR 97201"
-  },
-  "amount": 50000.00
-}`,
-    responseBody: `{
-  "id": "fil_new002",
-  "type": "1099-NEC",
-  "tax_year": 2025,
-  "status": "draft",
-  "amount": 50000.00,
-  "created_at": "2025-12-22T16:00:00Z"
-}`,
-    curlExample: `curl -X POST "${BASE_URL}/api/v1/filings" \\
-  -H "Authorization: Bearer sk_live_..." \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "type": "1099-NEC",
-    "tax_year": 2025,
-    "payer": { "name": "Acme Corp", "tin": "12-3456789" },
-    "payee": { "name": "John Doe", "tin": "123-45-6789" },
-    "amount": 50000.00
-  }'`,
-    jsExample: `const filing = await signof.filings.create({
-  type: '1099-NEC',
-  tax_year: 2025,
-  payer: { name: 'Acme Corp', tin: '12-3456789' },
-  payee: { name: 'John Doe', tin: '123-45-6789' },
-  amount: 50000.00,
-});
-
-console.log(filing.id);`,
-    pythonExample: `filing = client.filings.create(
-    type="1099-NEC",
-    tax_year=2025,
-    payer={"name": "Acme Corp", "tin": "12-3456789"},
-    payee={"name": "John Doe", "tin": "123-45-6789"},
-    amount=50000.00,
-)
-
-print(filing.id)`,
-  },
-  {
-    id: 'filing-submit',
-    method: HttpMethod.Post as typeof HttpMethod.Post,
-    path: '/api/v1/filings/:id/submit',
-    description: 'Submit a filing to the IRS',
-    category: 'Filings',
-    parameters: [
-      { name: 'id', type: 'string', required: true, description: 'Filing ID' },
-    ],
-    requestBody: null,
-    responseBody: `{
-  "id": "fil_001",
-  "status": "submitted",
-  "submitted_at": "2025-12-22T16:30:00Z",
-  "confirmation_number": "IRS-2025-ABC123"
-}`,
-    curlExample: `curl -X POST "${BASE_URL}/api/v1/filings/fil_001/submit" \\
-  -H "Authorization: Bearer sk_live_..."`,
-    jsExample: `const result = await signof.filings.submit('fil_001');
-
-console.log(result.confirmation_number);`,
-    pythonExample: `result = client.filings.submit("fil_001")
-
-print(result.confirmation_number)`,
-  },
   // ── Bookings ──────────────────────────────────────────────
   {
     id: 'booking-list',
@@ -565,40 +440,6 @@ console.log(booking.location);`,
 )
 
 print(booking.location)`,
-  },
-  {
-    id: 'booking-cancel',
-    method: HttpMethod.Post as typeof HttpMethod.Post,
-    path: '/api/v1/bookings/:id/cancel',
-    description: 'Cancel a booking',
-    category: 'Bookings',
-    parameters: [
-      { name: 'id', type: 'string', required: true, description: 'Booking ID' },
-    ],
-    requestBody: `{
-  "reason": "Schedule conflict"
-}`,
-    responseBody: `{
-  "id": "bk_001",
-  "status": "cancelled",
-  "cancelled_at": "2025-12-22T17:30:00Z",
-  "reason": "Schedule conflict"
-}`,
-    curlExample: `curl -X POST "${BASE_URL}/api/v1/bookings/bk_001/cancel" \\
-  -H "Authorization: Bearer sk_live_..." \\
-  -H "Content-Type: application/json" \\
-  -d '{ "reason": "Schedule conflict" }'`,
-    jsExample: `const result = await signof.bookings.cancel('bk_001', {
-  reason: 'Schedule conflict',
-});
-
-console.log(result.status); // "cancelled"`,
-    pythonExample: `result = client.bookings.cancel(
-    "bk_001",
-    reason="Schedule conflict",
-)
-
-print(result.status)  # "cancelled"`,
   },
   // ── Databases ─────────────────────────────────────────────
   {
@@ -695,11 +536,72 @@ print(record.id)`,
   },
 ]
 
-const CATEGORIES = ['Documents', 'Signers', 'Filings', 'Bookings', 'Databases']
+const CATEGORIES = ['Documents', 'Signers', 'Bookings', 'Databases']
+
+const METHOD_COLORS: Record<string, string> = {
+  [HttpMethod.Get]: '#059669',
+  [HttpMethod.Post]: '#4F46E5',
+  [HttpMethod.Put]: '#D97706',
+  [HttpMethod.Patch]: '#D97706',
+  [HttpMethod.Delete]: '#DC2626',
+}
+
+// Mock responses for "Try it" explorer
+const MOCK_RESPONSES: Record<string, { status: number; body: object }> = {
+  'GET /api/v1/documents': {
+    status: 200,
+    body: {
+      data: [
+        { id: 'doc_abc123', name: 'Contract.pdf', status: 'completed', created_at: '2025-12-20T10:00:00Z' },
+        { id: 'doc_def456', name: 'NDA.pdf', status: 'pending', created_at: '2025-12-21T14:30:00Z' },
+      ],
+      has_more: false,
+      total: 2,
+    },
+  },
+  'POST /api/v1/documents': {
+    status: 201,
+    body: { id: 'doc_new789', name: 'New Document', status: 'draft', created_at: new Date().toISOString() },
+  },
+  'GET /api/v1/documents/:id': {
+    status: 200,
+    body: { id: 'doc_abc123', name: 'Contract.pdf', status: 'completed', signers: [] },
+  },
+  'GET /api/v1/bookings': {
+    status: 200,
+    body: { data: [{ id: 'bk_001', event_type: 'consultation', status: 'confirmed' }], has_more: false, total: 1 },
+  },
+  'GET /api/v1/databases': {
+    status: 200,
+    body: { data: [{ id: 'db_001', name: 'Contacts', record_count: 150 }], has_more: false, total: 1 },
+  },
+}
+
+function findMockResponse(method: string, path: string): { status: number; body: object } {
+  const key = `${method} ${path}`
+  if (MOCK_RESPONSES[key]) return MOCK_RESPONSES[key]
+  const normalizedPath = path.replace(/\/[a-zA-Z0-9_]+$/, '/:id')
+  const keyWithId = `${method} ${normalizedPath}`
+  if (MOCK_RESPONSES[keyWithId]) return MOCK_RESPONSES[keyWithId]
+  return { status: method === 'POST' ? 201 : 200, body: { message: 'OK', data: {} } }
+}
+
+function getStatusColor(code: number): string {
+  if (code >= 200 && code < 300) return 'var(--color-success)'
+  if (code >= 400 && code < 500) return 'var(--color-warning)'
+  return 'var(--color-danger)'
+}
 
 function ApiDocsPage() {
+  const { apiKeys } = useDeveloperStore()
+  const activeKeys = apiKeys.filter(k => k.status === 'active')
+
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [filterCategory, setFilterCategory] = useState<string | null>(null)
+  const [tryItEndpoint, setTryItEndpoint] = useState<string | null>(null)
+  const [selectedKeyId, setSelectedKeyId] = useState<string>(activeKeys[0]?.id ?? '')
+  const [tryItLoading, setTryItLoading] = useState(false)
+  const [tryItResponse, setTryItResponse] = useState<{ status: number; body: string; time: number } | null>(null)
 
   const handleToggle = useCallback((id: string) => {
     setExpandedId(prev => prev === id ? null : id)
@@ -707,6 +609,32 @@ function ApiDocsPage() {
 
   const handleFilterCategory = useCallback((cat: string | null) => {
     setFilterCategory(cat)
+  }, [])
+
+  const handleTryIt = useCallback((endpointId: string) => {
+    setTryItEndpoint(prev => prev === endpointId ? null : endpointId)
+    setTryItResponse(null)
+  }, [])
+
+  const handleSendRequest = useCallback((endpoint: ApiEndpoint) => {
+    setTryItLoading(true)
+    setTryItResponse(null)
+
+    const startTime = performance.now()
+    const delay = 200 + Math.random() * 400
+    setTimeout(() => {
+      const mock = findMockResponse(endpoint.method, endpoint.path)
+      setTryItResponse({
+        status: mock.status,
+        body: JSON.stringify(mock.body, null, 2),
+        time: Math.round(performance.now() - startTime + delay),
+      })
+      setTryItLoading(false)
+    }, delay)
+  }, [])
+
+  const handleKeySelect = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedKeyId(e.target.value)
   }, [])
 
   const filteredEndpoints = filterCategory
@@ -753,12 +681,94 @@ function ApiDocsPage() {
 
       <div className="api-docs-page__endpoints">
         {filteredEndpoints.map(endpoint => (
-          <EndpointCard
-            key={endpoint.id}
-            endpoint={endpoint}
-            expanded={expandedId === endpoint.id}
-            onToggle={() => handleToggle(endpoint.id)}
-          />
+          <div key={endpoint.id}>
+            <EndpointCard
+              endpoint={endpoint}
+              expanded={expandedId === endpoint.id}
+              onToggle={() => handleToggle(endpoint.id)}
+            />
+
+            {/* Try It Section - shown below expanded endpoint */}
+            {expandedId === endpoint.id && (
+              <div className="api-docs-page__try-it">
+                <button
+                  className="api-docs-page__try-it-toggle"
+                  onClick={() => handleTryIt(endpoint.id)}
+                  type="button"
+                >
+                  <Play size={14} />
+                  {tryItEndpoint === endpoint.id ? 'Hide Explorer' : 'Try It'}
+                </button>
+
+                {tryItEndpoint === endpoint.id && (
+                  <div className="api-docs-page__try-it-panel">
+                    <div className="api-docs-page__try-it-header">
+                      <span
+                        className="api-docs-page__try-it-method"
+                        style={{ backgroundColor: METHOD_COLORS[endpoint.method] ?? '#94A3B8' }}
+                      >
+                        {endpoint.method}
+                      </span>
+                      <code className="api-docs-page__try-it-path">{endpoint.path}</code>
+                    </div>
+
+                    <div className="api-docs-page__try-it-controls">
+                      <div className="api-docs-page__try-it-field">
+                        <label className="api-docs-page__try-it-label" htmlFor={`key-select-${endpoint.id}`}>
+                          API Key
+                        </label>
+                        <select
+                          id={`key-select-${endpoint.id}`}
+                          className="api-docs-page__try-it-select"
+                          value={selectedKeyId}
+                          onChange={handleKeySelect}
+                        >
+                          {activeKeys.length === 0 && (
+                            <option value="">No active keys</option>
+                          )}
+                          {activeKeys.map(key => (
+                            <option key={key.id} value={key.id}>
+                              {key.name} ({key.keyPrefix}...)
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <button
+                        className="btn-primary api-docs-page__try-it-send"
+                        onClick={() => handleSendRequest(endpoint)}
+                        disabled={tryItLoading || activeKeys.length === 0}
+                        type="button"
+                      >
+                        {tryItLoading ? (
+                          <><Loader2 size={14} className="api-docs-page__spinner" /> Sending...</>
+                        ) : (
+                          <><Play size={14} /> Send</>
+                        )}
+                      </button>
+                    </div>
+
+                    {tryItResponse && (
+                      <div className="api-docs-page__try-it-response">
+                        <div className="api-docs-page__try-it-response-header">
+                          <span>Response</span>
+                          <div className="api-docs-page__try-it-response-meta">
+                            <span
+                              className="api-docs-page__try-it-status"
+                              style={{ backgroundColor: getStatusColor(tryItResponse.status) }}
+                            >
+                              {tryItResponse.status}
+                            </span>
+                            <span className="api-docs-page__try-it-time">{tryItResponse.time}ms</span>
+                          </div>
+                        </div>
+                        <CodeBlock code={tryItResponse.body} language="json" />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         ))}
       </div>
     </div>

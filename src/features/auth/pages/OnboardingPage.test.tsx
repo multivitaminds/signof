@@ -19,6 +19,19 @@ vi.mock('../stores/useAuthStore', () => ({
     }),
 }))
 
+vi.mock('../stores/useOnboardingStore', () => ({
+  useOnboardingStore: () => ({
+    setWorkspace: vi.fn(),
+    setRole: vi.fn(),
+    setTeamSize: vi.fn(),
+    setUseCases: vi.fn(),
+    setTheme: vi.fn(),
+    setAccentColor: vi.fn(),
+    addInviteEmail: vi.fn(),
+    completeOnboarding: vi.fn(),
+  }),
+}))
+
 function renderOnboarding() {
   return render(
     <MemoryRouter>
@@ -46,9 +59,9 @@ describe('OnboardingPage', () => {
     vi.useRealTimers()
   })
 
-  it('renders the welcome step (step 1 of 8)', () => {
+  it('renders the welcome step with personalized greeting', () => {
     renderOnboarding()
-    expect(screen.getByText('Welcome to SignOf')).toBeInTheDocument()
+    expect(screen.getByText(/Welcome to SignOf/)).toBeInTheDocument()
     expect(screen.getByText('Step 1 of 8')).toBeInTheDocument()
     expect(screen.getByLabelText('What should we call you?')).toBeInTheDocument()
   })
@@ -70,22 +83,26 @@ describe('OnboardingPage', () => {
     expect(continueBtn).toBeDisabled()
   })
 
-  it('advances to step 2 (workspace) when Continue is clicked', async () => {
+  it('advances to workspace step with preview card', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     renderOnboarding()
 
     await clickContinueAndWait()
 
     expect(screen.getByText('Step 2 of 8')).toBeInTheDocument()
     expect(screen.getByText('Name your workspace')).toBeInTheDocument()
+
+    // Type a workspace name and verify preview appears
+    const wsInput = screen.getByLabelText('Workspace name')
+    await user.type(wsInput, 'Acme Inc')
+    expect(screen.getByText('Acme Inc')).toBeInTheDocument()
   })
 
   it('shows the Back button from step 2 onward', async () => {
     renderOnboarding()
 
-    // No back button on step 1
     expect(screen.queryByLabelText('Go back')).not.toBeInTheDocument()
 
-    // Advance to step 2
     await clickContinueAndWait()
 
     expect(screen.getByLabelText('Go back')).toBeInTheDocument()
@@ -95,7 +112,26 @@ describe('OnboardingPage', () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     renderOnboarding()
 
-    // Step 1 -> 2: display name (pre-filled)
+    await clickContinueAndWait()
+
+    const wsInput = screen.getByLabelText('Workspace name')
+    await user.type(wsInput, 'Acme Inc')
+    await clickContinueAndWait()
+
+    expect(screen.getByText('What is your role?')).toBeInTheDocument()
+    expect(screen.getByText('Engineering')).toBeInTheDocument()
+
+    expect(screen.getByRole('button', { name: /continue/i })).toBeDisabled()
+
+    await user.click(screen.getByText('Engineering'))
+    expect(screen.getByRole('button', { name: /continue/i })).toBeEnabled()
+  })
+
+  it('shows skip button on optional steps (invite and appearance)', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    renderOnboarding()
+
+    // Step 1 -> 2
     await clickContinueAndWait()
 
     // Step 2 -> 3: workspace name
@@ -103,26 +139,29 @@ describe('OnboardingPage', () => {
     await user.type(wsInput, 'Acme Inc')
     await clickContinueAndWait()
 
-    // Step 3: role selection
-    expect(screen.getByText('What is your role?')).toBeInTheDocument()
-    expect(screen.getByText('Engineering')).toBeInTheDocument()
-    expect(screen.getByText('Design')).toBeInTheDocument()
-
-    // Continue should be disabled until a role is selected
-    expect(screen.getByRole('button', { name: /continue/i })).toBeDisabled()
-
-    // Select a role
+    // Step 3 -> 4: select role
     await user.click(screen.getByText('Engineering'))
-    expect(screen.getByRole('button', { name: /continue/i })).toBeEnabled()
+    await clickContinueAndWait()
+
+    // Step 4 -> 5: select team size
+    await user.click(screen.getByText('2-5'))
+    await clickContinueAndWait()
+
+    // Step 5 -> 6: select use case
+    await user.click(screen.getByText('Scheduling'))
+    await clickContinueAndWait()
+
+    // Step 6 (invite): should have Skip
+    expect(screen.getByText('Invite your team')).toBeInTheDocument()
+    expect(screen.getByText('Skip')).toBeInTheDocument()
   })
 
-  it('renders the step progress counter', () => {
+  it('renders segment indicators for progress', () => {
     renderOnboarding()
-    expect(screen.getByText('Step 1 of 8')).toBeInTheDocument()
-  })
+    const segments = document.querySelectorAll('.onboarding__segment')
+    expect(segments.length).toBe(8)
 
-  it('renders the Continue button on step 1', () => {
-    renderOnboarding()
-    expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument()
+    const filledSegments = document.querySelectorAll('.onboarding__segment--filled')
+    expect(filledSegments.length).toBe(1)
   })
 })

@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react'
-import { Plus, Copy, Trash2, MoreVertical } from 'lucide-react'
+import { Plus, Copy, Trash2, MoreVertical, CalendarDays } from 'lucide-react'
 import { useSchedulingStore } from '../stores/useSchedulingStore'
 import type { EventType } from '../types'
 import EventTypeCard from '../components/EventTypeCard/EventTypeCard'
 import EventTypeEditor from '../components/EventTypeEditor/EventTypeEditor'
+import EmptyState from '../../../components/EmptyState/EmptyState'
 import './EventTypesPage.css'
 
 export default function EventTypesPage() {
@@ -95,13 +96,12 @@ export default function EventTypesPage() {
       </div>
 
       {eventTypes.length === 0 ? (
-        <div className="event-types-page__empty">
-          <h2>No event types yet</h2>
-          <p>Create your first event type to start accepting bookings.</p>
-          <button className="btn-primary" onClick={handleCreateNew}>
-            <Plus size={16} /> Create Event Type
-          </button>
-        </div>
+        <EmptyState
+          icon={<CalendarDays size={36} />}
+          title="Create your first event type"
+          description="Set up booking links for meetings, calls, and appointments. Share your availability and let others schedule time with you."
+          action={{ label: 'Create Event Type', onClick: handleCreateNew }}
+        />
       ) : (
         <div className="event-types-page__grid">
           {eventTypes.map((et) => {

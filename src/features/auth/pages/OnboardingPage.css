@@ -370,7 +370,7 @@
 
 .onboarding__size-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: var(--space-2, 0.5rem);
   width: 100%;
 }
@@ -847,6 +847,163 @@
   text-transform: capitalize;
 }
 
+/* ─── Segment indicators ─── */
+
+.onboarding__segments {
+  display: flex;
+  gap: var(--space-1, 0.25rem);
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 101;
+}
+
+.onboarding__segment {
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  transition: background 400ms ease;
+}
+
+.onboarding__segment--filled {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* ─── Workspace preview card ─── */
+
+.onboarding__preview-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  width: 100%;
+  padding: var(--space-3, 0.75rem);
+  background: var(--bg-secondary, #F9FAFB);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  margin-top: var(--space-2, 0.5rem);
+}
+
+.onboarding__preview-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.onboarding__preview-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.onboarding__preview-name {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.onboarding__preview-url {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+}
+
+/* ─── Accent color grid ─── */
+
+.onboarding__accent-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2, 0.5rem);
+}
+
+.onboarding__accent-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-primary, #fff);
+  cursor: pointer;
+  transition: all 150ms ease;
+  position: relative;
+}
+
+.onboarding__accent-option:hover {
+  border-color: var(--accent-swatch, #4F46E5);
+}
+
+.onboarding__accent-option--selected {
+  border-color: var(--accent-swatch, #4F46E5);
+  box-shadow: 0 0 0 1px var(--accent-swatch, #4F46E5);
+}
+
+.onboarding__accent-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent-swatch, #4F46E5);
+  flex-shrink: 0;
+}
+
+.onboarding__accent-label {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+  flex: 1;
+}
+
+.onboarding__accent-check {
+  color: var(--accent-swatch, #4F46E5);
+  flex-shrink: 0;
+}
+
+/* ─── Email hint ─── */
+
+.onboarding__email-hint {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+  margin-top: var(--space-3, 0.75rem);
+  text-align: center;
+}
+
+/* ─── Ready step actions ─── */
+
+.onboarding__ready-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-4, 1rem);
+}
+
+.onboarding__tour-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border: none;
+  background: none;
+  color: var(--color-primary, #4F46E5);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--radius-md, 8px);
+  transition: all 150ms ease;
+}
+
+.onboarding__tour-link:hover {
+  background: rgba(79, 70, 229, 0.08);
+}
+
+/* ─── Summary color dot ─── */
+
+.onboarding__summary-color-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: var(--space-1, 0.25rem);
+}
+
 /* ─── Navigation ─── */
 
 .onboarding__nav {
@@ -1094,6 +1251,40 @@
 [data-theme="dark"] .onboarding__skip:hover {
   color: #F1F5F9;
   background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .onboarding__preview-card {
+  background: #0F0F1A;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .onboarding__preview-name {
+  color: #F1F5F9;
+}
+
+[data-theme="dark"] .onboarding__preview-url {
+  color: #64748B;
+}
+
+[data-theme="dark"] .onboarding__accent-option {
+  background: #0F0F1A;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .onboarding__accent-label {
+  color: #F1F5F9;
+}
+
+[data-theme="dark"] .onboarding__tour-link {
+  color: #A5B4FC;
+}
+
+[data-theme="dark"] .onboarding__tour-link:hover {
+  background: rgba(79, 70, 229, 0.15);
+}
+
+[data-theme="dark"] .onboarding__email-hint {
+  color: #64748B;
 }
 
 /* ─── Responsive ─── */

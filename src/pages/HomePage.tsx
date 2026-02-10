@@ -5,10 +5,12 @@ import {
   Activity,
 } from 'lucide-react'
 import { useSchedulingStore } from '../features/scheduling/stores/useSchedulingStore'
+import { useAuthStore } from '../features/auth/stores/useAuthStore'
 import WelcomeBanner from '../components/WelcomeBanner/WelcomeBanner'
 import StatsOverview from '../components/StatsOverview/StatsOverview'
 import QuickActions from '../components/QuickActions/QuickActions'
 import RecentItems from '../components/RecentItems/RecentItems'
+import FirstRunChecklist from '../components/FirstRunChecklist/FirstRunChecklist'
 import ActivityFeed from '../features/activity/components/ActivityFeed/ActivityFeed'
 import DashboardCharts from '../features/activity/components/DashboardCharts/DashboardCharts'
 import './HomePage.css'
@@ -16,6 +18,7 @@ import './HomePage.css'
 export default function HomePage() {
   const bookings = useSchedulingStore((s) => s.bookings)
   const eventTypes = useSchedulingStore((s) => s.eventTypes)
+  const onboardingComplete = useAuthStore((s) => s.onboardingComplete)
 
   const upcomingBookings = useMemo(
     () =>
@@ -37,6 +40,9 @@ export default function HomePage() {
     <div className="home-page">
       {/* 1. Welcome Banner */}
       <WelcomeBanner />
+
+      {/* 1.5 First Run Checklist */}
+      {onboardingComplete && <FirstRunChecklist />}
 
       {/* 2. Stats Overview */}
       <StatsOverview />

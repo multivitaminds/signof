@@ -7,8 +7,6 @@ import {
   PlayCircle,
   Key,
 } from 'lucide-react'
-import { Environment } from '../types'
-import useDeveloperStore from '../stores/useDeveloperStore'
 import './DeveloperLayout.css'
 
 type DeveloperTab =
@@ -53,19 +51,10 @@ const PAGE_MAP: Record<DeveloperTab, React.FC> = {
 
 function DeveloperLayout() {
   const [activeTab, setActiveTab] = useState<DeveloperTab>('api-docs')
-  const { selectedEnvironment, setEnvironment } = useDeveloperStore()
 
   const handleTabChange = useCallback((tab: DeveloperTab) => {
     setActiveTab(tab)
   }, [])
-
-  const handleEnvToggle = useCallback(() => {
-    setEnvironment(
-      selectedEnvironment === Environment.Live
-        ? (Environment.Test as typeof Environment.Test)
-        : (Environment.Live as typeof Environment.Live)
-    )
-  }, [selectedEnvironment, setEnvironment])
 
   const ActivePage = PAGE_MAP[activeTab]
 
@@ -75,26 +64,6 @@ function DeveloperLayout() {
         <div className="developer-layout__sidebar-header">
           <h2 className="developer-layout__title">Developer</h2>
           <span className="developer-layout__version">v1.0</span>
-        </div>
-
-        <div className="developer-layout__env-toggle">
-          <button
-            className="developer-layout__env-btn"
-            onClick={handleEnvToggle}
-            type="button"
-            aria-label={`Switch to ${selectedEnvironment === Environment.Live ? 'test' : 'live'} environment`}
-          >
-            <span
-              className={`developer-layout__env-dot ${
-                selectedEnvironment === Environment.Live
-                  ? 'developer-layout__env-dot--live'
-                  : 'developer-layout__env-dot--test'
-              }`}
-            />
-            <span className="developer-layout__env-label">
-              {selectedEnvironment === Environment.Live ? 'Live Mode' : 'Test Mode'}
-            </span>
-          </button>
         </div>
 
         <nav className="developer-layout__nav">

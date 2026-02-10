@@ -1,0 +1,344 @@
+/* ─── Comments Sidebar Panel ────────────────────────────────────────── */
+
+.comments-sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 360px;
+  background: var(--bg-primary, #FFFFFF);
+  border-left: 1px solid var(--border-color, #E5E7EB);
+  box-shadow: var(--shadow-lg, 0 10px 30px rgba(0, 0, 0, 0.12));
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  animation: comments-sidebar-slide-in 0.2s ease-out forwards;
+}
+
+@keyframes comments-sidebar-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.comments-sidebar--open {
+  transform: translateX(0);
+}
+
+/* ─── Header ───────────────────────────────────────────────────────── */
+
+.comments-sidebar__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-4, 1rem);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  color: var(--text-primary, #111827);
+  flex-shrink: 0;
+}
+
+.comments-sidebar__title {
+  flex: 1;
+  margin: 0;
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.comments-sidebar__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 9999px;
+  background: var(--color-warning, #D97706);
+  color: white;
+  line-height: 1;
+}
+
+.comments-sidebar__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted, #9CA3AF);
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.comments-sidebar__close:hover {
+  background: var(--bg-secondary, #F3F4F6);
+  color: var(--text-primary, #111827);
+}
+
+/* ─── Filters ──────────────────────────────────────────────────────── */
+
+.comments-sidebar__filters {
+  display: flex;
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  gap: var(--space-1, 0.25rem);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  flex-shrink: 0;
+}
+
+.comments-sidebar__filter {
+  padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #6B7280);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.comments-sidebar__filter:hover {
+  background: var(--bg-secondary, #F3F4F6);
+}
+
+.comments-sidebar__filter--active {
+  background: var(--color-primary, #4F46E5);
+  color: white;
+}
+
+.comments-sidebar__filter--active:hover {
+  background: var(--color-primary-hover, #4338CA);
+}
+
+/* ─── Content ──────────────────────────────────────────────────────── */
+
+.comments-sidebar__content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ─── Empty State ──────────────────────────────────────────────────── */
+
+.comments-sidebar__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-8, 4rem) var(--space-4, 1rem);
+  text-align: center;
+  color: var(--text-muted, #9CA3AF);
+}
+
+.comments-sidebar__empty p {
+  margin: 0;
+  font-size: var(--text-sm, 0.875rem);
+}
+
+/* ─── List ─────────────────────────────────────────────────────────── */
+
+.comments-sidebar__list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Item ─────────────────────────────────────────────────────────── */
+
+.comments-sidebar__item {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  transition: background 0.1s;
+  position: relative;
+}
+
+.comments-sidebar__item:hover {
+  background: var(--bg-secondary, #F3F4F6);
+}
+
+.comments-sidebar__item--resolved {
+  opacity: 0.6;
+}
+
+/* ─── Block Preview ────────────────────────────────────────────────── */
+
+.comments-sidebar__block-preview {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+  margin-bottom: var(--space-2, 0.5rem);
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  background: var(--bg-secondary, #F3F4F6);
+  border-radius: var(--radius-sm, 4px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-left: 2px solid var(--color-primary, #4F46E5);
+}
+
+/* ─── Item Body ────────────────────────────────────────────────────── */
+
+.comments-sidebar__item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.comments-sidebar__item-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  margin-bottom: var(--space-1, 0.25rem);
+}
+
+.comments-sidebar__avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-primary, #4F46E5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.comments-sidebar__author {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+}
+
+.comments-sidebar__time {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+  margin-left: auto;
+}
+
+.comments-sidebar__item-content {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  line-height: 1.4;
+  margin-bottom: var(--space-1, 0.25rem);
+}
+
+.comments-sidebar__reply-count {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-primary, #4F46E5);
+  font-weight: 500;
+}
+
+/* ─── Item Actions ─────────────────────────────────────────────────── */
+
+.comments-sidebar__item-actions {
+  position: absolute;
+  top: var(--space-3, 0.75rem);
+  right: var(--space-4, 1rem);
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.comments-sidebar__item:hover .comments-sidebar__item-actions {
+  opacity: 1;
+}
+
+.comments-sidebar__resolve-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--border-color, #E5E7EB);
+  background: var(--bg-primary, #FFFFFF);
+  color: var(--text-muted, #9CA3AF);
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.comments-sidebar__resolve-btn:hover {
+  background: var(--color-success, #059669);
+  color: white;
+  border-color: var(--color-success, #059669);
+}
+
+.comments-sidebar__resolve-btn--resolved {
+  background: rgba(5, 150, 105, 0.1);
+  color: var(--color-success, #059669);
+  border-color: var(--color-success, #059669);
+}
+
+/* ─── Dark Mode ────────────────────────────────────────────────────── */
+
+@media (prefers-color-scheme: dark) {
+  .comments-sidebar {
+    background: var(--bg-secondary, #1A1A2E);
+    border-color: var(--border-color, #334155);
+  }
+
+  .comments-sidebar__item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .comments-sidebar__close:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .comments-sidebar__filter:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .comments-sidebar__block-preview {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .comments-sidebar__resolve-btn {
+    background: var(--bg-secondary, #1A1A2E);
+    border-color: var(--border-color, #334155);
+  }
+
+  .comments-sidebar__count {
+    background: #FBBF24;
+    color: #1A1A2E;
+  }
+}
+
+[data-theme="dark"] .comments-sidebar {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .comments-sidebar__item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .comments-sidebar__close:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .comments-sidebar__filter:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .comments-sidebar__block-preview {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .comments-sidebar__resolve-btn {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .comments-sidebar__count {
+  background: #FBBF24;
+  color: #1A1A2E;
+}

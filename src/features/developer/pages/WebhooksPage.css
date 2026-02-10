@@ -59,6 +59,8 @@
   margin-top: var(--space-1);
 }
 
+/* ─── Card ────────────────────────────────────────────────── */
+
 .webhooks-page__card {
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
@@ -129,6 +131,13 @@
   white-space: nowrap;
 }
 
+.webhooks-page__card-description {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+  line-height: var(--leading-relaxed);
+}
+
 .webhooks-page__card-meta {
   font-size: var(--text-xs);
   color: var(--text-muted);
@@ -136,6 +145,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex-wrap: wrap;
 }
 
 .webhooks-page__separator {
@@ -143,9 +153,14 @@
 }
 
 .webhooks-page__failures {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: var(--color-danger);
   font-weight: var(--font-medium);
 }
+
+/* ─── Card Actions ────────────────────────────────────────── */
 
 .webhooks-page__card-actions {
   display: flex;
@@ -183,6 +198,8 @@
 .webhooks-page__toggle--off {
   color: var(--text-muted);
 }
+
+/* ─── Card Details (expanded) ─────────────────────────────── */
 
 .webhooks-page__card-details {
   padding: var(--space-4);
@@ -245,6 +262,42 @@
   border-radius: var(--radius-full);
 }
 
+/* ─── Deliveries ──────────────────────────────────────────── */
+
+.webhooks-page__deliveries-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.webhooks-page__deliveries-header .webhooks-page__detail-title {
+  margin-bottom: 0;
+}
+
+.webhooks-page__test-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-3);
+}
+
+.webhooks-page__no-deliveries {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-align: center;
+  padding: var(--space-4);
+}
+
+.webhooks-page__delivery-icon--success {
+  color: var(--color-success);
+}
+
+.webhooks-page__delivery-icon--failure {
+  color: var(--color-danger);
+}
+
 .webhooks-page__logs-table {
   width: 100%;
   border-collapse: collapse;
@@ -266,6 +319,7 @@
   padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--border-color);
   color: var(--text-secondary);
+  vertical-align: middle;
 }
 
 .webhooks-page__logs-table tr:last-child td {
@@ -292,6 +346,17 @@
   color: #ffffff;
 }
 
+.webhooks-page__log-payload {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
 .webhooks-page__log-result--success {
   color: var(--color-success);
   font-weight: var(--font-medium);
@@ -300,4 +365,22 @@
 .webhooks-page__log-result--failure {
   color: var(--color-danger);
   font-weight: var(--font-medium);
+}
+
+/* ─── Dark Mode ───────────────────────────────────────────── */
+
+[data-theme="dark"] .webhooks-page__event-tag {
+  background: rgba(79, 70, 229, 0.15);
+}
+
+/* ─── Responsive ──────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .webhooks-page__header {
+    flex-direction: column;
+  }
+
+  .webhooks-page__card-header {
+    flex-wrap: wrap;
+  }
 }

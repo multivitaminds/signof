@@ -5,13 +5,20 @@ import type { WebhookEvent } from '../../types'
 import './WebhookConfig.css'
 
 interface WebhookConfigProps {
-  onSave: (url: string, events: WebhookEvent[]) => void
+  onSave: (url: string, description: string, events: WebhookEvent[]) => void
   initialUrl?: string
+  initialDescription?: string
   initialEvents?: WebhookEvent[]
 }
 
-function WebhookConfig({ onSave, initialUrl = '', initialEvents = [] }: WebhookConfigProps) {
+function WebhookConfig({
+  onSave,
+  initialUrl = '',
+  initialDescription = '',
+  initialEvents = [],
+}: WebhookConfigProps) {
   const [url, setUrl] = useState(initialUrl)
+  const [description, setDescription] = useState(initialDescription)
   const [selectedEvents, setSelectedEvents] = useState<WebhookEvent[]>(initialEvents)
   const [urlError, setUrlError] = useState('')
 
@@ -22,8 +29,8 @@ function WebhookConfig({ onSave, initialUrl = '', initialEvents = [] }: WebhookC
     }
     try {
       const parsed = new URL(value)
-      if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
-        setUrlError('URL must start with https:// or http://')
+      if (parsed.protocol !== 'https:') {
+        setUrlError('URL must start with https://')
         return false
       }
       setUrlError('')
@@ -43,6 +50,10 @@ function WebhookConfig({ onSave, initialUrl = '', initialEvents = [] }: WebhookC
       setUrlError('')
     }
   }, [validateUrl])
+
+  const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(e.target.value)
+  }, [])
 
   const handleEventToggle = useCallback((event: WebhookEvent) => {
     setSelectedEvents(prev =>
@@ -66,11 +77,12 @@ function WebhookConfig({ onSave, initialUrl = '', initialEvents = [] }: WebhookC
   const handleSave = useCallback(() => {
     if (!validateUrl(url)) return
     if (selectedEvents.length === 0) return
-    onSave(url, selectedEvents)
+    onSave(url, description.trim(), selectedEvents)
     setUrl('')
+    setDescription('')
     setSelectedEvents([])
     setUrlError('')
-  }, [url, selectedEvents, onSave, validateUrl])
+  }, [url, description, selectedEvents, onSave, validateUrl])
 
   const canSave = url.trim() !== '' && !urlError && selectedEvents.length > 0
 
@@ -91,6 +103,20 @@ function WebhookConfig({ onSave, initialUrl = '', initialEvents = [] }: WebhookC
         {urlError && (
           <span className="webhook-config__error">{urlError}</span>
         )}
+      </div>
+
+      <div className="webhook-config__field">
+        <label className="webhook-config__label" htmlFor="webhook-description">
+          Description
+        </label>
+        <textarea
+          id="webhook-description"
+          className="webhook-config__textarea"
+          placeholder="What is this webhook for?"
+          value={description}
+          onChange={handleDescriptionChange}
+          rows={2}
+        />
       </div>
 
       <div className="webhook-config__field">

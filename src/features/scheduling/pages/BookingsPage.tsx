@@ -12,6 +12,7 @@ import {
 import { useSchedulingStore } from '../stores/useSchedulingStore'
 import type { BookingFilter, Booking } from '../types'
 import { BookingFilter as BookingFilterEnum, BookingStatus } from '../types'
+import EmptyState from '../../../components/EmptyState/EmptyState'
 import './BookingsPage.css'
 
 const FILTER_TABS: Array<{ value: BookingFilter; label: string }> = [
@@ -155,15 +156,15 @@ export default function BookingsPage() {
       )}
 
       {searchedBookings.length === 0 ? (
-        <div className="bookings-page__empty">
-          <Calendar size={48} />
-          <h2>No bookings</h2>
-          <p>
-            {searchQuery
+        <EmptyState
+          icon={<Calendar size={36} />}
+          title="No bookings yet"
+          description={
+            searchQuery
               ? `No bookings match "${searchQuery}".`
-              : `No ${filter} bookings to show.`}
-          </p>
-        </div>
+              : `No ${filter} bookings to show. When someone books time with you, it will appear here.`
+          }
+        />
       ) : (
         <div className="bookings-page__list">
           {searchedBookings.map((booking) => (

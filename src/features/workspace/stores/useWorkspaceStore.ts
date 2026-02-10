@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Block, Page, BlockType, InlineMark, PageSnapshot, PagePropertyValue, BlockProperties } from '../types'
+import type { Block, Page, BlockType, InlineMark, PageSnapshot, PagePropertyValue, BlockProperties, BlockComment, CommentReply } from '../types'
 import { BlockType as BT } from '../types'
 import { splitBlock as splitBlockOp, mergeBlocks as mergeBlocksOp } from '../lib/blockOperations'
 
@@ -111,6 +111,7 @@ interface WorkspaceState {
   blocks: Record<string, Block>
   snapshots: Record<string, PageSnapshot[]>
   editCounts: Record<string, number>
+  comments: Record<string, BlockComment[]>
 
   // Page CRUD
   addPage: (title: string, parentId?: string | null) => string
@@ -147,6 +148,15 @@ interface WorkspaceState {
   getTrashedPages: () => Page[]
   getBacklinks: (pageId: string) => Array<{ pageId: string; pageTitle: string; blockId: string }>
 
+  // Comments
+  addComment: (pageId: string, blockId: string, content: string, authorName: string, authorId: string) => string
+  addReply: (pageId: string, commentId: string, content: string, authorName: string, authorId: string) => void
+  resolveComment: (pageId: string, commentId: string) => void
+  unresolveComment: (pageId: string, commentId: string) => void
+  deleteComment: (pageId: string, commentId: string) => void
+  getBlockComments: (pageId: string, blockId: string) => BlockComment[]
+  getPageComments: (pageId: string) => BlockComment[]
+
   // Version History
   createSnapshot: (pageId: string) => void
   autoSnapshot: (pageId: string) => void
@@ -165,6 +175,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         blocks: sample.blocks,
         snapshots: {},
         editCounts: {},
+        comments: {},
 
         // ─── Page CRUD ────────────────────────────────────────────
 
@@ -665,6 +676,113 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           })
         },
 
+        // ─── Comments ────────────────────────────────────────────
+
+        addComment: (pageId, blockId, content, authorName, authorId) => {
+          const comment: BlockComment = {
+            id: generateId(),
+            blockId,
+            pageId,
+            content,
+            authorName,
+            authorId,
+            createdAt: now(),
+            updatedAt: now(),
+            resolved: false,
+            replies: [],
+          }
+
+          set((state) => ({
+            comments: {
+              ...state.comments,
+              [pageId]: [...(state.comments[pageId] ?? []), comment],
+            },
+          }))
+
+          return comment.id
+        },
+
+        addReply: (pageId, commentId, content, authorName, authorId) => {
+          const reply: CommentReply = {
+            id: generateId(),
+            content,
+            authorName,
+            authorId,
+            createdAt: now(),
+          }
+
+          set((state) => {
+            const pageComments = state.comments[pageId]
+            if (!pageComments) return state
+
+            return {
+              comments: {
+                ...state.comments,
+                [pageId]: pageComments.map((c) =>
+                  c.id === commentId
+                    ? { ...c, replies: [...c.replies, reply], updatedAt: now() }
+                    : c
+                ),
+              },
+            }
+          })
+        },
+
+        resolveComment: (pageId, commentId) => {
+          set((state) => {
+            const pageComments = state.comments[pageId]
+            if (!pageComments) return state
+
+            return {
+              comments: {
+                ...state.comments,
+                [pageId]: pageComments.map((c) =>
+                  c.id === commentId ? { ...c, resolved: true, updatedAt: now() } : c
+                ),
+              },
+            }
+          })
+        },
+
+        unresolveComment: (pageId, commentId) => {
+          set((state) => {
+            const pageComments = state.comments[pageId]
+            if (!pageComments) return state
+
+            return {
+              comments: {
+                ...state.comments,
+                [pageId]: pageComments.map((c) =>
+                  c.id === commentId ? { ...c, resolved: false, updatedAt: now() } : c
+                ),
+              },
+            }
+          })
+        },
+
+        deleteComment: (pageId, commentId) => {
+          set((state) => {
+            const pageComments = state.comments[pageId]
+            if (!pageComments) return state
+
+            return {
+              comments: {
+                ...state.comments,
+                [pageId]: pageComments.filter((c) => c.id !== commentId),
+              },
+            }
+          })
+        },
+
+        getBlockComments: (pageId, blockId) => {
+          const state = get()
+          return (state.comments[pageId] ?? []).filter((c) => c.blockId === blockId)
+        },
+
+        getPageComments: (pageId) => {
+          return get().comments[pageId] ?? []
+        },
+
         // ─── Queries ──────────────────────────────────────────────
 
         getRootPages: () => {
@@ -854,6 +972,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         blocks: state.blocks,
         snapshots: state.snapshots,
         editCounts: state.editCounts,
+        comments: state.comments,
       }),
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as Record<string, unknown>

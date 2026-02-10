@@ -1,6 +1,15 @@
 import { useState, useCallback } from 'react'
-import { Plus, Copy, Check, Trash2, RefreshCw, Eye, EyeOff } from 'lucide-react'
-import { Environment } from '../types'
+import {
+  Plus,
+  Copy,
+  Check,
+  Trash2,
+  Key,
+  AlertTriangle,
+  Shield,
+  XCircle,
+} from 'lucide-react'
+import { ApiKeyPermission } from '../types'
 import useDeveloperStore from '../stores/useDeveloperStore'
 import './ApiKeysPage.css'
 
@@ -14,83 +23,115 @@ function formatDate(iso: string): string {
   })
 }
 
-function maskKey(key: string): string {
-  if (key.length <= 12) return key
-  return key.slice(0, 8) + '\u2022'.repeat(20) + key.slice(-6)
+const PERMISSION_LABELS: Record<string, string> = {
+  [ApiKeyPermission.Read]: 'Read',
+  [ApiKeyPermission.Write]: 'Write',
+  [ApiKeyPermission.Admin]: 'Admin',
 }
+
+const EXPIRY_OPTIONS = [
+  { label: 'Never', value: '' },
+  { label: '30 days', value: '30' },
+  { label: '90 days', value: '90' },
+  { label: '1 year', value: '365' },
+] as const
 
 function ApiKeysPage() {
   const {
     apiKeys,
     createApiKey,
+    revokeApiKey,
     deleteApiKey,
-    rollApiKey,
   } = useDeveloperStore()
 
   const [showCreate, setShowCreate] = useState(false)
   const [newKeyName, setNewKeyName] = useState('')
-  const [newKeyEnv, setNewKeyEnv] = useState<Environment>(Environment.Test as typeof Environment.Test)
+  const [newKeyPermissions, setNewKeyPermissions] = useState<Set<string>>(new Set([ApiKeyPermission.Read]))
+  const [newKeyExpiry, setNewKeyExpiry] = useState('')
+  const [createdKeyValue, setCreatedKeyValue] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set())
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
-  const [confirmRollId, setConfirmRollId] = useState<string | null>(null)
+  const [revokeConfirmId, setRevokeConfirmId] = useState<string | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   const handleCreate = useCallback(() => {
     if (!newKeyName.trim()) return
-    createApiKey(newKeyName.trim(), newKeyEnv)
-    setNewKeyName('')
-    setNewKeyEnv(Environment.Test as typeof Environment.Test)
-    setShowCreate(false)
-  }, [newKeyName, newKeyEnv, createApiKey])
+    if (newKeyPermissions.size === 0) return
 
-  const handleCopy = useCallback((id: string, key: string) => {
-    navigator.clipboard.writeText(key).then(() => {
+    const permissions = Array.from(newKeyPermissions) as ApiKeyPermission[]
+
+    let expiresAt: string | null = null
+    if (newKeyExpiry) {
+      const days = parseInt(newKeyExpiry, 10)
+      const date = new Date()
+      date.setDate(date.getDate() + days)
+      expiresAt = date.toISOString()
+    }
+
+    const fullKey = createApiKey(newKeyName.trim(), permissions, expiresAt)
+    setCreatedKeyValue(fullKey)
+    setNewKeyName('')
+    setNewKeyPermissions(new Set([ApiKeyPermission.Read]))
+    setNewKeyExpiry('')
+    setShowCreate(false)
+  }, [newKeyName, newKeyPermissions, newKeyExpiry, createApiKey])
+
+  const handleCopyKey = useCallback((value: string, id: string) => {
+    navigator.clipboard.writeText(value).then(() => {
       setCopiedId(id)
       setTimeout(() => setCopiedId(null), 2000)
     })
   }, [])
 
-  const handleToggleReveal = useCallback((id: string) => {
-    setRevealedKeys(prev => {
+  const handleTogglePermission = useCallback((perm: string) => {
+    setNewKeyPermissions(prev => {
       const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
+      if (next.has(perm)) {
+        next.delete(perm)
       } else {
-        next.add(id)
+        next.add(perm)
       }
       return next
     })
   }, [])
 
-  const handleDelete = useCallback((id: string) => {
-    if (confirmDeleteId === id) {
-      deleteApiKey(id)
-      setConfirmDeleteId(null)
+  const handleRevoke = useCallback((id: string) => {
+    if (revokeConfirmId === id) {
+      revokeApiKey(id)
+      setRevokeConfirmId(null)
     } else {
-      setConfirmDeleteId(id)
-      setConfirmRollId(null)
-      setTimeout(() => setConfirmDeleteId(null), 3000)
+      setRevokeConfirmId(id)
+      setDeleteConfirmId(null)
+      setTimeout(() => setRevokeConfirmId(null), 3000)
     }
-  }, [confirmDeleteId, deleteApiKey])
+  }, [revokeConfirmId, revokeApiKey])
 
-  const handleRoll = useCallback((id: string) => {
-    if (confirmRollId === id) {
-      rollApiKey(id)
-      setConfirmRollId(null)
+  const handleDelete = useCallback((id: string) => {
+    if (deleteConfirmId === id) {
+      deleteApiKey(id)
+      setDeleteConfirmId(null)
     } else {
-      setConfirmRollId(id)
-      setConfirmDeleteId(null)
-      setTimeout(() => setConfirmRollId(null), 3000)
+      setDeleteConfirmId(id)
+      setRevokeConfirmId(null)
+      setTimeout(() => setDeleteConfirmId(null), 3000)
     }
-  }, [confirmRollId, rollApiKey])
+  }, [deleteConfirmId, deleteApiKey])
 
   const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setNewKeyName(e.target.value)
   }, [])
 
-  const handleEnvChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setNewKeyEnv(e.target.value as Environment)
+  const handleExpiryChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setNewKeyExpiry(e.target.value)
   }, [])
+
+  const handleDismissCreated = useCallback(() => {
+    setCreatedKeyValue(null)
+  }, [])
+
+  const isExpired = (expiresAt: string | null): boolean => {
+    if (!expiresAt) return false
+    return new Date(expiresAt) < new Date()
+  }
 
   return (
     <div className="api-keys-page">
@@ -112,10 +153,57 @@ function ApiKeysPage() {
         </button>
       </div>
 
+      {/* Created key modal overlay */}
+      {createdKeyValue && (
+        <div className="modal-overlay" onClick={handleDismissCreated}>
+          <div
+            className="modal-content api-keys-page__created-modal"
+            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-label="API key created"
+          >
+            <div className="modal-header">
+              <h3>API Key Created</h3>
+              <button
+                className="api-keys-page__close-btn"
+                onClick={handleDismissCreated}
+                type="button"
+                aria-label="Close"
+              >
+                <XCircle size={20} />
+              </button>
+            </div>
+            <div className="api-keys-page__created-body">
+              <div className="api-keys-page__created-warning">
+                <AlertTriangle size={16} />
+                <span>This key will not be shown again. Copy it now and store it securely.</span>
+              </div>
+              <div className="api-keys-page__created-key-row">
+                <code className="api-keys-page__created-key-value">{createdKeyValue}</code>
+                <button
+                  className="btn-primary api-keys-page__copy-btn"
+                  onClick={() => handleCopyKey(createdKeyValue, 'created')}
+                  type="button"
+                  aria-label="Copy API key"
+                >
+                  {copiedId === 'created' ? (
+                    <><Check size={14} /> Copied</>
+                  ) : (
+                    <><Copy size={14} /> Copy</>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create key form */}
       {showCreate && (
         <div className="api-keys-page__create-form">
           <h3 className="api-keys-page__form-title">Create New API Key</h3>
-          <div className="api-keys-page__form-fields">
+
+          <div className="api-keys-page__form-grid">
             <div className="api-keys-page__field">
               <label className="api-keys-page__label" htmlFor="key-name">
                 Key Name
@@ -129,129 +217,177 @@ function ApiKeysPage() {
                 onChange={handleNameChange}
               />
             </div>
+
             <div className="api-keys-page__field">
-              <label className="api-keys-page__label" htmlFor="key-env">
-                Environment
+              <label className="api-keys-page__label" htmlFor="key-expiry">
+                Expiration
               </label>
               <select
-                id="key-env"
+                id="key-expiry"
                 className="api-keys-page__select"
-                value={newKeyEnv}
-                onChange={handleEnvChange}
+                value={newKeyExpiry}
+                onChange={handleExpiryChange}
               >
-                <option value={Environment.Test}>Test</option>
-                <option value={Environment.Live}>Live</option>
+                {EXPIRY_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
               </select>
             </div>
-            <button
-              className="btn-primary api-keys-page__submit-btn"
-              onClick={handleCreate}
-              disabled={!newKeyName.trim()}
-              type="button"
-            >
-              Create
-            </button>
+
+            <div className="api-keys-page__field api-keys-page__field--full">
+              <label className="api-keys-page__label">
+                Permissions
+              </label>
+              <div className="api-keys-page__permissions">
+                {Object.values(ApiKeyPermission).map(perm => (
+                  <label className="api-keys-page__permission" key={perm}>
+                    <input
+                      type="checkbox"
+                      checked={newKeyPermissions.has(perm)}
+                      onChange={() => handleTogglePermission(perm)}
+                    />
+                    <span className="api-keys-page__permission-label">
+                      {PERMISSION_LABELS[perm]}
+                    </span>
+                    <span className="api-keys-page__permission-desc">
+                      {perm === ApiKeyPermission.Read && 'Read-only access to resources'}
+                      {perm === ApiKeyPermission.Write && 'Create and update resources'}
+                      {perm === ApiKeyPermission.Admin && 'Full administrative access'}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
+
+          <button
+            className="btn-primary api-keys-page__submit-btn"
+            onClick={handleCreate}
+            disabled={!newKeyName.trim() || newKeyPermissions.size === 0}
+            type="button"
+          >
+            <Key size={16} />
+            Create API Key
+          </button>
         </div>
       )}
 
-      <div className="api-keys-page__list">
-        {apiKeys.length === 0 && (
-          <div className="api-keys-page__empty">
-            <p>No API keys yet.</p>
-            <p className="api-keys-page__empty-hint">
-              Create a key to start making API requests.
-            </p>
-          </div>
-        )}
-
-        {apiKeys.map(key => (
-          <div key={key.id} className="api-keys-page__key-card">
-            <div className="api-keys-page__key-header">
-              <div className="api-keys-page__key-info">
-                <div className="api-keys-page__key-name-row">
+      {/* Key list table */}
+      <div className="api-keys-page__table-wrapper">
+        <table className="api-keys-page__table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Key</th>
+              <th>Permissions</th>
+              <th>Created</th>
+              <th>Last Used</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {apiKeys.length === 0 && (
+              <tr>
+                <td colSpan={7} className="api-keys-page__empty">
+                  No API keys yet. Create a key to start making API requests.
+                </td>
+              </tr>
+            )}
+            {apiKeys.map(key => (
+              <tr
+                key={key.id}
+                className={key.status === 'revoked' ? 'api-keys-page__row--revoked' : ''}
+              >
+                <td>
                   <span className="api-keys-page__key-name">{key.name}</span>
-                  <span
-                    className={`api-keys-page__env-badge ${
-                      key.environment === Environment.Live
-                        ? 'api-keys-page__env-badge--live'
-                        : 'api-keys-page__env-badge--test'
-                    }`}
-                  >
-                    {key.environment === Environment.Live ? 'Live' : 'Test'}
-                  </span>
-                </div>
-                <div className="api-keys-page__key-value-row">
+                </td>
+                <td>
                   <code className="api-keys-page__key-value">
-                    {revealedKeys.has(key.id) ? key.key : maskKey(key.key)}
+                    {key.keyPrefix}{'\u2022'.repeat(6)}
                   </code>
-                  <button
-                    className="api-keys-page__icon-btn"
-                    onClick={() => handleToggleReveal(key.id)}
-                    type="button"
-                    aria-label={revealedKeys.has(key.id) ? 'Hide key' : 'Reveal key'}
-                  >
-                    {revealedKeys.has(key.id) ? <EyeOff size={14} /> : <Eye size={14} />}
-                  </button>
-                  <button
-                    className="api-keys-page__icon-btn"
-                    onClick={() => handleCopy(key.id, key.key)}
-                    type="button"
-                    aria-label="Copy key"
-                  >
-                    {copiedId === key.id ? <Check size={14} className="api-keys-page__copied" /> : <Copy size={14} />}
-                  </button>
-                </div>
-                <div className="api-keys-page__key-meta">
-                  <span>Created {formatDate(key.createdAt)}</span>
-                  {key.lastUsedAt && (
-                    <>
-                      <span className="api-keys-page__separator">|</span>
-                      <span>Last used {formatDate(key.lastUsedAt)}</span>
-                    </>
+                </td>
+                <td>
+                  <div className="api-keys-page__perm-badges">
+                    {key.permissions.map(p => (
+                      <span
+                        key={p}
+                        className={`api-keys-page__perm-badge api-keys-page__perm-badge--${p}`}
+                      >
+                        {PERMISSION_LABELS[p]}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+                <td className="api-keys-page__date-cell">
+                  {formatDate(key.createdAt)}
+                </td>
+                <td className="api-keys-page__date-cell">
+                  {key.lastUsedAt ? formatDate(key.lastUsedAt) : 'Never'}
+                </td>
+                <td>
+                  {key.status === 'active' ? (
+                    <span className="api-keys-page__status-badge api-keys-page__status-badge--active">
+                      Active
+                    </span>
+                  ) : (
+                    <span className="api-keys-page__status-badge api-keys-page__status-badge--revoked">
+                      Revoked
+                    </span>
                   )}
-                </div>
-              </div>
-
-              <div className="api-keys-page__key-actions">
-                <button
-                  className={`api-keys-page__action-btn ${
-                    confirmRollId === key.id ? 'api-keys-page__action-btn--warning' : ''
-                  }`}
-                  onClick={() => handleRoll(key.id)}
-                  type="button"
-                  title={confirmRollId === key.id ? 'Click again to confirm roll' : 'Roll key (regenerate)'}
-                  aria-label="Roll key"
-                >
-                  <RefreshCw size={14} />
-                  <span>{confirmRollId === key.id ? 'Confirm Roll?' : 'Roll'}</span>
-                </button>
-                <button
-                  className={`api-keys-page__action-btn ${
-                    confirmDeleteId === key.id ? 'api-keys-page__action-btn--danger' : ''
-                  }`}
-                  onClick={() => handleDelete(key.id)}
-                  type="button"
-                  title={confirmDeleteId === key.id ? 'Click again to confirm delete' : 'Delete key'}
-                  aria-label="Delete key"
-                >
-                  <Trash2 size={14} />
-                  <span>{confirmDeleteId === key.id ? 'Confirm?' : 'Delete'}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+                  {isExpired(key.expiresAt) && key.status === 'active' && (
+                    <span className="api-keys-page__status-badge api-keys-page__status-badge--expired">
+                      Expired
+                    </span>
+                  )}
+                </td>
+                <td>
+                  <div className="api-keys-page__key-actions">
+                    {key.status === 'active' && (
+                      <button
+                        className={`api-keys-page__action-btn ${
+                          revokeConfirmId === key.id ? 'api-keys-page__action-btn--warning' : ''
+                        }`}
+                        onClick={() => handleRevoke(key.id)}
+                        type="button"
+                        title={revokeConfirmId === key.id ? 'Click again to confirm' : 'Revoke key'}
+                        aria-label="Revoke key"
+                      >
+                        <Shield size={14} />
+                        <span>{revokeConfirmId === key.id ? 'Confirm?' : 'Revoke'}</span>
+                      </button>
+                    )}
+                    <button
+                      className={`api-keys-page__action-btn ${
+                        deleteConfirmId === key.id ? 'api-keys-page__action-btn--danger' : ''
+                      }`}
+                      onClick={() => handleDelete(key.id)}
+                      type="button"
+                      title={deleteConfirmId === key.id ? 'Click again to confirm' : 'Delete key'}
+                      aria-label="Delete key"
+                    >
+                      <Trash2 size={14} />
+                      <span>{deleteConfirmId === key.id ? 'Confirm?' : 'Delete'}</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <div className="api-keys-page__security">
-        <h3 className="api-keys-page__security-title">Security Best Practices</h3>
+        <h3 className="api-keys-page__security-title">
+          <Shield size={16} />
+          Security Best Practices
+        </h3>
         <ul className="api-keys-page__security-list">
           <li>Never expose API keys in client-side code or version control.</li>
           <li>Use environment variables to store keys in production.</li>
-          <li>Use test keys (<code>sk_test_...</code>) during development.</li>
-          <li>Roll keys immediately if you suspect they have been compromised.</li>
-          <li>Assign descriptive names to track key usage across services.</li>
+          <li>Use the minimum permissions needed for each integration.</li>
+          <li>Set expiration dates on keys used for temporary access.</li>
+          <li>Revoke keys immediately if you suspect they have been compromised.</li>
         </ul>
       </div>
     </div>

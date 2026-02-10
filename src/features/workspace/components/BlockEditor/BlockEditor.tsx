@@ -5,6 +5,8 @@ import type { Block, BlockType as BlockTypeT, MarkType, InlineMark } from '../..
 import BlockRenderer from '../BlockRenderer/BlockRenderer'
 import SlashMenu from '../SlashMenu/SlashMenu'
 import InlineToolbar from '../InlineToolbar/InlineToolbar'
+import CommentIndicator from '../CommentIndicator/CommentIndicator'
+import CommentThread from '../CommentThread/CommentThread'
 import { getMarksAtPosition, toggleMark } from '../../lib/markUtils'
 import { parseMarkdown } from '../../lib/markdownParser'
 import './BlockEditor.css'
@@ -38,6 +40,7 @@ export default function BlockEditor({ pageId, blockIds, autoFocusBlockId }: Bloc
   const [dragBlockId, setDragBlockId] = useState<string | null>(null)
   const [dropIndex, setDropIndex] = useState<number | null>(null)
   const [blockActionsMenu, setBlockActionsMenu] = useState<{ blockId: string; position: { x: number; y: number } } | null>(null)
+  const [commentThreadBlockId, setCommentThreadBlockId] = useState<string | null>(null)
 
   const handleContentChange = useCallback(
     (blockId: string, content: string) => {
@@ -333,6 +336,17 @@ export default function BlockEditor({ pageId, blockIds, autoFocusBlockId }: Bloc
     [blockIds, insertBlocksAt, pageId]
   )
 
+  const handleToggleCommentThread = useCallback(
+    (blockId: string) => {
+      setCommentThreadBlockId((prev) => (prev === blockId ? null : blockId))
+    },
+    []
+  )
+
+  const handleCloseCommentThread = useCallback(() => {
+    setCommentThreadBlockId(null)
+  }, [])
+
   const handleEmptyAreaClick = useCallback(() => {
     // Add a new paragraph at the end and focus it
     const lastBlockId = blockIds[blockIds.length - 1] as string | undefined
@@ -372,6 +386,7 @@ export default function BlockEditor({ pageId, blockIds, autoFocusBlockId }: Bloc
         return (
           <div
             key={blockId}
+            data-block-id={blockId}
             className={`block-editor__block ${dragBlockId === blockId ? 'block-editor__block--dragging' : ''} ${dropIndex === index ? 'block-editor__block--drop-above' : ''}`}
             draggable
             onDragStart={() => handleDragStart(blockId)}
@@ -410,6 +425,21 @@ export default function BlockEditor({ pageId, blockIds, autoFocusBlockId }: Bloc
                 pageId={pageId}
               />
             </div>
+            <div className="block-editor__comment-actions">
+              <CommentIndicator
+                pageId={pageId}
+                blockId={blockId}
+                onClick={() => handleToggleCommentThread(blockId)}
+              />
+            </div>
+            {commentThreadBlockId === blockId && (
+              <CommentThread
+                pageId={pageId}
+                blockId={blockId}
+                position={{ top: 0, right: -340 }}
+                onClose={handleCloseCommentThread}
+              />
+            )}
           </div>
         )
       })}
