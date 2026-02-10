@@ -16,35 +16,66 @@ const sampleNotifications = [
   {
     id: 'n1',
     type: 'signature_request',
+    category: 'documents',
     title: 'Document awaiting signature',
     message: 'Alex sent you a doc',
     read: false,
+    archived: false,
     createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
     link: '/documents',
     actorName: 'Alex Johnson',
     actorAvatar: null,
+    actionUrl: '/documents',
+    actionLabel: 'Sign Now',
+    sourceId: null,
   },
   {
     id: 'n2',
     type: 'mention',
+    category: 'workspace',
     title: 'You were mentioned',
     message: 'Sarah mentioned you',
     read: false,
+    archived: false,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
     link: '/pages',
     actorName: 'Sarah Chen',
     actorAvatar: null,
+    actionUrl: null,
+    actionLabel: null,
+    sourceId: null,
   },
   {
     id: 'n3',
     type: 'comment',
+    category: 'workspace',
     title: 'New comment',
     message: 'Emma commented on your doc',
     read: true,
+    archived: false,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
     link: '/documents',
     actorName: 'Emma Davis',
     actorAvatar: null,
+    actionUrl: null,
+    actionLabel: null,
+    sourceId: null,
+  },
+  {
+    id: 'n4',
+    type: 'system',
+    category: 'system',
+    title: 'Archived notification',
+    message: 'This is archived and should not appear',
+    read: true,
+    archived: true,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(),
+    link: null,
+    actorName: null,
+    actorAvatar: null,
+    actionUrl: null,
+    actionLabel: null,
+    sourceId: null,
   },
 ]
 
@@ -75,9 +106,10 @@ describe('NotificationCenter', () => {
     expect(screen.getByLabelText('Notifications')).toBeInTheDocument()
   })
 
-  it('shows unread count badge', () => {
+  it('shows unread count badge excluding archived notifications', () => {
     renderNotificationCenter()
     const badge = screen.getByTestId('notification-badge')
+    // n1 and n2 are unread and not archived, n4 is archived
     expect(badge).toHaveTextContent('2')
   })
 
@@ -104,6 +136,16 @@ describe('NotificationCenter', () => {
     expect(screen.getByText('Document awaiting signature')).toBeInTheDocument()
     expect(screen.getByText('You were mentioned')).toBeInTheDocument()
     expect(screen.getByText('New comment')).toBeInTheDocument()
+  })
+
+  it('does not show archived notifications in the panel', async () => {
+    const user = userEvent.setup()
+    renderNotificationCenter()
+
+    await user.click(screen.getByLabelText('Notifications'))
+
+    expect(screen.queryByText('Archived notification')).not.toBeInTheDocument()
+    expect(screen.queryByText('This is archived and should not appear')).not.toBeInTheDocument()
   })
 
   it('marks a notification as read when clicked', async () => {
@@ -143,5 +185,26 @@ describe('NotificationCenter', () => {
     await user.click(screen.getByText('View all notifications'))
 
     expect(mockNavigate).toHaveBeenCalledWith('/inbox')
+  })
+
+  it('renders action button for notifications with actionLabel', async () => {
+    const user = userEvent.setup()
+    renderNotificationCenter()
+
+    await user.click(screen.getByLabelText('Notifications'))
+
+    // n1 has actionLabel: 'Sign Now'
+    expect(screen.getByText('Sign Now')).toBeInTheDocument()
+  })
+
+  it('navigates to actionUrl when action button is clicked', async () => {
+    const user = userEvent.setup()
+    renderNotificationCenter()
+
+    await user.click(screen.getByLabelText('Notifications'))
+    await user.click(screen.getByText('Sign Now'))
+
+    expect(mockMarkAsRead).toHaveBeenCalledWith('n1')
+    expect(mockNavigate).toHaveBeenCalledWith('/documents')
   })
 })

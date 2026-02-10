@@ -103,10 +103,10 @@ describe('Sidebar', () => {
     expect(useAppStore.getState().favorites).toEqual([])
   })
 
-  it('shows badge on documents nav item', () => {
+  it('shows badge on inbox nav item', () => {
     renderSidebar()
-    // The Inbox always shows badge "3"
-    expect(screen.getByText('3')).toBeInTheDocument()
+    // The Inbox shows a badge for unread notifications from sample data
+    expect(screen.getByText('6')).toBeInTheDocument()
   })
 
   it('renders resize handle when expanded', () => {

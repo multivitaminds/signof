@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useTaxStore } from '../stores/useTaxStore'
-import { FILING_STATUS_LABELS, FilingState, STANDARD_DEDUCTION_2025 } from '../types'
+import { useTaxFilingStore } from '../stores/useTaxFilingStore'
+import { FILING_STATUS_LABELS, FILING_STATE_LABELS, FilingState, STANDARD_DEDUCTION_2025 } from '../types'
 import type { TaxFiling, FilingStatus } from '../types'
 import FilingWizard from '../components/FilingWizard/FilingWizard'
 import './TaxFilingPage.css'
@@ -25,22 +26,34 @@ const US_STATES = [
 
 function TaxFilingPage() {
   const activeTaxYear = useTaxStore((s) => s.activeTaxYear)
-  const filings = useTaxStore((s) => s.filings)
-  const createFiling = useTaxStore((s) => s.createFiling)
-  const updateFiling = useTaxStore((s) => s.updateFiling)
-  const calculateTax = useTaxStore((s) => s.calculateTax)
-  const submitFiling = useTaxStore((s) => s.submitFiling)
   const documents = useTaxStore((s) => s.documents)
+
+  const filings = useTaxFilingStore((s) => s.filings)
+  const createFiling = useTaxFilingStore((s) => s.createFiling)
+  const updateFiling = useTaxFilingStore((s) => s.updateFiling)
+  const calculateTax = useTaxFilingStore((s) => s.calculateTax)
+  const submitFiling = useTaxFilingStore((s) => s.submitFiling)
+  const checklist = useTaxFilingStore((s) => s.checklist)
+  const toggleChecklistItem = useTaxFilingStore((s) => s.toggleChecklistItem)
+  const checklistProgress = useTaxFilingStore((s) => s.checklistProgress)
+  const isChecklistComplete = useTaxFilingStore((s) => s.isChecklistComplete)
+  const confirmation = useTaxFilingStore((s) => s.confirmation)
+  const clearConfirmation = useTaxFilingStore((s) => s.clearConfirmation)
+  const isAmendmentMode = useTaxFilingStore((s) => s.isAmendmentMode)
+  const setAmendmentMode = useTaxFilingStore((s) => s.setAmendmentMode)
+  const amendmentReason = useTaxFilingStore((s) => s.amendmentReason)
+  const setAmendmentReason = useTaxFilingStore((s) => s.setAmendmentReason)
+  const submitAmendment = useTaxFilingStore((s) => s.submitAmendment)
 
   const [currentStep, setCurrentStep] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showChecklist, setShowChecklist] = useState(true)
 
   const filing = useMemo(
     () => filings.find((f) => f.taxYear === activeTaxYear),
     [filings, activeTaxYear]
   )
 
-  // Auto-create filing if it does not exist
   useEffect(() => {
     if (!filing) {
       createFiling(activeTaxYear)
@@ -101,11 +114,32 @@ function TaxFilingPage() {
     if (!filing) return
     setIsSubmitting(true)
     submitFiling(filing.id)
-    // Reset submitting state after simulated delay
     setTimeout(() => {
       setIsSubmitting(false)
     }, 3500)
   }, [filing, submitFiling])
+
+  const handleAmendmentSubmit = useCallback(() => {
+    if (!filing) return
+    setIsSubmitting(true)
+    submitAmendment(filing.id)
+    setTimeout(() => {
+      setIsSubmitting(false)
+    }, 3500)
+  }, [filing, submitAmendment])
+
+  const handleStartAmendment = useCallback(() => {
+    if (!filing) return
+    setAmendmentMode(true)
+    // Reset filing state so the wizard shows again
+    updateFiling(filing.id, { state: FilingState.InProgress, filedAt: null })
+    clearConfirmation()
+    setCurrentStep(0)
+  }, [filing, setAmendmentMode, updateFiling, clearConfirmation])
+
+  const handleToggleChecklist = useCallback(() => {
+    setShowChecklist((prev) => !prev)
+  }, [])
 
   // Auto-populate income from extracted documents
   const autoPopulatedWages = useMemo(() => {
@@ -151,12 +185,91 @@ function TaxFilingPage() {
     )
   }
 
+  // ─── Confirmation View ────────────────────────────────────────────────
+  if (confirmation) {
+    return (
+      <div className="tax-filing__confirmation">
+        <div className="tax-filing__confirmation-card">
+          <div className="tax-filing__confirmation-icon tax-filing__confirmation-icon--success">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+
+          <h2 className="tax-filing__confirmation-title">
+            {confirmation.isAmendment ? 'Amendment Filed!' : 'Filing Submitted!'}
+          </h2>
+          <p className="tax-filing__confirmation-desc">
+            {confirmation.isAmendment
+              ? `Your amended ${activeTaxYear} tax return has been submitted for processing.`
+              : `Your ${activeTaxYear} tax return has been submitted to the IRS.`}
+          </p>
+
+          <div className="tax-filing__confirmation-ref">
+            <span className="tax-filing__confirmation-ref-label">Reference Number</span>
+            <span className="tax-filing__confirmation-ref-value">{confirmation.referenceNumber}</span>
+          </div>
+
+          <div className="tax-filing__confirmation-details">
+            <div className="tax-filing__confirmation-row">
+              <span>Filed At</span>
+              <span>
+                {new Date(confirmation.filedAt).toLocaleDateString('en-US', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                })}
+              </span>
+            </div>
+            <div className="tax-filing__confirmation-row">
+              <span>Filing Status</span>
+              <span className="tax-filing__confirmation-status">
+                {FILING_STATE_LABELS[filing.state]}
+              </span>
+            </div>
+            {confirmation.isAmendment && (
+              <div className="tax-filing__confirmation-row">
+                <span>Amendment Reason</span>
+                <span>{confirmation.amendmentReason}</span>
+              </div>
+            )}
+            <div className="tax-filing__confirmation-row tax-filing__confirmation-row--highlight">
+              <span>{confirmation.estimatedRefund !== null ? 'Estimated Refund' : 'Estimated Tax Owed'}</span>
+              <span
+                className={
+                  confirmation.estimatedRefund !== null
+                    ? 'tax-filing__amount--refund'
+                    : 'tax-filing__amount--owed'
+                }
+              >
+                ${(confirmation.estimatedRefund ?? confirmation.estimatedOwed ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </span>
+            </div>
+          </div>
+
+          <div className="tax-filing__confirmation-actions">
+            <button
+              className="btn-secondary"
+              onClick={handleStartAmendment}
+              type="button"
+            >
+              File Amendment (1040-X)
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Filed State (without confirmation - e.g., reloaded page) ────────
   const isFiled =
     filing.state === FilingState.Filed ||
     filing.state === FilingState.Accepted ||
     filing.state === FilingState.Rejected
 
-  if (isFiled) {
+  if (isFiled && !isAmendmentMode) {
     return (
       <div className="tax-filing__filed">
         <div className="tax-filing__filed-card">
@@ -169,7 +282,11 @@ function TaxFilingPage() {
                   : 'tax-filing__filed-icon--primary'
             }`}
           >
-            {filing.state === FilingState.Accepted ? '&#10003;' : filing.state === FilingState.Rejected ? '!' : '...'}
+            {filing.state === FilingState.Accepted ? (
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            ) : filing.state === FilingState.Rejected ? '!' : '...'}
           </div>
           <h2 className="tax-filing__filed-title">
             {filing.state === FilingState.Accepted
@@ -219,6 +336,16 @@ function TaxFilingPage() {
               </span>
             </div>
           </div>
+
+          <div className="tax-filing__filed-actions">
+            <button
+              className="btn-secondary"
+              onClick={handleStartAmendment}
+              type="button"
+            >
+              File Amendment (1040-X)
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -226,12 +353,122 @@ function TaxFilingPage() {
 
   return (
     <div className="tax-filing">
+      {/* ─── Pre-Filing Checklist ───────────────────────────── */}
+      <div className="tax-filing__checklist">
+        <button
+          className="tax-filing__checklist-toggle"
+          onClick={handleToggleChecklist}
+          type="button"
+          aria-expanded={showChecklist}
+        >
+          <div className="tax-filing__checklist-toggle-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {showChecklist ? (
+                <polyline points="6 9 12 15 18 9" />
+              ) : (
+                <polyline points="9 18 15 12 9 6" />
+              )}
+            </svg>
+            <span className="tax-filing__checklist-title">Pre-Filing Checklist</span>
+          </div>
+          <div className="tax-filing__checklist-progress-mini">
+            <span className="tax-filing__checklist-progress-text">
+              {checklistProgress()}%
+            </span>
+            <div className="tax-filing__checklist-progress-bar-mini">
+              <div
+                className="tax-filing__checklist-progress-fill-mini"
+                style={{ width: `${checklistProgress()}%` }}
+              />
+            </div>
+          </div>
+        </button>
+
+        {showChecklist && (
+          <div className="tax-filing__checklist-items">
+            {checklist.map((item) => (
+              <label
+                key={item.id}
+                className={`tax-filing__checklist-item ${
+                  item.completed ? 'tax-filing__checklist-item--completed' : ''
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={item.completed}
+                  onChange={() => toggleChecklistItem(item.id)}
+                  className="tax-filing__checklist-checkbox"
+                />
+                <div className="tax-filing__checklist-item-info">
+                  <span className="tax-filing__checklist-item-label">{item.label}</span>
+                  <span className="tax-filing__checklist-item-desc">{item.description}</span>
+                </div>
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ─── Amendment Banner ──────────────────────────────── */}
+      {isAmendmentMode && (
+        <div className="tax-filing__amendment-banner">
+          <div className="tax-filing__amendment-banner-left">
+            <strong>Amendment Mode (Form 1040-X)</strong>
+            <p>Make corrections to your previously filed return.</p>
+          </div>
+          <div className="tax-filing__amendment-reason">
+            <label htmlFor="amendReason" className="tax-filing__label">
+              Reason for Amendment
+            </label>
+            <input
+              id="amendReason"
+              type="text"
+              value={amendmentReason}
+              onChange={(e) => setAmendmentReason(e.target.value)}
+              className="tax-filing__input"
+              placeholder="e.g., Forgot to include 1099-INT income"
+            />
+          </div>
+          <button
+            className="btn-secondary"
+            onClick={() => setAmendmentMode(false)}
+            type="button"
+          >
+            Cancel Amendment
+          </button>
+        </div>
+      )}
+
+      {/* ─── Filing Status Bar ─────────────────────────────── */}
+      <div className="tax-filing__status-bar">
+        {Object.values(FilingState).map((state) => {
+          const isActive = filing.state === state
+          const stateIndex = Object.values(FilingState).indexOf(state)
+          const currentIndex = Object.values(FilingState).indexOf(filing.state)
+          const isPast = stateIndex < currentIndex
+
+          return (
+            <div
+              key={state}
+              className={`tax-filing__status-step ${
+                isActive ? 'tax-filing__status-step--active' : ''
+              } ${isPast ? 'tax-filing__status-step--past' : ''}`}
+            >
+              <div className="tax-filing__status-dot" />
+              <span className="tax-filing__status-label">{FILING_STATE_LABELS[state]}</span>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* ─── Wizard ───────────────────────────────────────── */}
       <FilingWizard
         steps={WIZARD_STEPS}
         currentStep={currentStep}
         onStepChange={setCurrentStep}
-        onSubmit={handleSubmit}
+        onSubmit={isAmendmentMode ? handleAmendmentSubmit : handleSubmit}
         isSubmitting={isSubmitting}
+        canProceed={!isAmendmentMode || amendmentReason.length > 0 || currentStep < 3}
       >
         {/* Step 1: Personal Info */}
         {currentStep === 0 && (
@@ -648,6 +885,16 @@ function TaxFilingPage() {
             <p className="tax-filing__step-desc">
               Review your tax return summary before submitting.
             </p>
+
+            {!isChecklistComplete() && (
+              <div className="tax-filing__checklist-warning">
+                <strong>Checklist Incomplete</strong>
+                <p>
+                  You have not completed all pre-filing checklist items. You can
+                  still submit, but we recommend completing the checklist first.
+                </p>
+              </div>
+            )}
 
             <div className="tax-filing__review">
               {/* Personal Info Summary */}

@@ -2,7 +2,8 @@ import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Bell, FileSignature, AtSign, MessageSquare, UserPlus,
-  ArrowRightLeft, Sparkles, CheckCheck,
+  ArrowRightLeft, Sparkles, CheckCheck, Calendar, Clock,
+  ExternalLink,
 } from 'lucide-react'
 import { useInboxStore } from '../../features/inbox/stores/useInboxStore'
 import { NotificationType } from '../../features/inbox/types'
@@ -15,17 +16,21 @@ import './NotificationCenter.css'
 
 const ICON_MAP: Record<string, React.ComponentType<{ size?: number }>> = {
   [NotificationType.SignatureRequest]: FileSignature,
+  [NotificationType.DocumentSigned]: FileSignature,
   [NotificationType.Mention]: AtSign,
   [NotificationType.Comment]: MessageSquare,
   [NotificationType.Assignment]: UserPlus,
   [NotificationType.StatusChange]: ArrowRightLeft,
   [NotificationType.Invitation]: UserPlus,
-  [NotificationType.Reminder]: Bell,
+  [NotificationType.Reminder]: Clock,
   [NotificationType.System]: Sparkles,
+  [NotificationType.Booking]: Calendar,
+  [NotificationType.TeamJoined]: UserPlus,
 }
 
 const TYPE_COLOR: Record<string, string> = {
   [NotificationType.SignatureRequest]: '#EF4444',
+  [NotificationType.DocumentSigned]: '#059669',
   [NotificationType.Mention]: '#4F46E5',
   [NotificationType.Comment]: '#0EA5E9',
   [NotificationType.Assignment]: '#F59E0B',
@@ -33,6 +38,8 @@ const TYPE_COLOR: Record<string, string> = {
   [NotificationType.Invitation]: '#8B5CF6',
   [NotificationType.Reminder]: '#F97316',
   [NotificationType.System]: '#94A3B8',
+  [NotificationType.Booking]: '#06B6D4',
+  [NotificationType.TeamJoined]: '#8B5CF6',
 }
 
 /* ------------------------------------------------------------------ */
@@ -67,19 +74,24 @@ export default function NotificationCenter() {
   const markAllAsRead = useInboxStore((s) => s.markAllAsRead)
 
   /* Derived */
-  const unreadCount = useMemo(
-    () => notifications.filter((n) => !n.read).length,
+  const activeNotifications = useMemo(
+    () => notifications.filter((n) => !n.archived),
     [notifications],
+  )
+
+  const unreadCount = useMemo(
+    () => activeNotifications.filter((n) => !n.read).length,
+    [activeNotifications],
   )
 
   const unreadNotifications = useMemo(
-    () => notifications.filter((n) => !n.read),
-    [notifications],
+    () => activeNotifications.filter((n) => !n.read),
+    [activeNotifications],
   )
 
   const readNotifications = useMemo(
-    () => notifications.filter((n) => n.read).slice(0, 10),
-    [notifications],
+    () => activeNotifications.filter((n) => n.read).slice(0, 10),
+    [activeNotifications],
   )
 
   /* Toggle */
@@ -134,6 +146,19 @@ export default function NotificationCenter() {
     [markAsRead, navigate],
   )
 
+  /* Click action button */
+  const handleActionClick = useCallback(
+    (e: React.MouseEvent, notif: Notification) => {
+      e.stopPropagation()
+      markAsRead(notif.id)
+      if (notif.actionUrl) {
+        navigate(notif.actionUrl)
+      }
+      setIsOpen(false)
+    },
+    [markAsRead, navigate],
+  )
+
   /* Mark all as read */
   const handleMarkAllAsRead = useCallback(
     (e: React.MouseEvent) => {
@@ -175,7 +200,19 @@ export default function NotificationCenter() {
             )}
           </div>
           <p className="notification-center__item-message">{notif.message}</p>
-          <span className="notification-center__item-time">{timeAgo(notif.createdAt)}</span>
+          <div className="notification-center__item-footer">
+            <span className="notification-center__item-time">{timeAgo(notif.createdAt)}</span>
+            {notif.actionLabel && notif.actionUrl && (
+              <button
+                className="notification-center__item-action"
+                onClick={(e) => handleActionClick(e, notif)}
+                type="button"
+              >
+                <ExternalLink size={10} />
+                {notif.actionLabel}
+              </button>
+            )}
+          </div>
         </div>
       </button>
     )
@@ -226,7 +263,7 @@ export default function NotificationCenter() {
 
           {/* Panel body */}
           <div className="notification-center__panel-body">
-            {notifications.length === 0 ? (
+            {activeNotifications.length === 0 ? (
               <div className="notification-center__empty">
                 <Bell size={32} />
                 <p>No notifications yet</p>
