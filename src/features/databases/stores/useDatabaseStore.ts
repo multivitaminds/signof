@@ -51,7 +51,17 @@ interface DatabaseState {
   deleteAutomation: (id: string) => void
   toggleAutomation: (id: string) => void
 
+  // Bulk table creation
+  addTableWithData: (
+    databaseId: string,
+    name: string,
+    icon: string,
+    fields: Array<{ name: string; type: DbFieldType }>,
+    rowData: Array<Record<string, CellValue>>
+  ) => string
+
   // Queries
+  isTableNameUnique: (databaseId: string, name: string) => boolean
   getFilteredRows: (tableId: string, viewId: string, query?: string) => DbRow[]
   getGroupedRows: (tableId: string, viewId: string, query?: string) => Record<string, DbRow[]>
   getDatabase: (id: string) => Database | undefined
@@ -285,6 +295,60 @@ export const useDatabaseStore = create<DatabaseState>()(
             r.id === id ? { ...r, enabled: !r.enabled } : r
           ),
         }))
+      },
+
+      addTableWithData: (databaseId, name, icon, fieldDefs, rowData) => {
+        const tableId = rid()
+        const fields: DbField[] = fieldDefs.map((f) => ({
+          id: rid(),
+          name: f.name,
+          type: f.type,
+          width: f.type === DbFieldType.Text ? 280 : 160,
+        }))
+        const defaultView: DbView = {
+          id: rid(),
+          name: 'Grid view',
+          type: ViewType.Grid,
+          tableId,
+          filters: [],
+          sorts: [],
+          hiddenFields: [],
+          fieldOrder: fields.map((f) => f.id),
+        }
+        const rows: DbRow[] = rowData.map((data) => {
+          const cells: Record<string, CellValue> = {}
+          for (const field of fields) {
+            if (data[field.name] !== undefined) {
+              cells[field.id] = data[field.name] ?? null
+            }
+          }
+          return { id: rid(), cells, createdAt: now(), updatedAt: now() }
+        })
+        const table: DbTable = { id: tableId, name, icon, fields, rows, views: [defaultView] }
+
+        set((s) => {
+          const db = s.databases[databaseId]
+          if (!db) return s
+          return {
+            databases: { ...s.databases, [databaseId]: { ...db, tables: [...db.tables, tableId], updatedAt: now() } },
+            tables: { ...s.tables, [tableId]: table },
+          }
+        })
+        return tableId
+      },
+
+      isTableNameUnique: (databaseId, name) => {
+        const state = get()
+        const db = state.databases[databaseId]
+        if (!db) return true
+        const trimmedLower = name.trim().toLowerCase()
+        for (const tid of db.tables) {
+          const table = state.tables[tid]
+          if (table && table.name.trim().toLowerCase() === trimmedLower) {
+            return false
+          }
+        }
+        return true
       },
 
       getFilteredRows: (tableId, viewId, query) => {

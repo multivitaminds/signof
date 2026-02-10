@@ -1,0 +1,389 @@
+/* ===================================================================
+   FileUploadParser -- BEM
+   =================================================================== */
+
+.file-upload-parser {
+  max-width: 720px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Body ────────────────────────────────────────────────── */
+
+.file-upload-parser__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+  overflow-y: auto;
+  max-height: 60vh;
+  padding-bottom: var(--space-2, 0.5rem);
+}
+
+.file-upload-parser__section-label {
+  display: block;
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--text-secondary, #6B7280);
+  margin-bottom: var(--space-2, 0.5rem);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ─── Dropzone ────────────────────────────────────────────── */
+
+.file-upload-parser__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-8, 3rem) var(--space-4, 1rem);
+  border: 2px dashed var(--border-color, #E2E8F0);
+  border-radius: var(--radius-lg, 12px);
+  background-color: var(--bg-secondary, #F9FAFB);
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.file-upload-parser__dropzone:hover,
+.file-upload-parser__dropzone--active {
+  border-color: var(--color-primary, #4F46E5);
+  background-color: rgba(79, 70, 229, 0.04);
+}
+
+.file-upload-parser__dropzone-icon {
+  color: var(--text-muted, #94A3B8);
+}
+
+.file-upload-parser__dropzone-text {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  font-weight: 500;
+  margin: 0;
+}
+
+.file-upload-parser__dropzone-hint {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #94A3B8);
+  margin: 0;
+}
+
+.file-upload-parser__file-input {
+  display: none;
+}
+
+/* ─── File Info ────────────────────────────────────────────── */
+
+.file-upload-parser__file-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  background-color: var(--bg-secondary, #F9FAFB);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+}
+
+.file-upload-parser__file-count {
+  color: var(--text-muted, #94A3B8);
+  margin-left: auto;
+}
+
+.file-upload-parser__file-clear {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: var(--text-muted, #94A3B8);
+  padding: var(--space-1, 0.25rem);
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+}
+
+.file-upload-parser__file-clear:hover {
+  color: var(--color-danger, #DC2626);
+  background-color: rgba(220, 38, 38, 0.06);
+}
+
+/* ─── Errors ──────────────────────────────────────────────── */
+
+.file-upload-parser__errors {
+  background-color: rgba(220, 38, 38, 0.06);
+  border: 1px solid var(--color-danger, #DC2626);
+  border-radius: var(--radius-md, 8px);
+  padding: var(--space-3, 0.75rem);
+}
+
+.file-upload-parser__errors-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--color-danger, #DC2626);
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.file-upload-parser__errors-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 0.25rem);
+}
+
+.file-upload-parser__errors-list li {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-danger, #DC2626);
+  padding-left: var(--space-4, 1rem);
+  position: relative;
+}
+
+.file-upload-parser__errors-list li::before {
+  content: '\2022';
+  position: absolute;
+  left: var(--space-2, 0.5rem);
+}
+
+/* ─── Column Editor ───────────────────────────────────────── */
+
+.file-upload-parser__column-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.file-upload-parser__column-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.file-upload-parser__column-name {
+  flex: 1;
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-sm, 4px);
+  color: var(--text-primary, #111827);
+}
+
+.file-upload-parser__column-name:focus {
+  outline: none;
+  border-color: var(--color-primary, #4F46E5);
+}
+
+.file-upload-parser__column-type {
+  width: 120px;
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-sm, 4px);
+  color: var(--text-primary, #111827);
+}
+
+.file-upload-parser__column-remove {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: var(--text-muted, #94A3B8);
+  padding: var(--space-1, 0.25rem);
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+}
+
+.file-upload-parser__column-remove:hover {
+  color: var(--color-danger, #DC2626);
+  background-color: rgba(220, 38, 38, 0.06);
+}
+
+/* ─── Preview Table ───────────────────────────────────────── */
+
+.file-upload-parser__table-wrapper {
+  overflow-x: auto;
+}
+
+.file-upload-parser__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-xs, 0.75rem);
+}
+
+.file-upload-parser__table th,
+.file-upload-parser__table td {
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  border: 1px solid var(--border-color, #E2E8F0);
+  text-align: left;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-upload-parser__table th {
+  background-color: var(--bg-secondary, #F9FAFB);
+  font-weight: 600;
+  color: var(--text-secondary, #6B7280);
+}
+
+.file-upload-parser__table td {
+  color: var(--text-primary, #111827);
+}
+
+/* ─── Import Mode ─────────────────────────────────────────── */
+
+.file-upload-parser__mode-options {
+  display: flex;
+  gap: var(--space-4, 1rem);
+}
+
+.file-upload-parser__radio {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  cursor: pointer;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+}
+
+.file-upload-parser__radio input[type="radio"] {
+  accent-color: var(--color-primary, #4F46E5);
+}
+
+/* ─── New Table / Existing Table ──────────────────────────── */
+
+.file-upload-parser__input,
+.file-upload-parser__select {
+  width: 100%;
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  font-size: var(--text-sm, 0.875rem);
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-md, 8px);
+  color: var(--text-primary, #111827);
+}
+
+.file-upload-parser__input:focus,
+.file-upload-parser__select:focus {
+  outline: none;
+  border-color: var(--color-primary, #4F46E5);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+/* ─── Column Mapping ──────────────────────────────────────── */
+
+.file-upload-parser__mapping {
+  margin-top: var(--space-3, 0.75rem);
+}
+
+.file-upload-parser__mapping-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2, 0.5rem);
+  align-items: center;
+}
+
+.file-upload-parser__mapping-header {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--text-muted, #94A3B8);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-bottom: var(--space-1, 0.25rem);
+  border-bottom: 1px solid var(--border-color, #E2E8F0);
+}
+
+.file-upload-parser__mapping-row {
+  display: contents;
+}
+
+.file-upload-parser__mapping-source {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  padding: var(--space-1, 0.25rem) 0;
+}
+
+.file-upload-parser__mapping-select {
+  font-size: var(--text-sm, 0.875rem);
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-sm, 4px);
+  color: var(--text-primary, #111827);
+}
+
+/* ─── Actions ─────────────────────────────────────────────── */
+
+.file-upload-parser__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2, 0.5rem);
+  padding-top: var(--space-3, 0.75rem);
+  border-top: 1px solid var(--border-color, #E2E8F0);
+}
+
+.file-upload-parser__actions .btn-primary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.file-upload-parser__actions .btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Dark Mode ───────────────────────────────────────────── */
+
+[data-theme="dark"] .file-upload-parser__dropzone {
+  background-color: var(--bg-secondary, #1A1A2E);
+}
+
+[data-theme="dark"] .file-upload-parser__dropzone:hover,
+[data-theme="dark"] .file-upload-parser__dropzone--active {
+  background-color: rgba(79, 70, 229, 0.1);
+}
+
+[data-theme="dark"] .file-upload-parser__file-info {
+  background-color: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .file-upload-parser__errors {
+  background-color: rgba(220, 38, 38, 0.1);
+}
+
+[data-theme="dark"] .file-upload-parser__errors-list li {
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .file-upload-parser__column-name,
+[data-theme="dark"] .file-upload-parser__column-type {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+  color: var(--text-primary, #F8FAFC);
+}
+
+[data-theme="dark"] .file-upload-parser__table th {
+  background-color: rgba(79, 70, 229, 0.08);
+}
+
+[data-theme="dark"] .file-upload-parser__input,
+[data-theme="dark"] .file-upload-parser__select {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+  color: var(--text-primary, #F8FAFC);
+}
+
+[data-theme="dark"] .file-upload-parser__mapping-select {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+  color: var(--text-primary, #F8FAFC);
+}

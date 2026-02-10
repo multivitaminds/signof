@@ -1,0 +1,183 @@
+/* ===================================================================
+   CreateTableModal -- BEM
+   =================================================================== */
+
+.create-table-modal {
+  max-width: 480px;
+}
+
+/* ─── Body ────────────────────────────────────────────────── */
+
+.create-table-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+  padding: var(--space-4, 1rem) 0;
+}
+
+.create-table-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 0.25rem);
+}
+
+.create-table-modal__label {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.create-table-modal__required {
+  color: var(--color-danger, #DC2626);
+}
+
+.create-table-modal__optional {
+  font-weight: 400;
+  color: var(--text-muted, #94A3B8);
+}
+
+/* ─── Input ───────────────────────────────────────────────── */
+
+.create-table-modal__input {
+  padding: 0.5rem 0.75rem;
+  font-size: var(--text-sm, 0.875rem);
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-md, 8px);
+  color: var(--text-primary, #111827);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.create-table-modal__input::placeholder {
+  color: var(--text-muted, #94A3B8);
+}
+
+.create-table-modal__input:focus {
+  outline: none;
+  border-color: var(--color-primary, #4F46E5);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.create-table-modal__input--error {
+  border-color: var(--color-danger, #DC2626);
+}
+
+.create-table-modal__input--error:focus {
+  border-color: var(--color-danger, #DC2626);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+/* ─── Textarea ────────────────────────────────────────────── */
+
+.create-table-modal__textarea {
+  padding: 0.5rem 0.75rem;
+  font-size: var(--text-sm, 0.875rem);
+  font-family: inherit;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-md, 8px);
+  color: var(--text-primary, #111827);
+  resize: vertical;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.create-table-modal__textarea::placeholder {
+  color: var(--text-muted, #94A3B8);
+}
+
+.create-table-modal__textarea:focus {
+  outline: none;
+  border-color: var(--color-primary, #4F46E5);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+/* ─── Error ───────────────────────────────────────────────── */
+
+.create-table-modal__error {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-danger, #DC2626);
+  margin: 0;
+}
+
+/* ─── Icon Picker ─────────────────────────────────────────── */
+
+.create-table-modal__icons {
+  display: flex;
+  gap: var(--space-2, 0.5rem);
+  flex-wrap: wrap;
+}
+
+.create-table-modal__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-size: 1.25rem;
+  border: 2px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-primary, #fff);
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.create-table-modal__icon-btn:hover {
+  border-color: var(--color-primary, #4F46E5);
+  background: rgba(79, 70, 229, 0.04);
+}
+
+.create-table-modal__icon-btn--active {
+  border-color: var(--color-primary, #4F46E5);
+  background: rgba(79, 70, 229, 0.08);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+/* ─── Actions ─────────────────────────────────────────────── */
+
+.create-table-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2, 0.5rem);
+  padding-top: var(--space-3, 0.75rem);
+  border-top: 1px solid var(--border-color, #E2E8F0);
+}
+
+.create-table-modal__actions .btn-primary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.create-table-modal__actions .btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Dark Mode ───────────────────────────────────────────── */
+
+[data-theme="dark"] .create-table-modal__input {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+  color: var(--text-primary, #F8FAFC);
+}
+
+[data-theme="dark"] .create-table-modal__textarea {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+  color: var(--text-primary, #F8FAFC);
+}
+
+[data-theme="dark"] .create-table-modal__icon-btn {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .create-table-modal__icon-btn:hover {
+  border-color: var(--color-primary, #4F46E5);
+  background: rgba(79, 70, 229, 0.1);
+}
+
+[data-theme="dark"] .create-table-modal__icon-btn--active {
+  border-color: var(--color-primary, #4F46E5);
+  background: rgba(79, 70, 229, 0.15);
+}
