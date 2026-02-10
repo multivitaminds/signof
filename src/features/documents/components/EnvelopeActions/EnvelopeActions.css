@@ -1,0 +1,40 @@
+.envelope-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.envelope-actions__btn {
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-3);
+}
+
+.envelope-actions__btn--danger {
+  background-color: var(--color-danger);
+  color: #ffffff;
+}
+
+.envelope-actions__btn--danger:hover:not(:disabled) {
+  background-color: var(--color-danger-dark);
+}
+
+.envelope-actions__btn--danger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.envelope-actions__confirm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-danger-light);
+  border-radius: var(--radius-md);
+}
+
+.envelope-actions__confirm-text {
+  font-size: var(--text-sm);
+  color: var(--color-danger-dark);
+  font-weight: var(--font-medium);
+}

@@ -1,0 +1,208 @@
+.field-renderer {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.field-renderer--focused {
+  z-index: 2;
+}
+
+.field-renderer--focused > :first-child {
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+}
+
+.field-renderer--readonly {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.field-renderer--completed > :first-child {
+  background-color: var(--color-success-light);
+}
+
+/* ─── Signature ─────────────────────────────────── */
+
+.field-renderer__signature {
+  width: 100%;
+  height: 100%;
+  min-width: 120px;
+  min-height: 40px;
+  border: 2px dashed;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-primary);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.field-renderer__signature:hover {
+  background-color: var(--bg-secondary);
+}
+
+.field-renderer__signature-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* ─── Initial ───────────────────────────────────── */
+
+.field-renderer__initial {
+  width: 100%;
+  height: 100%;
+  min-width: 60px;
+  min-height: 30px;
+  border: 2px dashed;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-primary);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+}
+
+.field-renderer__initial-value {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+/* ─── Date ──────────────────────────────────────── */
+
+.field-renderer__date {
+  width: 100%;
+  height: 100%;
+  border: 1px solid;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-2);
+  background-color: var(--bg-secondary);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.field-renderer__date-value {
+  white-space: nowrap;
+}
+
+/* ─── Text ──────────────────────────────────────── */
+
+.field-renderer__text {
+  width: 100%;
+  height: 100%;
+  border: 1px solid;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.field-renderer__text:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* ─── Checkbox ──────────────────────────────────── */
+
+.field-renderer__checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  position: relative;
+  background-color: var(--bg-primary);
+}
+
+.field-renderer__checkbox input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.field-renderer__checkbox-mark {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  transition: background-color var(--transition-fast);
+}
+
+.field-renderer__checkbox input:checked + .field-renderer__checkbox-mark {
+  background-color: var(--color-primary);
+}
+
+/* ─── Dropdown ──────────────────────────────────── */
+
+.field-renderer__dropdown {
+  width: 100%;
+  height: 100%;
+  border: 1px solid;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  appearance: auto;
+}
+
+/* ─── Attachment ────────────────────────────────── */
+
+.field-renderer__attachment {
+  width: 100%;
+  height: 100%;
+  min-width: 80px;
+  min-height: 32px;
+  border: 2px dashed;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--space-2);
+  background-color: var(--bg-primary);
+  cursor: pointer;
+  font-size: var(--text-xs);
+}
+
+.field-renderer__attachment-name {
+  color: var(--text-primary);
+  font-size: var(--text-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── Shared ────────────────────────────────────── */
+
+.field-renderer__placeholder {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-style: italic;
+  user-select: none;
+}
+
+.field-renderer__label {
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}

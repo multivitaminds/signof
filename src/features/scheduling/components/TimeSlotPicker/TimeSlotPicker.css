@@ -1,0 +1,59 @@
+.time-slot-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.time-slot-picker__date {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.time-slot-picker__timezone {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.time-slot-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.time-slot-picker__slot {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-primary);
+  background-color: var(--bg-primary);
+  text-align: center;
+  transition: all var(--motion-fast) var(--ease-out);
+}
+
+.time-slot-picker__slot:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.time-slot-picker__slot--selected {
+  background-color: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.time-slot-picker__slot--selected:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.time-slot-picker__empty {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}

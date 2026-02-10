@@ -1,0 +1,81 @@
+.template-builder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.template-builder__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.template-builder__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.template-builder__field label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+}
+
+.template-builder__field input,
+.template-builder__field textarea {
+  width: 100%;
+}
+
+.template-builder__field textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.template-builder__roles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.template-builder__roles h4 {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.template-builder__role-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.template-builder__role-color {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.template-builder__role-item input {
+  flex: 1;
+}
+
+.template-builder__canvas-area {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.template-builder__canvas-area .document-canvas {
+  flex: 1;
+}
+
+.template-builder__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-color);
+}
