@@ -1,39 +1,158 @@
-/* ─── KeyboardShortcutHelp ─────────────────────────────────── */
+/* ─── KeyboardShortcutHelp (BEM) ──────────────────────────────── */
 
-.shortcut-help {
-  max-width: 520px;
+.keyboard-help {
+  max-width: 540px;
 }
 
-.shortcut-help__body {
-  max-height: 60vh;
-  overflow-y: auto;
+/* ─── Search ──────────────────────────────────────────────────── */
+
+.keyboard-help__search {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-5, 24px);
+  align-items: center;
+  margin-bottom: var(--space-4, 16px);
 }
 
-/* Section */
-.shortcut-help__section-title {
-  font-size: var(--text-xs, 0.75rem);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted, #9CA3AF);
-  margin-bottom: var(--space-2, 8px);
+.keyboard-help__search-icon {
+  position: absolute;
+  left: var(--space-3, 12px);
+  color: var(--text-muted, #94A3B8);
+  pointer-events: none;
+  flex-shrink: 0;
 }
 
-/* List */
-.shortcut-help__list {
-  list-style: none;
-  margin: 0;
+.keyboard-help__search-input {
+  width: 100%;
+  padding: var(--space-2, 8px) var(--space-4, 16px) var(--space-2, 8px) var(--space-8, 40px);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-md, 8px);
+  background-color: var(--bg-secondary, #F8FAFC);
+  color: var(--text-primary, #1E293B);
+  font-size: var(--text-sm, 0.875rem);
+  font-family: var(--font-sans);
+  transition: border-color var(--motion-fast, 150ms) ease-out,
+              box-shadow var(--motion-fast, 150ms) ease-out;
+}
+
+.keyboard-help__search-input:focus {
+  outline: none;
+  border-color: var(--color-primary, #4F46E5);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.keyboard-help__search-input::placeholder {
+  color: var(--text-muted, #94A3B8);
+}
+
+.keyboard-help__search-clear {
+  position: absolute;
+  right: var(--space-2, 8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   padding: 0;
+  border: none;
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  color: var(--text-muted, #94A3B8);
+  cursor: pointer;
+  transition: color var(--motion-micro, 100ms) ease-out,
+              background var(--motion-micro, 100ms) ease-out;
+}
+
+.keyboard-help__search-clear:hover {
+  color: var(--text-primary, #1E293B);
+  background: var(--bg-tertiary, #E5E7EB);
+}
+
+/* ─── Body ────────────────────────────────────────────────────── */
+
+.keyboard-help__body {
+  max-height: 55vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-1, 4px);
 }
 
-/* Item */
-.shortcut-help__item {
+/* ─── Empty State ─────────────────────────────────────────────── */
+
+.keyboard-help__empty {
+  text-align: center;
+  color: var(--text-muted, #94A3B8);
+  font-size: var(--text-sm, 0.875rem);
+  padding: var(--space-8, 48px) var(--space-4, 16px);
+}
+
+/* ─── Section ─────────────────────────────────────────────────── */
+
+.keyboard-help__section {
+  border-radius: var(--radius-md, 8px);
+}
+
+.keyboard-help__section-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  width: 100%;
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--motion-micro, 100ms) ease-out;
+  text-align: left;
+}
+
+.keyboard-help__section-toggle:hover {
+  background: var(--bg-secondary, #F8FAFC);
+}
+
+.keyboard-help__section-toggle:focus-visible {
+  outline: 2px solid var(--color-primary, #4F46E5);
+  outline-offset: -2px;
+}
+
+.keyboard-help__chevron {
+  color: var(--text-muted, #94A3B8);
+  flex-shrink: 0;
+}
+
+.keyboard-help__section-title {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, #94A3B8);
+  flex: 1;
+}
+
+.keyboard-help__section-count {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  color: var(--text-muted, #94A3B8);
+  background: var(--bg-tertiary, #E5E7EB);
+  padding: 1px 6px;
+  border-radius: var(--radius-full, 9999px);
+  line-height: 1.4;
+}
+
+/* ─── List ────────────────────────────────────────────────────── */
+
+.keyboard-help__list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 var(--space-2, 8px) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 4px);
+}
+
+/* ─── Item ────────────────────────────────────────────────────── */
+
+.keyboard-help__item {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -42,79 +161,123 @@
   transition: background var(--motion-micro, 100ms) ease-out;
 }
 
-.shortcut-help__item:hover {
-  background: var(--bg-secondary, #F8F9FA);
+.keyboard-help__item:hover {
+  background: var(--bg-secondary, #F8FAFC);
 }
 
-/* Keys */
-.shortcut-help__keys {
+/* ─── Description ─────────────────────────────────────────────── */
+
+.keyboard-help__desc {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #1E293B);
+}
+
+/* ─── Keys ────────────────────────────────────────────────────── */
+
+.keyboard-help__keys {
   display: flex;
   align-items: center;
-  gap: var(--space-1, 4px);
+  gap: 0;
   flex-shrink: 0;
 }
 
-.shortcut-help__key {
+.keyboard-help__key-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.keyboard-help__key-separator {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #94A3B8);
+  margin: 0 2px;
+  user-select: none;
+}
+
+.keyboard-help__key {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 6px;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 7px;
   border-radius: var(--radius-sm, 4px);
-  background: var(--bg-tertiary, #E9ECEF);
-  border: 1px solid var(--border-color, #DEE2E6);
+  background: linear-gradient(to bottom, var(--bg-primary, #FFFFFF), var(--bg-secondary, #F8FAFC));
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-bottom-width: 2px;
   font-size: var(--text-xs, 0.75rem);
   font-weight: 500;
   font-family: var(--font-sans);
-  color: var(--text-secondary, #6C757D);
-  box-shadow: 0 1px 0 var(--border-color, #DEE2E6);
+  color: var(--text-secondary, #64748B);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  line-height: 1;
+  white-space: nowrap;
 }
 
-/* Description */
-.shortcut-help__desc {
-  font-size: var(--text-sm, 0.875rem);
-  color: var(--text-primary, #343A40);
-}
+/* ─── Scrollbar ───────────────────────────────────────────────── */
 
-/* ─── Scrollbar ───────────────────────────────────────────── */
-.shortcut-help__body::-webkit-scrollbar {
+.keyboard-help__body::-webkit-scrollbar {
   width: 6px;
 }
 
-.shortcut-help__body::-webkit-scrollbar-track {
+.keyboard-help__body::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.shortcut-help__body::-webkit-scrollbar-thumb {
-  background: var(--border-color, #DEE2E6);
+.keyboard-help__body::-webkit-scrollbar-thumb {
+  background: var(--border-color, #E2E8F0);
   border-radius: 3px;
 }
 
-.shortcut-help__body::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted, #9CA3AF);
+.keyboard-help__body::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted, #94A3B8);
 }
 
-/* ─── Dark Mode ───────────────────────────────────────────── */
-[data-theme="dark"] .shortcut-help__item:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
+/* ─── Dark Mode ───────────────────────────────────────────────── */
 
-[data-theme="dark"] .shortcut-help__key {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.15);
-  color: var(--text-secondary, #94A3B8);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-[data-theme="dark"] .shortcut-help__desc {
+[data-theme="dark"] .keyboard-help__search-input {
+  background-color: var(--bg-tertiary, #2D2D44);
+  border-color: var(--border-color, #334155);
   color: var(--text-primary, #F1F5F9);
 }
 
-[data-theme="dark"] .shortcut-help__body::-webkit-scrollbar-thumb {
+[data-theme="dark"] .keyboard-help__search-input:focus {
+  border-color: var(--color-primary, #4F46E5);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+[data-theme="dark"] .keyboard-help__search-clear:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .keyboard-help__section-toggle:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .keyboard-help__section-count {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted, #64748B);
+}
+
+[data-theme="dark"] .keyboard-help__item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .keyboard-help__key {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text-secondary, #94A3B8);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .keyboard-help__desc {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .keyboard-help__body::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
 }
 
-[data-theme="dark"] .shortcut-help__body::-webkit-scrollbar-thumb:hover {
+[data-theme="dark"] .keyboard-help__body::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.25);
 }

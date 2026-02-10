@@ -42,6 +42,12 @@ interface AppState {
   removeFavorite: (id: string) => void
   reorderFavorites: (fromIndex: number, toIndex: number) => void
 
+  // Search overlay
+  searchOverlayOpen: boolean
+  openSearchOverlay: () => void
+  closeSearchOverlay: () => void
+  toggleSearchOverlay: () => void
+
   // Keyboard shortcut help
   shortcutHelpOpen: boolean
   openShortcutHelp: () => void
@@ -110,6 +116,16 @@ export const useAppStore = create<AppState>()(
           }
           return { favorites: items }
         }),
+
+      // Search overlay
+      searchOverlayOpen: false,
+      openSearchOverlay: () => set({ searchOverlayOpen: true, commandPaletteOpen: false }),
+      closeSearchOverlay: () => set({ searchOverlayOpen: false }),
+      toggleSearchOverlay: () =>
+        set((state) => ({
+          searchOverlayOpen: !state.searchOverlayOpen,
+          commandPaletteOpen: false,
+        })),
 
       // Keyboard shortcut help
       shortcutHelpOpen: false,

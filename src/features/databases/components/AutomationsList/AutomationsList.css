@@ -1,0 +1,242 @@
+/* ═══════════════════════════════════════════════════════════
+   AutomationsList — BEM
+   ═══════════════════════════════════════════════════════════ */
+
+.automations-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ─── Header ──────────────────────────────────────────────── */
+
+.automations-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.automations-list__title {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.automations-list__header .btn-primary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+/* ─── Empty State ─────────────────────────────────────────── */
+
+.automations-list__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+}
+
+.automations-list__empty-icon {
+  color: var(--text-muted);
+}
+
+.automations-list__empty-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.automations-list__empty-desc {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  max-width: 320px;
+}
+
+.automations-list__empty .btn-primary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+/* ─── Items ───────────────────────────────────────────────── */
+
+.automations-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.automations-list__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: border-color var(--motion-fast), opacity var(--motion-fast);
+}
+
+.automations-list__item:hover {
+  border-color: var(--color-primary);
+}
+
+.automations-list__item--disabled {
+  opacity: 0.55;
+}
+
+.automations-list__item--disabled:hover {
+  opacity: 0.7;
+}
+
+/* ─── Toggle Switch ───────────────────────────────────────── */
+
+.automations-list__toggle {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.automations-list__toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.automations-list__toggle-slider {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-gray-300);
+  border-radius: var(--radius-full);
+  transition: background-color var(--motion-fast);
+}
+
+.automations-list__toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #fff;
+  border-radius: var(--radius-full);
+  transition: transform var(--motion-fast);
+}
+
+.automations-list__toggle-input:checked + .automations-list__toggle-slider {
+  background-color: var(--color-primary);
+}
+
+.automations-list__toggle-input:checked + .automations-list__toggle-slider::before {
+  transform: translateX(16px);
+}
+
+.automations-list__toggle-input:focus-visible + .automations-list__toggle-slider {
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+/* ─── Item Content ────────────────────────────────────────── */
+
+.automations-list__item-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.automations-list__item-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.automations-list__item-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.automations-list__item-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Meta (trigger → action, stats) ──────────────────────── */
+
+.automations-list__item-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.automations-list__item-badge {
+  font-size: var(--text-xs);
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-medium);
+  white-space: nowrap;
+}
+
+.automations-list__item-badge--trigger {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.automations-list__item-badge--action {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.automations-list__item-arrow {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.automations-list__item-stat {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* ─── Item Actions ────────────────────────────────────────── */
+
+.automations-list__item-actions {
+  display: flex;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.automations-list__delete-btn:hover {
+  color: var(--color-danger) !important;
+}
+
+/* ─── Dark Mode ───────────────────────────────────────────── */
+
+[data-theme="dark"] .automations-list__item {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .automations-list__toggle-slider {
+  background-color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .automations-list__item-badge--trigger {
+  background-color: rgba(79, 70, 229, 0.15);
+}
+
+[data-theme="dark"] .automations-list__item-badge--action {
+  background-color: rgba(5, 150, 105, 0.15);
+}

@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Database, DbTable, DbField, DbRow, DbView, CellValue } from '../types'
 import { DbFieldType, ViewType } from '../types'
+import type { AutomationRule } from '../types/automation'
 import { sampleDatabase, sampleTable } from '../lib/sampleData'
 import { applyFilters, applySorts, searchRows, groupRows } from '../lib/filterEngine'
 
@@ -16,6 +17,7 @@ function now(): string {
 interface DatabaseState {
   databases: Record<string, Database>
   tables: Record<string, DbTable>
+  automations: AutomationRule[]
 
   // Database CRUD
   addDatabase: (name: string, icon: string, description: string) => string
@@ -43,6 +45,12 @@ interface DatabaseState {
   updateView: (tableId: string, viewId: string, updates: Partial<DbView>) => void
   deleteView: (tableId: string, viewId: string) => void
 
+  // Automation CRUD
+  addAutomation: (rule: AutomationRule) => void
+  updateAutomation: (id: string, updates: Partial<AutomationRule>) => void
+  deleteAutomation: (id: string) => void
+  toggleAutomation: (id: string) => void
+
   // Queries
   getFilteredRows: (tableId: string, viewId: string, query?: string) => DbRow[]
   getGroupedRows: (tableId: string, viewId: string, query?: string) => Record<string, DbRow[]>
@@ -55,6 +63,7 @@ export const useDatabaseStore = create<DatabaseState>()(
     (set, get) => ({
       databases: { [sampleDatabase.id]: sampleDatabase },
       tables: { [sampleTable.id]: sampleTable },
+      automations: [],
 
       addDatabase: (name, icon, description) => {
         const id = rid()
@@ -254,6 +263,30 @@ export const useDatabaseStore = create<DatabaseState>()(
         })
       },
 
+      addAutomation: (rule) => {
+        set((s) => ({ automations: [...s.automations, rule] }))
+      },
+
+      updateAutomation: (id, updates) => {
+        set((s) => ({
+          automations: s.automations.map((r) => (r.id === id ? { ...r, ...updates } : r)),
+        }))
+      },
+
+      deleteAutomation: (id) => {
+        set((s) => ({
+          automations: s.automations.filter((r) => r.id !== id),
+        }))
+      },
+
+      toggleAutomation: (id) => {
+        set((s) => ({
+          automations: s.automations.map((r) =>
+            r.id === id ? { ...r, enabled: !r.enabled } : r
+          ),
+        }))
+      },
+
       getFilteredRows: (tableId, viewId, query) => {
         const state = get()
         const table = state.tables[tableId]
@@ -287,6 +320,7 @@ export const useDatabaseStore = create<DatabaseState>()(
       partialize: (state) => ({
         databases: state.databases,
         tables: state.tables,
+        automations: state.automations,
       }),
     }
   )

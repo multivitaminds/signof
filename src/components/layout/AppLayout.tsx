@@ -5,6 +5,7 @@ import TopBar from './TopBar/TopBar'
 import PageTransition from './PageTransition/PageTransition'
 import CommandPalette from '../CommandPalette/CommandPalette'
 import KeyboardShortcutHelp from '../KeyboardShortcutHelp/KeyboardShortcutHelp'
+import SearchOverlay from '../../features/search/components/SearchOverlay/SearchOverlay'
 import { useTheme } from '../../hooks/useTheme'
 import { useAppStore } from '../../stores/useAppStore'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
@@ -33,6 +34,8 @@ export default function AppLayout() {
   const mobileSidebarOpen = useAppStore((s) => s.mobileSidebarOpen)
   const closeMobileSidebar = useAppStore((s) => s.closeMobileSidebar)
   const addRecentItem = useAppStore((s) => s.addRecentItem)
+  const searchOverlayOpen = useAppStore((s) => s.searchOverlayOpen)
+  const closeSearchOverlay = useAppStore((s) => s.closeSearchOverlay)
 
   // Register all keyboard shortcuts
   useKeyboardShortcuts([
@@ -93,6 +96,7 @@ export default function AppLayout() {
       </div>
       <CommandPalette />
       <KeyboardShortcutHelp />
+      <SearchOverlay isOpen={searchOverlayOpen} onClose={closeSearchOverlay} />
     </div>
   )
 }

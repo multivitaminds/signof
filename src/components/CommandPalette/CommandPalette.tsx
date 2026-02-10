@@ -450,12 +450,17 @@ export default function CommandPalette() {
     return groups
   }, [filteredItems])
 
-  // Keyboard shortcuts to open palette
+  // Keyboard shortcuts: Cmd+K opens SearchOverlay, not CommandPalette
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
-        useAppStore.getState().toggleCommandPalette()
+        const store = useAppStore.getState()
+        // Close command palette if open, open search overlay
+        if (store.commandPaletteOpen) {
+          store.closeCommandPalette()
+        }
+        store.toggleSearchOverlay()
       }
     }
     window.addEventListener('keydown', handleKeyDown)

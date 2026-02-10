@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 // Critical path — direct imports (not lazy-loaded)
 import AppLayout from './components/layout/AppLayout'
+import ToastProvider from './components/Toast/ToastProvider'
 import LoadingSpinner from './components/layout/LoadingSpinner/LoadingSpinner'
 import HomePage from './pages/HomePage'
 import DocumentsPage from './pages/DocumentsPage'
@@ -72,6 +73,7 @@ const LazyFallback = <LoadingSpinner />
 
 createRoot(root).render(
   <StrictMode>
+    <ToastProvider>
     <BrowserRouter>
       <Routes>
         {/* Auth routes (outside main layout) */}
@@ -160,5 +162,6 @@ createRoot(root).render(
         </Route>
       </Routes>
     </BrowserRouter>
+    </ToastProvider>
   </StrictMode>,
 )
