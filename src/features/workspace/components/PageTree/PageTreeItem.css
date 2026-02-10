@@ -1,0 +1,124 @@
+.page-tree-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: 4px var(--space-2, 0.5rem);
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  transition: background 60ms ease;
+  user-select: none;
+}
+
+.page-tree-item:hover {
+  background: var(--bg-secondary, #F3F4F6);
+  color: var(--text-primary, #111827);
+}
+
+.page-tree-item--active {
+  background: var(--color-primary-light, #E0E7FF);
+  color: var(--color-primary, #4F46E5);
+}
+
+.page-tree-item--active:hover {
+  background: var(--color-primary-light, #E0E7FF);
+}
+
+.page-tree-item__chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background: transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+  flex-shrink: 0;
+  transition: transform 100ms ease;
+}
+
+.page-tree-item__chevron:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.page-tree-item__chevron--expanded {
+  transform: rotate(90deg);
+}
+
+.page-tree-item__chevron-placeholder {
+  width: 16px;
+  flex-shrink: 0;
+}
+
+.page-tree-item__icon {
+  font-size: 0.875rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.page-tree-item__title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.page-tree-item__add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--text-muted, #9CA3AF);
+  padding: 0;
+  opacity: 0;
+  transition: opacity 100ms ease;
+  flex-shrink: 0;
+}
+
+.page-tree-item:hover .page-tree-item__add {
+  opacity: 1;
+}
+
+.page-tree-item__add:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-primary, #111827);
+}
+
+.page-tree-item__children {
+  /* Children are rendered recursively — indentation via paddingLeft */
+}
+
+/* Dark mode / sidebar context */
+[data-theme="dark"] .page-tree-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .page-tree-item--active {
+  background: rgba(79, 70, 229, 0.15);
+}
+
+/* When used in the sidebar (dark background) */
+.sidebar .page-tree-item {
+  color: var(--text-sidebar-muted, #94A3B8);
+}
+
+.sidebar .page-tree-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-sidebar, #E2E8F0);
+}
+
+.sidebar .page-tree-item--active {
+  background: rgba(233, 69, 96, 0.15);
+  color: var(--signof-coral, #E94560);
+}

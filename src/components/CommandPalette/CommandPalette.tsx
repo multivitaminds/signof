@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import { useAppStore } from '../../stores/useAppStore'
 import { useDocumentStore } from '../../stores/useDocumentStore'
+import { useWorkspaceStore } from '../../features/workspace/stores/useWorkspaceStore'
 import { fuzzyMatch, highlightMatches } from '../../lib/fuzzyMatch'
 import './CommandPalette.css'
 
@@ -31,7 +32,7 @@ interface CommandItem {
   description?: string
   icon: React.ComponentType<{ size?: number; className?: string }>
   action: () => void
-  category: 'navigation' | 'action' | 'recent' | 'document'
+  category: 'navigation' | 'action' | 'recent' | 'document' | 'page'
   shortcut?: string
   score?: number
 }
@@ -63,6 +64,7 @@ export default function CommandPalette() {
   } = useAppStore()
   const { theme, setTheme, compactMode, setCompactMode } = useAppStore()
   const documents = useDocumentStore((s) => s.documents)
+  const workspacePages = useWorkspaceStore((s) => Object.values(s.pages))
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -278,11 +280,29 @@ export default function CommandPalette() {
       }
     }
 
+    // Search pages (when query length >= 2)
+    if (trimmed.length >= 2) {
+      for (const page of workspacePages) {
+        const match = fuzzyMatch(trimmed, page.title || 'Untitled')
+        if (match) {
+          scored.push({
+            id: `page-${page.id}`,
+            label: page.title || 'Untitled',
+            description: `Page${page.icon ? ` ${page.icon}` : ''}`,
+            icon: FileText,
+            action: () => navigateAndTrack(`/pages/${page.id}`, page.title || 'Untitled'),
+            category: 'page',
+            score: match.score,
+          })
+        }
+      }
+    }
+
     // Sort by score descending
     scored.sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
 
     return scored
-  }, [query, commands, documents, recentItems, navigateAndTrack])
+  }, [query, commands, documents, workspacePages, recentItems, navigateAndTrack])
 
   // Get matched indices per item for highlighting
   const getMatchIndices = useCallback(
@@ -301,6 +321,7 @@ export default function CommandPalette() {
       action: [] as CommandItem[],
       navigation: [] as CommandItem[],
       document: [] as CommandItem[],
+      page: [] as CommandItem[],
     }
     filteredItems.forEach((cmd) => {
       groups[cmd.category].push(cmd)
@@ -470,6 +491,7 @@ export default function CommandPalette() {
               {renderGroup('Recent', groupedCommands.recent)}
               {renderGroup('Quick Actions', groupedCommands.action)}
               {renderGroup('Documents', groupedCommands.document)}
+              {renderGroup('Pages', groupedCommands.page)}
               {renderGroup('Navigation', groupedCommands.navigation)}
             </>
           )}

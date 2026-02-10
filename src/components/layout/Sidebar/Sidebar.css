@@ -381,6 +381,13 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
+
+/* Page tree in sidebar */
+.sidebar__page-tree {
+  padding: 0 var(--space-2, 8px);
+  margin-top: var(--space-1, 4px);
+}
+
 /* ─── Mobile ────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .sidebar {

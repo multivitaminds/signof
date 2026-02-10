@@ -4,6 +4,11 @@ import { MemoryRouter } from 'react-router-dom'
 import CommandPalette from './CommandPalette'
 import { useAppStore } from '../../stores/useAppStore'
 
+vi.mock('../../features/workspace/stores/useWorkspaceStore', () => ({
+  useWorkspaceStore: (selector: (s: Record<string, unknown>) => unknown) =>
+    selector({ pages: {} }),
+}))
+
 function renderPalette() {
   return render(
     <MemoryRouter>

@@ -1,4 +1,4 @@
-import { FileText, FolderKanban, Calendar, Database, Inbox, Settings } from 'lucide-react'
+import { FolderKanban, Calendar, Database, Inbox, Settings } from 'lucide-react'
 import './PlaceholderPages.css'
 
 interface PlaceholderProps {
@@ -17,16 +17,6 @@ function PlaceholderPage({ title, description, icon: Icon }: PlaceholderProps) {
       <p className="placeholder-page__description">{description}</p>
       <div className="placeholder-page__badge">Coming Soon</div>
     </div>
-  )
-}
-
-export function PagesPage() {
-  return (
-    <PlaceholderPage
-      title="Pages"
-      description="Create rich documents with a block-based editor. Write notes, wikis, and documentation with slash commands and AI assistance."
-      icon={FileText}
-    />
   )
 }
 

@@ -6,6 +6,15 @@ import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotFoundPage'
 import { useAppStore } from './stores/useAppStore'
 
+vi.mock('./features/workspace/stores/useWorkspaceStore', () => ({
+  useWorkspaceStore: (selector: (s: Record<string, unknown>) => unknown) =>
+    selector({ pages: {}, blocks: {} }),
+}))
+
+vi.mock('./features/workspace/components/PageTree/PageTree', () => ({
+  default: () => null,
+}))
+
 function renderWithRouter(initialEntries = ['/']) {
   return render(
     <MemoryRouter initialEntries={initialEntries}>

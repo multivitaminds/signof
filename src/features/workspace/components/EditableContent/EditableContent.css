@@ -1,0 +1,35 @@
+.editable-content {
+  outline: none;
+  min-height: 1.5em;
+  word-break: break-word;
+  white-space: pre-wrap;
+  line-height: var(--leading-normal, 1.5);
+  color: var(--text-primary);
+}
+
+.editable-content:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-muted, #9CA3AF);
+  pointer-events: none;
+}
+
+.editable-content code {
+  background: var(--color-gray-100, #F3F4F6);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.9em;
+}
+
+.editable-content a {
+  color: var(--color-primary, #4F46E5);
+  text-decoration: underline;
+}
+
+.editable-content a:hover {
+  color: var(--color-primary-hover, #4338CA);
+}
+
+[data-theme="dark"] .editable-content code {
+  background: var(--color-gray-700, #374151);
+}

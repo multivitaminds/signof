@@ -23,6 +23,8 @@ import {
 } from 'lucide-react'
 import { useAppStore } from '../../../stores/useAppStore'
 import { useDocumentStore } from '../../../stores/useDocumentStore'
+import { useWorkspaceStore } from '../../../features/workspace/stores/useWorkspaceStore'
+import PageTree from '../../../features/workspace/components/PageTree/PageTree'
 import { ACTIVE_STATUSES } from '../../../types'
 import './Sidebar.css'
 
@@ -61,6 +63,8 @@ export default function Sidebar() {
   const pendingCount = documents.filter((d) =>
     (ACTIVE_STATUSES as string[]).includes(d.status)
   ).length
+
+  const workspacePages = useWorkspaceStore((s) => Object.values(s.pages))
 
   const [newMenuOpen, setNewMenuOpen] = useState(false)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
@@ -308,6 +312,20 @@ export default function Sidebar() {
             )
           })}
         </ul>
+        {sidebarExpanded && workspacePages.length > 0 && (
+          <div className="sidebar__page-tree">
+            <PageTree
+              pages={workspacePages}
+              selectedPageId={location.pathname.split('/pages/')[1]}
+              onSelectPage={(id) => {
+                navigate(`/pages/${id}`)
+                closeMobileSidebar()
+              }}
+              compact
+              maxItems={5}
+            />
+          </div>
+        )}
       </nav>
 
       {/* Divider */}

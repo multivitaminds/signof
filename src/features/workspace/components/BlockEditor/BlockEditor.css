@@ -1,0 +1,15 @@
+.block-editor {
+  min-height: 200px;
+  padding: var(--space-4, 1rem) 0;
+}
+
+.block-editor__block {
+  position: relative;
+  padding: 2px 0;
+}
+
+.block-editor__empty-click {
+  min-height: 200px;
+  cursor: text;
+  outline: none;
+}

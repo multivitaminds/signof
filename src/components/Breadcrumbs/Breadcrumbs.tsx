@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
 import type { BreadcrumbSegment } from '../../types'
+import { useWorkspaceStore } from '../../features/workspace/stores/useWorkspaceStore'
 import './Breadcrumbs.css'
 
 const ROUTE_LABELS: Record<string, string> = {
@@ -33,13 +34,27 @@ function buildBreadcrumbs(pathname: string): BreadcrumbSegment[] {
 
 export default function Breadcrumbs() {
   const location = useLocation()
+  const pages = useWorkspaceStore((s) => s.pages)
   const crumbs = buildBreadcrumbs(location.pathname)
+
+  // Resolve page IDs to titles
+  const resolvedCrumbs = crumbs.map((crumb) => {
+    const segments = crumb.path.split('/')
+    const lastSegment = segments[segments.length - 1]
+    if (segments.includes('pages') && lastSegment && lastSegment !== 'pages' && lastSegment !== 'new') {
+      const page = pages[lastSegment]
+      if (page) {
+        return { ...crumb, label: page.title || 'Untitled' }
+      }
+    }
+    return crumb
+  })
 
   return (
     <nav className="breadcrumbs" aria-label="Breadcrumbs">
       <ol className="breadcrumbs__list">
-        {crumbs.map((crumb, index) => {
-          const isLast = index === crumbs.length - 1
+        {resolvedCrumbs.map((crumb, index) => {
+          const isLast = index === resolvedCrumbs.length - 1
 
           return (
             <li key={crumb.path} className="breadcrumbs__item">
