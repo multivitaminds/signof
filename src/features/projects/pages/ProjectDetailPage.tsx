@@ -11,6 +11,8 @@ import ViewToggle from '../components/ViewToggle/ViewToggle'
 import CreateIssueModal from '../components/CreateIssueModal/CreateIssueModal'
 import IssueDetailPanel from '../components/IssueDetailPanel/IssueDetailPanel'
 import CyclePanel from '../components/CyclePanel/CyclePanel'
+import GoalsPanel from '../components/GoalsPanel/GoalsPanel'
+import MilestonesTimeline from '../components/MilestonesTimeline/MilestonesTimeline'
 import './ProjectDetailPage.css'
 
 export default function ProjectDetailPage() {
@@ -177,6 +179,8 @@ export default function ProjectDetailPage() {
         {/* Cycle sidebar */}
         <aside className="project-detail__sidebar">
           <CyclePanel projectId={projectId} />
+          <GoalsPanel projectId={projectId} />
+          <MilestonesTimeline projectId={projectId} />
         </aside>
       </div>
 

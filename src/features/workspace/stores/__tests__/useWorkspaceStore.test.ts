@@ -269,6 +269,138 @@ describe('useWorkspaceStore', () => {
     })
   })
 
+  describe('undo/redo', () => {
+    it('pushes undo state and can undo', () => {
+      const pageId = useWorkspaceStore.getState().addPage('Test')
+      const blockId = useWorkspaceStore.getState().pages[pageId]!.blockIds[0]!
+      useWorkspaceStore.getState().updateBlockContent(blockId, 'Hello')
+
+      // After updateBlockContent, undo stack should have a snapshot
+      expect(useWorkspaceStore.getState().canUndo()).toBe(true)
+
+      // Undo should restore previous state
+      useWorkspaceStore.getState().undo()
+      const block = useWorkspaceStore.getState().blocks[
+        useWorkspaceStore.getState().pages[pageId]!.blockIds[0]!
+      ]!
+      expect(block.content).toBe('')
+    })
+
+    it('redo restores undone state', () => {
+      const pageId = useWorkspaceStore.getState().addPage('Test')
+      const blockId = useWorkspaceStore.getState().pages[pageId]!.blockIds[0]!
+      useWorkspaceStore.getState().updateBlockContent(blockId, 'Hello')
+
+      useWorkspaceStore.getState().undo()
+      expect(useWorkspaceStore.getState().canRedo()).toBe(true)
+
+      useWorkspaceStore.getState().redo()
+      const block = useWorkspaceStore.getState().blocks[
+        useWorkspaceStore.getState().pages[pageId]!.blockIds[0]!
+      ]!
+      expect(block.content).toBe('Hello')
+    })
+
+    it('clears redo stack on new mutation', () => {
+      const pageId = useWorkspaceStore.getState().addPage('Test')
+      const blockId = useWorkspaceStore.getState().pages[pageId]!.blockIds[0]!
+      useWorkspaceStore.getState().updateBlockContent(blockId, 'Hello')
+
+      useWorkspaceStore.getState().undo()
+      expect(useWorkspaceStore.getState().canRedo()).toBe(true)
+
+      // New mutation should clear redo stack
+      useWorkspaceStore.getState().updateBlockContent(
+        useWorkspaceStore.getState().pages[pageId]!.blockIds[0]!,
+        'World'
+      )
+      expect(useWorkspaceStore.getState().canRedo()).toBe(false)
+    })
+
+    it('returns false for canUndo when stack is empty', () => {
+      expect(useWorkspaceStore.getState().canUndo()).toBe(false)
+    })
+
+    it('returns false for canRedo when stack is empty', () => {
+      expect(useWorkspaceStore.getState().canRedo()).toBe(false)
+    })
+
+    it('limits undo stack to 50 entries', () => {
+      const pageId = useWorkspaceStore.getState().addPage('Test')
+      const blockId = useWorkspaceStore.getState().pages[pageId]!.blockIds[0]!
+
+      // Push 55 undo entries
+      for (let i = 0; i < 55; i++) {
+        useWorkspaceStore.getState().updateBlockContent(blockId, `Content ${i}`)
+      }
+
+      expect(useWorkspaceStore.getState().undoStack.length).toBeLessThanOrEqual(50)
+    })
+  })
+
+  describe('synced blocks', () => {
+    it('creates a synced block from an existing block', () => {
+      const pageId = useWorkspaceStore.getState().addPage('Test')
+      const blockId = useWorkspaceStore.getState().pages[pageId]!.blockIds[0]!
+      useWorkspaceStore.getState().updateBlockContent(blockId, 'Synced content')
+
+      const syncedId = useWorkspaceStore.getState().createSyncedBlock(blockId)
+      expect(syncedId).not.toBeNull()
+
+      // Block should now have syncedBlockId
+      const block = useWorkspaceStore.getState().blocks[blockId]!
+      expect(block.syncedBlockId).toBe(syncedId)
+
+      // Synced block should exist in syncedBlocks
+      expect(useWorkspaceStore.getState().syncedBlocks[syncedId!]).toBeDefined()
+      expect(useWorkspaceStore.getState().syncedBlocks[syncedId!]!.content).toBe('Synced content')
+    })
+
+    it('inserts a synced block reference into a page', () => {
+      const pageId = useWorkspaceStore.getState().addPage('Test')
+      const blockId = useWorkspaceStore.getState().pages[pageId]!.blockIds[0]!
+      useWorkspaceStore.getState().updateBlockContent(blockId, 'Synced content')
+
+      const syncedId = useWorkspaceStore.getState().createSyncedBlock(blockId)!
+
+      const page2Id = useWorkspaceStore.getState().addPage('Test 2')
+      const refId = useWorkspaceStore.getState().insertSyncedBlock(page2Id, syncedId)
+      expect(refId).not.toBeNull()
+
+      const page2 = useWorkspaceStore.getState().pages[page2Id]!
+      expect(page2.blockIds).toContain(refId)
+
+      const refBlock = useWorkspaceStore.getState().blocks[refId!]!
+      expect(refBlock.syncedBlockId).toBe(syncedId)
+      expect(refBlock.content).toBe('Synced content')
+    })
+
+    it('updates all synced block references when content changes', () => {
+      const pageId = useWorkspaceStore.getState().addPage('Test')
+      const blockId = useWorkspaceStore.getState().pages[pageId]!.blockIds[0]!
+      useWorkspaceStore.getState().updateBlockContent(blockId, 'Original')
+
+      const syncedId = useWorkspaceStore.getState().createSyncedBlock(blockId)!
+
+      const page2Id = useWorkspaceStore.getState().addPage('Test 2')
+      const refId = useWorkspaceStore.getState().insertSyncedBlock(page2Id, syncedId)!
+
+      // Update via the original synced block reference
+      useWorkspaceStore.getState().updateSyncedBlockContent(syncedId, 'Updated content')
+
+      // Both references should be updated
+      const block1 = useWorkspaceStore.getState().blocks[blockId]!
+      const block2 = useWorkspaceStore.getState().blocks[refId]!
+      expect(block1.content).toBe('Updated content')
+      expect(block2.content).toBe('Updated content')
+    })
+
+    it('returns null for non-existent block', () => {
+      const result = useWorkspaceStore.getState().createSyncedBlock('nonexistent')
+      expect(result).toBeNull()
+    })
+  })
+
   describe('queries', () => {
     it('getRootPages returns pages without parents', () => {
       const roots = useWorkspaceStore.getState().getRootPages()

@@ -53,6 +53,9 @@ function makeDocWithFields(): Document {
     templateId: null,
     expiresAt: null,
     reminderSentAt: null,
+    signingOrder: 'parallel' as const,
+    pricingTable: null,
+    notes: [],
   }
 }
 
@@ -75,6 +78,9 @@ function makeDocNoFields(): Document {
     templateId: null,
     expiresAt: null,
     reminderSentAt: null,
+    signingOrder: 'parallel' as const,
+    pricingTable: null,
+    notes: [],
   }
 }
 

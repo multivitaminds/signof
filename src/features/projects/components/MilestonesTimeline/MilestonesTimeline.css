@@ -1,0 +1,301 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   MilestonesTimeline — Vertical timeline with milestone markers
+   BEM: milestones-timeline__element--modifier
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.milestones-timeline {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+.milestones-timeline__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.milestones-timeline__header:hover {
+  background: var(--bg-secondary);
+}
+
+.milestones-timeline__title {
+  flex: 1;
+  text-align: left;
+}
+
+.milestones-timeline__count {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.milestones-timeline__body {
+  padding: 0 var(--space-md) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.milestones-timeline__empty {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+  padding: var(--space-sm) 0;
+}
+
+/* ─── Timeline Track ─────────────────────────────────────────────── */
+
+.milestones-timeline__track {
+  display: flex;
+  flex-direction: column;
+}
+
+.milestones-timeline__item {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.milestones-timeline__marker-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 20px;
+}
+
+.milestones-timeline__marker {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 0;
+  background: var(--bg-primary);
+  transition: transform var(--motion-fast);
+}
+
+.milestones-timeline__marker:hover {
+  transform: scale(1.2);
+}
+
+.milestones-timeline__marker--completed {
+  border-color: #22C55E;
+  background: #22C55E;
+  color: white;
+}
+
+.milestones-timeline__marker--upcoming {
+  border-color: #94A3B8;
+  color: transparent;
+}
+
+.milestones-timeline__marker--overdue {
+  border-color: #EF4444;
+  color: transparent;
+}
+
+.milestones-timeline__line {
+  width: 2px;
+  flex: 1;
+  min-height: 8px;
+  background: var(--border-color);
+}
+
+/* ─── Milestone Content ──────────────────────────────────────────── */
+
+.milestones-timeline__content {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: var(--space-sm);
+}
+
+.milestones-timeline__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.milestones-timeline__expand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.milestones-timeline__expand:hover {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+.milestones-timeline__name {
+  flex: 1;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.milestones-timeline__item--completed .milestones-timeline__name {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.milestones-timeline__date {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.milestones-timeline__item--overdue .milestones-timeline__date {
+  color: #EF4444;
+  font-weight: 600;
+}
+
+.milestones-timeline__delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  transition: opacity var(--motion-fast);
+}
+
+.milestones-timeline__item:hover .milestones-timeline__delete {
+  opacity: 1;
+}
+
+.milestones-timeline__delete:hover {
+  color: var(--color-danger);
+  background: var(--bg-secondary);
+}
+
+/* ─── Detail (expanded) ──────────────────────────────────────────── */
+
+.milestones-timeline__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: var(--space-xs);
+  margin-top: 2px;
+}
+
+.milestones-timeline__linked-count {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.milestones-timeline__linked-issue {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.milestones-timeline__linked-id {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-right: var(--space-xs);
+}
+
+/* ─── Form ───────────────────────────────────────────────────────── */
+
+.milestones-timeline__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-sm);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.milestones-timeline__input {
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+.milestones-timeline__input:focus {
+  border-color: var(--color-primary);
+}
+
+.milestones-timeline__form-actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.milestones-timeline__small-btn {
+  font-size: 0.6875rem;
+  padding: 3px 10px;
+}
+
+/* ─── Add Button ─────────────────────────────────────────────────── */
+
+.milestones-timeline__add-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  width: 100%;
+  padding: var(--space-xs) var(--space-sm);
+  background: none;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  transition: color var(--motion-fast), border-color var(--motion-fast);
+}
+
+.milestones-timeline__add-btn:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}

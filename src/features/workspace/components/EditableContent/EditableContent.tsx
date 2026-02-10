@@ -172,6 +172,11 @@ export default function EditableContent({
           onFormatShortcut(MT.Strikethrough)
           return
         }
+        if (e.shiftKey && (e.key === 'h' || e.key === 'H')) {
+          e.preventDefault()
+          onFormatShortcut(MT.Highlight)
+          return
+        }
       }
 
       if (e.key === 'Enter' && !e.shiftKey) {

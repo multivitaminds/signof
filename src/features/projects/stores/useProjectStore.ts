@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Project, Issue, Cycle, Member } from '../types'
-import { IssueStatus, IssuePriority, ViewType } from '../types'
+import type { Project, Issue, Cycle, Member, Goal, Milestone } from '../types'
+import { IssueStatus, IssuePriority, ViewType, GoalStatus } from '../types'
 import { generateIdentifier } from '../lib/issueIdentifier'
 import {
   createSampleProjects,
@@ -24,6 +24,8 @@ interface ProjectState {
   issues: Record<string, Issue>
   cycles: Record<string, Cycle>
   members: Member[]
+  goals: Goal[]
+  milestones: Milestone[]
 
   // UI state
   selectedProjectId: string | null
@@ -68,6 +70,29 @@ interface ProjectState {
   updateCycle: (id: string, updates: Partial<Cycle>) => void
   deleteCycle: (id: string) => void
 
+  // Goal CRUD
+  createGoal: (data: {
+    projectId: string
+    title: string
+    description?: string
+    targetDate?: string | null
+  }) => string
+  updateGoal: (id: string, updates: Partial<Goal>) => void
+  deleteGoal: (id: string) => void
+  linkIssueToGoal: (goalId: string, issueId: string) => void
+  unlinkIssueFromGoal: (goalId: string, issueId: string) => void
+
+  // Milestone CRUD
+  createMilestone: (data: {
+    projectId: string
+    title: string
+    dueDate: string
+  }) => string
+  updateMilestone: (id: string, updates: Partial<Milestone>) => void
+  deleteMilestone: (id: string) => void
+  linkIssueToMilestone: (milestoneId: string, issueId: string) => void
+  unlinkIssueFromMilestone: (milestoneId: string, issueId: string) => void
+
   // UI actions
   setSelectedProject: (id: string | null) => void
   setSelectedIssue: (id: string | null) => void
@@ -84,6 +109,8 @@ export const useProjectStore = create<ProjectState>()(
       issues: createSampleIssues(),
       cycles: createSampleCycles(),
       members: createSampleMembers(),
+      goals: [],
+      milestones: [],
 
       // UI state
       selectedProjectId: null,
@@ -256,6 +283,113 @@ export const useProjectStore = create<ProjectState>()(
         })
       },
 
+      // Goal CRUD
+      createGoal: (data) => {
+        const id = generateId()
+        const goal: Goal = {
+          id,
+          projectId: data.projectId,
+          title: data.title,
+          description: data.description ?? '',
+          targetDate: data.targetDate ?? null,
+          status: GoalStatus.NotStarted,
+          progress: 0,
+          issueIds: [],
+          createdAt: now(),
+          updatedAt: now(),
+        }
+        set((state) => ({
+          goals: [...state.goals, goal],
+        }))
+        return id
+      },
+
+      updateGoal: (id, updates) => {
+        set((state) => ({
+          goals: state.goals.map((g) =>
+            g.id === id ? { ...g, ...updates, updatedAt: now() } : g
+          ),
+        }))
+      },
+
+      deleteGoal: (id) => {
+        set((state) => ({
+          goals: state.goals.filter((g) => g.id !== id),
+        }))
+      },
+
+      linkIssueToGoal: (goalId, issueId) => {
+        set((state) => ({
+          goals: state.goals.map((g) =>
+            g.id === goalId && !g.issueIds.includes(issueId)
+              ? { ...g, issueIds: [...g.issueIds, issueId], updatedAt: now() }
+              : g
+          ),
+        }))
+      },
+
+      unlinkIssueFromGoal: (goalId, issueId) => {
+        set((state) => ({
+          goals: state.goals.map((g) =>
+            g.id === goalId
+              ? { ...g, issueIds: g.issueIds.filter((iid) => iid !== issueId), updatedAt: now() }
+              : g
+          ),
+        }))
+      },
+
+      // Milestone CRUD
+      createMilestone: (data) => {
+        const id = generateId()
+        const milestone: Milestone = {
+          id,
+          projectId: data.projectId,
+          title: data.title,
+          dueDate: data.dueDate,
+          completed: false,
+          issueIds: [],
+          createdAt: now(),
+        }
+        set((state) => ({
+          milestones: [...state.milestones, milestone],
+        }))
+        return id
+      },
+
+      updateMilestone: (id, updates) => {
+        set((state) => ({
+          milestones: state.milestones.map((m) =>
+            m.id === id ? { ...m, ...updates } : m
+          ),
+        }))
+      },
+
+      deleteMilestone: (id) => {
+        set((state) => ({
+          milestones: state.milestones.filter((m) => m.id !== id),
+        }))
+      },
+
+      linkIssueToMilestone: (milestoneId, issueId) => {
+        set((state) => ({
+          milestones: state.milestones.map((m) =>
+            m.id === milestoneId && !m.issueIds.includes(issueId)
+              ? { ...m, issueIds: [...m.issueIds, issueId] }
+              : m
+          ),
+        }))
+      },
+
+      unlinkIssueFromMilestone: (milestoneId, issueId) => {
+        set((state) => ({
+          milestones: state.milestones.map((m) =>
+            m.id === milestoneId
+              ? { ...m, issueIds: m.issueIds.filter((iid) => iid !== issueId) }
+              : m
+          ),
+        }))
+      },
+
       // UI actions
       setSelectedProject: (id) => set({ selectedProjectId: id }),
       setSelectedIssue: (id) => set({ selectedIssueId: id }),
@@ -283,6 +417,8 @@ export const useProjectStore = create<ProjectState>()(
         issues: state.issues,
         cycles: state.cycles,
         members: state.members,
+        goals: state.goals,
+        milestones: state.milestones,
       }),
     }
   )

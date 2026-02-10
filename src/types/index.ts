@@ -22,6 +22,15 @@ export const SignerStatus = {
 
 export type SignerStatus = (typeof SignerStatus)[keyof typeof SignerStatus]
 
+// ─── Signing Order (const object pattern) ───────────────────────────
+
+export const SigningOrder = {
+  Sequential: 'sequential',
+  Parallel: 'parallel',
+} as const
+
+export type SigningOrder = (typeof SigningOrder)[keyof typeof SigningOrder]
+
 // ─── Core Interfaces ────────────────────────────────────────────────
 
 export interface Signer {
@@ -47,6 +56,33 @@ export interface AuditEntry {
   detail?: string
 }
 
+// ─── Pricing Table Types ─────────────────────────────────────────────
+
+export interface PricingItem {
+  id: string
+  item: string
+  description: string
+  quantity: number
+  unitPrice: number
+}
+
+export interface PricingTableData {
+  items: PricingItem[]
+  taxRate: number
+  currency: string
+}
+
+// ─── Document Note Types ─────────────────────────────────────────────
+
+export interface DocumentNote {
+  id: string
+  authorName: string
+  content: string
+  createdAt: string
+}
+
+// ─── Document Interface ──────────────────────────────────────────────
+
 export interface Document {
   id: string
   name: string
@@ -63,6 +99,9 @@ export interface Document {
   templateId: string | null
   expiresAt: string | null
   reminderSentAt: string | null
+  signingOrder: SigningOrder
+  pricingTable: PricingTableData | null
+  notes: DocumentNote[]
 }
 
 // ─── Field Types (Document Placement) ───────────────────────────────

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useWorkspaceStore } from '../../stores/useWorkspaceStore'
 import { BlockType, MarkType as MT } from '../../types'
 import type { Block, BlockType as BlockTypeT, MarkType, InlineMark } from '../../types'
@@ -30,6 +30,9 @@ export default function BlockEditor({ pageId, blockIds, autoFocusBlockId }: Bloc
   const duplicateBlock = useWorkspaceStore((s) => s.duplicateBlock)
   const deleteBlock = useWorkspaceStore((s) => s.deleteBlock)
   const insertBlocksAt = useWorkspaceStore((s) => s.insertBlocksAt)
+  const undo = useWorkspaceStore((s) => s.undo)
+  const redo = useWorkspaceStore((s) => s.redo)
+  const createSyncedBlock = useWorkspaceStore((s) => s.createSyncedBlock)
 
   const [focusedBlockId, setFocusedBlockId] = useState<string | null>(autoFocusBlockId ?? null)
   const [focusNextId, setFocusNextId] = useState<string | null>(null)
@@ -172,7 +175,7 @@ export default function BlockEditor({ pageId, blockIds, autoFocusBlockId }: Bloc
   )
 
   const handleToggleMark = useCallback(
-    (markType: MarkType) => {
+    (markType: MarkType, attrs?: Record<string, string>) => {
       if (!inlineToolbar) return
       const block = blocks[inlineToolbar.blockId]
       if (!block) return
@@ -188,7 +191,7 @@ export default function BlockEditor({ pageId, blockIds, autoFocusBlockId }: Bloc
         return
       }
 
-      const newMarks = toggleMark(block.marks, markType, inlineToolbar.from, inlineToolbar.to)
+      const newMarks = toggleMark(block.marks, markType, inlineToolbar.from, inlineToolbar.to, attrs)
       updateBlockMarks(inlineToolbar.blockId, newMarks)
     },
     [inlineToolbar, blocks, updateBlockMarks]
@@ -309,6 +312,9 @@ export default function BlockEditor({ pageId, blockIds, autoFocusBlockId }: Bloc
         case 'duplicate':
           duplicateBlock(pageId, blockId)
           break
+        case 'create_synced':
+          createSyncedBlock(blockId)
+          break
         default:
           if (action.startsWith('turn_into:')) {
             const newType = action.slice('turn_into:'.length) as BlockTypeT
@@ -318,7 +324,7 @@ export default function BlockEditor({ pageId, blockIds, autoFocusBlockId }: Bloc
       }
       setBlockActionsMenu(null)
     },
-    [deleteBlock, duplicateBlock, convertBlockType, pageId]
+    [deleteBlock, duplicateBlock, convertBlockType, createSyncedBlock, pageId]
   )
 
   const handlePasteBlocks = useCallback(
@@ -346,6 +352,23 @@ export default function BlockEditor({ pageId, blockIds, autoFocusBlockId }: Bloc
   const handleCloseCommentThread = useCallback(() => {
     setCommentThreadBlockId(null)
   }, [])
+
+  // Undo/Redo keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const metaKey = e.metaKey || e.ctrlKey
+      if (metaKey && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        undo()
+      }
+      if (metaKey && e.key === 'z' && e.shiftKey) {
+        e.preventDefault()
+        redo()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [undo, redo])
 
   const handleEmptyAreaClick = useCallback(() => {
     // Add a new paragraph at the end and focus it
@@ -387,12 +410,15 @@ export default function BlockEditor({ pageId, blockIds, autoFocusBlockId }: Bloc
           <div
             key={blockId}
             data-block-id={blockId}
-            className={`block-editor__block ${dragBlockId === blockId ? 'block-editor__block--dragging' : ''} ${dropIndex === index ? 'block-editor__block--drop-above' : ''}`}
+            className={`block-editor__block ${dragBlockId === blockId ? 'block-editor__block--dragging' : ''} ${dropIndex === index ? 'block-editor__block--drop-above' : ''} ${block.syncedBlockId ? 'block-editor__block--synced' : ''}`}
             draggable
             onDragStart={() => handleDragStart(blockId)}
             onDragOver={(e) => handleDragOver(e, index)}
             onDragEnd={handleDragEnd}
           >
+            {block.syncedBlockId && (
+              <span className="block-editor__synced-badge">Synced</span>
+            )}
             <div
               className="block-editor__handle"
               title="Drag to reorder / Click for actions"
@@ -689,6 +715,12 @@ function BlockActionsMenu({
             onMouseDown={(e) => { e.preventDefault(); onAction('duplicate') }}
           >
             Duplicate
+          </button>
+          <button
+            className="block-actions-menu__item"
+            onMouseDown={(e) => { e.preventDefault(); onAction('create_synced') }}
+          >
+            Create synced block
           </button>
           <button
             className="block-actions-menu__item"

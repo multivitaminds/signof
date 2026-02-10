@@ -18,7 +18,7 @@ import {
   Eraser,
 } from 'lucide-react'
 import type { Document, Signer, DocumentField } from '../../../../types'
-import { FieldType } from '../../../../types'
+import { FieldType, SigningOrder, SignerStatus } from '../../../../types'
 import './SigningCeremony.css'
 
 // ─── Types ─────────────────────────────────────────────────────────
@@ -563,6 +563,52 @@ function SigningCeremony({
           </span>
         </div>
       </div>
+
+      {/* Signing order & progress tracker */}
+      {doc.signers.length > 1 && (
+        <div className="signing-ceremony-v2__signers-progress" data-testid="signers-progress">
+          <div className="signing-ceremony-v2__fields-list-title">
+            <Users /> Signer Progress ({doc.signers.filter((s) => s.status === SignerStatus.Signed).length} of {doc.signers.length} completed)
+          </div>
+          {[...doc.signers]
+            .sort((a, b) => a.order - b.order)
+            .map((s) => {
+              const isCurrent = s.id === signer.id
+              const isActive = doc.signingOrder === SigningOrder.Sequential
+                ? [...doc.signers]
+                    .filter((sig) => sig.status === SignerStatus.Pending)
+                    .sort((a, b) => a.order - b.order)[0]?.id === s.id
+                : s.status === SignerStatus.Pending
+
+              return (
+                <div
+                  key={s.id}
+                  className={`signing-ceremony-v2__signer-item${isCurrent ? ' signing-ceremony-v2__signer-item--current' : ''}${s.status === SignerStatus.Signed ? ' signing-ceremony-v2__signer-item--signed' : ''}`}
+                >
+                  <span className="signing-ceremony-v2__signer-order">
+                    {doc.signingOrder === SigningOrder.Sequential ? `Step ${s.order}` : `#${s.order}`}
+                  </span>
+                  <span className="signing-ceremony-v2__signer-name">
+                    {s.name}
+                    {isCurrent && <span className="signing-ceremony-v2__signer-you"> (You)</span>}
+                  </span>
+                  <span className={`signing-ceremony-v2__signer-status signing-ceremony-v2__signer-status--${s.status}`}>
+                    {s.status === SignerStatus.Signed
+                      ? 'Signed'
+                      : isActive
+                        ? 'Ready to sign'
+                        : 'Waiting'}
+                  </span>
+                </div>
+              )
+            })}
+          {doc.signingOrder === SigningOrder.Sequential && (
+            <div className="signing-ceremony-v2__signing-order-note">
+              Sequential signing: signers must sign in order
+            </div>
+          )}
+        </div>
+      )}
 
       {effectiveFields.length > 0 && (
         <div className="signing-ceremony-v2__fields-list">

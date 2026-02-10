@@ -240,6 +240,28 @@
   z-index: -1;
 }
 
+/* ─── Synced Block Indicator ─────────────────────────────────────── */
+
+.block-editor__block--synced {
+  border-left: 3px solid #EA580C;
+  padding-left: var(--space-2, 0.5rem);
+  position: relative;
+}
+
+.block-editor__synced-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: #EA580C;
+  background: rgba(234, 88, 12, 0.08);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm, 4px);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 /* ─── Block Highlight (from sidebar comment click) ───────────────── */
 
 .block-editor__block--highlighted {

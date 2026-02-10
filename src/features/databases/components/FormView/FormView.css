@@ -1,45 +1,96 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   FormView — Database form for data collection
+   BEM: form-view__element--modifier
+   ═══════════════════════════════════════════════════════════════════════ */
+
 .form-view {
   max-width: 560px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-5, 1.5rem);
+  gap: var(--space-lg, 1.5rem);
 }
+
+/* ─── Success State ──────────────────────────────────────────────── */
 
 .form-view--success {
   align-items: center;
   text-align: center;
-  padding: var(--space-12, 6rem) 0;
+  padding: var(--space-2xl, 3rem) 0;
   color: var(--color-success, #059669);
 }
 
 .form-view--success h2 {
-  color: var(--text-primary, #111827);
+  color: var(--text-primary);
   margin: 0;
 }
 
 .form-view--success p {
-  color: var(--text-secondary, #6B7280);
+  color: var(--text-secondary);
   margin: 0;
 }
 
+.form-view__submission-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+/* ─── Header ─────────────────────────────────────────────────────── */
+
+.form-view__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.form-view__header-icon {
+  color: var(--color-primary);
+  margin-bottom: var(--space-xs);
+}
+
 .form-view__title {
-  font-size: var(--text-xl, 1.25rem);
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-primary, #111827);
+  color: var(--text-primary);
   margin: 0;
 }
+
+.form-view__description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ─── Shareable Hint ─────────────────────────────────────────────── */
+
+.form-view__shareable-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: rgba(79, 70, 229, 0.05);
+  border: 1px solid rgba(79, 70, 229, 0.15);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  color: var(--color-primary);
+}
+
+/* ─── Field ──────────────────────────────────────────────────────── */
 
 .form-view__field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1, 0.25rem);
+  gap: var(--space-xs);
 }
 
 .form-view__label {
-  font-size: var(--text-sm, 0.875rem);
+  font-size: 0.875rem;
   font-weight: 500;
-  color: var(--text-primary, #111827);
+  color: var(--text-primary);
 }
 
 .form-view__required {
@@ -47,33 +98,87 @@
   margin-left: 2px;
 }
 
+/* ─── Text / Number / Date / URL / Email / Phone Inputs ──────────── */
+
 .form-view__input,
 .form-view__select {
-  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
-  border: 1px solid var(--border-color, #E5E7EB);
-  border-radius: var(--radius-md, 8px);
-  font-size: var(--text-sm, 0.875rem);
-  color: var(--text-primary, #111827);
-  background: var(--bg-primary, #fff);
-  transition: border-color 150ms ease;
+  padding: var(--space-sm, 0.5rem) var(--space-md, 0.75rem);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .form-view__input:focus,
 .form-view__select:focus {
   outline: none;
-  border-color: var(--color-primary, #4F46E5);
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
+
+/* ─── Checkbox ───────────────────────────────────────────────────── */
 
 .form-view__checkbox-label {
   display: flex;
   align-items: center;
-  gap: var(--space-2, 0.5rem);
-  font-size: var(--text-sm, 0.875rem);
-  color: var(--text-primary, #111827);
+  gap: var(--space-sm);
+  font-size: 0.875rem;
+  color: var(--text-primary);
   cursor: pointer;
 }
 
+.form-view__checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* ─── Multi-Select ───────────────────────────────────────────────── */
+
+.form-view__multi-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.form-view__multi-option {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full, 9999px);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.form-view__multi-option:hover {
+  border-color: var(--color-primary);
+  color: var(--text-primary);
+}
+
+.form-view__multi-option--selected {
+  font-weight: 600;
+}
+
+/* ─── Submit ─────────────────────────────────────────────────────── */
+
 .form-view__submit {
   align-self: flex-start;
+  margin-top: var(--space-sm);
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .form-view__shareable-hint {
+  background: rgba(79, 70, 229, 0.1);
+  border-color: rgba(79, 70, 229, 0.25);
 }

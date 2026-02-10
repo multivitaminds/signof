@@ -2,9 +2,12 @@ import { create } from 'zustand'
 import {
   type Document,
   type Signer,
+  type PricingTableData,
+  type DocumentNote,
   ACTIVE_STATUSES,
   DocumentStatus,
   SignerStatus,
+  SigningOrder,
 } from '../types'
 
 function generateId(): string {
@@ -38,6 +41,9 @@ const SAMPLE_DOCUMENTS: Document[] = [
     templateId: null,
     expiresAt: null,
     reminderSentAt: null,
+    signingOrder: SigningOrder.Parallel,
+    pricingTable: null,
+    notes: [],
   },
   {
     id: '2',
@@ -60,6 +66,9 @@ const SAMPLE_DOCUMENTS: Document[] = [
     templateId: null,
     expiresAt: null,
     reminderSentAt: null,
+    signingOrder: SigningOrder.Parallel,
+    pricingTable: null,
+    notes: [],
   },
   {
     id: '3',
@@ -79,6 +88,9 @@ const SAMPLE_DOCUMENTS: Document[] = [
     templateId: null,
     expiresAt: null,
     reminderSentAt: null,
+    signingOrder: SigningOrder.Parallel,
+    pricingTable: null,
+    notes: [],
   },
 ]
 
@@ -94,6 +106,26 @@ interface DocumentState {
   addSigner: (docId: string, name: string, email: string) => void
   removeSigner: (docId: string, signerId: string) => void
   getDocument: (docId: string) => Document | undefined
+
+  // Signing Order
+  setSigningOrder: (docId: string, order: SigningOrder) => void
+  getActiveSignerId: (docId: string) => string | null
+  canSignerSign: (docId: string, signerId: string) => boolean
+
+  // Pricing Table
+  updatePricingTable: (docId: string, data: PricingTableData) => void
+
+  // Document Expiration
+  setDocumentExpiration: (docId: string, date: string | null) => void
+  getExpiredDocuments: () => Document[]
+  autoExpireDocuments: () => void
+
+  // Bulk Send
+  bulkCreateDocuments: (templateDoc: Document, recipients: { name: string; email: string }[]) => Document[]
+
+  // Document Notes
+  addDocumentNote: (docId: string, content: string, authorName?: string) => void
+  deleteDocumentNote: (docId: string, noteId: string) => void
 
   // Computed
   totalCount: number
@@ -122,6 +154,9 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       templateId: null,
       expiresAt: null,
       reminderSentAt: null,
+      signingOrder: SigningOrder.Parallel,
+      pricingTable: null,
+      notes: [],
     }
     set((state) => ({ documents: [newDoc, ...state.documents] }))
     return newDoc
@@ -172,6 +207,18 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     set((state) => ({
       documents: state.documents.map((doc) => {
         if (doc.id !== docId) return doc
+
+        // Enforce sequential signing order
+        if (doc.signingOrder === SigningOrder.Sequential) {
+          const sortedPending = [...doc.signers]
+            .filter((s) => s.status === SignerStatus.Pending)
+            .sort((a, b) => a.order - b.order)
+          const nextSigner = sortedPending[0]
+          if (nextSigner && nextSigner.id !== signerId) {
+            return doc // Cannot sign out of order
+          }
+        }
+
         const signer = doc.signers.find((s) => s.id === signerId)
         const updatedSigners = doc.signers.map((s) =>
           s.id === signerId ? { ...s, status: SignerStatus.Signed as typeof s.status, signedAt: timestamp } : s
@@ -293,6 +340,183 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
 
   getDocument: (docId: string) => {
     return get().documents.find((d) => d.id === docId)
+  },
+
+  // ─── Signing Order ─────────────────────────────────────────────────
+
+  setSigningOrder: (docId: string, order: SigningOrder) => {
+    const timestamp = now()
+    set((state) => ({
+      documents: state.documents.map((doc) => {
+        if (doc.id !== docId) return doc
+        return { ...doc, signingOrder: order, updatedAt: timestamp }
+      }),
+    }))
+  },
+
+  getActiveSignerId: (docId: string) => {
+    const doc = get().documents.find((d) => d.id === docId)
+    if (!doc) return null
+    if (doc.signingOrder === SigningOrder.Parallel) return null
+
+    const sortedPending = [...doc.signers]
+      .filter((s) => s.status === SignerStatus.Pending)
+      .sort((a, b) => a.order - b.order)
+    return sortedPending[0]?.id ?? null
+  },
+
+  canSignerSign: (docId: string, signerId: string) => {
+    const doc = get().documents.find((d) => d.id === docId)
+    if (!doc) return false
+
+    const signer = doc.signers.find((s) => s.id === signerId)
+    if (!signer || signer.status !== SignerStatus.Pending) return false
+
+    if (doc.signingOrder === SigningOrder.Parallel) return true
+
+    // Sequential: only the lowest-order pending signer can sign
+    const sortedPending = [...doc.signers]
+      .filter((s) => s.status === SignerStatus.Pending)
+      .sort((a, b) => a.order - b.order)
+    return sortedPending[0]?.id === signerId
+  },
+
+  // ─── Pricing Table ─────────────────────────────────────────────────
+
+  updatePricingTable: (docId: string, data: PricingTableData) => {
+    const timestamp = now()
+    set((state) => ({
+      documents: state.documents.map((doc) => {
+        if (doc.id !== docId) return doc
+        return { ...doc, pricingTable: data, updatedAt: timestamp }
+      }),
+    }))
+  },
+
+  // ─── Document Expiration ───────────────────────────────────────────
+
+  setDocumentExpiration: (docId: string, date: string | null) => {
+    const timestamp = now()
+    set((state) => ({
+      documents: state.documents.map((doc) => {
+        if (doc.id !== docId) return doc
+        return { ...doc, expiresAt: date, updatedAt: timestamp }
+      }),
+    }))
+  },
+
+  getExpiredDocuments: () => {
+    const currentTime = new Date().toISOString()
+    return get().documents.filter(
+      (doc) =>
+        doc.expiresAt !== null &&
+        doc.expiresAt < currentTime &&
+        doc.status !== DocumentStatus.Voided &&
+        doc.status !== DocumentStatus.Completed
+    )
+  },
+
+  autoExpireDocuments: () => {
+    const currentTime = new Date().toISOString()
+    const timestamp = now()
+    set((state) => ({
+      documents: state.documents.map((doc) => {
+        if (
+          doc.expiresAt !== null &&
+          doc.expiresAt < currentTime &&
+          doc.status !== DocumentStatus.Voided &&
+          doc.status !== DocumentStatus.Completed
+        ) {
+          return {
+            ...doc,
+            status: DocumentStatus.Voided,
+            updatedAt: timestamp,
+            audit: [
+              ...doc.audit,
+              { action: 'voided', timestamp, userId: 'system', detail: 'Document expired' },
+            ],
+          }
+        }
+        return doc
+      }),
+    }))
+  },
+
+  // ─── Bulk Send ─────────────────────────────────────────────────────
+
+  bulkCreateDocuments: (templateDoc: Document, recipients: { name: string; email: string }[]) => {
+    const timestamp = now()
+    const newDocs: Document[] = recipients.map((recipient) => ({
+      id: generateId(),
+      name: templateDoc.name,
+      status: DocumentStatus.Sent,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      fileUrl: templateDoc.fileUrl,
+      fileType: templateDoc.fileType,
+      signers: [
+        {
+          id: generateId(),
+          name: recipient.name,
+          email: recipient.email,
+          status: SignerStatus.Pending,
+          signedAt: null,
+          order: 1,
+        },
+      ],
+      signatures: [],
+      audit: [
+        { action: 'created', timestamp, userId: 'you', detail: 'Created via bulk send' },
+        { action: 'sent', timestamp, userId: 'you', detail: `Sent to ${recipient.name}` },
+      ],
+      fields: [...templateDoc.fields],
+      folderId: templateDoc.folderId,
+      templateId: templateDoc.templateId ?? templateDoc.id,
+      expiresAt: templateDoc.expiresAt,
+      reminderSentAt: null,
+      signingOrder: SigningOrder.Parallel,
+      pricingTable: templateDoc.pricingTable ? { ...templateDoc.pricingTable, items: templateDoc.pricingTable.items.map((i) => ({ ...i })) } : null,
+      notes: [],
+    }))
+
+    set((state) => ({ documents: [...newDocs, ...state.documents] }))
+    return newDocs
+  },
+
+  // ─── Document Notes ────────────────────────────────────────────────
+
+  addDocumentNote: (docId: string, content: string, authorName = 'You') => {
+    const timestamp = now()
+    const note: DocumentNote = {
+      id: generateId(),
+      authorName,
+      content,
+      createdAt: timestamp,
+    }
+    set((state) => ({
+      documents: state.documents.map((doc) => {
+        if (doc.id !== docId) return doc
+        return {
+          ...doc,
+          notes: [...doc.notes, note],
+          updatedAt: timestamp,
+        }
+      }),
+    }))
+  },
+
+  deleteDocumentNote: (docId: string, noteId: string) => {
+    const timestamp = now()
+    set((state) => ({
+      documents: state.documents.map((doc) => {
+        if (doc.id !== docId) return doc
+        return {
+          ...doc,
+          notes: doc.notes.filter((n) => n.id !== noteId),
+          updatedAt: timestamp,
+        }
+      }),
+    }))
   },
 
   get totalCount() {

@@ -75,7 +75,7 @@ function wrapWithMarks(
   let node: React.ReactNode = text
 
   // Apply marks in consistent order
-  const ordered: MarkType[] = [MT.Code, MT.Strikethrough, MT.Underline, MT.Italic, MT.Bold, MT.Link]
+  const ordered: MarkType[] = [MT.Code, MT.Strikethrough, MT.Underline, MT.Italic, MT.Bold, MT.Link, MT.Highlight, MT.TextColor]
 
   for (const markType of ordered) {
     if (!marks.has(markType)) continue
@@ -102,6 +102,24 @@ function wrapWithMarks(
           <a key={`${key}-a`} href={href} target="_blank" rel="noopener noreferrer">
             {node}
           </a>
+        )
+        break
+      }
+      case MT.Highlight: {
+        const bgColor = attrs[MT.Highlight]?.color ?? '#FEF08A'
+        node = (
+          <mark key={`${key}-hl`} style={{ backgroundColor: bgColor, borderRadius: '2px', padding: '0 2px' }}>
+            {node}
+          </mark>
+        )
+        break
+      }
+      case MT.TextColor: {
+        const textColor = attrs[MT.TextColor]?.color ?? 'inherit'
+        node = (
+          <span key={`${key}-tc`} style={{ color: textColor }}>
+            {node}
+          </span>
         )
         break
       }

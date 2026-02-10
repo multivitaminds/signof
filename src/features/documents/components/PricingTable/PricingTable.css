@@ -1,0 +1,320 @@
+/* ═══════════════════════════════════════════════════════════════════
+   PricingTable — Editable line-item table for documents
+   ═══════════════════════════════════════════════════════════════════ */
+
+.pricing-table {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 12px);
+  background: var(--bg-secondary);
+  overflow: hidden;
+}
+
+.pricing-table__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-4, 1rem) var(--space-5, 1.5rem);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.pricing-table__header-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-primary);
+}
+
+.pricing-table__title {
+  font-size: var(--text-base, 1rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ─── Table Wrapper ────────────────────────────────────────────────── */
+
+.pricing-table__wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pricing-table__table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  min-width: 580px;
+}
+
+/* ─── Table Header ─────────────────────────────────────────────────── */
+
+.pricing-table__th {
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-muted);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-tertiary, var(--bg-secondary));
+  white-space: nowrap;
+}
+
+.pricing-table__th--qty,
+.pricing-table__th--price,
+.pricing-table__th--total {
+  text-align: right;
+  width: 100px;
+}
+
+.pricing-table__th--actions {
+  width: 44px;
+}
+
+.pricing-table__th--item {
+  width: 25%;
+}
+
+.pricing-table__th--description {
+  width: 35%;
+}
+
+/* ─── Table Body ───────────────────────────────────────────────────── */
+
+.pricing-table__row {
+  transition: background var(--transition-fast);
+}
+
+.pricing-table__row:hover {
+  background: var(--bg-tertiary, rgba(0, 0, 0, 0.02));
+}
+
+.pricing-table__td {
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.pricing-table__td--qty,
+.pricing-table__td--price,
+.pricing-table__td--total {
+  text-align: right;
+}
+
+.pricing-table__td--total {
+  padding-right: var(--space-3, 0.75rem);
+}
+
+.pricing-table__td--actions {
+  text-align: center;
+}
+
+/* ─── Inputs ───────────────────────────────────────────────────────── */
+
+.pricing-table__input {
+  width: 100%;
+  padding: var(--space-2, 0.5rem) var(--space-2, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.pricing-table__input:hover {
+  border-color: var(--border-color);
+}
+
+.pricing-table__input--focused,
+.pricing-table__input:focus {
+  border-color: var(--color-primary);
+  background: var(--bg-primary);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+.pricing-table__input--number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.pricing-table__input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Hide number input spinners */
+.pricing-table__input--number::-webkit-inner-spin-button,
+.pricing-table__input--number::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.pricing-table__input--number {
+  -moz-appearance: textfield;
+}
+
+/* ─── Row Total & Remove ───────────────────────────────────────────── */
+
+.pricing-table__row-total {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.pricing-table__remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0;
+  margin: 0 auto;
+  opacity: 0;
+  transition: all var(--transition-fast);
+}
+
+.pricing-table__row:hover .pricing-table__remove-btn {
+  opacity: 1;
+}
+
+.pricing-table__remove-btn:hover {
+  background: var(--color-danger-light, #FEE2E2);
+  color: var(--color-danger, #DC2626);
+}
+
+.pricing-table__remove-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ─── Empty State ──────────────────────────────────────────────────── */
+
+.pricing-table__empty {
+  padding: var(--space-6, 2rem) var(--space-4, 1rem);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+/* ─── Add Button ───────────────────────────────────────────────────── */
+
+.pricing-table__add-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  width: 100%;
+  padding: var(--space-3, 0.75rem) var(--space-5, 1.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--color-primary);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.pricing-table__add-btn:hover {
+  background: var(--color-primary-light, #EEF2FF);
+}
+
+.pricing-table__add-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ─── Summary ──────────────────────────────────────────────────────── */
+
+.pricing-table__summary {
+  padding: var(--space-4, 1rem) var(--space-5, 1.5rem);
+}
+
+.pricing-table__summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2, 0.5rem) 0;
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.pricing-table__summary-row + .pricing-table__summary-row {
+  border-top: 1px solid var(--border-color);
+}
+
+.pricing-table__summary-row--total {
+  border-top: 2px solid var(--border-color) !important;
+  padding-top: var(--space-3, 0.75rem);
+  margin-top: var(--space-1, 0.25rem);
+}
+
+.pricing-table__summary-label {
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.pricing-table__summary-value {
+  font-weight: var(--font-medium, 500);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.pricing-table__summary-value--total {
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: var(--font-bold, 700);
+  color: var(--color-primary);
+}
+
+.pricing-table__tax-input {
+  width: 60px;
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm, 4px);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  text-align: right;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.pricing-table__tax-input:focus {
+  border-color: var(--color-primary);
+}
+
+.pricing-table__tax-display {
+  font-weight: var(--font-medium, 500);
+  color: var(--text-primary);
+}
+
+/* ─── Responsive ───────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .pricing-table__header {
+    padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  }
+
+  .pricing-table__summary {
+    padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  }
+}
+
+/* ─── Dark Mode ────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .pricing-table__add-btn:hover {
+  background: rgba(79, 70, 229, 0.1);
+}
+
+[data-theme="dark"] .pricing-table__remove-btn:hover {
+  background: rgba(220, 38, 38, 0.15);
+}
+
+[data-theme="dark"] .pricing-table__input--focused,
+[data-theme="dark"] .pricing-table__input:focus {
+  background: var(--bg-secondary);
+}

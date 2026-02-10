@@ -377,6 +377,87 @@
   line-height: var(--leading-relaxed, 1.625);
 }
 
+/* ─── Signer Progress Tracker ──────────────────────────────────── */
+
+.signing-ceremony-v2__signers-progress {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-4, 1rem);
+}
+
+.signing-ceremony-v2__signer-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  transition: background var(--transition-fast);
+}
+
+.signing-ceremony-v2__signer-item + .signing-ceremony-v2__signer-item {
+  margin-top: var(--space-1, 0.25rem);
+}
+
+.signing-ceremony-v2__signer-item--current {
+  background: rgba(79, 70, 229, 0.06);
+  border: 1px solid rgba(79, 70, 229, 0.15);
+}
+
+.signing-ceremony-v2__signer-item--signed {
+  opacity: 0.7;
+}
+
+.signing-ceremony-v2__signer-order {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-muted);
+  min-width: 44px;
+  padding: 2px 6px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm, 4px);
+  text-align: center;
+}
+
+.signing-ceremony-v2__signer-name {
+  flex: 1;
+  color: var(--text-primary);
+  font-weight: var(--font-medium, 500);
+}
+
+.signing-ceremony-v2__signer-you {
+  color: #4F46E5;
+  font-weight: var(--font-semibold, 600);
+}
+
+.signing-ceremony-v2__signer-status {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-medium, 500);
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 9999px);
+}
+
+.signing-ceremony-v2__signer-status--signed {
+  background: rgba(5, 150, 105, 0.1);
+  color: #059669;
+}
+
+.signing-ceremony-v2__signer-status--pending {
+  background: rgba(217, 119, 6, 0.1);
+  color: #D97706;
+}
+
+.signing-ceremony-v2__signing-order-note {
+  margin-top: var(--space-3, 0.75rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+  background: var(--bg-primary);
+  border-radius: var(--radius-md, 8px);
+  text-align: center;
+}
+
 /* ─── Step 2: Sign ──────────────────────────────────────────────── */
 
 .signing-ceremony-v2__sign {

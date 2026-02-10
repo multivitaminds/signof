@@ -25,6 +25,9 @@ const SAMPLE_DOCS: Document[] = [
     templateId: null,
     expiresAt: null,
     reminderSentAt: null,
+    signingOrder: 'parallel' as const,
+    pricingTable: null,
+    notes: [],
   },
   {
     id: '2',
@@ -44,6 +47,9 @@ const SAMPLE_DOCS: Document[] = [
     templateId: null,
     expiresAt: null,
     reminderSentAt: null,
+    signingOrder: 'parallel' as const,
+    pricingTable: null,
+    notes: [],
   },
   {
     id: '3',
@@ -61,6 +67,9 @@ const SAMPLE_DOCS: Document[] = [
     templateId: null,
     expiresAt: null,
     reminderSentAt: null,
+    signingOrder: 'parallel' as const,
+    pricingTable: null,
+    notes: [],
   },
 ]
 

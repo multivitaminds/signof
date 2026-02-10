@@ -157,6 +157,58 @@ export const STATUS_ORDER: IssueStatus[] = [
   IssueStatus.Cancelled,
 ]
 
+// ─── Goal Status ────────────────────────────────────────────────────
+
+export const GoalStatus = {
+  NotStarted: 'not_started',
+  InProgress: 'in_progress',
+  Achieved: 'achieved',
+  AtRisk: 'at_risk',
+  Cancelled: 'cancelled',
+} as const
+
+export type GoalStatus = (typeof GoalStatus)[keyof typeof GoalStatus]
+
+// ─── Goal & Milestone Interfaces ────────────────────────────────────
+
+export interface Goal {
+  id: string
+  projectId: string
+  title: string
+  description: string
+  targetDate: string | null
+  status: GoalStatus
+  progress: number
+  issueIds: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Milestone {
+  id: string
+  projectId: string
+  title: string
+  dueDate: string
+  completed: boolean
+  issueIds: string[]
+  createdAt: string
+}
+
+// ─── Goal Status Config ─────────────────────────────────────────────
+
+export interface GoalStatusConfig {
+  label: string
+  color: string
+}
+
+export const GOAL_STATUS_CONFIG: Record<GoalStatus, GoalStatusConfig> = {
+  [GoalStatus.NotStarted]: { label: 'Not Started', color: '#94A3B8' },
+  [GoalStatus.InProgress]: { label: 'In Progress', color: '#F59E0B' },
+  [GoalStatus.Achieved]: { label: 'Achieved', color: '#22C55E' },
+  [GoalStatus.AtRisk]: { label: 'At Risk', color: '#EF4444' },
+  [GoalStatus.Cancelled]: { label: 'Cancelled', color: '#64748B' },
+}
+
 // ─── Filter/Sort Types ──────────────────────────────────────────────
 
 export interface IssueFilters {

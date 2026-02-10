@@ -1,0 +1,296 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   GoalsPanel — Collapsible goals section with progress bars
+   BEM: goals-panel__element--modifier
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.goals-panel {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+.goals-panel__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.goals-panel__header:hover {
+  background: var(--bg-secondary);
+}
+
+.goals-panel__title {
+  flex: 1;
+  text-align: left;
+}
+
+.goals-panel__count {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.goals-panel__body {
+  padding: 0 var(--space-md) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.goals-panel__empty {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+  padding: var(--space-sm) 0;
+}
+
+/* ─── Goal Item ──────────────────────────────────────────────────── */
+
+.goals-panel__goal {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.goals-panel__goal-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.goals-panel__goal-expand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.goals-panel__goal-expand:hover {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+.goals-panel__goal-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.goals-panel__goal-title {
+  flex: 1;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.goals-panel__goal-actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--motion-fast);
+}
+
+.goals-panel__goal:hover .goals-panel__goal-actions {
+  opacity: 1;
+}
+
+/* ─── Progress Bar ───────────────────────────────────────────────── */
+
+.goals-panel__progress-bar {
+  height: 4px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.goals-panel__progress-fill {
+  height: 100%;
+  background: #22C55E;
+  border-radius: var(--radius-full);
+  transition: width var(--motion-normal);
+  min-width: 0;
+}
+
+.goals-panel__progress-text {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+/* ─── Goal Detail (expanded) ─────────────────────────────────────── */
+
+.goals-panel__goal-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-top: var(--space-xs);
+  border-top: 1px solid var(--border-color);
+  margin-top: 2px;
+}
+
+.goals-panel__goal-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.goals-panel__goal-date {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.goals-panel__linked-issues {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.goals-panel__linked-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.goals-panel__linked-issue {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.goals-panel__linked-issue-id {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-right: var(--space-xs);
+}
+
+/* ─── Icon Button ────────────────────────────────────────────────── */
+
+.goals-panel__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.goals-panel__icon-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.goals-panel__icon-btn--danger:hover {
+  color: var(--color-danger);
+}
+
+/* ─── Form ───────────────────────────────────────────────────────── */
+
+.goals-panel__create-form,
+.goals-panel__edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-sm);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.goals-panel__input,
+.goals-panel__textarea,
+.goals-panel__select {
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+.goals-panel__input:focus,
+.goals-panel__textarea:focus,
+.goals-panel__select:focus {
+  border-color: var(--color-primary);
+}
+
+.goals-panel__textarea {
+  resize: vertical;
+  min-height: 40px;
+}
+
+.goals-panel__form-actions,
+.goals-panel__edit-actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.goals-panel__small-btn {
+  font-size: 0.6875rem;
+  padding: 3px 10px;
+}
+
+/* ─── Add Button ─────────────────────────────────────────────────── */
+
+.goals-panel__add-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  width: 100%;
+  padding: var(--space-xs) var(--space-sm);
+  background: none;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  transition: color var(--motion-fast), border-color var(--motion-fast);
+}
+
+.goals-panel__add-btn:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}

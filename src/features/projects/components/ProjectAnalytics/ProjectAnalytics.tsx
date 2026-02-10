@@ -66,6 +66,33 @@ export default function ProjectAnalytics() {
     return Math.round((totalDays / doneIssues.length) * 10) / 10
   }, [allIssues])
 
+  // ─── Velocity Chart (last 8 weeks) ────────────────────────────────
+  const velocityData = useMemo(() => {
+    const weeks: { label: string; count: number }[] = []
+    const nowMs = Date.now()
+
+    for (let i = 7; i >= 0; i--) {
+      const weekStart = nowMs - (i + 1) * 7 * 24 * 60 * 60 * 1000
+      const weekEnd = nowMs - i * 7 * 24 * 60 * 60 * 1000
+      const count = allIssues.filter((issue) => {
+        if (issue.status !== IssueStatus.Done) return false
+        const updated = new Date(issue.updatedAt).getTime()
+        return updated >= weekStart && updated < weekEnd
+      }).length
+
+      const weekDate = new Date(weekEnd)
+      const label = `${weekDate.getMonth() + 1}/${weekDate.getDate()}`
+      weeks.push({ label, count })
+    }
+
+    return weeks
+  }, [allIssues])
+
+  const maxVelocity = useMemo(
+    () => Math.max(...velocityData.map((w) => w.count), 1),
+    [velocityData]
+  )
+
   // ─── Status Distribution ──────────────────────────────────────────
   const statusCounts = useMemo(() => {
     const counts: Record<string, number> = {}
@@ -253,6 +280,30 @@ export default function ProjectAnalytics() {
               Avg Cycle Time
             </span>
           </div>
+        </div>
+      </div>
+
+      {/* ─── Velocity Chart ─────────────────────────────────────── */}
+      <div className="project-analytics__section">
+        <h3 className="project-analytics__section-title">
+          <TrendingUp size={16} />
+          Issue Velocity (Last 8 Weeks)
+        </h3>
+        <div className="project-analytics__velocity">
+          {velocityData.map((week, idx) => (
+            <div key={idx} className="project-analytics__velocity-col">
+              <div className="project-analytics__velocity-bar-track">
+                <div
+                  className="project-analytics__velocity-bar"
+                  style={{ height: `${(week.count / maxVelocity) * 100}%` }}
+                  title={`${week.count} issues completed`}
+                  aria-label={`Week of ${week.label}: ${week.count} issues`}
+                />
+              </div>
+              <span className="project-analytics__velocity-count">{week.count}</span>
+              <span className="project-analytics__velocity-label">{week.label}</span>
+            </div>
+          ))}
         </div>
       </div>
 

@@ -74,6 +74,9 @@ const makeDoc = (overrides?: Partial<Document>): Document => ({
   templateId: null,
   expiresAt: null,
   reminderSentAt: null,
+  signingOrder: 'parallel' as const,
+  pricingTable: null,
+  notes: [],
   ...overrides,
 })
 

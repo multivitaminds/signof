@@ -1,6 +1,9 @@
 import { useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 import { useProjectStore } from '../stores/useProjectStore'
+import { PROJECT_TEMPLATES } from '../lib/projectTemplates'
+import type { ProjectTemplate } from '../lib/projectTemplates'
 import './NewProjectPage.css'
 
 const PRESET_COLORS = [
@@ -31,9 +34,17 @@ function derivePrefix(name: string): string {
   return cleaned.slice(0, 3).toUpperCase()
 }
 
+function generateLabelId(): string {
+  return 'lbl-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
+}
+
 export default function NewProjectPage() {
   const navigate = useNavigate()
   const createProject = useProjectStore((s) => s.createProject)
+  const updateProject = useProjectStore((s) => s.updateProject)
+
+  const [step, setStep] = useState<'template' | 'form'>('template')
+  const [selectedTemplate, setSelectedTemplate] = useState<ProjectTemplate | null>(null)
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
@@ -43,6 +54,20 @@ export default function NewProjectPage() {
 
   const autoPrefix = useMemo(() => derivePrefix(name), [name])
   const effectivePrefix = prefixTouched ? prefix : autoPrefix
+
+  const handleTemplateSelect = useCallback((template: ProjectTemplate) => {
+    setSelectedTemplate(template)
+    setStep('form')
+  }, [])
+
+  const handleSkipTemplate = useCallback(() => {
+    setSelectedTemplate(null)
+    setStep('form')
+  }, [])
+
+  const handleBackToTemplates = useCallback(() => {
+    setStep('template')
+  }, [])
 
   const handleNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,18 +103,90 @@ export default function NewProjectPage() {
         prefix: effectivePrefix || derivePrefix(trimmedName),
         color,
       })
+
+      // Apply template labels if a template was selected
+      if (selectedTemplate) {
+        const labels = selectedTemplate.labels.map((l) => ({
+          ...l,
+          id: generateLabelId(),
+        }))
+        updateProject(id, { labels })
+      }
+
       navigate(`/projects/${id}`)
     },
-    [name, description, effectivePrefix, color, createProject, navigate]
+    [name, description, effectivePrefix, color, createProject, navigate, selectedTemplate, updateProject]
   )
 
   const handleCancel = useCallback(() => {
     navigate('/projects')
   }, [navigate])
 
+  if (step === 'template') {
+    return (
+      <div className="new-project">
+        <h2>New Project</h2>
+        <p className="new-project__subtitle">Choose a template to get started, or start from scratch.</p>
+
+        <div className="new-project__templates" role="list" aria-label="Project templates">
+          {PROJECT_TEMPLATES.map((template) => (
+            <button
+              key={template.id}
+              className="new-project__template-card"
+              onClick={() => handleTemplateSelect(template)}
+              role="listitem"
+              aria-label={`Template: ${template.name}`}
+            >
+              <span className="new-project__template-icon">{template.icon}</span>
+              <div className="new-project__template-info">
+                <span className="new-project__template-name">{template.name}</span>
+                <span className="new-project__template-desc">{template.description}</span>
+              </div>
+              <div className="new-project__template-statuses">
+                {template.statuses.map((s) => (
+                  <span
+                    key={s.key}
+                    className="new-project__template-status"
+                    style={{ backgroundColor: `${s.color}20`, color: s.color }}
+                  >
+                    {s.label}
+                  </span>
+                ))}
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <div className="new-project__template-actions">
+          <button type="button" className="btn-secondary" onClick={handleCancel}>
+            Cancel
+          </button>
+          <button type="button" className="btn-primary" onClick={handleSkipTemplate}>
+            Start from Scratch
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="new-project">
-      <h2>New Project</h2>
+      <div className="new-project__header-row">
+        <button
+          type="button"
+          className="new-project__back-btn"
+          onClick={handleBackToTemplates}
+          aria-label="Back to templates"
+        >
+          <ArrowLeft size={16} />
+        </button>
+        <h2>New Project</h2>
+        {selectedTemplate && (
+          <span className="new-project__template-badge">
+            {selectedTemplate.icon} {selectedTemplate.name}
+          </span>
+        )}
+      </div>
 
       <form className="new-project__form" onSubmit={handleSubmit}>
         <div className="new-project__field">
@@ -154,6 +251,40 @@ export default function NewProjectPage() {
             ))}
           </div>
         </div>
+
+        {selectedTemplate && (
+          <div className="new-project__field">
+            <span className="new-project__label">Template Statuses</span>
+            <div className="new-project__template-preview-statuses">
+              {selectedTemplate.statuses.map((s) => (
+                <span
+                  key={s.key}
+                  className="new-project__template-status"
+                  style={{ backgroundColor: `${s.color}20`, color: s.color }}
+                >
+                  {s.label}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {selectedTemplate && (
+          <div className="new-project__field">
+            <span className="new-project__label">Template Labels</span>
+            <div className="new-project__template-preview-labels">
+              {selectedTemplate.labels.map((l) => (
+                <span
+                  key={l.id}
+                  className="new-project__template-label-pill"
+                  style={{ backgroundColor: `${l.color}20`, color: l.color, borderColor: `${l.color}40` }}
+                >
+                  {l.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="new-project__actions">
           <button type="button" className="btn-secondary" onClick={handleCancel}>

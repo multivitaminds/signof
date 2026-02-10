@@ -1,0 +1,365 @@
+/* ═══════════════════════════════════════════════════════════════════
+   BulkSendModal — Send document to multiple recipients
+   ═══════════════════════════════════════════════════════════════════ */
+
+.bulk-send-modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal, 50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4, 1rem);
+}
+
+.bulk-send-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  animation: bulk-send-modal__fade-in 200ms ease-out;
+}
+
+@keyframes bulk-send-modal__fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.bulk-send-modal__content {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  max-height: 85vh;
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl, 16px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: bulk-send-modal__slide-up 200ms ease-out;
+}
+
+@keyframes bulk-send-modal__slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Header ───────────────────────────────────────────────────────── */
+
+.bulk-send-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--space-5, 1.5rem) var(--space-5, 1.5rem) var(--space-4, 1rem);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.bulk-send-modal__header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3, 0.75rem);
+}
+
+.bulk-send-modal__header-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.bulk-send-modal__title {
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.bulk-send-modal__subtitle {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted);
+  margin: var(--space-1, 0.25rem) 0 0;
+}
+
+.bulk-send-modal__close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0;
+  transition: all var(--transition-fast);
+}
+
+.bulk-send-modal__close-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* ─── Document Info ────────────────────────────────────────────────── */
+
+.bulk-send-modal__doc-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-3, 0.75rem) var(--space-5, 1.5rem);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.bulk-send-modal__doc-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+}
+
+.bulk-send-modal__doc-name {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--text-primary);
+}
+
+/* ─── Recipients ───────────────────────────────────────────────────── */
+
+.bulk-send-modal__recipients {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4, 1rem) var(--space-5, 1.5rem);
+}
+
+.bulk-send-modal__recipients-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3, 0.75rem);
+}
+
+.bulk-send-modal__recipients-title {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  margin: 0;
+}
+
+.bulk-send-modal__count {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+  padding: 2px 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full, 9999px);
+}
+
+.bulk-send-modal__recipients-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.bulk-send-modal__recipient-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.bulk-send-modal__recipient-number {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full, 9999px);
+  flex-shrink: 0;
+}
+
+.bulk-send-modal__input {
+  flex: 1;
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  font-size: var(--text-sm, 0.875rem);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.bulk-send-modal__input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+.bulk-send-modal__input::placeholder {
+  color: var(--text-muted);
+}
+
+.bulk-send-modal__remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.bulk-send-modal__remove-btn:hover:not(:disabled) {
+  background: var(--color-danger-light, #FEE2E2);
+  color: var(--color-danger, #DC2626);
+}
+
+.bulk-send-modal__remove-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.bulk-send-modal__add-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  width: 100%;
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  margin-top: var(--space-2, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--color-primary);
+  background: transparent;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.bulk-send-modal__add-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light, #EEF2FF);
+}
+
+/* ─── Error ────────────────────────────────────────────────────────── */
+
+.bulk-send-modal__error {
+  padding: var(--space-2, 0.5rem) var(--space-5, 1.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-danger, #DC2626);
+  background: var(--color-danger-light, #FEE2E2);
+}
+
+/* ─── Footer ───────────────────────────────────────────────────────── */
+
+.bulk-send-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4, 1rem) var(--space-5, 1.5rem);
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.bulk-send-modal__preview-count {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted);
+}
+
+.bulk-send-modal__footer-actions {
+  display: flex;
+  gap: var(--space-2, 0.5rem);
+}
+
+.bulk-send-modal__cancel-btn {
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.bulk-send-modal__cancel-btn:hover {
+  background: var(--bg-tertiary);
+}
+
+.bulk-send-modal__send-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-semibold, 600);
+  color: #ffffff;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.bulk-send-modal__send-btn:hover:not(:disabled) {
+  background: var(--color-primary-hover, #4338CA);
+}
+
+.bulk-send-modal__send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Responsive ───────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .bulk-send-modal__recipient-row {
+    flex-wrap: wrap;
+  }
+
+  .bulk-send-modal__recipient-number {
+    display: none;
+  }
+
+  .bulk-send-modal__input {
+    min-width: 0;
+  }
+
+  .bulk-send-modal__footer {
+    flex-direction: column;
+    gap: var(--space-3, 0.75rem);
+    align-items: stretch;
+  }
+
+  .bulk-send-modal__footer-actions {
+    justify-content: flex-end;
+  }
+}
+
+/* ─── Dark Mode ────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .bulk-send-modal__overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .bulk-send-modal__add-btn:hover {
+  background: rgba(79, 70, 229, 0.1);
+}
+
+[data-theme="dark"] .bulk-send-modal__error {
+  background: rgba(220, 38, 38, 0.15);
+}

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Block, Page, BlockType, InlineMark, PageSnapshot, PagePropertyValue, BlockProperties, BlockComment, CommentReply } from '../types'
+import type { Block, Page, BlockType, InlineMark, PageSnapshot, PagePropertyValue, BlockProperties, BlockComment, CommentReply, UndoSnapshot } from '../types'
 import { BlockType as BT } from '../types'
 import { splitBlock as splitBlockOp, mergeBlocks as mergeBlocksOp } from '../lib/blockOperations'
 
@@ -106,12 +106,17 @@ function createSampleData(): { pages: Record<string, Page>; blocks: Record<strin
 
 // ─── Store Interface ────────────────────────────────────────────────
 
+const MAX_UNDO_STACK = 50
+
 interface WorkspaceState {
   pages: Record<string, Page>
   blocks: Record<string, Block>
   snapshots: Record<string, PageSnapshot[]>
   editCounts: Record<string, number>
   comments: Record<string, BlockComment[]>
+  syncedBlocks: Record<string, Block>
+  undoStack: UndoSnapshot[]
+  redoStack: UndoSnapshot[]
 
   // Page CRUD
   addPage: (title: string, parentId?: string | null) => string
@@ -163,6 +168,18 @@ interface WorkspaceState {
   getPageHistory: (pageId: string) => PageSnapshot[]
   restoreSnapshot: (snapshotId: string, pageId: string) => void
   deleteSnapshot: (snapshotId: string, pageId: string) => void
+
+  // Undo/Redo
+  pushUndo: (pageId: string) => void
+  undo: () => void
+  redo: () => void
+  canUndo: () => boolean
+  canRedo: () => boolean
+
+  // Synced Blocks
+  createSyncedBlock: (blockId: string) => string | null
+  insertSyncedBlock: (pageId: string, syncedBlockId: string, afterBlockId?: string) => string | null
+  updateSyncedBlockContent: (syncedBlockId: string, content: string) => void
 }
 
 export const useWorkspaceStore = create<WorkspaceState>()(
@@ -176,6 +193,9 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         snapshots: {},
         editCounts: {},
         comments: {},
+        syncedBlocks: {},
+        undoStack: [],
+        redoStack: [],
 
         // ─── Page CRUD ────────────────────────────────────────────
 
@@ -384,6 +404,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         // ─── Block CRUD ───────────────────────────────────────────
 
         addBlock: (pageId, type, afterBlockId) => {
+          get().pushUndo(pageId)
           const block = createBlock(type)
 
           set((state) => {
@@ -420,11 +441,27 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         },
 
         updateBlockContent: (blockId, content) => {
+          // Push undo for the page containing this block
+          const preState = get()
+          for (const page of Object.values(preState.pages)) {
+            if (page.blockIds.includes(blockId)) {
+              get().pushUndo(page.id)
+              break
+            }
+          }
+
+          // If it's a synced block reference, update via synced path
+          const block = get().blocks[blockId]
+          if (block?.syncedBlockId) {
+            get().updateSyncedBlockContent(block.syncedBlockId, content)
+            return
+          }
+
           set((state) => {
-            const block = state.blocks[blockId]
-            if (!block) return state
+            const b = state.blocks[blockId]
+            if (!b) return state
             return {
-              blocks: { ...state.blocks, [blockId]: { ...block, content } },
+              blocks: { ...state.blocks, [blockId]: { ...b, content } },
             }
           })
 
@@ -453,6 +490,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         },
 
         deleteBlock: (pageId, blockId) => {
+          get().pushUndo(pageId)
           set((state) => {
             const page = state.pages[pageId]
             if (!page) return state
@@ -480,6 +518,14 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         },
 
         convertBlockType: (blockId, newType) => {
+          // Find page for undo
+          const preState = get()
+          for (const page of Object.values(preState.pages)) {
+            if (page.blockIds.includes(blockId)) {
+              get().pushUndo(page.id)
+              break
+            }
+          }
           set((state) => {
             const block = state.blocks[blockId]
             if (!block) return state
@@ -493,6 +539,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         },
 
         splitBlock: (pageId, blockId, offset) => {
+          get().pushUndo(pageId)
           const state = get()
           const block = state.blocks[blockId]
           const page = state.pages[pageId]
@@ -527,6 +574,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         },
 
         mergeBlocks: (pageId, blockId) => {
+          get().pushUndo(pageId)
           const state = get()
           const page = state.pages[pageId]
           if (!page) return null
@@ -561,6 +609,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         },
 
         reorderBlock: (pageId, blockId, newIndex) => {
+          get().pushUndo(pageId)
           set((state) => {
             const page = state.pages[pageId]
             if (!page) return state
@@ -962,6 +1011,215 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             }
           })
         },
+
+        // ─── Undo / Redo ───────────────────────────────────────────
+
+        pushUndo: (pageId) => {
+          const state = get()
+          const page = state.pages[pageId]
+          if (!page) return
+
+          // Capture only the blocks belonging to this page
+          const pageBlocks: Record<string, Block> = {}
+          for (const bid of page.blockIds) {
+            const block = state.blocks[bid]
+            if (block) {
+              pageBlocks[bid] = JSON.parse(JSON.stringify(block))
+            }
+          }
+
+          const snapshot: UndoSnapshot = {
+            pageId,
+            page: JSON.parse(JSON.stringify(page)),
+            blocks: pageBlocks,
+          }
+
+          set((s) => {
+            const newStack = [...s.undoStack, snapshot]
+            if (newStack.length > MAX_UNDO_STACK) {
+              newStack.splice(0, newStack.length - MAX_UNDO_STACK)
+            }
+            return {
+              undoStack: newStack,
+              redoStack: [],
+            }
+          })
+        },
+
+        undo: () => {
+          const state = get()
+          if (state.undoStack.length === 0) return
+
+          const snapshot = state.undoStack[state.undoStack.length - 1]!
+          const page = state.pages[snapshot.pageId]
+          if (!page) return
+
+          // Save current state to redo stack
+          const currentBlocks: Record<string, Block> = {}
+          for (const bid of page.blockIds) {
+            const block = state.blocks[bid]
+            if (block) {
+              currentBlocks[bid] = JSON.parse(JSON.stringify(block))
+            }
+          }
+
+          const currentSnapshot: UndoSnapshot = {
+            pageId: snapshot.pageId,
+            page: JSON.parse(JSON.stringify(page)),
+            blocks: currentBlocks,
+          }
+
+          // Remove old blocks, add restored blocks
+          const newBlocks = { ...state.blocks }
+          for (const bid of page.blockIds) {
+            delete newBlocks[bid]
+          }
+          for (const [bid, block] of Object.entries(snapshot.blocks)) {
+            newBlocks[bid] = block
+          }
+
+          set({
+            pages: {
+              ...state.pages,
+              [snapshot.pageId]: snapshot.page,
+            },
+            blocks: newBlocks,
+            undoStack: state.undoStack.slice(0, -1),
+            redoStack: [...state.redoStack, currentSnapshot],
+          })
+        },
+
+        redo: () => {
+          const state = get()
+          if (state.redoStack.length === 0) return
+
+          const snapshot = state.redoStack[state.redoStack.length - 1]!
+          const page = state.pages[snapshot.pageId]
+          if (!page) return
+
+          // Save current state to undo stack
+          const currentBlocks: Record<string, Block> = {}
+          for (const bid of page.blockIds) {
+            const block = state.blocks[bid]
+            if (block) {
+              currentBlocks[bid] = JSON.parse(JSON.stringify(block))
+            }
+          }
+
+          const currentSnapshot: UndoSnapshot = {
+            pageId: snapshot.pageId,
+            page: JSON.parse(JSON.stringify(page)),
+            blocks: currentBlocks,
+          }
+
+          // Remove old blocks, add restored blocks
+          const newBlocks = { ...state.blocks }
+          for (const bid of page.blockIds) {
+            delete newBlocks[bid]
+          }
+          for (const [bid, block] of Object.entries(snapshot.blocks)) {
+            newBlocks[bid] = block
+          }
+
+          set({
+            pages: {
+              ...state.pages,
+              [snapshot.pageId]: snapshot.page,
+            },
+            blocks: newBlocks,
+            undoStack: [...state.undoStack, currentSnapshot],
+            redoStack: state.redoStack.slice(0, -1),
+          })
+        },
+
+        canUndo: () => get().undoStack.length > 0,
+
+        canRedo: () => get().redoStack.length > 0,
+
+        // ─── Synced Blocks ─────────────────────────────────────────
+
+        createSyncedBlock: (blockId) => {
+          const state = get()
+          const block = state.blocks[blockId]
+          if (!block) return null
+
+          const syncedId = generateId()
+          const syncedBlock: Block = {
+            ...JSON.parse(JSON.stringify(block)),
+            id: syncedId,
+          }
+
+          set((s) => ({
+            syncedBlocks: { ...s.syncedBlocks, [syncedId]: syncedBlock },
+            blocks: {
+              ...s.blocks,
+              [blockId]: { ...block, syncedBlockId: syncedId, content: block.content },
+            },
+          }))
+
+          return syncedId
+        },
+
+        insertSyncedBlock: (pageId, syncedBlockId, afterBlockId) => {
+          const state = get()
+          const page = state.pages[pageId]
+          const syncedSource = state.syncedBlocks[syncedBlockId]
+          if (!page || !syncedSource) return null
+
+          const refBlock: Block = {
+            id: generateId(),
+            type: syncedSource.type,
+            content: syncedSource.content,
+            marks: [...syncedSource.marks],
+            properties: { ...syncedSource.properties },
+            children: [],
+            syncedBlockId,
+          }
+
+          const newBlockIds = [...page.blockIds]
+          if (afterBlockId) {
+            const idx = newBlockIds.indexOf(afterBlockId)
+            if (idx >= 0) {
+              newBlockIds.splice(idx + 1, 0, refBlock.id)
+            } else {
+              newBlockIds.push(refBlock.id)
+            }
+          } else {
+            newBlockIds.push(refBlock.id)
+          }
+
+          set((s) => ({
+            pages: {
+              ...s.pages,
+              [pageId]: { ...page, blockIds: newBlockIds, updatedAt: now() },
+            },
+            blocks: { ...s.blocks, [refBlock.id]: refBlock },
+          }))
+
+          return refBlock.id
+        },
+
+        updateSyncedBlockContent: (syncedBlockId, content) => {
+          const state = get()
+          const syncedSource = state.syncedBlocks[syncedBlockId]
+          if (!syncedSource) return
+
+          // Update the source
+          const updatedSource = { ...syncedSource, content }
+
+          // Update all reference blocks across the app
+          const updatedBlocks = { ...state.blocks }
+          for (const [bid, block] of Object.entries(updatedBlocks)) {
+            if (block.syncedBlockId === syncedBlockId) {
+              updatedBlocks[bid] = { ...block, content }
+            }
+          }
+
+          set({
+            syncedBlocks: { ...state.syncedBlocks, [syncedBlockId]: updatedSource },
+            blocks: updatedBlocks,
+          })
+        },
       }
     },
     {
@@ -973,6 +1231,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         snapshots: state.snapshots,
         editCounts: state.editCounts,
         comments: state.comments,
+        syncedBlocks: state.syncedBlocks,
       }),
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as Record<string, unknown>

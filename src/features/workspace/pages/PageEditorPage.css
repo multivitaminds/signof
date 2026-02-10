@@ -69,6 +69,11 @@
   color: var(--text-secondary, #6B7280);
 }
 
+.page-editor__toolbar-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .page-editor__toolbar-btn--active {
   background: var(--bg-secondary, #F3F4F6);
   color: var(--color-primary, #4F46E5);

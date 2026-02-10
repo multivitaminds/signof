@@ -374,7 +374,15 @@ export default function DatabaseDetailPage() {
         )}
         {activeView?.type === ViewType.Form && (
           <FormView
-            fields={resolvedTable.fields.filter((f) => f.type !== DbFieldType.CreatedTime && f.type !== DbFieldType.LastEditedTime)}
+            fields={resolvedTable.fields.filter((f) =>
+              f.type !== DbFieldType.CreatedTime &&
+              f.type !== DbFieldType.LastEditedTime &&
+              f.type !== DbFieldType.Formula &&
+              f.type !== DbFieldType.Lookup &&
+              f.type !== DbFieldType.Rollup
+            )}
+            tableName={resolvedTable.name}
+            formDescription={database.description}
             onSubmit={(cells) => addRow(resolvedTable.id, cells)}
           />
         )}

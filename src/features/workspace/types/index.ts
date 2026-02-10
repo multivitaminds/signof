@@ -34,6 +34,8 @@ export const MarkType = {
   Strikethrough: 'strikethrough',
   Code: 'code',
   Link: 'link',
+  Highlight: 'highlight',
+  TextColor: 'textColor',
 } as const
 
 export type MarkType = (typeof MarkType)[keyof typeof MarkType]
@@ -72,6 +74,7 @@ export interface Block {
   marks: InlineMark[]
   properties: BlockProperties
   children: string[]
+  syncedBlockId?: string
 }
 
 // ─── Page Property ──────────────────────────────────────────────────
@@ -108,6 +111,14 @@ export interface PageSnapshot {
   blockData: Array<{ id: string; type: string; content: string; properties: Record<string, unknown> }>
   timestamp: string
   editCount: number
+}
+
+// ─── Undo Snapshot ─────────────────────────────────────────────────
+
+export interface UndoSnapshot {
+  pageId: string
+  page: Page
+  blocks: Record<string, Block>
 }
 
 // ─── Slash Command Item ─────────────────────────────────────────────

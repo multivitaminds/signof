@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { FileText, Clock, Download, FileDown, MessageSquare } from 'lucide-react'
+import { FileText, Clock, Download, FileDown, MessageSquare, Undo2, Redo2 } from 'lucide-react'
 import { useWorkspaceStore } from '../stores/useWorkspaceStore'
 import PageHeader from '../components/PageHeader/PageHeader'
 import BlockEditor from '../components/BlockEditor/BlockEditor'
@@ -22,6 +22,11 @@ export default function PageEditorPage() {
   const createSnapshot = useWorkspaceStore((s) => s.createSnapshot)
   const restoreSnapshot = useWorkspaceStore((s) => s.restoreSnapshot)
   const deleteSnapshot = useWorkspaceStore((s) => s.deleteSnapshot)
+
+  const undo = useWorkspaceStore((s) => s.undo)
+  const redo = useWorkspaceStore((s) => s.redo)
+  const canUndo = useWorkspaceStore((s) => s.canUndo)
+  const canRedo = useWorkspaceStore((s) => s.canRedo)
 
   const pageComments = useWorkspaceStore((s) => (pageId ? s.comments[pageId] ?? [] : []))
 
@@ -79,7 +84,7 @@ export default function PageEditorPage() {
       const blockData = page.blockIds.map((bid) => {
         const block = blocks[bid]
         return block
-          ? { type: block.type, content: block.content, properties: block.properties as Record<string, unknown> }
+          ? { type: block.type, content: block.content, properties: block.properties as Record<string, unknown>, marks: block.marks }
           : { type: 'paragraph', content: '' }
       })
 
@@ -160,6 +165,24 @@ export default function PageEditorPage() {
         {/* Page toolbar */}
         <div className="page-editor__toolbar">
           <div className="page-editor__toolbar-actions">
+            <button
+              className="page-editor__toolbar-btn"
+              onClick={undo}
+              disabled={!canUndo()}
+              title="Undo (⌘Z)"
+              aria-label="Undo"
+            >
+              <Undo2 size={16} />
+            </button>
+            <button
+              className="page-editor__toolbar-btn"
+              onClick={redo}
+              disabled={!canRedo()}
+              title="Redo (⌘⇧Z)"
+              aria-label="Redo"
+            >
+              <Redo2 size={16} />
+            </button>
             <div className="page-editor__export-wrapper">
               <button
                 className="page-editor__toolbar-btn"
