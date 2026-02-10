@@ -2,8 +2,8 @@ import { useState, useCallback, useMemo, useEffect } from 'react'
 import { Plus, Download, Upload, Search } from 'lucide-react'
 import { Button, Input } from '../../../../components/ui'
 import { useMemoryStore } from '../../stores/useMemoryStore'
-import { MemoryScope } from '../../types'
-import type { MemoryScope as MemoryScopeType, MemoryEntry } from '../../types'
+import { MemoryScope, MemoryCategory, MemorySortOrder } from '../../types'
+import type { MemoryScope as MemoryScopeType, MemoryCategory as MemoryCategoryType, MemorySortOrder as MemorySortOrderType, MemoryEntry } from '../../types'
 import UsageMeter from '../UsageMeter/UsageMeter'
 import MemoryEntryCard from '../MemoryEntryCard/MemoryEntryCard'
 import MemoryEntryModal from '../MemoryEntryModal/MemoryEntryModal'
@@ -16,15 +16,53 @@ const SCOPE_OPTIONS: Array<{ value: MemoryScopeType; label: string }> = [
   { value: MemoryScope.Project, label: 'Project' },
 ]
 
+const CATEGORY_OPTIONS: Array<{ value: MemoryCategoryType; label: string }> = [
+  { value: MemoryCategory.Decisions, label: 'Decisions' },
+  { value: MemoryCategory.Workflows, label: 'Workflows' },
+  { value: MemoryCategory.Preferences, label: 'Preferences' },
+  { value: MemoryCategory.People, label: 'People' },
+  { value: MemoryCategory.Projects, label: 'Projects' },
+  { value: MemoryCategory.Facts, label: 'Facts' },
+]
+
+const SORT_OPTIONS: Array<{ value: MemorySortOrderType; label: string }> = [
+  { value: MemorySortOrder.Recent, label: 'Recent' },
+  { value: MemorySortOrder.Oldest, label: 'Oldest' },
+  { value: MemorySortOrder.Largest, label: 'Largest' },
+  { value: MemorySortOrder.Category, label: 'Category' },
+]
+
+function sortEntries(entries: MemoryEntry[], order: MemorySortOrderType): MemoryEntry[] {
+  const sorted = [...entries]
+  switch (order) {
+    case MemorySortOrder.Recent:
+      return sorted.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    case MemorySortOrder.Oldest:
+      return sorted.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    case MemorySortOrder.Largest:
+      return sorted.sort((a, b) => b.tokenCount - a.tokenCount)
+    case MemorySortOrder.Category:
+      return sorted.sort((a, b) => a.category.localeCompare(b.category))
+    default:
+      return sorted
+  }
+}
+
 export default function MemoryExplorer() {
   const {
     entries,
     isHydrated,
     searchQuery,
     filterScope,
+    filterCategory,
+    sortOrder,
+    expandedEntryId,
     hydrate,
     setSearchQuery,
     setFilterScope,
+    setFilterCategory,
+    setSortOrder,
+    setExpandedEntryId,
     addEntry,
     updateEntry,
     deleteEntry,
@@ -52,8 +90,11 @@ export default function MemoryExplorer() {
     if (filterScope) {
       result = result.filter((e) => e.scope === filterScope)
     }
-    return result
-  }, [entries, searchQuery, filterScope])
+    if (filterCategory) {
+      result = result.filter((e) => e.category === filterCategory)
+    }
+    return sortEntries(result, sortOrder)
+  }, [entries, searchQuery, filterScope, filterCategory, sortOrder])
 
   const totalTokens = useMemo(
     () => entries.reduce((sum, e) => sum + e.tokenCount, 0),
@@ -83,12 +124,19 @@ export default function MemoryExplorer() {
     [deleteEntry],
   )
 
+  const handleToggleExpand = useCallback(
+    (id: string) => {
+      setExpandedEntryId(expandedEntryId === id ? null : id)
+    },
+    [expandedEntryId, setExpandedEntryId],
+  )
+
   const handleSave = useCallback(
-    async (title: string, content: string, tags: string[], scope: MemoryScopeType) => {
+    async (title: string, content: string, category: MemoryCategoryType, tags: string[], scope: MemoryScopeType) => {
       if (editingEntry) {
-        await updateEntry(editingEntry.id, { title, content, tags, scope })
+        await updateEntry(editingEntry.id, { title, content, category, tags, scope })
       } else {
-        await addEntry(title, content, tags, scope)
+        await addEntry(title, content, category, tags, scope)
       }
       setModalOpen(false)
       setEditingEntry(null)
@@ -134,6 +182,21 @@ export default function MemoryExplorer() {
     [setFilterScope],
   )
 
+  const handleCategoryChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value
+      setFilterCategory(value === '' ? null : (value as MemoryCategoryType))
+    },
+    [setFilterCategory],
+  )
+
+  const handleSortChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setSortOrder(e.target.value as MemorySortOrderType)
+    },
+    [setSortOrder],
+  )
+
   if (!isHydrated) {
     return (
       <div className="memory-explorer">
@@ -170,6 +233,33 @@ export default function MemoryExplorer() {
           ))}
         </select>
 
+        <select
+          className="memory-explorer__category-filter"
+          value={filterCategory ?? ''}
+          onChange={handleCategoryChange}
+          aria-label="Filter by category"
+        >
+          <option value="">All Categories</option>
+          {CATEGORY_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="memory-explorer__sort-select"
+          value={sortOrder}
+          onChange={handleSortChange}
+          aria-label="Sort entries"
+        >
+          {SORT_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+
         <div className="memory-explorer__actions">
           <Button variant="ghost" size="sm" icon={<Download size={16} />} onClick={handleExport}>
             Export
@@ -178,7 +268,7 @@ export default function MemoryExplorer() {
             Import
           </Button>
           <Button variant="primary" size="sm" icon={<Plus size={16} />} onClick={handleAdd}>
-            Add Entry
+            Add Memory
           </Button>
         </div>
       </div>
@@ -187,7 +277,7 @@ export default function MemoryExplorer() {
         <div className="memory-explorer__empty">
           <p>No memory entries yet. Add your first entry to start building context.</p>
           <Button variant="primary" icon={<Plus size={16} />} onClick={handleAdd}>
-            Add Entry
+            Add Memory
           </Button>
         </div>
       ) : (
@@ -196,8 +286,10 @@ export default function MemoryExplorer() {
             <MemoryEntryCard
               key={entry.id}
               entry={entry}
+              expanded={expandedEntryId === entry.id}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onToggleExpand={handleToggleExpand}
             />
           ))}
         </div>

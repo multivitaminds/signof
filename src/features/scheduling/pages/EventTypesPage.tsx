@@ -4,6 +4,7 @@ import { useSchedulingStore } from '../stores/useSchedulingStore'
 import type { EventType } from '../types'
 import EventTypeCard from '../components/EventTypeCard/EventTypeCard'
 import EventTypeEditor from '../components/EventTypeEditor/EventTypeEditor'
+import { useSchedulingShortcuts } from '../hooks/useSchedulingShortcuts'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import './EventTypesPage.css'
 
@@ -19,6 +20,13 @@ export default function EventTypesPage() {
   const [editingEventType, setEditingEventType] = useState<EventType | undefined>(undefined)
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+
+  useSchedulingShortcuts({
+    onNewEventType: () => {
+      setEditingEventType(undefined)
+      setEditorOpen(true)
+    },
+  })
 
   const handleToggleActive = useCallback(
     (id: string, active: boolean) => {

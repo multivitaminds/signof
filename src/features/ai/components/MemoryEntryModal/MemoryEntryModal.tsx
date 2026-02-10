@@ -1,14 +1,14 @@
 import { useState, useCallback } from 'react'
 import { Button } from '../../../../components/ui'
 import { Input } from '../../../../components/ui'
-import type { MemoryEntry, MemoryScope } from '../../types'
-import { MemoryScope as MemoryScopeValues } from '../../types'
+import type { MemoryEntry, MemoryScope, MemoryCategory } from '../../types'
+import { MemoryScope as MemoryScopeValues, MemoryCategory as MemoryCategoryValues } from '../../types'
 import { countTokens, formatTokenCount } from '../../lib/tokenCount'
 import './MemoryEntryModal.css'
 
 interface MemoryEntryModalProps {
   entry?: MemoryEntry | null
-  onSave: (title: string, content: string, tags: string[], scope: MemoryScope) => void
+  onSave: (title: string, content: string, category: MemoryCategory, tags: string[], scope: MemoryScope) => void
   onCancel: () => void
 }
 
@@ -19,10 +19,20 @@ const SCOPE_OPTIONS: Array<{ value: MemoryScope; label: string }> = [
   { value: MemoryScopeValues.Project, label: 'Project' },
 ]
 
+const CATEGORY_OPTIONS: Array<{ value: MemoryCategory; label: string }> = [
+  { value: MemoryCategoryValues.Decisions, label: 'Decisions' },
+  { value: MemoryCategoryValues.Workflows, label: 'Workflows' },
+  { value: MemoryCategoryValues.Preferences, label: 'Preferences' },
+  { value: MemoryCategoryValues.People, label: 'People' },
+  { value: MemoryCategoryValues.Projects, label: 'Projects' },
+  { value: MemoryCategoryValues.Facts, label: 'Facts' },
+]
+
 export default function MemoryEntryModal({ entry, onSave, onCancel }: MemoryEntryModalProps) {
   const isEdit = Boolean(entry)
   const [title, setTitle] = useState(entry?.title ?? '')
   const [content, setContent] = useState(entry?.content ?? '')
+  const [category, setCategory] = useState<MemoryCategory>(entry?.category ?? MemoryCategoryValues.Facts)
   const [tags, setTags] = useState<string[]>(entry?.tags ?? [])
   const [tagInput, setTagInput] = useState('')
   const [scope, setScope] = useState<MemoryScope>(entry?.scope ?? MemoryScopeValues.Workspace)
@@ -32,8 +42,8 @@ export default function MemoryEntryModal({ entry, onSave, onCancel }: MemoryEntr
 
   const handleSave = useCallback(() => {
     if (!canSave) return
-    onSave(title.trim(), content.trim(), tags, scope)
-  }, [canSave, title, content, tags, scope, onSave])
+    onSave(title.trim(), content.trim(), category, tags, scope)
+  }, [canSave, title, content, category, tags, scope, onSave])
 
   const handleTagKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -76,6 +86,25 @@ export default function MemoryEntryModal({ entry, onSave, onCancel }: MemoryEntr
             placeholder="Memory entry title"
             fullWidth
           />
+        </div>
+
+        <div className="memory-modal__field">
+          <label className="memory-modal__label" htmlFor="memory-category">
+            Category
+          </label>
+          <select
+            id="memory-category"
+            className="memory-modal__category-select"
+            value={category}
+            onChange={(e) => setCategory(e.target.value as MemoryCategory)}
+            aria-label="Category"
+          >
+            {CATEGORY_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="memory-modal__field">

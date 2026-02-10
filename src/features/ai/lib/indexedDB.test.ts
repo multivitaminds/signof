@@ -77,6 +77,7 @@ const makeEntry = (id: string, content = 'test content'): MemoryEntry => ({
   id,
   title: `Entry ${id}`,
   content,
+  category: 'facts',
   tags: ['test'],
   scope: 'workspace',
   tokenCount: Math.ceil(content.length / 4),

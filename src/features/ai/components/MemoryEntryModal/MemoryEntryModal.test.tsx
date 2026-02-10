@@ -7,6 +7,7 @@ const makeEntry = (): MemoryEntry => ({
   id: 'edit-1',
   title: 'Existing Entry',
   content: 'Existing content for editing.',
+  category: 'facts',
   tags: ['tag1', 'tag2'],
   scope: 'personal',
   tokenCount: 7,
@@ -51,7 +52,25 @@ describe('MemoryEntryModal', () => {
     expect(personalRadio).toBeChecked()
   })
 
-  it('calls onSave with correct values', async () => {
+  it('renders category dropdown', () => {
+    render(<MemoryEntryModal onSave={onSave} onCancel={onCancel} />)
+    expect(screen.getByRole('combobox', { name: /category/i })).toBeInTheDocument()
+  })
+
+  it('defaults category to facts in add mode', () => {
+    render(<MemoryEntryModal onSave={onSave} onCancel={onCancel} />)
+    const categorySelect = screen.getByRole('combobox', { name: /category/i })
+    expect(categorySelect).toHaveValue('facts')
+  })
+
+  it('shows correct category in edit mode', () => {
+    const entry = makeEntry()
+    render(<MemoryEntryModal entry={{ ...entry, category: 'decisions' }} onSave={onSave} onCancel={onCancel} />)
+    const categorySelect = screen.getByRole('combobox', { name: /category/i })
+    expect(categorySelect).toHaveValue('decisions')
+  })
+
+  it('calls onSave with correct values including category', async () => {
     const user = userEvent.setup()
     render(<MemoryEntryModal onSave={onSave} onCancel={onCancel} />)
 
@@ -59,7 +78,19 @@ describe('MemoryEntryModal', () => {
     await user.type(screen.getByPlaceholderText(/Enter the content/), 'Some content')
     await user.click(screen.getByRole('button', { name: /add entry/i }))
 
-    expect(onSave).toHaveBeenCalledWith('My Title', 'Some content', [], 'workspace')
+    expect(onSave).toHaveBeenCalledWith('My Title', 'Some content', 'facts', [], 'workspace')
+  })
+
+  it('calls onSave with selected category', async () => {
+    const user = userEvent.setup()
+    render(<MemoryEntryModal onSave={onSave} onCancel={onCancel} />)
+
+    await user.type(screen.getByPlaceholderText('Memory entry title'), 'Title')
+    await user.type(screen.getByPlaceholderText(/Enter the content/), 'Content')
+    await user.selectOptions(screen.getByRole('combobox', { name: /category/i }), 'workflows')
+    await user.click(screen.getByRole('button', { name: /add entry/i }))
+
+    expect(onSave).toHaveBeenCalledWith('Title', 'Content', 'workflows', [], 'workspace')
   })
 
   it('calls onCancel when cancel is clicked', async () => {
@@ -123,6 +154,6 @@ describe('MemoryEntryModal', () => {
     await user.click(screen.getByRole('radio', { name: 'Team' }))
     await user.click(screen.getByRole('button', { name: /add entry/i }))
 
-    expect(onSave).toHaveBeenCalledWith('Title', 'Content', [], 'team')
+    expect(onSave).toHaveBeenCalledWith('Title', 'Content', 'facts', [], 'team')
   })
 })

@@ -269,6 +269,11 @@
   transition: all 150ms ease;
 }
 
+.bookings-page__action-btn--download:hover {
+  color: var(--color-primary, #4F46E5);
+  background: var(--color-primary-light, #E8E6FF);
+}
+
 .bookings-page__action-btn--reschedule:hover {
   color: var(--color-primary, #4F46E5);
   background: var(--color-primary-light, #E8E6FF);

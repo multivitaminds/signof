@@ -34,6 +34,7 @@ const makeEntry = (id: string, content = 'test content'): MemoryEntry => ({
   id,
   title: `Entry ${id}`,
   content,
+  category: 'facts',
   tags: ['test'],
   scope: 'workspace',
   tokenCount: Math.ceil(content.length / 4),
@@ -49,7 +50,10 @@ describe('useMemoryStore', () => {
       isHydrated: false,
       searchQuery: '',
       filterScope: null,
+      filterCategory: null,
       filterTags: [],
+      sortOrder: 'recent',
+      expandedEntryId: null,
     })
     mockDB.__store.clear()
     vi.clearAllMocks()
@@ -61,7 +65,10 @@ describe('useMemoryStore', () => {
     expect(state.isHydrated).toBe(false)
     expect(state.searchQuery).toBe('')
     expect(state.filterScope).toBeNull()
+    expect(state.filterCategory).toBeNull()
     expect(state.filterTags).toEqual([])
+    expect(state.sortOrder).toBe('recent')
+    expect(state.expandedEntryId).toBeNull()
   })
 
   describe('hydrate', () => {
@@ -85,16 +92,18 @@ describe('useMemoryStore', () => {
   })
 
   describe('addEntry', () => {
-    it('creates and stores a new entry', async () => {
+    it('creates and stores a new entry with category', async () => {
       const result = await useMemoryStore.getState().addEntry(
         'Test Title',
         'Some content here',
+        'decisions',
         ['tag1'],
         'workspace',
       )
       expect(result).not.toBeNull()
       expect(result?.title).toBe('Test Title')
       expect(result?.content).toBe('Some content here')
+      expect(result?.category).toBe('decisions')
       expect(result?.tags).toEqual(['tag1'])
       expect(result?.scope).toBe('workspace')
       expect(result?.tokenCount).toBe(Math.ceil(17 / 4))
@@ -113,6 +122,7 @@ describe('useMemoryStore', () => {
       const result = await useMemoryStore.getState().addEntry(
         'Over budget',
         'This will exceed the limit',
+        'facts',
         [],
         'workspace',
       )
@@ -141,6 +151,16 @@ describe('useMemoryStore', () => {
 
       const state = useMemoryStore.getState()
       expect(state.entries[0]!.tokenCount).toBe(25)
+    })
+
+    it('updates category', async () => {
+      const entry = makeEntry('u3')
+      useMemoryStore.setState({ entries: [entry] })
+
+      await useMemoryStore.getState().updateEntry('u3', { category: 'workflows' })
+
+      const state = useMemoryStore.getState()
+      expect(state.entries[0]!.category).toBe('workflows')
     })
 
     it('does nothing for non-existent id', async () => {
@@ -173,7 +193,7 @@ describe('useMemoryStore', () => {
     })
   })
 
-  describe('filter setters', () => {
+  describe('filter and sort setters', () => {
     it('setSearchQuery updates searchQuery', () => {
       useMemoryStore.getState().setSearchQuery('hello')
       expect(useMemoryStore.getState().searchQuery).toBe('hello')
@@ -190,9 +210,36 @@ describe('useMemoryStore', () => {
       expect(useMemoryStore.getState().filterScope).toBeNull()
     })
 
+    it('setFilterCategory updates filterCategory', () => {
+      useMemoryStore.getState().setFilterCategory('decisions')
+      expect(useMemoryStore.getState().filterCategory).toBe('decisions')
+    })
+
+    it('setFilterCategory can be set to null', () => {
+      useMemoryStore.getState().setFilterCategory('workflows')
+      useMemoryStore.getState().setFilterCategory(null)
+      expect(useMemoryStore.getState().filterCategory).toBeNull()
+    })
+
     it('setFilterTags updates filterTags', () => {
       useMemoryStore.getState().setFilterTags(['a', 'b'])
       expect(useMemoryStore.getState().filterTags).toEqual(['a', 'b'])
+    })
+
+    it('setSortOrder updates sortOrder', () => {
+      useMemoryStore.getState().setSortOrder('oldest')
+      expect(useMemoryStore.getState().sortOrder).toBe('oldest')
+    })
+
+    it('setExpandedEntryId updates expandedEntryId', () => {
+      useMemoryStore.getState().setExpandedEntryId('abc')
+      expect(useMemoryStore.getState().expandedEntryId).toBe('abc')
+    })
+
+    it('setExpandedEntryId can be set to null', () => {
+      useMemoryStore.getState().setExpandedEntryId('abc')
+      useMemoryStore.getState().setExpandedEntryId(null)
+      expect(useMemoryStore.getState().expandedEntryId).toBeNull()
     })
   })
 

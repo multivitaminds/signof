@@ -26,7 +26,9 @@
   min-width: 200px;
 }
 
-.memory-explorer__scope-filter {
+.memory-explorer__scope-filter,
+.memory-explorer__category-filter,
+.memory-explorer__sort-select {
   padding: var(--space-2) var(--space-3);
   font-size: var(--text-sm);
   border: 1px solid var(--border-color);
@@ -36,7 +38,9 @@
   cursor: pointer;
 }
 
-.memory-explorer__scope-filter:focus {
+.memory-explorer__scope-filter:focus,
+.memory-explorer__category-filter:focus,
+.memory-explorer__sort-select:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);

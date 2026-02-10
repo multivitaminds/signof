@@ -1,7 +1,7 @@
 .notif-settings {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4, 1rem);
+  gap: var(--space-6, 2rem);
 }
 
 .notif-settings__title {
@@ -14,22 +14,75 @@
 .notif-settings__subtitle {
   color: var(--text-secondary, #6B7280);
   font-size: var(--text-sm, 0.875rem);
-  margin: -0.5rem 0 0;
+  margin: -1rem 0 0;
 }
 
-.notif-settings__list {
+/* ─── Category ─────────────────────────────────────────────── */
+
+.notif-settings__category {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1, 0.25rem);
+  gap: var(--space-3, 0.75rem);
 }
 
-.notif-settings__item {
+.notif-settings__category-title {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ─── Table Layout ─────────────────────────────────────────── */
+
+.notif-settings__table {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-4, 1rem);
-  border-radius: var(--radius-md, 8px);
+  flex-direction: column;
   border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+}
+
+.notif-settings__table-header {
+  display: grid;
+  grid-template-columns: 1fr 60px 60px;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  background: var(--bg-secondary, #F9FAFB);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+}
+
+.notif-settings__table-header-label {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--text-muted, #9CA3AF);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.notif-settings__table-header-toggle {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--text-muted, #9CA3AF);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+/* ─── Item Row ─────────────────────────────────────────────── */
+
+.notif-settings__item {
+  display: grid;
+  grid-template-columns: 1fr 60px 60px;
+  gap: var(--space-2, 0.5rem);
+  align-items: center;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+}
+
+.notif-settings__item:last-child {
+  border-bottom: none;
 }
 
 .notif-settings__item-info {
@@ -49,16 +102,20 @@
   color: var(--text-muted, #9CA3AF);
 }
 
+/* ─── Toggle Switch ────────────────────────────────────────── */
+
 .notif-settings__toggle {
-  width: 44px;
-  height: 24px;
-  border-radius: 12px;
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
   background: var(--border-color, #E5E7EB);
   border: none;
   cursor: pointer;
   position: relative;
   transition: background 200ms ease;
   flex-shrink: 0;
+  justify-self: center;
+  padding: 0;
 }
 
 .notif-settings__toggle--on {
@@ -69,8 +126,8 @@
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: #fff;
   transition: transform 200ms ease;
@@ -78,5 +135,58 @@
 }
 
 .notif-settings__toggle--on .notif-settings__toggle-thumb {
-  transform: translateX(20px);
+  transform: translateX(18px);
+}
+
+/* ─── Quiet Hours ──────────────────────────────────────────── */
+
+.notif-settings__quiet-desc {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  margin: 0;
+}
+
+.notif-settings__quiet-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+}
+
+.notif-settings__quiet-label {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  font-weight: 500;
+}
+
+.notif-settings__quiet-times {
+  display: flex;
+  gap: var(--space-4, 1rem);
+  align-items: center;
+}
+
+.notif-settings__quiet-time-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.notif-settings__quiet-time-label {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  font-weight: 500;
+}
+
+.notif-settings__time-input {
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  background: var(--bg-primary, #fff);
+}
+
+.notif-settings__time-input:focus {
+  outline: none;
+  border-color: var(--color-primary, #4F46E5);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }

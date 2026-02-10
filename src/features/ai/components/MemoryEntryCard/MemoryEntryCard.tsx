@@ -1,15 +1,17 @@
 import { useCallback } from 'react'
-import { Pencil, Trash2, Tag, Clock } from 'lucide-react'
+import { Pencil, Trash2, Tag, Clock, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '../../../../components/ui'
 import { Badge } from '../../../../components/ui'
-import type { MemoryEntry } from '../../types'
+import type { MemoryEntry, MemoryCategory } from '../../types'
 import { formatTokenCount } from '../../lib/tokenCount'
 import './MemoryEntryCard.css'
 
 interface MemoryEntryCardProps {
   entry: MemoryEntry
+  expanded?: boolean
   onEdit: (id: string) => void
   onDelete: (id: string) => void
+  onToggleExpand?: (id: string) => void
 }
 
 const scopeVariant: Record<string, 'primary' | 'success' | 'warning' | 'info'> = {
@@ -17,6 +19,15 @@ const scopeVariant: Record<string, 'primary' | 'success' | 'warning' | 'info'> =
   personal: 'success',
   team: 'warning',
   project: 'info',
+}
+
+const categoryVariant: Record<MemoryCategory, 'primary' | 'success' | 'warning' | 'info' | 'danger' | 'default'> = {
+  decisions: 'primary',
+  workflows: 'success',
+  preferences: 'warning',
+  people: 'info',
+  projects: 'danger',
+  facts: 'default',
 }
 
 function formatRelativeTime(dateStr: string): string {
@@ -34,24 +45,44 @@ function formatRelativeTime(dateStr: string): string {
   return 'just now'
 }
 
-export default function MemoryEntryCard({ entry, onEdit, onDelete }: MemoryEntryCardProps) {
+export default function MemoryEntryCard({ entry, expanded = false, onEdit, onDelete, onToggleExpand }: MemoryEntryCardProps) {
   const preview = entry.content.length > 150
     ? entry.content.slice(0, 150) + '...'
     : entry.content
 
   const handleEdit = useCallback(() => onEdit(entry.id), [onEdit, entry.id])
   const handleDelete = useCallback(() => onDelete(entry.id), [onDelete, entry.id])
+  const handleToggle = useCallback(() => onToggleExpand?.(entry.id), [onToggleExpand, entry.id])
 
   return (
-    <div className="memory-card">
+    <div className={`memory-card${expanded ? ' memory-card--expanded' : ''}`}>
       <div className="memory-card__header">
         <h3 className="memory-card__title">{entry.title}</h3>
-        <Badge variant={scopeVariant[entry.scope] ?? 'default'} size="sm">
-          {entry.scope}
-        </Badge>
+        <div className="memory-card__badges">
+          <Badge variant={categoryVariant[entry.category] ?? 'default'} size="sm">
+            {entry.category}
+          </Badge>
+          <Badge variant={scopeVariant[entry.scope] ?? 'default'} size="sm">
+            {entry.scope}
+          </Badge>
+        </div>
       </div>
 
-      <p className="memory-card__content">{preview}</p>
+      <button
+        className="memory-card__expand-btn"
+        onClick={handleToggle}
+        aria-label={expanded ? 'Collapse entry' : 'Expand entry'}
+        aria-expanded={expanded}
+      >
+        <p className="memory-card__content">
+          {expanded ? entry.content : preview}
+        </p>
+        {entry.content.length > 150 && (
+          <span className="memory-card__expand-icon">
+            {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          </span>
+        )}
+      </button>
 
       {entry.tags.length > 0 && (
         <div className="memory-card__tags">
@@ -65,6 +96,9 @@ export default function MemoryEntryCard({ entry, onEdit, onDelete }: MemoryEntry
       <div className="memory-card__meta">
         <span className="memory-card__tokens">
           {formatTokenCount(entry.tokenCount)} tokens
+        </span>
+        <span className="memory-card__date">
+          {new Date(entry.createdAt).toLocaleDateString()}
         </span>
         <span className="memory-card__time">
           <Clock size={12} aria-hidden="true" />

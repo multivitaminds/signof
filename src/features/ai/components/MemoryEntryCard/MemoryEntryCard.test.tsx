@@ -7,6 +7,7 @@ const makeEntry = (overrides: Partial<MemoryEntry> = {}): MemoryEntry => ({
   id: 'test-1',
   title: 'Test Memory Entry',
   content: 'This is the content of the memory entry for testing purposes.',
+  category: 'facts',
   tags: ['react', 'testing'],
   scope: 'workspace',
   tokenCount: 250,
@@ -18,6 +19,7 @@ const makeEntry = (overrides: Partial<MemoryEntry> = {}): MemoryEntry => ({
 describe('MemoryEntryCard', () => {
   const onEdit = vi.fn()
   const onDelete = vi.fn()
+  const onToggleExpand = vi.fn()
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -50,6 +52,11 @@ describe('MemoryEntryCard', () => {
     expect(screen.getByText('personal')).toBeInTheDocument()
   })
 
+  it('renders category badge', () => {
+    render(<MemoryEntryCard entry={makeEntry({ category: 'decisions' })} onEdit={onEdit} onDelete={onDelete} />)
+    expect(screen.getByText('decisions')).toBeInTheDocument()
+  })
+
   it('renders formatted token count', () => {
     render(<MemoryEntryCard entry={makeEntry({ tokenCount: 1500 })} onEdit={onEdit} onDelete={onDelete} />)
     expect(screen.getByText('1.5K tokens')).toBeInTheDocument()
@@ -80,5 +87,55 @@ describe('MemoryEntryCard', () => {
       <MemoryEntryCard entry={makeEntry({ tags: [] })} onEdit={onEdit} onDelete={onDelete} />
     )
     expect(container.querySelector('.memory-card__tags')).not.toBeInTheDocument()
+  })
+
+  it('shows expand button', () => {
+    render(
+      <MemoryEntryCard
+        entry={makeEntry({ content: 'a'.repeat(200) })}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onToggleExpand={onToggleExpand}
+      />
+    )
+    expect(screen.getByRole('button', { name: /expand entry/i })).toBeInTheDocument()
+  })
+
+  it('fires onToggleExpand when expand button is clicked', async () => {
+    const user = userEvent.setup()
+    render(
+      <MemoryEntryCard
+        entry={makeEntry({ content: 'a'.repeat(200) })}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onToggleExpand={onToggleExpand}
+      />
+    )
+    await user.click(screen.getByRole('button', { name: /expand entry/i }))
+    expect(onToggleExpand).toHaveBeenCalledWith('test-1')
+  })
+
+  it('shows full content when expanded', () => {
+    const longContent = 'a'.repeat(200)
+    render(
+      <MemoryEntryCard
+        entry={makeEntry({ content: longContent })}
+        expanded={true}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onToggleExpand={onToggleExpand}
+      />
+    )
+    // The full content (200 chars, no truncation with ...)
+    expect(screen.getByText(longContent)).toBeInTheDocument()
+    // Collapse button shown instead of expand
+    expect(screen.getByRole('button', { name: /collapse entry/i })).toBeInTheDocument()
+  })
+
+  it('renders created date', () => {
+    render(<MemoryEntryCard entry={makeEntry()} onEdit={onEdit} onDelete={onDelete} />)
+    // The createdAt is formatted as a locale date string
+    const dateStr = new Date('2025-01-01T00:00:00.000Z').toLocaleDateString()
+    expect(screen.getByText(dateStr)).toBeInTheDocument()
   })
 })

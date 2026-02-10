@@ -11,9 +11,9 @@ import {
   User,
   Mail,
   FileText,
+  AlertTriangle,
 } from 'lucide-react'
 import { useSchedulingStore } from '../stores/useSchedulingStore'
-import type { TimeRange } from '../types'
 import { BookingStatus, LOCATION_LABELS } from '../types'
 import {
   getCalendarGrid,
@@ -22,26 +22,11 @@ import {
   isSameDay,
   getMonthName,
 } from '../lib/calendarUtils'
+import { getAvailableSlots, isDateAvailable } from '../lib/availabilityEngine'
+import { generateICS } from '../lib/icsGenerator'
 import './PublicBookingPage.css'
 
 const STEPS = ['Select Date', 'Select Time', 'Your Details', 'Confirmed']
-
-function generateTimeSlots(durationMinutes: number): TimeRange[] {
-  const slots: TimeRange[] = []
-  for (let hour = 9; hour < 17; hour++) {
-    for (let min = 0; min < 60; min += 30) {
-      const start = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`
-      const endTotal = hour * 60 + min + durationMinutes
-      const endH = Math.floor(endTotal / 60)
-      const endM = endTotal % 60
-      if (endH <= 17) {
-        const end = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`
-        slots.push({ start, end })
-      }
-    }
-  }
-  return slots
-}
 
 function formatTime12(time: string): string {
   const [h, m] = time.split(':').map(Number) as [number, number]
@@ -55,7 +40,9 @@ const WEEKDAY_HEADERS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 export default function PublicBookingPage() {
   const { slug } = useParams<{ slug: string }>()
   const eventTypes = useSchedulingStore((s) => s.eventTypes)
+  const bookings = useSchedulingStore((s) => s.bookings)
   const addBooking = useSchedulingStore((s) => s.addBooking)
+  const hasDuplicateBooking = useSchedulingStore((s) => s.hasDuplicateBooking)
 
   const eventType = useMemo(
     () => eventTypes.find((et) => et.slug === slug && et.isActive),
@@ -70,15 +57,21 @@ export default function PublicBookingPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [notes, setNotes] = useState('')
+  const [duplicateWarning, setDuplicateWarning] = useState(false)
 
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
   const grid = useMemo(() => getCalendarGrid(calYear, calMonth), [calYear, calMonth])
 
-  const availableSlots = useMemo(
-    () => generateTimeSlots(eventType?.durationMinutes ?? 30),
-    [eventType?.durationMinutes]
-  )
+  const availableSlots = useMemo(() => {
+    if (!eventType || !selectedDate) return []
+    return getAvailableSlots({
+      date: selectedDate,
+      eventType,
+      bookings,
+      timezone,
+    })
+  }, [eventType, selectedDate, bookings, timezone])
 
   const selectedEndTime = useMemo(() => {
     if (!selectedTime) return null
@@ -105,13 +98,13 @@ export default function PublicBookingPage() {
   }, [calMonth])
 
   const handleSelectDate = useCallback((date: Date) => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    if (date < today) return
+    if (!eventType) return
+    if (!isDateAvailable({ date, eventType, bookings })) return
     setSelectedDate(date)
     setSelectedTime(null)
+    setDuplicateWarning(false)
     setStep(1)
-  }, [])
+  }, [eventType, bookings])
 
   const handleSelectTime = useCallback((time: string) => {
     setSelectedTime(time)
@@ -119,6 +112,42 @@ export default function PublicBookingPage() {
   }, [])
 
   const handleSubmit = useCallback(() => {
+    if (!eventType || !selectedDate || !selectedTime || !selectedEndTime) return
+
+    const dateStr = formatDate(selectedDate, 'iso')
+
+    // Check for duplicate booking
+    if (hasDuplicateBooking(email, eventType.id, dateStr)) {
+      setDuplicateWarning(true)
+      return
+    }
+
+    addBooking({
+      eventTypeId: eventType.id,
+      date: dateStr,
+      startTime: selectedTime,
+      endTime: selectedEndTime,
+      timezone,
+      status: BookingStatus.Confirmed,
+      attendees: [{ name, email, timezone }],
+      notes,
+    })
+    setDuplicateWarning(false)
+    setStep(3)
+  }, [
+    eventType,
+    selectedDate,
+    selectedTime,
+    selectedEndTime,
+    timezone,
+    name,
+    email,
+    notes,
+    addBooking,
+    hasDuplicateBooking,
+  ])
+
+  const handleConfirmDuplicate = useCallback(() => {
     if (!eventType || !selectedDate || !selectedTime || !selectedEndTime) return
 
     const dateStr = formatDate(selectedDate, 'iso')
@@ -133,6 +162,7 @@ export default function PublicBookingPage() {
       attendees: [{ name, email, timezone }],
       notes,
     })
+    setDuplicateWarning(false)
     setStep(3)
   }, [
     eventType,
@@ -145,6 +175,36 @@ export default function PublicBookingPage() {
     notes,
     addBooking,
   ])
+
+  const handleDownloadICS = useCallback(() => {
+    if (!eventType || !selectedDate || !selectedTime || !selectedEndTime) return
+    const dateStr = formatDate(selectedDate, 'iso')
+    const icsContent = generateICS(
+      {
+        id: 'temp',
+        eventTypeId: eventType.id,
+        date: dateStr,
+        startTime: selectedTime,
+        endTime: selectedEndTime,
+        timezone,
+        status: BookingStatus.Confirmed,
+        attendees: [{ name, email, timezone }],
+        notes,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      eventType
+    )
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${eventType.slug}-${dateStr}.ics`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }, [eventType, selectedDate, selectedTime, selectedEndTime, timezone, name, email, notes])
 
   const handleBookAnother = useCallback(() => {
     setStep(0)
@@ -253,19 +313,22 @@ export default function PublicBookingPage() {
                   <div key={ri} className="public-booking__cal-row" role="row">
                     {week.map((date, ci) => {
                       const isCurrentMonth = date.getMonth() === calMonth - 1
-                      const today = new Date()
-                      today.setHours(0, 0, 0, 0)
-                      const isPast = date < today
                       const isTodayDate = isToday(date)
                       const isSelected = selectedDate
                         ? isSameDay(date, selectedDate)
                         : false
 
+                      // Use the availability engine to determine if a date is available
+                      const dateAvailable = isCurrentMonth && eventType
+                        ? isDateAvailable({ date, eventType, bookings })
+                        : false
+                      const isDisabled = !isCurrentMonth || !dateAvailable
+
                       const cellClasses = [
                         'public-booking__cal-cell',
                         !isCurrentMonth && 'public-booking__cal-cell--outside',
-                        isPast && 'public-booking__cal-cell--disabled',
-                        isTodayDate && 'public-booking__cal-cell--today',
+                        isDisabled && 'public-booking__cal-cell--disabled',
+                        isTodayDate && !isDisabled && 'public-booking__cal-cell--today',
                         isSelected && 'public-booking__cal-cell--selected',
                       ]
                         .filter(Boolean)
@@ -277,16 +340,15 @@ export default function PublicBookingPage() {
                           className={cellClasses}
                           role="gridcell"
                           aria-label={formatDate(date, 'long')}
-                          aria-disabled={isPast || !isCurrentMonth}
-                          tabIndex={isPast || !isCurrentMonth ? -1 : 0}
+                          aria-disabled={isDisabled}
+                          tabIndex={isDisabled ? -1 : 0}
                           onClick={() => {
-                            if (!isPast && isCurrentMonth) handleSelectDate(date)
+                            if (!isDisabled) handleSelectDate(date)
                           }}
                           onKeyDown={(e) => {
                             if (
                               (e.key === 'Enter' || e.key === ' ') &&
-                              !isPast &&
-                              isCurrentMonth
+                              !isDisabled
                             ) {
                               e.preventDefault()
                               handleSelectDate(date)
@@ -324,27 +386,40 @@ export default function PublicBookingPage() {
               <p className="public-booking__time-tz">
                 <Globe size={12} /> {timezone}
               </p>
-              <div
-                className="public-booking__time-grid"
-                role="listbox"
-                aria-label="Available time slots"
-              >
-                {availableSlots.map((slot) => (
+              {availableSlots.length === 0 ? (
+                <div className="public-booking__no-slots">
+                  <Clock size={24} />
+                  <p>No available time slots for this date.</p>
                   <button
-                    key={slot.start}
-                    className={`public-booking__time-slot${
-                      selectedTime === slot.start
-                        ? ' public-booking__time-slot--selected'
-                        : ''
-                    }`}
-                    onClick={() => handleSelectTime(slot.start)}
-                    role="option"
-                    aria-selected={selectedTime === slot.start}
+                    className="btn-secondary"
+                    onClick={() => setStep(0)}
                   >
-                    {formatTime12(slot.start)}
+                    Choose Another Date
                   </button>
-                ))}
-              </div>
+                </div>
+              ) : (
+                <div
+                  className="public-booking__time-grid"
+                  role="listbox"
+                  aria-label="Available time slots"
+                >
+                  {availableSlots.map((slot) => (
+                    <button
+                      key={slot.start}
+                      className={`public-booking__time-slot${
+                        selectedTime === slot.start
+                          ? ' public-booking__time-slot--selected'
+                          : ''
+                      }`}
+                      onClick={() => handleSelectTime(slot.start)}
+                      role="option"
+                      aria-selected={selectedTime === slot.start}
+                    >
+                      {formatTime12(slot.start)}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -428,6 +503,31 @@ export default function PublicBookingPage() {
                   <span>Timezone: {timezone}</span>
                 </div>
 
+                {duplicateWarning && (
+                  <div className="public-booking__duplicate-warning" role="alert">
+                    <AlertTriangle size={16} />
+                    <div className="public-booking__duplicate-warning-content">
+                      <p className="public-booking__duplicate-warning-text">
+                        A booking with this email already exists for this event type on this date.
+                      </p>
+                      <div className="public-booking__duplicate-warning-actions">
+                        <button
+                          className="btn-primary public-booking__duplicate-warning-btn"
+                          onClick={handleConfirmDuplicate}
+                        >
+                          Book Anyway
+                        </button>
+                        <button
+                          className="btn-secondary public-booking__duplicate-warning-btn"
+                          onClick={() => setDuplicateWarning(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <button
                   className="btn-primary public-booking__submit-btn"
                   onClick={handleSubmit}
@@ -485,14 +585,7 @@ export default function PublicBookingPage() {
               <div className="public-booking__success-actions">
                 <button
                   className="btn-primary"
-                  onClick={() => {
-                    // Generate .ics data for "Add to Calendar"
-                    // For demo, just show an alert
-                    if (selectedDate && selectedTime) {
-                      const msg = `Calendar event: ${eventType.name} on ${formatDate(selectedDate, 'iso')} at ${selectedTime}`
-                      void msg // Placeholder for calendar download
-                    }
-                  }}
+                  onClick={handleDownloadICS}
                 >
                   <CalendarPlus size={16} />
                   Add to Calendar

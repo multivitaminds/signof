@@ -1,20 +1,9 @@
 import { useState, useCallback } from 'react'
-import {
-  Check,
-  CreditCard,
-  Download,
-  Zap,
-  Shield,
-  Crown,
-  Building2,
-  ArrowRight,
-} from 'lucide-react'
+import { useBillingStore } from '../stores/useBillingStore'
+import type { PlanId, BillingCycle } from '../types'
 import './BillingSettings.css'
 
-// ─── Types ──────────────────────────────────────────────────────────
-
-type BillingCycle = 'monthly' | 'yearly'
-type PlanId = 'starter' | 'pro' | 'business' | 'enterprise'
+// ─── Plan Data ──────────────────────────────────────────────────────
 
 interface PlanFeature {
   text: string
@@ -30,38 +19,23 @@ interface PricingPlan {
   id: PlanId
   name: string
   description: string
-  icon: React.ReactNode
   monthlyPrice: number | null
   yearlyPrice: number | null
   features: FeatureCategory[]
   popular: boolean
-  cta: string
   documentLimit: number | null
   storageLimit: number | null
   memberLimit: number | null
 }
-
-interface BillingRecord {
-  id: string
-  date: string
-  description: string
-  amount: string
-  status: 'paid' | 'pending' | 'failed'
-  invoiceUrl: string
-}
-
-// ─── Plan Data ──────────────────────────────────────────────────────
 
 const PLANS: PricingPlan[] = [
   {
     id: 'starter',
     name: 'Starter',
     description: 'For individuals getting started with digital signatures.',
-    icon: <Zap size={20} />,
     monthlyPrice: 0,
     yearlyPrice: 0,
     popular: false,
-    cta: 'Get Started',
     documentLimit: 50,
     storageLimit: 1,
     memberLimit: 3,
@@ -105,11 +79,9 @@ const PLANS: PricingPlan[] = [
     id: 'pro',
     name: 'Pro',
     description: 'For professionals who need more power and flexibility.',
-    icon: <Crown size={20} />,
     monthlyPrice: 12,
     yearlyPrice: 10,
     popular: true,
-    cta: 'Upgrade to Pro',
     documentLimit: 500,
     storageLimit: 50,
     memberLimit: 15,
@@ -156,11 +128,9 @@ const PLANS: PricingPlan[] = [
     id: 'business',
     name: 'Business',
     description: 'For teams that need advanced controls and integrations.',
-    icon: <Shield size={20} />,
     monthlyPrice: 29,
     yearlyPrice: 24,
     popular: false,
-    cta: 'Upgrade to Business',
     documentLimit: 2000,
     storageLimit: 200,
     memberLimit: 50,
@@ -210,11 +180,9 @@ const PLANS: PricingPlan[] = [
     id: 'enterprise',
     name: 'Enterprise',
     description: 'For organizations with complex needs and compliance requirements.',
-    icon: <Building2 size={20} />,
     monthlyPrice: null,
     yearlyPrice: null,
     popular: false,
-    cta: 'Contact Sales',
     documentLimit: null,
     storageLimit: null,
     memberLimit: null,
@@ -272,60 +240,18 @@ const PLAN_ORDER: PlanId[] = ['starter', 'pro', 'business', 'enterprise']
 // ─── Component ──────────────────────────────────────────────────────
 
 export default function BillingSettings() {
-  const [currentPlan, setCurrentPlan] = useState<PlanId>('starter')
-  const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly')
+  const currentPlan = useBillingStore((s) => s.currentPlan)
+  const billingCycle = useBillingStore((s) => s.billingCycle)
+  const usage = useBillingStore((s) => s.usage)
+  const paymentMethod = useBillingStore((s) => s.paymentMethod)
+  const billingHistory = useBillingStore((s) => s.billingHistory)
+  const setPlan = useBillingStore((s) => s.setPlan)
+  const storeBillingCycle = useBillingStore((s) => s.setBillingCycle)
+  const setUsage = useBillingStore((s) => s.setUsage)
+  const setPaymentMethod = useBillingStore((s) => s.setPaymentMethod)
+
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<PlanId | null>(null)
-
-  // Usage data (in state so it's reactive)
-  const [usage, setUsage] = useState({
-    documents: { used: 32, limit: 50 },
-    storage: { used: 0.6, limit: 1 },
-    members: { used: 2, limit: 3 },
-  })
-
-  // Payment method in state
-  const [paymentMethod, setPaymentMethod] = useState({
-    brand: 'Visa',
-    last4: '4242',
-    expiry: '12/27',
-  })
-
-  // Billing history in state
-  const [billingHistory] = useState<BillingRecord[]>([
-    {
-      id: 'inv-001',
-      date: '2026-02-01',
-      description: 'Starter Plan - February 2026',
-      amount: '$0.00',
-      status: 'paid',
-      invoiceUrl: '#',
-    },
-    {
-      id: 'inv-002',
-      date: '2026-01-01',
-      description: 'Starter Plan - January 2026',
-      amount: '$0.00',
-      status: 'paid',
-      invoiceUrl: '#',
-    },
-    {
-      id: 'inv-003',
-      date: '2025-12-01',
-      description: 'Starter Plan - December 2025',
-      amount: '$0.00',
-      status: 'paid',
-      invoiceUrl: '#',
-    },
-    {
-      id: 'inv-004',
-      date: '2025-11-01',
-      description: 'Starter Plan - November 2025',
-      amount: '$0.00',
-      status: 'paid',
-      invoiceUrl: '#',
-    },
-  ])
 
   const currentPlanData = PLANS.find((p) => p.id === currentPlan)!
 
@@ -398,25 +324,23 @@ export default function BillingSettings() {
   const handleConfirmChange = useCallback(() => {
     if (!selectedPlan) return
     const newPlanData = PLANS.find((p) => p.id === selectedPlan)!
-    setCurrentPlan(selectedPlan)
+    setPlan(selectedPlan)
 
-    // Update usage limits to match the new plan
-    setUsage((prev) => ({
+    setUsage({
       documents: {
-        used: prev.documents.used,
+        used: usage.documents.used,
         limit: newPlanData.documentLimit ?? 9999,
       },
       storage: {
-        used: prev.storage.used,
+        used: usage.storage.used,
         limit: newPlanData.storageLimit ?? 9999,
       },
       members: {
-        used: prev.members.used,
+        used: usage.members.used,
         limit: newPlanData.memberLimit ?? 9999,
       },
-    }))
+    })
 
-    // Update payment method card display if upgrading from free
     if (currentPlan === 'starter' && selectedPlan !== 'starter') {
       setPaymentMethod({
         brand: 'Visa',
@@ -427,7 +351,7 @@ export default function BillingSettings() {
 
     setShowConfirmModal(false)
     setSelectedPlan(null)
-  }, [selectedPlan, currentPlan])
+  }, [selectedPlan, currentPlan, usage, setPlan, setUsage, setPaymentMethod])
 
   const handleCancelModal = useCallback(() => {
     setShowConfirmModal(false)
@@ -435,8 +359,9 @@ export default function BillingSettings() {
   }, [])
 
   const handleToggleBillingCycle = useCallback(() => {
-    setBillingCycle((prev) => (prev === 'monthly' ? 'yearly' : 'monthly'))
-  }, [])
+    const newCycle: BillingCycle = billingCycle === 'monthly' ? 'yearly' : 'monthly'
+    storeBillingCycle(newCycle)
+  }, [billingCycle, storeBillingCycle])
 
   const formatStorageUsed = (gb: number): string => {
     if (gb < 1) return `${Math.round(gb * 1000)} MB`
@@ -473,12 +398,11 @@ export default function BillingSettings() {
 
   return (
     <div className="billing">
-      {/* ═══ Current Plan Header ═══ */}
+      {/* Current Plan Header */}
       <div className="billing__current-plan">
         <div className="billing__current-plan-content">
           <div className="billing__current-plan-info">
             <div className="billing__current-plan-badge">
-              {currentPlanData.icon}
               <span>{currentPlanData.name} Plan</span>
             </div>
             <h1 className="billing__title">Plan &amp; Billing</h1>
@@ -510,7 +434,7 @@ export default function BillingSettings() {
         </div>
       </div>
 
-      {/* ═══ Billing Cycle Toggle ═══ */}
+      {/* Billing Cycle Toggle */}
       <div className="billing__cycle-section">
         <div className="billing__cycle-toggle">
           <span
@@ -538,7 +462,7 @@ export default function BillingSettings() {
         </div>
       </div>
 
-      {/* ═══ Pricing Plans ═══ */}
+      {/* Pricing Plans */}
       <div className="billing__plans">
         {PLANS.map((plan) => {
           const isCurrent = plan.id === currentPlan
@@ -552,7 +476,6 @@ export default function BillingSettings() {
                 <div className="billing__plan-popular-badge">Most Popular</div>
               )}
               <div className="billing__plan-header">
-                <div className="billing__plan-icon">{plan.icon}</div>
                 <h3 className="billing__plan-name">{plan.name}</h3>
                 <p className="billing__plan-description">{plan.description}</p>
               </div>
@@ -592,9 +515,6 @@ export default function BillingSettings() {
                 disabled={isCurrent}
               >
                 {getButtonLabel(plan)}
-                {!isCurrent && plan.id !== 'enterprise' && (
-                  <ArrowRight size={16} />
-                )}
               </button>
               <div className="billing__plan-features">
                 {plan.features.map((category) => (
@@ -611,10 +531,7 @@ export default function BillingSettings() {
                           key={feature.text}
                           className={`billing__feature-item ${feature.included ? '' : 'billing__feature-item--disabled'}`}
                         >
-                          <Check
-                            size={14}
-                            className="billing__feature-check"
-                          />
+                          <span className="billing__feature-check-icon">{feature.included ? '\u2713' : '\u2013'}</span>
                           <span>{feature.text}</span>
                         </li>
                       ))}
@@ -627,7 +544,7 @@ export default function BillingSettings() {
         })}
       </div>
 
-      {/* ═══ Usage Section ═══ */}
+      {/* Usage Section */}
       <div className="billing__section">
         <h2 className="billing__section-title">Usage</h2>
         <p className="billing__section-subtitle">
@@ -688,7 +605,7 @@ export default function BillingSettings() {
         </div>
       </div>
 
-      {/* ═══ Payment Method ═══ */}
+      {/* Payment Method */}
       <div className="billing__section">
         <h2 className="billing__section-title">Payment Method</h2>
         <p className="billing__section-subtitle">
@@ -697,7 +614,7 @@ export default function BillingSettings() {
         <div className="billing__payment-card">
           <div className="billing__payment-info">
             <div className="billing__payment-icon">
-              <CreditCard size={24} />
+              <span aria-label="Credit card">&#128179;</span>
             </div>
             <div className="billing__payment-details">
               <span className="billing__payment-brand">
@@ -723,7 +640,7 @@ export default function BillingSettings() {
         </div>
       </div>
 
-      {/* ═══ Billing History ═══ */}
+      {/* Billing History */}
       <div className="billing__section">
         <h2 className="billing__section-title">Billing History</h2>
         <p className="billing__section-subtitle">
@@ -767,8 +684,7 @@ export default function BillingSettings() {
                       className="billing__history-download"
                       aria-label={`Download invoice ${record.id}`}
                     >
-                      <Download size={14} />
-                      <span>PDF</span>
+                      PDF
                     </button>
                   </td>
                 </tr>
@@ -778,7 +694,7 @@ export default function BillingSettings() {
         </div>
       </div>
 
-      {/* ═══ Confirm Plan Change Modal ═══ */}
+      {/* Confirm Plan Change Modal */}
       {showConfirmModal && selectedPlan && (
         <div
           className="billing__modal-overlay"

@@ -6,6 +6,8 @@ import PageTransition from './PageTransition/PageTransition'
 import CommandPalette from '../CommandPalette/CommandPalette'
 import KeyboardShortcutHelp from '../KeyboardShortcutHelp/KeyboardShortcutHelp'
 import SearchOverlay from '../../features/search/components/SearchOverlay/SearchOverlay'
+import AIChatSidebar from '../../features/ai/components/AIChatSidebar/AIChatSidebar'
+import useAIChatStore from '../../features/ai/stores/useAIChatStore'
 import { useTheme } from '../../hooks/useTheme'
 import { useAppStore } from '../../stores/useAppStore'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
@@ -36,6 +38,7 @@ export default function AppLayout() {
   const addRecentItem = useAppStore((s) => s.addRecentItem)
   const searchOverlayOpen = useAppStore((s) => s.searchOverlayOpen)
   const closeSearchOverlay = useAppStore((s) => s.closeSearchOverlay)
+  const setAIChatContext = useAIChatStore((s) => s.setContextLabel)
 
   // Register all keyboard shortcuts
   useKeyboardShortcuts([
@@ -73,8 +76,9 @@ export default function AppLayout() {
     const label = ROUTE_LABELS[location.pathname]
     if (label) {
       addRecentItem({ path: location.pathname, label })
+      setAIChatContext(label)
     }
-  }, [location.pathname, addRecentItem])
+  }, [location.pathname, addRecentItem, setAIChatContext])
 
   return (
     <div className="app-layout">
@@ -97,6 +101,7 @@ export default function AppLayout() {
       <CommandPalette />
       <KeyboardShortcutHelp />
       <SearchOverlay isOpen={searchOverlayOpen} onClose={closeSearchOverlay} />
+      <AIChatSidebar />
     </div>
   )
 }

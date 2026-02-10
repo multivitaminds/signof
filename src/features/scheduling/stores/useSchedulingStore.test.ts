@@ -228,4 +228,64 @@ describe('useSchedulingStore', () => {
       expect(updated!.status).toBe(BookingStatus.Rescheduled)
     })
   })
+
+  // ─── Duplicate booking prevention ────────────────────────
+
+  describe('hasDuplicateBooking', () => {
+    it('returns true when same email has confirmed booking for same event type on same date', () => {
+      // SAMPLE_BOOKINGS[0] is alice@example.com on 2026-02-11 for et-quick-chat
+      const result = useSchedulingStore.getState().hasDuplicateBooking(
+        'alice@example.com',
+        'et-quick-chat',
+        '2026-02-11'
+      )
+      expect(result).toBe(true)
+    })
+
+    it('returns false when no matching booking exists', () => {
+      const result = useSchedulingStore.getState().hasDuplicateBooking(
+        'newuser@example.com',
+        'et-quick-chat',
+        '2026-02-11'
+      )
+      expect(result).toBe(false)
+    })
+
+    it('returns false when same email but different event type', () => {
+      const result = useSchedulingStore.getState().hasDuplicateBooking(
+        'alice@example.com',
+        'et-product-demo',
+        '2026-02-11'
+      )
+      expect(result).toBe(false)
+    })
+
+    it('returns false when same email but different date', () => {
+      const result = useSchedulingStore.getState().hasDuplicateBooking(
+        'alice@example.com',
+        'et-quick-chat',
+        '2026-02-20'
+      )
+      expect(result).toBe(false)
+    })
+
+    it('ignores cancelled bookings', () => {
+      // SAMPLE_BOOKINGS[4] is grace@tech.io on 2026-02-09 for et-quick-chat, cancelled
+      const result = useSchedulingStore.getState().hasDuplicateBooking(
+        'grace@tech.io',
+        'et-quick-chat',
+        '2026-02-09'
+      )
+      expect(result).toBe(false)
+    })
+
+    it('is case-insensitive for email matching', () => {
+      const result = useSchedulingStore.getState().hasDuplicateBooking(
+        'ALICE@EXAMPLE.COM',
+        'et-quick-chat',
+        '2026-02-11'
+      )
+      expect(result).toBe(true)
+    })
+  })
 })

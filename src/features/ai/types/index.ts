@@ -9,10 +9,31 @@ export const MemoryScope = {
 
 export type MemoryScope = (typeof MemoryScope)[keyof typeof MemoryScope]
 
+export const MemoryCategory = {
+  Decisions: 'decisions',
+  Workflows: 'workflows',
+  Preferences: 'preferences',
+  People: 'people',
+  Projects: 'projects',
+  Facts: 'facts',
+} as const
+
+export type MemoryCategory = (typeof MemoryCategory)[keyof typeof MemoryCategory]
+
+export const MemorySortOrder = {
+  Recent: 'recent',
+  Oldest: 'oldest',
+  Largest: 'largest',
+  Category: 'category',
+} as const
+
+export type MemorySortOrder = (typeof MemorySortOrder)[keyof typeof MemorySortOrder]
+
 export interface MemoryEntry {
   id: string
   title: string
   content: string
+  category: MemoryCategory
   tags: string[]
   scope: MemoryScope
   tokenCount: number
@@ -107,4 +128,44 @@ export interface AgentTypeDefinition {
   icon: string
   color: string
   defaultSteps: Array<{ label: string; durationMs: number }>
+}
+
+// ─── Agent Run Types (individual agent runs, not team-based) ─────────
+
+export const RunStatus = {
+  Running: 'running',
+  Paused: 'paused',
+  Completed: 'completed',
+  Cancelled: 'cancelled',
+  Failed: 'failed',
+} as const
+
+export type RunStatus = (typeof RunStatus)[keyof typeof RunStatus]
+
+export interface RunStep {
+  id: string
+  label: string
+  description: string
+  status: StepStatus
+  output?: string
+}
+
+export interface AgentRun {
+  id: string
+  agentType: AgentType
+  task: string
+  steps: RunStep[]
+  status: RunStatus
+  startedAt: string
+  completedAt: string | null
+  lastRunAt: string | null
+}
+
+// ─── AI Chat Types ──────────────────────────────────────────────────
+
+export interface AIChatMessage {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: string
 }

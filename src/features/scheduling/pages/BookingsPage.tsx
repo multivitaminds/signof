@@ -8,10 +8,12 @@ import {
   Clock,
   User,
   Mail,
+  Download,
 } from 'lucide-react'
 import { useSchedulingStore } from '../stores/useSchedulingStore'
 import type { BookingFilter, Booking } from '../types'
 import { BookingFilter as BookingFilterEnum, BookingStatus } from '../types'
+import { generateICS } from '../lib/icsGenerator'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import './BookingsPage.css'
 
@@ -84,6 +86,24 @@ export default function BookingsPage() {
       setRescheduleTime('')
     },
     [rescheduleDate, rescheduleTime, eventTypes, rescheduleBooking]
+  )
+
+  const handleDownloadICS = useCallback(
+    (booking: Booking) => {
+      const eventType = eventTypes.find((et) => et.id === booking.eventTypeId)
+      if (!eventType) return
+      const icsContent = generateICS(booking, eventType)
+      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${eventType.slug}-${booking.date}.ics`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    },
+    [eventTypes]
   )
 
   const getEventTypeName = (etId: string) => {
@@ -230,6 +250,16 @@ export default function BookingsPage() {
 
               {/* Actions */}
               <div className="bookings-page__item-actions">
+                {/* Download ICS */}
+                <button
+                  className="bookings-page__action-btn bookings-page__action-btn--download"
+                  onClick={() => handleDownloadICS(booking)}
+                  title="Download .ics"
+                  aria-label={`Download calendar file for booking with ${booking.attendees[0]?.name ?? 'attendee'}`}
+                >
+                  <Download size={14} />
+                </button>
+
                 {booking.status === BookingStatus.Confirmed && (
                   <>
                     {/* Reschedule */}

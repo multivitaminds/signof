@@ -1,6 +1,7 @@
-import { Search, User, Sun, Moon, Monitor, Menu } from 'lucide-react'
+import { Search, User, Sun, Moon, Monitor, Menu, Sparkles } from 'lucide-react'
 import { useAppStore } from '../../../stores/useAppStore'
 import { useTheme } from '../../../hooks/useTheme'
+import useAIChatStore from '../../../features/ai/stores/useAIChatStore'
 import Breadcrumbs from '../../Breadcrumbs/Breadcrumbs'
 import NotificationCenter from '../../NotificationCenter/NotificationCenter'
 import './TopBar.css'
@@ -20,6 +21,7 @@ const THEME_LABEL = {
 export default function TopBar() {
   const { openCommandPalette, openMobileSidebar } = useAppStore()
   const { theme, cycleTheme } = useTheme()
+  const toggleAIChat = useAIChatStore((s) => s.toggleOpen)
 
   const ThemeIcon = THEME_ICON[theme]
 
@@ -46,6 +48,16 @@ export default function TopBar() {
           title="Search (⌘K)"
         >
           <Search size={20} />
+        </button>
+
+        {/* AI Chat Toggle */}
+        <button
+          className="topbar__icon-btn"
+          onClick={toggleAIChat}
+          aria-label="Toggle AI assistant"
+          title="AI Assistant"
+        >
+          <Sparkles size={20} />
         </button>
 
         {/* Theme Toggle */}

@@ -30,6 +30,9 @@ export interface SchedulingState {
   getBookingsForDate: (date: string) => Booking[]
   getBookingsForEventType: (eventTypeId: string) => Booking[]
 
+  // Duplicate check
+  hasDuplicateBooking: (email: string, eventTypeId: string, date: string) => boolean
+
   // Convenience
   getFilteredBookings: (filter: BookingFilter) => Booking[]
 }
@@ -149,6 +152,17 @@ export const useSchedulingStore = create<SchedulingState>((set, get) => ({
 
   getBookingsForEventType: (eventTypeId) => {
     return get().bookings.filter((b) => b.eventTypeId === eventTypeId)
+  },
+
+  hasDuplicateBooking: (email, eventTypeId, date) => {
+    const { bookings } = get()
+    return bookings.some(
+      (b) =>
+        b.eventTypeId === eventTypeId &&
+        b.date === date &&
+        b.status !== BookingStatus.Cancelled &&
+        b.attendees.some((a) => a.email.toLowerCase() === email.toLowerCase())
+    )
   },
 
   getFilteredBookings: (filter) => {

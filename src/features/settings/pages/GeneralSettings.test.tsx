@@ -9,6 +9,7 @@ vi.mock('../stores/useSettingsStore', () => ({
     selector({
       workspace: {
         name: 'Test Workspace',
+        slug: 'test-workspace',
         language: 'en',
         dateFormat: 'MM/DD/YYYY',
         timezone: 'America/New_York',
@@ -34,6 +35,13 @@ describe('GeneralSettings', () => {
     expect(input).toBeInTheDocument()
   })
 
+  it('renders the workspace URL slug input', () => {
+    render(<GeneralSettings />)
+    expect(screen.getByText('Workspace URL')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('test-workspace')).toBeInTheDocument()
+    expect(screen.getByText('signof.com/')).toBeInTheDocument()
+  })
+
   it('renders language, date format, and timezone selects', () => {
     render(<GeneralSettings />)
     expect(screen.getByText('Workspace Name')).toBeInTheDocument()
@@ -45,14 +53,19 @@ describe('GeneralSettings', () => {
   it('renders the Danger Zone section', () => {
     render(<GeneralSettings />)
     expect(screen.getByText('Danger Zone')).toBeInTheDocument()
-    expect(screen.getByText('Delete Workspace')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Delete Workspace' })).toBeInTheDocument()
+  })
+
+  it('renders a Save button for workspace name', () => {
+    render(<GeneralSettings />)
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
   })
 
   it('calls updateWorkspace when language is changed', async () => {
     const user = userEvent.setup()
     render(<GeneralSettings />)
 
-    const languageSelect = screen.getByDisplayValue('English')
+    const languageSelect = screen.getByLabelText('Language')
     await user.selectOptions(languageSelect, 'es')
 
     expect(mockUpdateWorkspace).toHaveBeenCalledWith({ language: 'es' })
@@ -62,10 +75,20 @@ describe('GeneralSettings', () => {
     const user = userEvent.setup()
     render(<GeneralSettings />)
 
-    const dateFormatSelect = screen.getByDisplayValue('MM/DD/YYYY')
+    const dateFormatSelect = screen.getByLabelText('Date format')
     await user.selectOptions(dateFormatSelect, 'YYYY-MM-DD')
 
     expect(mockUpdateWorkspace).toHaveBeenCalledWith({ dateFormat: 'YYYY-MM-DD' })
+  })
+
+  it('calls updateWorkspace when timezone is changed', async () => {
+    const user = userEvent.setup()
+    render(<GeneralSettings />)
+
+    const timezoneSelect = screen.getByLabelText('Timezone')
+    await user.selectOptions(timezoneSelect, 'Europe/London')
+
+    expect(mockUpdateWorkspace).toHaveBeenCalledWith({ timezone: 'Europe/London' })
   })
 
   it('saves workspace name on blur', async () => {
@@ -75,8 +98,75 @@ describe('GeneralSettings', () => {
     const nameInput = screen.getByDisplayValue('Test Workspace')
     await user.clear(nameInput)
     await user.type(nameInput, 'New Workspace')
-    await user.tab() // triggers blur
+    await user.tab()
 
     expect(mockUpdateWorkspace).toHaveBeenCalledWith({ name: 'New Workspace' })
+  })
+
+  it('saves workspace name when Save button is clicked', async () => {
+    const user = userEvent.setup()
+    render(<GeneralSettings />)
+
+    const nameInput = screen.getByDisplayValue('Test Workspace')
+    await user.clear(nameInput)
+    await user.type(nameInput, 'Updated Name')
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+
+    expect(mockUpdateWorkspace).toHaveBeenCalledWith({ name: 'Updated Name' })
+  })
+
+  it('opens delete confirmation modal when Delete Workspace is clicked', async () => {
+    const user = userEvent.setup()
+    render(<GeneralSettings />)
+
+    // There's only one Delete Workspace button before modal opens
+    const deleteButtons = screen.getAllByRole('button', { name: 'Delete Workspace' })
+    await user.click(deleteButtons[0]!)
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    expect(screen.getByText(/This will permanently delete/i)).toBeInTheDocument()
+    expect(screen.getByLabelText('Type workspace name to confirm deletion')).toBeInTheDocument()
+  })
+
+  it('disables the confirm delete button until workspace name is typed', async () => {
+    const user = userEvent.setup()
+    render(<GeneralSettings />)
+
+    await user.click(screen.getByRole('button', { name: 'Delete Workspace' }))
+
+    const confirmButtons = screen.getAllByRole('button', { name: 'Delete Workspace' })
+    const confirmButton = confirmButtons[confirmButtons.length - 1]
+    expect(confirmButton).toBeDefined()
+    if (confirmButton) {
+      expect(confirmButton).toBeDisabled()
+    }
+  })
+
+  it('enables the confirm delete button when workspace name matches', async () => {
+    const user = userEvent.setup()
+    render(<GeneralSettings />)
+
+    await user.click(screen.getByRole('button', { name: 'Delete Workspace' }))
+
+    const confirmInput = screen.getByLabelText('Type workspace name to confirm deletion')
+    await user.type(confirmInput, 'Test Workspace')
+
+    const confirmButtons = screen.getAllByRole('button', { name: 'Delete Workspace' })
+    const confirmButton = confirmButtons[confirmButtons.length - 1]
+    expect(confirmButton).toBeDefined()
+    if (confirmButton) {
+      expect(confirmButton).not.toBeDisabled()
+    }
+  })
+
+  it('closes delete modal when Cancel is clicked', async () => {
+    const user = userEvent.setup()
+    render(<GeneralSettings />)
+
+    await user.click(screen.getByRole('button', { name: 'Delete Workspace' }))
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 })

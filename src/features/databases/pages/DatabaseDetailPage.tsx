@@ -33,7 +33,6 @@ export default function DatabaseDetailPage() {
   const addView = useDatabaseStore((s) => s.addView)
   const updateView = useDatabaseStore((s) => s.updateView)
   const getFilteredRows = useDatabaseStore((s) => s.getFilteredRows)
-  const getGroupedRows = useDatabaseStore((s) => s.getGroupedRows)
 
   const [searchQuery, setSearchQuery] = useState('')
   const [editingTitle, setEditingTitle] = useState(false)
@@ -41,11 +40,14 @@ export default function DatabaseDetailPage() {
   const [showCreateTable, setShowCreateTable] = useState(false)
   const [showFileUpload, setShowFileUpload] = useState(false)
 
+  // Per-view field selections
+  const [kanbanFieldId, setKanbanFieldId] = useState<string | null>(null)
+  const [calendarFieldId, setCalendarFieldId] = useState<string | null>(null)
+
   const database = databaseId ? databasesMap[databaseId] : undefined
 
   // Track active table by ID (default to first table)
   const [activeTableId, setActiveTableId] = useState(() => database?.tables[0] ?? '')
-  const table = activeTableId ? tablesMap[activeTableId] : (database?.tables[0] ? tablesMap[database.tables[0]] : undefined)
 
   // If activeTableId is stale or not set, fall back to first table
   const resolvedTableId = (activeTableId && tablesMap[activeTableId]) ? activeTableId : (database?.tables[0] ?? '')
@@ -64,11 +66,22 @@ export default function DatabaseDetailPage() {
     [resolvedTable, activeView, searchQuery, getFilteredRows, tablesMap]
   )
 
-  const groupedRows = useMemo(
-    () => (resolvedTable && activeView ? getGroupedRows(resolvedTable.id, activeView.id, searchQuery) : {}),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [resolvedTable, activeView, searchQuery, getGroupedRows, tablesMap]
-  )
+  // Resolve kanban and calendar field IDs
+  const resolvedKanbanFieldId = useMemo(() => {
+    if (!resolvedTable) return ''
+    // Use explicit selection, or view groupBy, or first select field
+    if (kanbanFieldId && resolvedTable.fields.find((f) => f.id === kanbanFieldId)) return kanbanFieldId
+    if (activeView?.groupBy) return activeView.groupBy
+    const selectField = resolvedTable.fields.find((f) => f.type === DbFieldType.Select)
+    return selectField?.id ?? ''
+  }, [resolvedTable, kanbanFieldId, activeView?.groupBy])
+
+  const resolvedCalendarFieldId = useMemo(() => {
+    if (!resolvedTable) return ''
+    if (calendarFieldId && resolvedTable.fields.find((f) => f.id === calendarFieldId)) return calendarFieldId
+    const dateField = resolvedTable.fields.find((f) => f.type === DbFieldType.Date)
+    return dateField?.id ?? ''
+  }, [resolvedTable, calendarFieldId])
 
   // Existing table names for validation
   const existingTableNames = useMemo(() => {
@@ -97,6 +110,8 @@ export default function DatabaseDetailPage() {
       setActiveViewId(t.views[0].id)
     }
     setSearchQuery('')
+    setKanbanFieldId(null)
+    setCalendarFieldId(null)
   }, [tablesMap])
 
   const handleAddRow = useCallback((cells?: Record<string, CellValue>) => {
@@ -199,8 +214,17 @@ export default function DatabaseDetailPage() {
     }
   }, [addRow])
 
-  // Suppress unused variable
-  void table
+  const handleKanbanFieldChange = useCallback((fieldId: string) => {
+    setKanbanFieldId(fieldId)
+    // Also update the view's groupBy
+    if (resolvedTable && activeView) {
+      updateView(resolvedTable.id, activeView.id, { groupBy: fieldId })
+    }
+  }, [resolvedTable, activeView, updateView])
+
+  const handleCalendarFieldChange = useCallback((fieldId: string) => {
+    setCalendarFieldId(fieldId)
+  }, [])
 
   if (!database || !resolvedTable) {
     return (
@@ -210,10 +234,6 @@ export default function DatabaseDetailPage() {
       </div>
     )
   }
-
-  const titleField = resolvedTable.fields[0]
-  const groupField = activeView?.groupBy ? resolvedTable.fields.find((f) => f.id === activeView.groupBy) : undefined
-  const dateField = resolvedTable.fields.find((f) => f.type === DbFieldType.Date)
 
   return (
     <div className="db-detail-page">
@@ -285,6 +305,11 @@ export default function DatabaseDetailPage() {
           activeViewId={activeView.id}
           onSelectView={setActiveViewId}
           onAddView={handleAddView}
+          fields={resolvedTable.fields}
+          kanbanFieldId={resolvedKanbanFieldId}
+          calendarFieldId={resolvedCalendarFieldId}
+          onKanbanFieldChange={handleKanbanFieldChange}
+          onCalendarFieldChange={handleCalendarFieldChange}
         />
       )}
 
@@ -321,31 +346,30 @@ export default function DatabaseDetailPage() {
             currentTableId={resolvedTableId}
           />
         )}
-        {activeView?.type === ViewType.Kanban && (
+        {activeView?.type === ViewType.Kanban && resolvedKanbanFieldId && (
           <KanbanView
-            groupField={groupField ?? resolvedTable.fields.find((f) => f.type === DbFieldType.Select)}
-            groups={groupedRows}
-            titleFieldId={titleField?.id ?? ''}
+            table={resolvedTable}
+            tables={tablesMap}
+            groupFieldId={resolvedKanbanFieldId}
+            onUpdateCell={handleCellChange}
             onAddRow={handleAddRow}
-            onRowClick={() => {}}
+            onDeleteRow={handleDeleteRow}
           />
         )}
         {activeView?.type === ViewType.Gallery && (
           <GalleryView
-            fields={resolvedTable.fields}
-            rows={filteredRows}
-            titleFieldId={titleField?.id ?? ''}
-            onAddRow={() => handleAddRow()}
-            onRowClick={() => {}}
+            table={resolvedTable}
+            tables={tablesMap}
+            onUpdateCell={handleCellChange}
           />
         )}
-        {activeView?.type === ViewType.Calendar && dateField && (
+        {activeView?.type === ViewType.Calendar && resolvedCalendarFieldId && (
           <CalendarView
-            rows={filteredRows}
-            dateFieldId={dateField.id}
-            titleFieldId={titleField?.id ?? ''}
-            onAddRow={(date) => handleAddRow({ [dateField.id]: date })}
-            onRowClick={() => {}}
+            table={resolvedTable}
+            tables={tablesMap}
+            dateFieldId={resolvedCalendarFieldId}
+            onUpdateCell={handleCellChange}
+            onAddRow={handleAddRow}
           />
         )}
         {activeView?.type === ViewType.Form && (

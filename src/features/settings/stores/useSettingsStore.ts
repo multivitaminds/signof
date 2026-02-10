@@ -43,6 +43,7 @@ export const useSettingsStore = create<SettingsState>()(
     (set) => ({
       workspace: {
         name: 'SignOf Workspace',
+        slug: 'signof-workspace',
         logo: null,
         theme: ThemeMode.System,
         language: 'en',

@@ -1,9 +1,31 @@
-import { useSettingsStore } from '../stores/useSettingsStore'
+import { useCallback } from 'react'
+import { useIntegrationsStore } from '../stores/useIntegrationsStore'
 import './IntegrationsSettings.css'
 
+function formatConnectedDate(isoDate: string): string {
+  const date = new Date(isoDate)
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
 export default function IntegrationsSettings() {
-  const integrations = useSettingsStore((s) => s.integrations)
-  const toggleIntegration = useSettingsStore((s) => s.toggleIntegration)
+  const integrations = useIntegrationsStore((s) => s.integrations)
+  const connectIntegration = useIntegrationsStore((s) => s.connectIntegration)
+  const disconnectIntegration = useIntegrationsStore((s) => s.disconnectIntegration)
+
+  const handleToggle = useCallback(
+    (id: string, isConnected: boolean) => {
+      if (isConnected) {
+        disconnectIntegration(id)
+      } else {
+        connectIntegration(id)
+      }
+    },
+    [connectIntegration, disconnectIntegration]
+  )
 
   return (
     <div className="integrations-settings">
@@ -12,7 +34,10 @@ export default function IntegrationsSettings() {
 
       <div className="integrations-settings__grid">
         {integrations.map((integration) => (
-          <div key={integration.id} className="integrations-settings__card">
+          <div
+            key={integration.id}
+            className={`integrations-settings__card ${integration.connected ? 'integrations-settings__card--connected' : ''}`}
+          >
             <div className="integrations-settings__card-header">
               <span className="integrations-settings__card-icon">{integration.icon}</span>
               <div className="integrations-settings__card-info">
@@ -21,12 +46,19 @@ export default function IntegrationsSettings() {
               </div>
             </div>
             <div className="integrations-settings__card-footer">
-              {integration.connected && (
-                <span className="integrations-settings__connected-badge">Connected</span>
-              )}
+              <div className="integrations-settings__card-status">
+                {integration.connected && integration.connectedAt && (
+                  <>
+                    <span className="integrations-settings__connected-badge">Connected</span>
+                    <span className="integrations-settings__connected-date">
+                      since {formatConnectedDate(integration.connectedAt)}
+                    </span>
+                  </>
+                )}
+              </div>
               <button
                 className={integration.connected ? 'btn-secondary' : 'btn-primary'}
-                onClick={() => toggleIntegration(integration.id)}
+                onClick={() => handleToggle(integration.id, integration.connected)}
               >
                 {integration.connected ? 'Disconnect' : 'Connect'}
               </button>

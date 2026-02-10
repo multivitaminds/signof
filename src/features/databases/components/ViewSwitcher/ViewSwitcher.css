@@ -32,6 +32,77 @@
   border-bottom-color: var(--color-primary, #4F46E5);
 }
 
+/* ─── Field picker ───────────────────────────────────────────── */
+
+.view-switcher__field-picker {
+  position: relative;
+  margin-left: var(--space-2, 0.5rem);
+}
+
+.view-switcher__field-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  background: var(--bg-secondary, #F9FAFB);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-sm, 4px);
+  color: var(--text-secondary, #6B7280);
+  font-size: var(--text-xs, 0.75rem);
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.view-switcher__field-btn:hover {
+  border-color: var(--color-primary, #4F46E5);
+  color: var(--text-primary, #111827);
+}
+
+.view-switcher__field-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 160px;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  z-index: 20;
+  padding: var(--space-1, 0.25rem);
+}
+
+.view-switcher__field-option {
+  display: block;
+  width: 100%;
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+  transition: background 100ms ease;
+}
+
+.view-switcher__field-option:hover {
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+.view-switcher__field-option--active {
+  color: var(--color-primary, #4F46E5);
+  font-weight: 600;
+  background: rgba(79, 70, 229, 0.06);
+}
+
+/* ─── Add button ─────────────────────────────────────────────── */
+
+.view-switcher__add-wrapper {
+  position: relative;
+  margin-left: var(--space-1, 0.25rem);
+}
+
 .view-switcher__add {
   display: flex;
   align-items: center;
@@ -42,10 +113,61 @@
   cursor: pointer;
   border-radius: var(--radius-sm, 4px);
   transition: all 150ms ease;
-  margin-left: var(--space-1, 0.25rem);
 }
 
 .view-switcher__add:hover {
   color: var(--color-primary, #4F46E5);
   background: var(--bg-secondary, #F9FAFB);
+}
+
+.view-switcher__add-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 140px;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  z-index: 20;
+  padding: var(--space-1, 0.25rem);
+}
+
+.view-switcher__add-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  width: 100%;
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+  transition: background 100ms ease;
+}
+
+.view-switcher__add-option:hover {
+  background: var(--bg-secondary, #F9FAFB);
+  color: var(--color-primary, #4F46E5);
+}
+
+/* ─── Dark mode ──────────────────────────────────────────────── */
+
+[data-theme="dark"] .view-switcher__field-dropdown,
+[data-theme="dark"] .view-switcher__add-menu {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .view-switcher__field-option:hover,
+[data-theme="dark"] .view-switcher__add-option:hover {
+  background: var(--bg-tertiary, #1E1E36);
+}
+
+[data-theme="dark"] .view-switcher__field-btn {
+  background: var(--bg-tertiary, #1E1E36);
+  border-color: var(--border-color, #334155);
 }

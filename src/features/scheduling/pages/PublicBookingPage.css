@@ -385,6 +385,54 @@
   margin-top: var(--space-2);
 }
 
+/* ─── No slots message ──────────────────────────────────── */
+.public-booking__no-slots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-4);
+  color: var(--text-muted, #9CA3AF);
+  text-align: center;
+}
+
+.public-booking__no-slots p {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary, #6B7280);
+}
+
+/* ─── Duplicate warning ─────────────────────────────────── */
+.public-booking__duplicate-warning {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background-color: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius-md);
+  color: var(--color-warning, #D97706);
+}
+
+.public-booking__duplicate-warning-content {
+  flex: 1;
+}
+
+.public-booking__duplicate-warning-text {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-primary, #111827);
+}
+
+.public-booking__duplicate-warning-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.public-booking__duplicate-warning-btn {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+}
+
 /* ─── Confirm step ───────────────────────────────────────── */
 .public-booking__confirm-step {
   text-align: center;
@@ -524,4 +572,13 @@
 [data-theme="dark"] .public-booking__selected-summary,
 [data-theme="dark"] .public-booking__success-details {
   background-color: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .public-booking__duplicate-warning {
+  background-color: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+[data-theme="dark"] .public-booking__duplicate-warning-text {
+  color: var(--text-primary);
 }
