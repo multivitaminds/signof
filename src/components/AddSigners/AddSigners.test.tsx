@@ -25,6 +25,11 @@ const makeDoc = (overrides: Partial<Document> = {}): Document => ({
   signers: [],
   signatures: [],
   audit: [],
+  fields: [],
+  folderId: null,
+  templateId: null,
+  expiresAt: null,
+  reminderSentAt: null,
   ...overrides,
 })
 

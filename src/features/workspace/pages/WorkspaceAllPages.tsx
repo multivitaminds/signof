@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, FileText } from 'lucide-react'
 import { useWorkspaceStore } from '../stores/useWorkspaceStore'
@@ -6,7 +6,13 @@ import './WorkspaceAllPages.css'
 
 export default function WorkspaceAllPages() {
   const navigate = useNavigate()
-  const pages = useWorkspaceStore((s) => s.getAllPages())
+  const pagesMap = useWorkspaceStore((s) => s.pages)
+  const pages = useMemo(
+    () => Object.values(pagesMap)
+      .filter((p) => !p.trashedAt)
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
+    [pagesMap]
+  )
 
   const handlePageClick = useCallback(
     (pageId: string) => {

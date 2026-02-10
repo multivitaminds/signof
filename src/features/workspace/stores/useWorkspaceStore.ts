@@ -802,11 +802,34 @@ export const useWorkspaceStore = create<WorkspaceState>()(
     },
     {
       name: 'signof-workspace-storage',
+      version: 1,
       partialize: (state) => ({
         pages: state.pages,
         blocks: state.blocks,
         snapshots: state.snapshots,
       }),
+      migrate: (persisted: unknown, version: number) => {
+        const state = persisted as Record<string, unknown>
+        if (version === 0) {
+          // Migrate pages from v0 (before trashedAt/properties were added)
+          const pages = state.pages as Record<string, Record<string, unknown>> | undefined
+          if (pages) {
+            for (const page of Object.values(pages)) {
+              if (!('trashedAt' in page)) {
+                page.trashedAt = null
+              }
+              if (!('properties' in page)) {
+                page.properties = {}
+              }
+            }
+          }
+          // Add snapshots if missing
+          if (!state.snapshots) {
+            state.snapshots = {}
+          }
+        }
+        return state as unknown as WorkspaceState
+      },
     }
   )
 )

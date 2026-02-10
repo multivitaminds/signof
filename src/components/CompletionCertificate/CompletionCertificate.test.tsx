@@ -40,6 +40,11 @@ const makeCompletedDoc = (): Document => ({
     { action: 'signed', timestamp: '2026-01-21T11:00:00Z', userId: 's2' },
     { action: 'completed', timestamp: '2026-01-21T11:05:00Z', userId: 'system' },
   ],
+  fields: [],
+  folderId: null,
+  templateId: null,
+  expiresAt: null,
+  reminderSentAt: null,
 })
 
 describe('CompletionCertificate', () => {

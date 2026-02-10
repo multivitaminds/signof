@@ -20,6 +20,11 @@ const SAMPLE_DOCS: Document[] = [
     ],
     signatures: [],
     audit: [],
+    fields: [],
+    folderId: null,
+    templateId: null,
+    expiresAt: null,
+    reminderSentAt: null,
   },
   {
     id: '2',
@@ -34,6 +39,11 @@ const SAMPLE_DOCS: Document[] = [
     ],
     signatures: [],
     audit: [],
+    fields: [],
+    folderId: null,
+    templateId: null,
+    expiresAt: null,
+    reminderSentAt: null,
   },
   {
     id: '3',
@@ -46,6 +56,11 @@ const SAMPLE_DOCS: Document[] = [
     signers: [],
     signatures: [],
     audit: [],
+    fields: [],
+    folderId: null,
+    templateId: null,
+    expiresAt: null,
+    reminderSentAt: null,
   },
 ]
 

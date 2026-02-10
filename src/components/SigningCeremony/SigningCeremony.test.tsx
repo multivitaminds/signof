@@ -41,6 +41,11 @@ const makeDoc = (): Document => ({
   signers: [makeSigner()],
   signatures: [],
   audit: [],
+  fields: [],
+  folderId: null,
+  templateId: null,
+  expiresAt: null,
+  reminderSentAt: null,
 })
 
 describe('SigningCeremony', () => {

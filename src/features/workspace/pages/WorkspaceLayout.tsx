@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import { useWorkspaceStore } from '../stores/useWorkspaceStore'
 import PageTree from '../components/PageTree/PageTree'
@@ -7,7 +7,11 @@ import './WorkspaceLayout.css'
 export default function WorkspaceLayout() {
   const navigate = useNavigate()
   const { pageId } = useParams()
-  const pages = useWorkspaceStore((s) => Object.values(s.pages))
+  const pagesMap = useWorkspaceStore((s) => s.pages)
+  const pages = useMemo(
+    () => Object.values(pagesMap).filter((p) => !p.trashedAt),
+    [pagesMap]
+  )
 
   const handleSelectPage = useCallback(
     (id: string) => {

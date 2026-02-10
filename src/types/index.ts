@@ -58,6 +58,87 @@ export interface Document {
   signers: Signer[]
   signatures: SignatureData[]
   audit: AuditEntry[]
+  fields: DocumentField[]
+  folderId: string | null
+  templateId: string | null
+  expiresAt: string | null
+  reminderSentAt: string | null
+}
+
+// ─── Field Types (Document Placement) ───────────────────────────────
+
+export const FieldType = {
+  Signature: 'signature',
+  Initial: 'initial',
+  DateSigned: 'date_signed',
+  Text: 'text',
+  Checkbox: 'checkbox',
+  Dropdown: 'dropdown',
+  Attachment: 'attachment',
+} as const
+
+export type FieldType = (typeof FieldType)[keyof typeof FieldType]
+
+export interface DocumentField {
+  id: string
+  type: FieldType
+  recipientId: string
+  page: number
+  x: number
+  y: number
+  width: number
+  height: number
+  required: boolean
+  label?: string
+  placeholder?: string
+  options?: string[]
+  value?: string
+}
+
+// ─── Template Types ─────────────────────────────────────────────────
+
+export interface RecipientRole {
+  id: string
+  label: string
+  order: number
+}
+
+export interface Template {
+  id: string
+  name: string
+  description: string
+  documentName: string
+  fields: DocumentField[]
+  recipientRoles: RecipientRole[]
+  createdAt: string
+  updatedAt: string
+}
+
+// ─── Contact Types ──────────────────────────────────────────────────
+
+export interface ContactSigningHistory {
+  documentId: string
+  date: string
+  status: string
+}
+
+export interface Contact {
+  id: string
+  name: string
+  email: string
+  company?: string
+  phone?: string
+  signingHistory: ContactSigningHistory[]
+  createdAt: string
+}
+
+// ─── Folder Types ───────────────────────────────────────────────────
+
+export interface Folder {
+  id: string
+  name: string
+  parentId: string | null
+  color?: string
 }
 
 // ─── App Shell Types ────────────────────────────────────────────────

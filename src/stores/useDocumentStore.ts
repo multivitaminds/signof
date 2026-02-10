@@ -33,6 +33,11 @@ const SAMPLE_DOCUMENTS: Document[] = [
       { action: 'created', timestamp: '2026-02-01T10:00:00Z', userId: 'system' },
       { action: 'signed', timestamp: '2026-02-02T14:00:00Z', userId: 's2', detail: 'HR Director signed' },
     ],
+    fields: [],
+    folderId: null,
+    templateId: null,
+    expiresAt: null,
+    reminderSentAt: null,
   },
   {
     id: '2',
@@ -50,6 +55,11 @@ const SAMPLE_DOCUMENTS: Document[] = [
       { action: 'created', timestamp: '2026-01-20T09:00:00Z', userId: 'system' },
       { action: 'completed', timestamp: '2026-01-21T11:00:00Z', userId: 'system' },
     ],
+    fields: [],
+    folderId: null,
+    templateId: null,
+    expiresAt: null,
+    reminderSentAt: null,
   },
   {
     id: '3',
@@ -64,6 +74,11 @@ const SAMPLE_DOCUMENTS: Document[] = [
     audit: [
       { action: 'created', timestamp: '2026-02-07T16:30:00Z', userId: 'system' },
     ],
+    fields: [],
+    folderId: null,
+    templateId: null,
+    expiresAt: null,
+    reminderSentAt: null,
   },
 ]
 
@@ -102,6 +117,11 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       signers: [],
       signatures: [],
       audit: [{ action: 'created', timestamp, userId: 'you' }],
+      fields: [],
+      folderId: null,
+      templateId: null,
+      expiresAt: null,
+      reminderSentAt: null,
     }
     set((state) => ({ documents: [newDoc, ...state.documents] }))
     return newDoc

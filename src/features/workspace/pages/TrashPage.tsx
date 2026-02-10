@@ -1,14 +1,19 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Trash2, RotateCcw } from 'lucide-react'
 import { useWorkspaceStore } from '../stores/useWorkspaceStore'
 import './TrashPage.css'
 
 export default function TrashPage() {
-  const getTrashedPages = useWorkspaceStore((s) => s.getTrashedPages)
+  const pagesMap = useWorkspaceStore((s) => s.pages)
   const restorePage = useWorkspaceStore((s) => s.restorePage)
   const permanentlyDeletePage = useWorkspaceStore((s) => s.permanentlyDeletePage)
 
-  const trashedPages = getTrashedPages()
+  const trashedPages = useMemo(
+    () => Object.values(pagesMap)
+      .filter((p) => p.trashedAt !== null)
+      .sort((a, b) => (b.trashedAt ?? '').localeCompare(a.trashedAt ?? '')),
+    [pagesMap]
+  )
 
   const handleRestore = useCallback(
     (pageId: string) => {
