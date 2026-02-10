@@ -1,19 +1,8 @@
-import { useLocation } from 'react-router-dom'
 import { Bell, Search, User, Sun, Moon, Monitor, Menu } from 'lucide-react'
 import { useAppStore } from '../../../stores/useAppStore'
 import { useTheme } from '../../../hooks/useTheme'
+import Breadcrumbs from '../../Breadcrumbs/Breadcrumbs'
 import './TopBar.css'
-
-const ROUTE_TITLES: Record<string, string> = {
-  '/': 'Home',
-  '/pages': 'Pages',
-  '/projects': 'Projects',
-  '/documents': 'Documents',
-  '/calendar': 'Calendar',
-  '/data': 'Databases',
-  '/inbox': 'Inbox',
-  '/settings': 'Settings',
-}
 
 const THEME_ICON = {
   light: Sun,
@@ -28,21 +17,8 @@ const THEME_LABEL = {
 } as const
 
 export default function TopBar() {
-  const location = useLocation()
   const { openCommandPalette, openMobileSidebar } = useAppStore()
   const { theme, cycleTheme } = useTheme()
-
-  const getPageTitle = () => {
-    // Exact match first
-    if (ROUTE_TITLES[location.pathname]) {
-      return ROUTE_TITLES[location.pathname]
-    }
-    // Prefix match for nested routes
-    const prefix = Object.keys(ROUTE_TITLES).find(
-      (key) => key !== '/' && location.pathname.startsWith(key)
-    )
-    return prefix ? ROUTE_TITLES[prefix] : 'SignOf'
-  }
 
   const ThemeIcon = THEME_ICON[theme]
 
@@ -57,7 +33,7 @@ export default function TopBar() {
         >
           <Menu size={20} />
         </button>
-        <h1 className="topbar__title">{getPageTitle()}</h1>
+        <Breadcrumbs />
       </div>
 
       <div className="topbar__right">

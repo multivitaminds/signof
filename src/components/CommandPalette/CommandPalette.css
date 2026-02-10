@@ -82,6 +82,21 @@
   font-size: 0.875rem;
 }
 
+.command-palette__empty-hint {
+  margin-top: var(--space-2, 8px);
+  font-size: 0.75rem;
+  color: var(--text-muted, #9CA3AF);
+  opacity: 0.7;
+}
+
+/* Match highlighting */
+.command-palette__match {
+  background: rgba(79, 70, 229, 0.15);
+  color: var(--color-primary, #4F46E5);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
 /* Groups */
 .command-palette__group {
   margin-bottom: var(--space-2, 8px);
@@ -227,6 +242,11 @@
 [data-theme="dark"] .command-palette__item-shortcut {
   background: rgba(255, 255, 255, 0.1);
   color: var(--text-secondary, #94A3B8);
+}
+
+[data-theme="dark"] .command-palette__match {
+  background: rgba(79, 70, 229, 0.3);
+  color: #818CF8;
 }
 
 [data-theme="dark"] .command-palette__footer {

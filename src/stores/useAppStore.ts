@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import type { RecentItem, FavoriteItem } from '../types'
 
 export type Theme = 'light' | 'dark' | 'system'
 
@@ -28,6 +29,22 @@ interface AppState {
   // User preferences
   compactMode: boolean
   setCompactMode: (compact: boolean) => void
+
+  // Recent items
+  recentItems: RecentItem[]
+  addRecentItem: (item: Omit<RecentItem, 'timestamp'>) => void
+
+  // Favorites
+  favorites: FavoriteItem[]
+  addFavorite: (item: FavoriteItem) => void
+  removeFavorite: (id: string) => void
+  reorderFavorites: (fromIndex: number, toIndex: number) => void
+
+  // Keyboard shortcut help
+  shortcutHelpOpen: boolean
+  openShortcutHelp: () => void
+  closeShortcutHelp: () => void
+  toggleShortcutHelp: () => void
 }
 
 export const useAppStore = create<AppState>()(
@@ -59,13 +76,53 @@ export const useAppStore = create<AppState>()(
       // User preferences
       compactMode: false,
       setCompactMode: (compact) => set({ compactMode: compact }),
+
+      // Recent items
+      recentItems: [],
+      addRecentItem: (item) =>
+        set((state) => {
+          const filtered = state.recentItems.filter((r) => r.path !== item.path)
+          const newItem: RecentItem = { ...item, timestamp: Date.now() }
+          return { recentItems: [newItem, ...filtered].slice(0, 10) }
+        }),
+
+      // Favorites
+      favorites: [],
+      addFavorite: (item) =>
+        set((state) => {
+          if (state.favorites.some((f) => f.id === item.id)) return state
+          return { favorites: [...state.favorites, item] }
+        }),
+      removeFavorite: (id) =>
+        set((state) => ({
+          favorites: state.favorites.filter((f) => f.id !== id),
+        })),
+      reorderFavorites: (fromIndex, toIndex) =>
+        set((state) => {
+          const items = [...state.favorites]
+          const removed = items.splice(fromIndex, 1)
+          if (removed[0]) {
+            items.splice(toIndex, 0, removed[0])
+          }
+          return { favorites: items }
+        }),
+
+      // Keyboard shortcut help
+      shortcutHelpOpen: false,
+      openShortcutHelp: () => set({ shortcutHelpOpen: true }),
+      closeShortcutHelp: () => set({ shortcutHelpOpen: false }),
+      toggleShortcutHelp: () =>
+        set((state) => ({ shortcutHelpOpen: !state.shortcutHelpOpen })),
     }),
     {
       name: 'signof-app-storage',
       partialize: (state) => ({
         sidebarExpanded: state.sidebarExpanded,
+        sidebarWidth: state.sidebarWidth,
         theme: state.theme,
         compactMode: state.compactMode,
+        recentItems: state.recentItems,
+        favorites: state.favorites,
       }),
     }
   )

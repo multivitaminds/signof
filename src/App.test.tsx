@@ -4,6 +4,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotFoundPage'
+import { useAppStore } from './stores/useAppStore'
 
 function renderWithRouter(initialEntries = ['/']) {
   return render(
@@ -19,6 +20,14 @@ function renderWithRouter(initialEntries = ['/']) {
 }
 
 describe('SignOf App', () => {
+  beforeEach(() => {
+    useAppStore.setState({
+      sidebarExpanded: true,
+      shortcutHelpOpen: false,
+      commandPaletteOpen: false,
+    })
+  })
+
   it('renders the sidebar with brand', () => {
     renderWithRouter()
     expect(screen.getByText('SignOf')).toBeInTheDocument()
@@ -31,7 +40,6 @@ describe('SignOf App', () => {
 
   it('shows the command palette shortcut', () => {
     renderWithRouter()
-    // Command palette trigger should be in the TopBar
     expect(screen.getByText(/⌘K/i)).toBeInTheDocument()
   })
 
@@ -84,5 +92,31 @@ describe('SignOf App', () => {
   it('has a hamburger menu button', () => {
     renderWithRouter()
     expect(screen.getByLabelText('Open menu')).toBeInTheDocument()
+  })
+
+  it('opens shortcut help with ? key', () => {
+    renderWithRouter()
+
+    fireEvent.keyDown(document, { key: '?' })
+    expect(useAppStore.getState().shortcutHelpOpen).toBe(true)
+  })
+
+  it('does not fire shortcuts when focus is in an input', () => {
+    renderWithRouter()
+
+    // Create a temporary input and focus it
+    const input = document.createElement('input')
+    document.body.appendChild(input)
+    input.focus()
+
+    fireEvent.keyDown(input, { key: '?' })
+    expect(useAppStore.getState().shortcutHelpOpen).toBe(false)
+
+    document.body.removeChild(input)
+  })
+
+  it('renders breadcrumbs in the topbar', () => {
+    renderWithRouter()
+    expect(screen.getByLabelText('Breadcrumbs')).toBeInTheDocument()
   })
 })

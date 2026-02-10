@@ -17,13 +17,6 @@
   gap: var(--space-3, 12px);
 }
 
-.topbar__title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary, #1F2937);
-  margin: 0;
-}
-
 .topbar__right {
   display: flex;
   align-items: center;
@@ -114,10 +107,6 @@
 [data-theme="dark"] .topbar {
   background: var(--bg-primary, #0F0F1A);
   border-bottom-color: var(--border-color, #334155);
-}
-
-[data-theme="dark"] .topbar__title {
-  color: var(--text-primary, #F1F5F9);
 }
 
 [data-theme="dark"] .topbar__icon-btn {

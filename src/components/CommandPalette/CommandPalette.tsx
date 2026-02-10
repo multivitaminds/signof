@@ -12,8 +12,17 @@ import {
   Home,
   ArrowRight,
   Brain,
+  Inbox,
+  Sun,
+  Moon,
+  PanelLeft,
+  LayoutGrid,
+  Keyboard,
+  Clock,
 } from 'lucide-react'
 import { useAppStore } from '../../stores/useAppStore'
+import { useDocumentStore } from '../../stores/useDocumentStore'
+import { fuzzyMatch, highlightMatches } from '../../lib/fuzzyMatch'
 import './CommandPalette.css'
 
 interface CommandItem {
@@ -22,17 +31,51 @@ interface CommandItem {
   description?: string
   icon: React.ComponentType<{ size?: number; className?: string }>
   action: () => void
-  category: 'navigation' | 'action' | 'recent'
+  category: 'navigation' | 'action' | 'recent' | 'document'
   shortcut?: string
+  score?: number
+}
+
+function HighlightedText({ text, indices }: { text: string; indices: number[] }) {
+  const segments = highlightMatches(text, indices)
+  return (
+    <>
+      {segments.map((seg, i) =>
+        seg.highlight ? (
+          <mark key={i} className="command-palette__match">{seg.text}</mark>
+        ) : (
+          <span key={i}>{seg.text}</span>
+        )
+      )}
+    </>
+  )
 }
 
 export default function CommandPalette() {
   const navigate = useNavigate()
-  const { commandPaletteOpen, closeCommandPalette } = useAppStore()
+  const {
+    commandPaletteOpen,
+    closeCommandPalette,
+    toggleSidebar,
+    toggleShortcutHelp,
+    addRecentItem,
+    recentItems,
+  } = useAppStore()
+  const { theme, setTheme, compactMode, setCompactMode } = useAppStore()
+  const documents = useDocumentStore((s) => s.documents)
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+
+  const navigateAndTrack = useCallback(
+    (path: string, label: string) => {
+      navigate(path)
+      addRecentItem({ path, label })
+      closeCommandPalette()
+    },
+    [navigate, addRecentItem, closeCommandPalette]
+  )
 
   // Define commands
   const commands: CommandItem[] = useMemo(
@@ -43,10 +86,7 @@ export default function CommandPalette() {
         label: 'Create new page',
         description: 'Add a new page to your workspace',
         icon: Plus,
-        action: () => {
-          navigate('/pages/new')
-          closeCommandPalette()
-        },
+        action: () => navigateAndTrack('/pages/new', 'New Page'),
         category: 'action',
         shortcut: '⌘N',
       },
@@ -55,165 +95,218 @@ export default function CommandPalette() {
         label: 'Create new project',
         description: 'Start a new project',
         icon: Plus,
-        action: () => {
-          navigate('/projects/new')
-          closeCommandPalette()
-        },
+        action: () => navigateAndTrack('/projects/new', 'New Project'),
         category: 'action',
-        shortcut: '⌘P',
       },
       {
         id: 'new-document',
         label: 'Create new document',
         description: 'Upload and send for signature',
         icon: Plus,
-        action: () => {
-          navigate('/documents?action=upload')
-          closeCommandPalette()
-        },
+        action: () => navigateAndTrack('/documents?action=upload', 'New Document'),
         category: 'action',
-        shortcut: '⌘D',
       },
       {
-        id: 'new-memory',
-        label: 'Add memory entry',
-        description: 'Store knowledge in AI context memory',
-        icon: Brain,
+        id: 'toggle-theme',
+        label: 'Toggle theme',
+        description: `Switch to ${theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light'} mode`,
+        icon: theme === 'dark' ? Moon : Sun,
         action: () => {
-          navigate('/ai/memory?action=add')
+          const next = theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light'
+          setTheme(next)
           closeCommandPalette()
         },
         category: 'action',
       },
       {
-        id: 'new-team',
-        label: 'Create agent team',
-        description: 'Build a team of AI agents',
-        icon: Brain,
+        id: 'toggle-sidebar',
+        label: 'Toggle sidebar',
+        description: 'Show or hide the sidebar',
+        icon: PanelLeft,
         action: () => {
-          navigate('/ai/agents?action=new')
+          toggleSidebar()
           closeCommandPalette()
         },
         category: 'action',
+        shortcut: '[',
+      },
+      {
+        id: 'toggle-compact',
+        label: 'Toggle compact mode',
+        description: compactMode ? 'Switch to normal mode' : 'Switch to compact mode',
+        icon: LayoutGrid,
+        action: () => {
+          setCompactMode(!compactMode)
+          closeCommandPalette()
+        },
+        category: 'action',
+      },
+      {
+        id: 'keyboard-shortcuts',
+        label: 'Keyboard shortcuts',
+        description: 'View all keyboard shortcuts',
+        icon: Keyboard,
+        action: () => {
+          closeCommandPalette()
+          toggleShortcutHelp()
+        },
+        category: 'action',
+        shortcut: '?',
       },
       // Navigation
       {
         id: 'nav-home',
         label: 'Go to Home',
         icon: Home,
-        action: () => {
-          navigate('/')
-          closeCommandPalette()
-        },
+        action: () => navigateAndTrack('/', 'Home'),
         category: 'navigation',
+        shortcut: 'G H',
       },
       {
         id: 'nav-pages',
         label: 'Go to Pages',
         icon: FileText,
-        action: () => {
-          navigate('/pages')
-          closeCommandPalette()
-        },
+        action: () => navigateAndTrack('/pages', 'Pages'),
         category: 'navigation',
+        shortcut: 'G A',
       },
       {
         id: 'nav-projects',
         label: 'Go to Projects',
         icon: FolderKanban,
-        action: () => {
-          navigate('/projects')
-          closeCommandPalette()
-        },
+        action: () => navigateAndTrack('/projects', 'Projects'),
         category: 'navigation',
+        shortcut: 'G P',
       },
       {
         id: 'nav-documents',
         label: 'Go to Documents',
         icon: FileSignature,
-        action: () => {
-          navigate('/documents')
-          closeCommandPalette()
-        },
+        action: () => navigateAndTrack('/documents', 'Documents'),
         category: 'navigation',
+        shortcut: 'G D',
       },
       {
         id: 'nav-calendar',
         label: 'Go to Calendar',
         icon: Calendar,
-        action: () => {
-          navigate('/calendar')
-          closeCommandPalette()
-        },
+        action: () => navigateAndTrack('/calendar', 'Calendar'),
         category: 'navigation',
+        shortcut: 'G S',
       },
       {
         id: 'nav-databases',
         label: 'Go to Databases',
         icon: Database,
-        action: () => {
-          navigate('/data')
-          closeCommandPalette()
-        },
+        action: () => navigateAndTrack('/data', 'Databases'),
         category: 'navigation',
+        shortcut: 'G C',
       },
       {
-        id: 'nav-ai-memory',
-        label: 'Go to AI Memory',
-        icon: Brain,
-        action: () => {
-          navigate('/ai/memory')
-          closeCommandPalette()
-        },
+        id: 'nav-inbox',
+        label: 'Go to Inbox',
+        icon: Inbox,
+        action: () => navigateAndTrack('/inbox', 'Inbox'),
         category: 'navigation',
+        shortcut: 'G I',
       },
       {
-        id: 'nav-ai-agents',
-        label: 'Go to Agent Teams',
+        id: 'nav-ai',
+        label: 'Go to AI',
         icon: Brain,
-        action: () => {
-          navigate('/ai/agents')
-          closeCommandPalette()
-        },
+        action: () => navigateAndTrack('/ai', 'AI'),
         category: 'navigation',
+        shortcut: 'G B',
       },
       {
         id: 'nav-settings',
         label: 'Go to Settings',
         icon: Settings,
-        action: () => {
-          navigate('/settings')
-          closeCommandPalette()
-        },
+        action: () => navigateAndTrack('/settings', 'Settings'),
         category: 'navigation',
       },
     ],
-    [navigate, closeCommandPalette]
+    [closeCommandPalette, navigateAndTrack, theme, setTheme, compactMode, setCompactMode, toggleSidebar, toggleShortcutHelp]
   )
 
-  // Filter commands based on query (simple fuzzy match)
-  const filteredCommands = useMemo(() => {
-    if (!query.trim()) return commands
-    const lowerQuery = query.toLowerCase()
-    return commands.filter(
-      (cmd) =>
-        cmd.label.toLowerCase().includes(lowerQuery) ||
-        cmd.description?.toLowerCase().includes(lowerQuery)
-    )
-  }, [commands, query])
+  // Build filtered + scored results
+  const filteredItems = useMemo(() => {
+    const trimmed = query.trim()
+
+    // Empty query: show recent items (if any) + all commands
+    if (!trimmed) {
+      const recents: CommandItem[] = recentItems.slice(0, 5).map((r) => ({
+        id: `recent-${r.path}`,
+        label: r.label,
+        icon: Clock,
+        action: () => navigateAndTrack(r.path, r.label),
+        category: 'recent' as const,
+      }))
+      return [...recents, ...commands]
+    }
+
+    // Score commands with fuzzy match
+    const scored: CommandItem[] = []
+
+    for (const cmd of commands) {
+      const labelMatch = fuzzyMatch(trimmed, cmd.label)
+      const descMatch = cmd.description ? fuzzyMatch(trimmed, cmd.description) : null
+      const bestScore = Math.max(labelMatch?.score ?? -1, descMatch?.score ?? -1)
+      if (bestScore >= 0) {
+        scored.push({
+          ...cmd,
+          score: bestScore,
+        })
+      }
+    }
+
+    // Search documents (when query length >= 2)
+    if (trimmed.length >= 2) {
+      for (const doc of documents) {
+        const match = fuzzyMatch(trimmed, doc.name)
+        if (match) {
+          scored.push({
+            id: `doc-${doc.id}`,
+            label: doc.name,
+            description: `${doc.status} · ${doc.signers.length} signer${doc.signers.length !== 1 ? 's' : ''}`,
+            icon: FileSignature,
+            action: () => navigateAndTrack(`/documents/${doc.id}`, doc.name),
+            category: 'document',
+            score: match.score,
+          })
+        }
+      }
+    }
+
+    // Sort by score descending
+    scored.sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+
+    return scored
+  }, [query, commands, documents, recentItems, navigateAndTrack])
+
+  // Get matched indices per item for highlighting
+  const getMatchIndices = useCallback(
+    (label: string): number[] => {
+      if (!query.trim()) return []
+      const result = fuzzyMatch(query.trim(), label)
+      return result?.matchedIndices ?? []
+    },
+    [query]
+  )
 
   // Group by category
   const groupedCommands = useMemo(() => {
     const groups = {
+      recent: [] as CommandItem[],
       action: [] as CommandItem[],
       navigation: [] as CommandItem[],
-      recent: [] as CommandItem[],
+      document: [] as CommandItem[],
     }
-    filteredCommands.forEach((cmd) => {
+    filteredItems.forEach((cmd) => {
       groups[cmd.category].push(cmd)
     })
     return groups
-  }, [filteredCommands])
+  }, [filteredItems])
 
   // Keyboard shortcuts to open palette
   useEffect(() => {
@@ -239,7 +332,7 @@ export default function CommandPalette() {
   // Keyboard navigation within palette
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      const totalItems = filteredCommands.length
+      const totalItems = filteredItems.length
 
       switch (e.key) {
         case 'ArrowDown':
@@ -252,8 +345,8 @@ export default function CommandPalette() {
           break
         case 'Enter':
           e.preventDefault()
-          if (filteredCommands[selectedIndex]) {
-            filteredCommands[selectedIndex].action()
+          if (filteredItems[selectedIndex]) {
+            filteredItems[selectedIndex].action()
           }
           break
         case 'Escape':
@@ -261,7 +354,7 @@ export default function CommandPalette() {
           break
       }
     },
-    [filteredCommands, selectedIndex, closeCommandPalette]
+    [filteredItems, selectedIndex, closeCommandPalette]
   )
 
   // Scroll selected item into view
@@ -280,6 +373,62 @@ export default function CommandPalette() {
   if (!commandPaletteOpen) return null
 
   let itemIndex = -1
+
+  const renderGroup = (
+    label: string,
+    items: CommandItem[]
+  ) => {
+    if (items.length === 0) return null
+    return (
+      <div className="command-palette__group">
+        <div className="command-palette__group-label">{label}</div>
+        {items.map((cmd) => {
+          itemIndex++
+          const currentIndex = itemIndex
+          const Icon = cmd.icon
+          const indices = getMatchIndices(cmd.label)
+          return (
+            <button
+              key={cmd.id}
+              data-index={currentIndex}
+              className={`command-palette__item ${
+                selectedIndex === currentIndex
+                  ? 'command-palette__item--selected'
+                  : ''
+              }`}
+              onClick={cmd.action}
+              onMouseEnter={() => setSelectedIndex(currentIndex)}
+            >
+              <Icon size={18} className="command-palette__item-icon" />
+              <div className="command-palette__item-content">
+                <span className="command-palette__item-label">
+                  {indices.length > 0 ? (
+                    <HighlightedText text={cmd.label} indices={indices} />
+                  ) : (
+                    cmd.label
+                  )}
+                </span>
+                {cmd.description && (
+                  <span className="command-palette__item-desc">
+                    {cmd.description}
+                  </span>
+                )}
+              </div>
+              {cmd.shortcut && (
+                <kbd className="command-palette__item-shortcut">
+                  {cmd.shortcut}
+                </kbd>
+              )}
+              <ArrowRight
+                size={14}
+                className="command-palette__item-arrow"
+              />
+            </button>
+          )
+        })}
+      </div>
+    )
+  }
 
   return (
     <div className="command-palette__overlay" onClick={closeCommandPalette}>
@@ -309,93 +458,19 @@ export default function CommandPalette() {
 
         {/* Results */}
         <div className="command-palette__results" ref={listRef}>
-          {filteredCommands.length === 0 ? (
+          {filteredItems.length === 0 ? (
             <div className="command-palette__empty">
-              No results found for "{query}"
+              <div>No results found for &ldquo;{query}&rdquo;</div>
+              <div className="command-palette__empty-hint">
+                Try searching for pages, documents, or commands
+              </div>
             </div>
           ) : (
             <>
-              {/* Actions */}
-              {groupedCommands.action.length > 0 && (
-                <div className="command-palette__group">
-                  <div className="command-palette__group-label">
-                    Quick Actions
-                  </div>
-                  {groupedCommands.action.map((cmd) => {
-                    itemIndex++
-                    const Icon = cmd.icon
-                    return (
-                      <button
-                        key={cmd.id}
-                        data-index={itemIndex}
-                        className={`command-palette__item ${
-                          selectedIndex === itemIndex
-                            ? 'command-palette__item--selected'
-                            : ''
-                        }`}
-                        onClick={cmd.action}
-                        onMouseEnter={() => setSelectedIndex(itemIndex)}
-                      >
-                        <Icon size={18} className="command-palette__item-icon" />
-                        <div className="command-palette__item-content">
-                          <span className="command-palette__item-label">
-                            {cmd.label}
-                          </span>
-                          {cmd.description && (
-                            <span className="command-palette__item-desc">
-                              {cmd.description}
-                            </span>
-                          )}
-                        </div>
-                        {cmd.shortcut && (
-                          <kbd className="command-palette__item-shortcut">
-                            {cmd.shortcut}
-                          </kbd>
-                        )}
-                        <ArrowRight
-                          size={14}
-                          className="command-palette__item-arrow"
-                        />
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-
-              {/* Navigation */}
-              {groupedCommands.navigation.length > 0 && (
-                <div className="command-palette__group">
-                  <div className="command-palette__group-label">Navigation</div>
-                  {groupedCommands.navigation.map((cmd) => {
-                    itemIndex++
-                    const Icon = cmd.icon
-                    return (
-                      <button
-                        key={cmd.id}
-                        data-index={itemIndex}
-                        className={`command-palette__item ${
-                          selectedIndex === itemIndex
-                            ? 'command-palette__item--selected'
-                            : ''
-                        }`}
-                        onClick={cmd.action}
-                        onMouseEnter={() => setSelectedIndex(itemIndex)}
-                      >
-                        <Icon size={18} className="command-palette__item-icon" />
-                        <div className="command-palette__item-content">
-                          <span className="command-palette__item-label">
-                            {cmd.label}
-                          </span>
-                        </div>
-                        <ArrowRight
-                          size={14}
-                          className="command-palette__item-arrow"
-                        />
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
+              {renderGroup('Recent', groupedCommands.recent)}
+              {renderGroup('Quick Actions', groupedCommands.action)}
+              {renderGroup('Documents', groupedCommands.document)}
+              {renderGroup('Navigation', groupedCommands.navigation)}
             </>
           )}
         </div>

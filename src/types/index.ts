@@ -60,6 +60,26 @@ export interface Document {
   audit: AuditEntry[]
 }
 
+// ─── App Shell Types ────────────────────────────────────────────────
+
+export interface BreadcrumbSegment {
+  label: string
+  path: string
+}
+
+export interface RecentItem {
+  path: string
+  label: string
+  timestamp: number
+}
+
+export interface FavoriteItem {
+  id: string
+  path: string
+  label: string
+  icon: string
+}
+
 // ─── Helpers ────────────────────────────────────────────────────────
 
 /** Status groups for filtering */
