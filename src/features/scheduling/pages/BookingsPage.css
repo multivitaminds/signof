@@ -33,8 +33,8 @@
 }
 
 .bookings-page__tab--active {
-  color: var(--color-primary, #635BFF);
-  border-bottom-color: var(--color-primary, #635BFF);
+  color: var(--color-primary, #4F46E5);
+  border-bottom-color: var(--color-primary, #4F46E5);
 }
 
 /* ─── Search ──────────────────────────────────────────────── */
@@ -66,8 +66,8 @@
 
 .bookings-page__search-input:focus {
   outline: none;
-  border-color: var(--color-primary, #635BFF);
-  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.1);
+  border-color: var(--color-primary, #4F46E5);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .bookings-page__search-clear {
@@ -181,8 +181,8 @@
 }
 
 .bookings-page__item-status--completed {
-  background: rgba(99, 91, 255, 0.1);
-  color: #635BFF;
+  background: rgba(79, 70, 229, 0.1);
+  color: #4F46E5;
 }
 
 .bookings-page__item-status--rescheduled {
@@ -270,7 +270,7 @@
 }
 
 .bookings-page__action-btn--reschedule:hover {
-  color: var(--color-primary, #635BFF);
+  color: var(--color-primary, #4F46E5);
   background: var(--color-primary-light, #E8E6FF);
 }
 
@@ -281,7 +281,7 @@
 
 .bookings-page__action-btn--confirm-cancel {
   color: #fff;
-  background: var(--color-danger, #FF5A5A);
+  background: var(--color-danger, #DC2626);
   animation: pulse-danger 600ms ease-in-out infinite alternate;
 }
 
@@ -329,8 +329,8 @@
 
 .bookings-page__reschedule-input:focus {
   outline: none;
-  border-color: var(--color-primary, #635BFF);
-  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.1);
+  border-color: var(--color-primary, #4F46E5);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .bookings-page__reschedule-btn {

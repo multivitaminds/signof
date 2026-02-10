@@ -13,7 +13,7 @@
   text-align: center;
   padding: var(--space-8) var(--space-5);
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(99, 91, 255, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 20%, rgba(79, 70, 229, 0.04) 0%, transparent 50%),
     radial-gradient(ellipse at 70% 80%, rgba(0, 212, 170, 0.04) 0%, transparent 50%),
     var(--bg-secondary);
   overflow: hidden;
@@ -68,14 +68,14 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #635BFF, #00D4AA);
+  background: linear-gradient(135deg, #4F46E5, #059669);
   color: #fff;
   font-size: 1.125rem;
   font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(99, 91, 255, 0.35);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
   animation: not-found-pulse 2s ease-in-out infinite;
 }
 
@@ -89,7 +89,7 @@
   width: 18px;
   height: 18px;
   border-radius: var(--radius-full);
-  background: #635BFF;
+  background: #4F46E5;
   top: 8px;
   left: 4px;
   animation: not-found-drift 8s ease-in-out infinite;
@@ -99,7 +99,7 @@
   width: 14px;
   height: 14px;
   border-radius: 3px;
-  background: #00D4AA;
+  background: #059669;
   top: 16px;
   right: 0;
   animation: not-found-drift 7s ease-in-out infinite reverse;
@@ -111,7 +111,7 @@
   height: 0;
   border-left: 8px solid transparent;
   border-right: 8px solid transparent;
-  border-bottom: 14px solid #F5A623;
+  border-bottom: 14px solid #D97706;
   bottom: 8px;
   left: 12px;
   animation: not-found-drift 9s ease-in-out infinite;
@@ -123,7 +123,7 @@
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.04em;
-  background: linear-gradient(135deg, #635BFF 0%, #00D4AA 100%);
+  background: linear-gradient(135deg, #4F46E5 0%, #059669 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -176,14 +176,14 @@
 }
 
 .not-found__btn--primary {
-  background: linear-gradient(135deg, #635BFF, #5851EA);
+  background: linear-gradient(135deg, #4F46E5, #4338CA);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(99, 91, 255, 0.25);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
 }
 
 .not-found__btn--primary:hover {
-  background: linear-gradient(135deg, #5851EA, #4B44C7);
-  box-shadow: 0 4px 14px rgba(99, 91, 255, 0.35);
+  background: linear-gradient(135deg, #4338CA, #3730A3);
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
   transform: translateY(-1px);
 }
 
@@ -244,7 +244,7 @@
 
 .not-found__card:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 4px 16px rgba(99, 91, 255, 0.12);
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.12);
   transform: translateY(-2px);
 }
 
@@ -259,7 +259,7 @@
   width: 40px;
   height: 40px;
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, rgba(99, 91, 255, 0.1), rgba(0, 212, 170, 0.1));
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(0, 212, 170, 0.1));
   color: var(--color-primary);
   flex-shrink: 0;
 }
@@ -297,11 +297,11 @@
 @keyframes not-found-pulse {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 4px 12px rgba(99, 91, 255, 0.35);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
   }
   50% {
     transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(99, 91, 255, 0.45);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
   }
 }
 
@@ -323,7 +323,7 @@
 /* ─── Dark Mode ────────────────────────────────────────────── */
 [data-theme="dark"] .not-found {
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(99, 91, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 20%, rgba(79, 70, 229, 0.06) 0%, transparent 50%),
     radial-gradient(ellipse at 70% 80%, rgba(0, 212, 170, 0.05) 0%, transparent 50%),
     var(--bg-secondary);
 }
@@ -357,11 +357,11 @@
 
 [data-theme="dark"] .not-found__card:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 4px 16px rgba(99, 91, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.2);
 }
 
 [data-theme="dark"] .not-found__card-icon {
-  background: linear-gradient(135deg, rgba(99, 91, 255, 0.15), rgba(0, 212, 170, 0.15));
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(0, 212, 170, 0.15));
 }
 
 [data-theme="dark"] .not-found__shape--circle {

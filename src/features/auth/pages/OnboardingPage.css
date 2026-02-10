@@ -8,7 +8,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0A2540 0%, #1B3A5C 40%, #635BFF 100%);
+  background: linear-gradient(135deg, #1A1A2E 0%, #0F3460 40%, #4F46E5 100%);
   padding: var(--space-4, 1rem);
   position: relative;
   overflow: hidden;
@@ -21,7 +21,7 @@
   right: -10%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(99, 91, 255, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -52,7 +52,7 @@
 
 .onboarding__progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #635BFF, #00D4AA);
+  background: linear-gradient(90deg, #4F46E5, #059669);
   border-radius: 0 2px 2px 0;
   transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -126,11 +126,11 @@
 }
 
 .onboarding__step-icon {
-  color: #635BFF;
+  color: #4F46E5;
 }
 
 .onboarding__step-icon--success {
-  color: #00D4AA;
+  color: #059669;
 }
 
 .onboarding__title {
@@ -153,7 +153,7 @@
 .onboarding__logo-animated {
   font-size: 3rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #635BFF, #00D4AA);
+  background: linear-gradient(135deg, #4F46E5, #059669);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -233,8 +233,8 @@
 
 .onboarding__input:focus {
   outline: none;
-  border-color: #635BFF;
-  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.15);
+  border-color: #4F46E5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
 }
 
 .onboarding__input::placeholder {
@@ -254,8 +254,8 @@
 }
 
 .onboarding__slug-row:focus-within {
-  border-color: #635BFF;
-  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.15);
+  border-color: #4F46E5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
 }
 
 .onboarding__slug-prefix {
@@ -301,14 +301,14 @@
 }
 
 .onboarding__icon-option:hover {
-  border-color: #635BFF;
+  border-color: #4F46E5;
   transform: scale(1.08);
 }
 
 .onboarding__icon-option--selected {
-  border-color: #635BFF;
-  background: rgba(99, 91, 255, 0.08);
-  box-shadow: 0 0 0 2px rgba(99, 91, 255, 0.2);
+  border-color: #4F46E5;
+  background: rgba(79, 70, 229, 0.08);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
 }
 
 /* ─── Role grid ─── */
@@ -335,14 +335,14 @@
 }
 
 .onboarding__role-card:hover {
-  border-color: #635BFF;
-  background: rgba(99, 91, 255, 0.02);
+  border-color: #4F46E5;
+  background: rgba(79, 70, 229, 0.02);
 }
 
 .onboarding__role-card--selected {
-  border-color: #635BFF;
-  background: rgba(99, 91, 255, 0.06);
-  box-shadow: 0 0 0 1px #635BFF;
+  border-color: #4F46E5;
+  background: rgba(79, 70, 229, 0.06);
+  box-shadow: 0 0 0 1px #4F46E5;
 }
 
 .onboarding__role-icon {
@@ -351,7 +351,7 @@
 }
 
 .onboarding__role-card--selected .onboarding__role-icon {
-  color: #635BFF;
+  color: #4F46E5;
 }
 
 .onboarding__role-label {
@@ -362,7 +362,7 @@
 }
 
 .onboarding__role-check {
-  color: #635BFF;
+  color: #4F46E5;
   flex-shrink: 0;
 }
 
@@ -390,15 +390,15 @@
 }
 
 .onboarding__size-card:hover {
-  border-color: #635BFF;
+  border-color: #4F46E5;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(99, 91, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
 }
 
 .onboarding__size-card--selected {
-  border-color: #635BFF;
-  background: rgba(99, 91, 255, 0.06);
-  box-shadow: 0 0 0 1px #635BFF;
+  border-color: #4F46E5;
+  background: rgba(79, 70, 229, 0.06);
+  box-shadow: 0 0 0 1px #4F46E5;
 }
 
 .onboarding__size-visual {
@@ -430,7 +430,7 @@
 }
 
 .onboarding__size-card--selected .onboarding__size-dot {
-  background: #635BFF;
+  background: #4F46E5;
 }
 
 .onboarding__size-dot--large {
@@ -458,7 +458,7 @@
   position: absolute;
   top: 4px;
   right: 4px;
-  color: #635BFF;
+  color: #4F46E5;
 }
 
 /* ─── Use case grid ─── */
@@ -484,13 +484,13 @@
 }
 
 .onboarding__usecase-card:hover {
-  border-color: #635BFF;
+  border-color: #4F46E5;
 }
 
 .onboarding__usecase-card--selected {
-  border-color: #635BFF;
-  background: rgba(99, 91, 255, 0.06);
-  box-shadow: 0 0 0 1px #635BFF;
+  border-color: #4F46E5;
+  background: rgba(79, 70, 229, 0.06);
+  box-shadow: 0 0 0 1px #4F46E5;
 }
 
 .onboarding__usecase-checkbox {
@@ -506,8 +506,8 @@
 }
 
 .onboarding__usecase-card--selected .onboarding__usecase-checkbox {
-  background: #635BFF;
-  border-color: #635BFF;
+  background: #4F46E5;
+  border-color: #4F46E5;
   color: #fff;
 }
 
@@ -517,7 +517,7 @@
 }
 
 .onboarding__usecase-card--selected .onboarding__usecase-icon {
-  color: #635BFF;
+  color: #4F46E5;
 }
 
 .onboarding__usecase-label {
@@ -562,15 +562,15 @@
   align-items: center;
   gap: var(--space-1, 0.25rem);
   padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
-  background: rgba(99, 91, 255, 0.08);
-  border: 1px solid rgba(99, 91, 255, 0.2);
+  background: rgba(79, 70, 229, 0.08);
+  border: 1px solid rgba(79, 70, 229, 0.2);
   border-radius: 100px;
   font-size: var(--text-xs, 0.75rem);
-  color: #635BFF;
+  color: #4F46E5;
 }
 
 .onboarding__email-chip svg:first-child {
-  color: rgba(99, 91, 255, 0.5);
+  color: rgba(79, 70, 229, 0.5);
 }
 
 .onboarding__email-remove {
@@ -581,7 +581,7 @@
   height: 16px;
   border: none;
   background: none;
-  color: rgba(99, 91, 255, 0.5);
+  color: rgba(79, 70, 229, 0.5);
   cursor: pointer;
   border-radius: 50%;
   padding: 0;
@@ -620,21 +620,21 @@
 }
 
 .onboarding__theme-card:hover {
-  border-color: #635BFF;
+  border-color: #4F46E5;
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(99, 91, 255, 0.15);
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.15);
 }
 
 .onboarding__theme-card--selected {
-  border-color: #635BFF;
-  box-shadow: 0 0 0 1px #635BFF, 0 4px 16px rgba(99, 91, 255, 0.15);
+  border-color: #4F46E5;
+  box-shadow: 0 0 0 1px #4F46E5, 0 4px 16px rgba(79, 70, 229, 0.15);
 }
 
 .onboarding__theme-check {
   position: absolute;
   top: 6px;
   right: 6px;
-  color: #635BFF;
+  color: #4F46E5;
 }
 
 /* Theme preview mini-app */
@@ -697,15 +697,15 @@
 }
 
 .onboarding__theme-preview--light .onboarding__theme-bar {
-  background: #635BFF;
+  background: #4F46E5;
 }
 
 .onboarding__theme-preview--dark .onboarding__theme-bar {
-  background: #635BFF;
+  background: #4F46E5;
 }
 
 .onboarding__theme-preview--system .onboarding__theme-bar {
-  background: #635BFF;
+  background: #4F46E5;
 }
 
 .onboarding__theme-lines {
@@ -765,13 +765,13 @@
 }
 
 .onboarding__confetti-piece:nth-child(5n+1) {
-  background: #635BFF;
+  background: #4F46E5;
   width: 6px;
   height: 10px;
 }
 
 .onboarding__confetti-piece:nth-child(5n+2) {
-  background: #00D4AA;
+  background: #059669;
   width: 8px;
   height: 6px;
   border-radius: 50%;
@@ -959,12 +959,12 @@
 }
 
 [data-theme="dark"] .onboarding__icon-option:hover {
-  border-color: #635BFF;
+  border-color: #4F46E5;
 }
 
 [data-theme="dark"] .onboarding__icon-option--selected {
-  background: rgba(99, 91, 255, 0.15);
-  border-color: #635BFF;
+  background: rgba(79, 70, 229, 0.15);
+  border-color: #4F46E5;
 }
 
 [data-theme="dark"] .onboarding__role-card {
@@ -973,12 +973,12 @@
 }
 
 [data-theme="dark"] .onboarding__role-card:hover {
-  border-color: #635BFF;
-  background: rgba(99, 91, 255, 0.08);
+  border-color: #4F46E5;
+  background: rgba(79, 70, 229, 0.08);
 }
 
 [data-theme="dark"] .onboarding__role-card--selected {
-  background: rgba(99, 91, 255, 0.12);
+  background: rgba(79, 70, 229, 0.12);
 }
 
 [data-theme="dark"] .onboarding__role-label {
@@ -990,7 +990,7 @@
 }
 
 [data-theme="dark"] .onboarding__role-card--selected .onboarding__role-icon {
-  color: #635BFF;
+  color: #4F46E5;
 }
 
 [data-theme="dark"] .onboarding__size-card {
@@ -999,11 +999,11 @@
 }
 
 [data-theme="dark"] .onboarding__size-card:hover {
-  border-color: #635BFF;
+  border-color: #4F46E5;
 }
 
 [data-theme="dark"] .onboarding__size-card--selected {
-  background: rgba(99, 91, 255, 0.12);
+  background: rgba(79, 70, 229, 0.12);
 }
 
 [data-theme="dark"] .onboarding__size-label {
@@ -1019,7 +1019,7 @@
 }
 
 [data-theme="dark"] .onboarding__size-card--selected .onboarding__size-dot {
-  background: #635BFF;
+  background: #4F46E5;
 }
 
 [data-theme="dark"] .onboarding__usecase-card {
@@ -1028,11 +1028,11 @@
 }
 
 [data-theme="dark"] .onboarding__usecase-card:hover {
-  border-color: #635BFF;
+  border-color: #4F46E5;
 }
 
 [data-theme="dark"] .onboarding__usecase-card--selected {
-  background: rgba(99, 91, 255, 0.12);
+  background: rgba(79, 70, 229, 0.12);
 }
 
 [data-theme="dark"] .onboarding__usecase-checkbox {
@@ -1048,12 +1048,12 @@
 }
 
 [data-theme="dark"] .onboarding__usecase-card--selected .onboarding__usecase-icon {
-  color: #635BFF;
+  color: #4F46E5;
 }
 
 [data-theme="dark"] .onboarding__email-chip {
-  background: rgba(99, 91, 255, 0.15);
-  border-color: rgba(99, 91, 255, 0.3);
+  background: rgba(79, 70, 229, 0.15);
+  border-color: rgba(79, 70, 229, 0.3);
 }
 
 [data-theme="dark"] .onboarding__theme-card {
@@ -1063,7 +1063,7 @@
 }
 
 [data-theme="dark"] .onboarding__theme-card:hover {
-  border-color: #635BFF;
+  border-color: #4F46E5;
 }
 
 [data-theme="dark"] .onboarding__summary {

@@ -195,7 +195,7 @@ function SigningCeremony({
       if (points.length < 2) return
       const firstPoint = points[0]
       if (!firstPoint) return
-      ctx.strokeStyle = '#0A2540'
+      ctx.strokeStyle = '#1A1A2E'
       ctx.lineWidth = 2
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
@@ -273,7 +273,7 @@ function SigningCeremony({
           if (ctx) {
             const prevPoint = prev[prev.length - 1]
             if (prevPoint) {
-              ctx.strokeStyle = '#0A2540'
+              ctx.strokeStyle = '#1A1A2E'
               ctx.lineWidth = 2
               ctx.lineCap = 'round'
               ctx.lineJoin = 'round'

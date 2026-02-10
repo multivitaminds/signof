@@ -27,10 +27,10 @@ const ICON_MAP: Record<string, React.ComponentType<{ size?: number }>> = {
 
 const PRIORITY_COLOR: Record<string, string> = {
   [NotificationType.SignatureRequest]: '#EF4444',
-  [NotificationType.Mention]: '#635BFF',
+  [NotificationType.Mention]: '#4F46E5',
   [NotificationType.Comment]: '#0EA5E9',
   [NotificationType.Assignment]: '#F59E0B',
-  [NotificationType.StatusChange]: '#00D4AA',
+  [NotificationType.StatusChange]: '#059669',
   [NotificationType.Invitation]: '#8B5CF6',
   [NotificationType.Reminder]: '#F97316',
   [NotificationType.System]: '#94A3B8',

@@ -12,11 +12,11 @@ interface EndpointCardProps {
 }
 
 const METHOD_COLORS: Record<string, string> = {
-  [HttpMethod.Get]: '#00D4AA',
-  [HttpMethod.Post]: '#635BFF',
-  [HttpMethod.Put]: '#F5A623',
-  [HttpMethod.Patch]: '#F5A623',
-  [HttpMethod.Delete]: '#FF5A5A',
+  [HttpMethod.Get]: '#059669',
+  [HttpMethod.Post]: '#4F46E5',
+  [HttpMethod.Put]: '#D97706',
+  [HttpMethod.Patch]: '#D97706',
+  [HttpMethod.Delete]: '#DC2626',
 }
 
 type CodeTab = 'curl' | 'javascript' | 'python'

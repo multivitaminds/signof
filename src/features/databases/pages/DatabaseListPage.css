@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
    DatabaseListPage — Airtable-inspired premium design
-   Stripe colors: #635BFF, #0A2540, #00D4AA
+   SignOf colors: #4F46E5, #1A1A2E, #059669
    ═══════════════════════════════════════════════════════════ */
 
 .db-list-page {
@@ -12,7 +12,7 @@
 /* ─── Welcome Hero Section ────────────────────────────────── */
 
 .db-list-page__hero {
-  background: linear-gradient(135deg, #635BFF 0%, #0A2540 100%);
+  background: linear-gradient(135deg, #4F46E5 0%, #1A1A2E 100%);
   border-radius: var(--radius-xl, 16px);
   padding: var(--space-8, 3rem) var(--space-6, 2rem);
   margin-bottom: var(--space-6, 2rem);
@@ -38,7 +38,7 @@
   left: 20%;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(99, 91, 255, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.3) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -84,7 +84,7 @@
 
 .db-list-page__hero-btn--primary {
   background: #ffffff;
-  color: #635BFF;
+  color: #4F46E5;
 }
 
 .db-list-page__hero-btn--primary:hover {
@@ -135,7 +135,7 @@
   background: var(--bg-primary, #fff);
   border: 1px solid var(--border-color, #E6E8EB);
   border-radius: var(--radius-md, 8px);
-  color: var(--text-primary, #0A2540);
+  color: var(--text-primary, #1A1A2E);
   transition: all 150ms ease;
 }
 
@@ -145,8 +145,8 @@
 
 .db-list-page__search-input:focus {
   outline: none;
-  border-color: #635BFF;
-  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.12);
+  border-color: #4F46E5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
 }
 
 .db-list-page__toolbar-right {
@@ -173,7 +173,7 @@
 .db-list-page__section-title {
   font-size: var(--text-lg, 1.125rem);
   font-weight: 600;
-  color: var(--text-primary, #0A2540);
+  color: var(--text-primary, #1A1A2E);
   margin: 0;
 }
 
@@ -199,8 +199,8 @@
 }
 
 .db-list-page__card:hover {
-  border-color: #635BFF;
-  box-shadow: 0 8px 24px rgba(99, 91, 255, 0.12);
+  border-color: #4F46E5;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.12);
   transform: translateY(-2px);
 }
 
@@ -220,7 +220,7 @@
   border-radius: var(--radius-md, 8px);
   font-size: 1.5rem;
   line-height: 1;
-  background: rgba(99, 91, 255, 0.08);
+  background: rgba(79, 70, 229, 0.08);
   flex-shrink: 0;
 }
 
@@ -232,7 +232,7 @@
 .db-list-page__card-name {
   font-size: var(--text-base, 1rem);
   font-weight: 600;
-  color: var(--text-primary, #0A2540);
+  color: var(--text-primary, #1A1A2E);
   margin: 0;
   line-height: 1.3;
 }
@@ -269,11 +269,11 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #635BFF;
+  background: #4F46E5;
 }
 
 .db-list-page__badge-dot--rows {
-  background: #00D4AA;
+  background: #059669;
 }
 
 .db-list-page__card-footer {
@@ -313,7 +313,7 @@
 
 .db-list-page__menu-btn:hover {
   background: var(--bg-secondary, #F6F9FC);
-  color: var(--text-primary, #0A2540);
+  color: var(--text-primary, #1A1A2E);
 }
 
 .db-list-page__menu {
@@ -337,7 +337,7 @@
   padding: var(--space-2, 0.5rem);
   background: none;
   border: none;
-  color: var(--text-primary, #0A2540);
+  color: var(--text-primary, #1A1A2E);
   font-size: var(--text-sm, 0.875rem);
   cursor: pointer;
   border-radius: var(--radius-sm, 4px);
@@ -349,7 +349,7 @@
 }
 
 .db-list-page__menu-danger {
-  color: var(--color-danger, #FF5A5A) !important;
+  color: var(--color-danger, #DC2626) !important;
 }
 
 .db-list-page__menu-danger:hover {
@@ -395,8 +395,8 @@
 }
 
 .db-list-page__template-card:hover {
-  border-color: #635BFF;
-  box-shadow: 0 8px 24px rgba(99, 91, 255, 0.12);
+  border-color: #4F46E5;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.12);
   transform: translateY(-2px);
 }
 
@@ -410,7 +410,7 @@
 }
 
 .db-list-page__template-preview--crm {
-  background: linear-gradient(135deg, rgba(99, 91, 255, 0.08) 0%, rgba(99, 91, 255, 0.16) 100%);
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(79, 70, 229, 0.16) 100%);
 }
 
 .db-list-page__template-preview--project {
@@ -432,7 +432,7 @@
 .db-list-page__template-name {
   font-size: var(--text-sm, 0.875rem);
   font-weight: 600;
-  color: var(--text-primary, #0A2540);
+  color: var(--text-primary, #1A1A2E);
   margin: 0 0 var(--space-1, 0.25rem);
 }
 
@@ -475,8 +475,8 @@
   width: 80px;
   height: 80px;
   border-radius: var(--radius-xl, 16px);
-  background: linear-gradient(135deg, rgba(99, 91, 255, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%);
-  color: #635BFF;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%);
+  color: #4F46E5;
   margin-bottom: var(--space-5, 1.5rem);
 }
 
@@ -484,7 +484,7 @@
   font-size: var(--text-xl, 1.25rem);
   font-weight: 700;
   margin: 0 0 var(--space-2, 0.5rem);
-  background: linear-gradient(135deg, #635BFF, #00D4AA);
+  background: linear-gradient(135deg, #4F46E5, #059669);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -505,11 +505,11 @@
   padding: 0.625rem 1.5rem;
   font-size: var(--text-sm, 0.875rem);
   font-weight: 600;
-  background: #635BFF;
+  background: #4F46E5;
 }
 
 .db-list-page__empty .btn-primary:hover {
-  background: #5851EA;
+  background: #4338CA;
 }
 
 /* ─── No Search Results ───────────────────────────────────── */
@@ -548,8 +548,8 @@
 }
 
 [data-theme="dark"] .db-list-page__search-input:focus {
-  border-color: #635BFF;
-  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.2);
+  border-color: #4F46E5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
 [data-theme="dark"] .db-list-page__card {
@@ -558,12 +558,12 @@
 }
 
 [data-theme="dark"] .db-list-page__card:hover {
-  border-color: #635BFF;
-  box-shadow: 0 8px 24px rgba(99, 91, 255, 0.15);
+  border-color: #4F46E5;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.15);
 }
 
 [data-theme="dark"] .db-list-page__card-icon {
-  background: rgba(99, 91, 255, 0.15);
+  background: rgba(79, 70, 229, 0.15);
 }
 
 [data-theme="dark"] .db-list-page__card-footer {
@@ -571,7 +571,7 @@
 }
 
 [data-theme="dark"] .db-list-page__badge {
-  background: rgba(99, 91, 255, 0.12);
+  background: rgba(79, 70, 229, 0.12);
   color: var(--text-secondary, #A3ACB9);
 }
 
@@ -599,12 +599,12 @@
 }
 
 [data-theme="dark"] .db-list-page__template-card:hover {
-  border-color: #635BFF;
-  box-shadow: 0 8px 24px rgba(99, 91, 255, 0.15);
+  border-color: #4F46E5;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.15);
 }
 
 [data-theme="dark"] .db-list-page__template-preview--crm {
-  background: linear-gradient(135deg, rgba(99, 91, 255, 0.15) 0%, rgba(99, 91, 255, 0.25) 100%);
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(79, 70, 229, 0.25) 100%);
 }
 
 [data-theme="dark"] .db-list-page__template-preview--project {
@@ -620,16 +620,16 @@
 }
 
 [data-theme="dark"] .db-list-page__template-field-tag {
-  background: rgba(99, 91, 255, 0.12);
+  background: rgba(79, 70, 229, 0.12);
   color: var(--text-secondary, #A3ACB9);
 }
 
 [data-theme="dark"] .db-list-page__empty-icon {
-  background: linear-gradient(135deg, rgba(99, 91, 255, 0.2) 0%, rgba(0, 212, 170, 0.15) 100%);
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.2) 0%, rgba(0, 212, 170, 0.15) 100%);
 }
 
 [data-theme="dark"] .db-list-page__empty h2 {
-  background: linear-gradient(135deg, #8B85FF, #00D4AA);
+  background: linear-gradient(135deg, #6366F1, #059669);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -85,14 +85,14 @@ export default function HomePage() {
   const recentDocuments = documents.slice(0, 3)
 
   const quickActions = [
-    { label: 'New Page', icon: FileText, path: '/pages/new', color: '#635BFF' },
+    { label: 'New Page', icon: FileText, path: '/pages/new', color: '#4F46E5' },
     { label: 'New Project', icon: FolderKanban, path: '/projects/new', color: '#0EA5E9' },
-    { label: 'New Document', icon: FileSignature, path: '/documents', color: '#FF5A5A' },
-    { label: 'Schedule', icon: Calendar, path: '/calendar', color: '#00D4AA' },
-    { label: 'New Database', icon: Database, path: '/data', color: '#F5A623' },
+    { label: 'New Document', icon: FileSignature, path: '/documents', color: '#DC2626' },
+    { label: 'Schedule', icon: Calendar, path: '/calendar', color: '#059669' },
+    { label: 'New Database', icon: Database, path: '/data', color: '#D97706' },
     { label: 'AI Assistant', icon: Brain, path: '/ai', color: '#8B5CF6' },
     { label: 'File Taxes', icon: Receipt, path: '/tax', color: '#059669' },
-    { label: 'Developer', icon: Code2, path: '/developer', color: '#0A2540' },
+    { label: 'Developer', icon: Code2, path: '/developer', color: '#1A1A2E' },
   ]
 
   return (

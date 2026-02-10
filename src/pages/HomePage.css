@@ -3,11 +3,11 @@
   margin: 0 auto;
 }
 
-/* Welcome Hero (Stripe-inspired gradient) */
+/* Welcome Hero (SignOf brand gradient) */
 .home-page__welcome {
   margin-bottom: var(--space-6, 32px);
   padding: var(--space-8, 48px) var(--space-6, 32px);
-  background: linear-gradient(135deg, #635BFF 0%, #0A2540 50%, #00D4AA 100%);
+  background: linear-gradient(135deg, #4F46E5 0%, #1A1A2E 50%, #059669 100%);
   border-radius: var(--radius-xl, 16px);
   position: relative;
   overflow: hidden;
@@ -34,7 +34,7 @@
 }
 
 .home-page__title-check {
-  color: #00D4AA;
+  color: #059669;
   margin-left: 2px;
 }
 
@@ -73,8 +73,8 @@
 }
 
 .stat-card__icon--total {
-  background: rgba(99, 91, 255, 0.1);
-  color: #635BFF;
+  background: rgba(79, 70, 229, 0.1);
+  color: #4F46E5;
 }
 
 .stat-card__icon--pending {

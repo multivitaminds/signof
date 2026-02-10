@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    BookingWidget — Public-facing Calendly-quality booking page
-   Stripe-inspired: #635BFF primary, #0A2540 dark, #00D4AA success
+   SignOf brand: #4F46E5 primary, #1A1A2E dark, #059669 success
    ═══════════════════════════════════════════════════════════════ */
 
 .booking-widget {
@@ -329,7 +329,7 @@
 .booking-widget__textarea:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .booking-widget__textarea {
