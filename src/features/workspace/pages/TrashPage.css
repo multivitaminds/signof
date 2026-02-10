@@ -1,0 +1,108 @@
+.trash-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--space-8, 4rem) var(--space-4, 1rem);
+}
+
+.trash-page__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  margin-bottom: var(--space-6, 2rem);
+  color: var(--text-primary, #111827);
+}
+
+.trash-page__title {
+  font-size: var(--text-2xl, 1.5rem);
+  font-weight: 700;
+  margin: 0;
+}
+
+.trash-page__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-12, 6rem) 0;
+  color: var(--text-muted, #9CA3AF);
+}
+
+.trash-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.trash-page__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-primary, #FFFFFF);
+}
+
+.trash-page__item-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  overflow: hidden;
+}
+
+.trash-page__item-icon {
+  flex-shrink: 0;
+}
+
+.trash-page__item-title {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary, #111827);
+}
+
+.trash-page__item-date {
+  flex-shrink: 0;
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+}
+
+.trash-page__item-actions {
+  display: flex;
+  gap: var(--space-2, 0.5rem);
+  flex-shrink: 0;
+}
+
+.trash-page__restore-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  color: var(--text-secondary, #6B7280);
+  font-size: var(--text-sm, 0.875rem);
+  cursor: pointer;
+}
+
+.trash-page__restore-btn:hover {
+  background: var(--bg-secondary, #F3F4F6);
+  color: var(--color-primary, #4F46E5);
+}
+
+.trash-page__delete-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  .trash-page__item {
+    background: var(--bg-secondary, #1A1A2E);
+    border-color: var(--border-color, #334155);
+  }
+}

@@ -10,6 +10,7 @@ export default function BulletListBlock({
   onArrowDown,
   onSlash,
   onSelectionChange,
+  onFormatShortcut,
   autoFocus,
 }: BlockComponentProps) {
   return (
@@ -26,6 +27,7 @@ export default function BulletListBlock({
         onArrowDown={onArrowDown}
         onSlash={onSlash}
         onSelectionChange={onSelectionChange}
+        onFormatShortcut={onFormatShortcut}
         autoFocus={autoFocus}
       />
     </div>

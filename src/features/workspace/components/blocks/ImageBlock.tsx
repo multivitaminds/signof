@@ -12,6 +12,7 @@ export default function ImageBlock({
   onArrowDown,
   onSlash,
   onSelectionChange,
+  onFormatShortcut,
   autoFocus,
 }: BlockComponentProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -30,8 +31,6 @@ export default function ImageBlock({
 
       const reader = new FileReader()
       reader.onload = () => {
-        // Store as data URL in content for now
-        // In a real app, this would upload to a server
         onContentChange(reader.result as string)
       }
       reader.readAsDataURL(file)
@@ -70,6 +69,7 @@ export default function ImageBlock({
           onArrowDown={onArrowDown}
           onSlash={onSlash}
           onSelectionChange={onSelectionChange}
+          onFormatShortcut={onFormatShortcut}
           autoFocus={autoFocus}
         />
       </div>

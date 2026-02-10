@@ -10,6 +10,7 @@ export default function ParagraphBlock({
   onArrowDown,
   onSlash,
   onSelectionChange,
+  onFormatShortcut,
   autoFocus,
 }: BlockComponentProps) {
   return (
@@ -23,6 +24,7 @@ export default function ParagraphBlock({
       onArrowDown={onArrowDown}
       onSlash={onSlash}
       onSelectionChange={onSelectionChange}
+      onFormatShortcut={onFormatShortcut}
       autoFocus={autoFocus}
       tag="p"
     />

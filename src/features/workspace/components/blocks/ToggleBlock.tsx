@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import { ChevronRight } from 'lucide-react'
 import EditableContent from '../EditableContent/EditableContent'
 import type { BlockComponentProps } from './types'
+import BlockEditor from '../BlockEditor/BlockEditor'
 
 export default function ToggleBlock({
   block,
@@ -12,8 +13,10 @@ export default function ToggleBlock({
   onArrowDown,
   onSlash,
   onSelectionChange,
+  onFormatShortcut,
   autoFocus,
-}: BlockComponentProps) {
+  pageId,
+}: BlockComponentProps & { pageId?: string }) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleToggle = useCallback(() => {
@@ -42,12 +45,20 @@ export default function ToggleBlock({
           onArrowDown={onArrowDown}
           onSlash={onSlash}
           onSelectionChange={onSelectionChange}
+          onFormatShortcut={onFormatShortcut}
           autoFocus={autoFocus}
         />
       </div>
       {isOpen && (
         <div className="block-toggle__content">
-          <p className="block-toggle__empty">Click to add content inside toggle</p>
+          {block.children.length > 0 && pageId ? (
+            <BlockEditor
+              pageId={pageId}
+              blockIds={block.children}
+            />
+          ) : (
+            <p className="block-toggle__empty">Click to add content inside toggle</p>
+          )}
         </div>
       )}
     </div>

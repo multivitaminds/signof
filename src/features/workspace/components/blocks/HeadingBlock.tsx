@@ -23,6 +23,7 @@ export default function HeadingBlock({
   onArrowDown,
   onSlash,
   onSelectionChange,
+  onFormatShortcut,
   autoFocus,
 }: BlockComponentProps) {
   const tag = TAG_MAP[block.type] ?? 'h2'
@@ -41,6 +42,7 @@ export default function HeadingBlock({
         onArrowDown={onArrowDown}
         onSlash={onSlash}
         onSelectionChange={onSelectionChange}
+        onFormatShortcut={onFormatShortcut}
         autoFocus={autoFocus}
         tag={tag}
       />

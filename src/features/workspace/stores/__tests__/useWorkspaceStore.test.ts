@@ -26,6 +26,8 @@ describe('useWorkspaceStore', () => {
       expect(page).toBeDefined()
       expect(page.title).toBe('Test Page')
       expect(page.blockIds).toHaveLength(1)
+      expect(page.trashedAt).toBeNull()
+      expect(page.properties).toEqual({})
     })
 
     it('creates a child page', () => {
@@ -37,15 +39,55 @@ describe('useWorkspaceStore', () => {
   })
 
   describe('deletePage', () => {
-    it('removes a page and its blocks', () => {
+    it('soft-deletes a page by setting trashedAt', () => {
+      const id = useWorkspaceStore.getState().addPage('To Delete')
+      useWorkspaceStore.getState().deletePage(id)
+
+      const page = useWorkspaceStore.getState().pages[id]
+      expect(page).toBeDefined()
+      expect(page!.trashedAt).not.toBeNull()
+    })
+
+    it('excludes soft-deleted pages from getRootPages', () => {
+      const id = useWorkspaceStore.getState().addPage('To Delete')
+      useWorkspaceStore.getState().deletePage(id)
+
+      const roots = useWorkspaceStore.getState().getRootPages()
+      expect(roots.find(p => p.id === id)).toBeUndefined()
+    })
+  })
+
+  describe('restorePage', () => {
+    it('restores a soft-deleted page', () => {
+      const id = useWorkspaceStore.getState().addPage('To Restore')
+      useWorkspaceStore.getState().deletePage(id)
+      useWorkspaceStore.getState().restorePage(id)
+
+      const page = useWorkspaceStore.getState().pages[id]!
+      expect(page.trashedAt).toBeNull()
+    })
+  })
+
+  describe('permanentlyDeletePage', () => {
+    it('removes a page and its blocks permanently', () => {
       const id = useWorkspaceStore.getState().addPage('To Delete')
       const page = useWorkspaceStore.getState().pages[id]!
       const blockId = page.blockIds[0]!
 
-      useWorkspaceStore.getState().deletePage(id)
+      useWorkspaceStore.getState().permanentlyDeletePage(id)
 
       expect(useWorkspaceStore.getState().pages[id]).toBeUndefined()
       expect(useWorkspaceStore.getState().blocks[blockId]).toBeUndefined()
+    })
+  })
+
+  describe('getTrashedPages', () => {
+    it('returns only trashed pages', () => {
+      const id = useWorkspaceStore.getState().addPage('Trashed')
+      useWorkspaceStore.getState().deletePage(id)
+
+      const trashed = useWorkspaceStore.getState().getTrashedPages()
+      expect(trashed.find(p => p.id === id)).toBeDefined()
     })
   })
 
@@ -119,6 +161,114 @@ describe('useWorkspaceStore', () => {
     })
   })
 
+  describe('reorderBlock', () => {
+    it('moves a block to a new position', () => {
+      const pageId = useWorkspaceStore.getState().addPage('Test')
+      const b1 = useWorkspaceStore.getState().pages[pageId]!.blockIds[0]!
+      const b2 = useWorkspaceStore.getState().addBlock(pageId, BlockType.Heading1)
+      const b3 = useWorkspaceStore.getState().addBlock(pageId, BlockType.Paragraph)
+
+      // Move b3 to position 0
+      useWorkspaceStore.getState().reorderBlock(pageId, b3, 0)
+      const page = useWorkspaceStore.getState().pages[pageId]!
+      expect(page.blockIds[0]).toBe(b3)
+      expect(page.blockIds[1]).toBe(b1)
+      expect(page.blockIds[2]).toBe(b2)
+    })
+  })
+
+  describe('duplicateBlock', () => {
+    it('creates a copy of a block', () => {
+      const pageId = useWorkspaceStore.getState().addPage('Test')
+      const blockId = useWorkspaceStore.getState().pages[pageId]!.blockIds[0]!
+      useWorkspaceStore.getState().updateBlockContent(blockId, 'Original')
+
+      const newId = useWorkspaceStore.getState().duplicateBlock(pageId, blockId)
+      expect(newId).not.toBeNull()
+
+      const page = useWorkspaceStore.getState().pages[pageId]!
+      expect(page.blockIds).toHaveLength(2)
+
+      const newBlock = useWorkspaceStore.getState().blocks[newId!]!
+      expect(newBlock.content).toBe('Original')
+      expect(newBlock.id).not.toBe(blockId)
+    })
+  })
+
+  describe('duplicatePage', () => {
+    it('creates a copy of a page with new blocks', () => {
+      const id = useWorkspaceStore.getState().addPage('Original')
+      useWorkspaceStore.getState().updateBlockContent(
+        useWorkspaceStore.getState().pages[id]!.blockIds[0]!,
+        'Content'
+      )
+
+      const newId = useWorkspaceStore.getState().duplicatePage(id)
+      expect(newId).not.toBeNull()
+
+      const newPage = useWorkspaceStore.getState().pages[newId!]!
+      expect(newPage.title).toBe('Copy of Original')
+      expect(newPage.blockIds).toHaveLength(1)
+      expect(newPage.blockIds[0]).not.toBe(useWorkspaceStore.getState().pages[id]!.blockIds[0])
+    })
+  })
+
+  describe('updatePageProperties', () => {
+    it('sets page properties', () => {
+      const id = useWorkspaceStore.getState().addPage('Test')
+      useWorkspaceStore.getState().updatePageProperties(id, {
+        status: { type: 'select', value: 'active', options: ['active', 'archived'] },
+      })
+
+      const page = useWorkspaceStore.getState().pages[id]!
+      expect(page.properties.status).toEqual({
+        type: 'select',
+        value: 'active',
+        options: ['active', 'archived'],
+      })
+    })
+  })
+
+  describe('insertBlocksAt', () => {
+    it('inserts multiple blocks at a position', () => {
+      const pageId = useWorkspaceStore.getState().addPage('Test')
+      useWorkspaceStore.getState().insertBlocksAt(pageId, [
+        { type: BlockType.Heading1, content: 'H1' },
+        { type: BlockType.Paragraph, content: 'Para' },
+      ], 0)
+
+      const page = useWorkspaceStore.getState().pages[pageId]!
+      expect(page.blockIds).toHaveLength(3) // 1 original + 2 inserted
+    })
+  })
+
+  describe('version history', () => {
+    it('creates and retrieves snapshots', () => {
+      const pageId = useWorkspaceStore.getState().addPage('Test')
+      useWorkspaceStore.getState().createSnapshot(pageId)
+
+      const history = useWorkspaceStore.getState().getPageHistory(pageId)
+      expect(history).toHaveLength(1)
+      expect(history[0]!.pageId).toBe(pageId)
+    })
+
+    it('restores a snapshot', () => {
+      const pageId = useWorkspaceStore.getState().addPage('Test')
+      const blockId = useWorkspaceStore.getState().pages[pageId]!.blockIds[0]!
+      useWorkspaceStore.getState().updateBlockContent(blockId, 'Before')
+      useWorkspaceStore.getState().createSnapshot(pageId)
+
+      useWorkspaceStore.getState().updateBlockContent(blockId, 'After')
+
+      const history = useWorkspaceStore.getState().getPageHistory(pageId)
+      useWorkspaceStore.getState().restoreSnapshot(history[0]!.id)
+
+      const page = useWorkspaceStore.getState().pages[pageId]!
+      const restoredBlock = useWorkspaceStore.getState().blocks[page.blockIds[0]!]!
+      expect(restoredBlock.content).toBe('Before')
+    })
+  })
+
   describe('queries', () => {
     it('getRootPages returns pages without parents', () => {
       const roots = useWorkspaceStore.getState().getRootPages()
@@ -140,6 +290,29 @@ describe('useWorkspaceStore', () => {
       expect(crumbs).toHaveLength(2)
       expect(crumbs[0]!.title).toBe('Parent')
       expect(crumbs[1]!.title).toBe('Child')
+    })
+
+    it('getAllPages excludes trashed pages', () => {
+      const id = useWorkspaceStore.getState().addPage('To Trash')
+      useWorkspaceStore.getState().deletePage(id)
+      const all = useWorkspaceStore.getState().getAllPages()
+      expect(all.find(p => p.id === id)).toBeUndefined()
+    })
+
+    it('getBacklinks finds pages linking to a page', () => {
+      const pageA = useWorkspaceStore.getState().addPage('Page A')
+      const pageB = useWorkspaceStore.getState().addPage('Page B')
+      const blockId = useWorkspaceStore.getState().pages[pageB]!.blockIds[0]!
+
+      // Add a link mark pointing to pageA
+      useWorkspaceStore.getState().updateBlockMarks(blockId, [
+        { type: 'link', from: 0, to: 5, attrs: { href: `/pages/${pageA}`, pageId: pageA } },
+      ])
+      useWorkspaceStore.getState().updateBlockContent(blockId, 'Page A')
+
+      const backlinks = useWorkspaceStore.getState().getBacklinks(pageA)
+      expect(backlinks).toHaveLength(1)
+      expect(backlinks[0]!.pageId).toBe(pageB)
     })
   })
 })

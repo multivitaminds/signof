@@ -15,6 +15,8 @@ const mockPages: Page[] = [
     updatedAt: '2026-01-01T00:00:00Z',
     isFavorite: false,
     lastViewedAt: null,
+    trashedAt: null,
+    properties: {},
   },
   {
     id: 'p2',
@@ -27,6 +29,8 @@ const mockPages: Page[] = [
     updatedAt: '2026-01-02T00:00:00Z',
     isFavorite: false,
     lastViewedAt: null,
+    trashedAt: null,
+    properties: {},
   },
   {
     id: 'p3',
@@ -39,6 +43,8 @@ const mockPages: Page[] = [
     updatedAt: '2026-01-03T00:00:00Z',
     isFavorite: false,
     lastViewedAt: null,
+    trashedAt: null,
+    properties: {},
   },
 ]
 

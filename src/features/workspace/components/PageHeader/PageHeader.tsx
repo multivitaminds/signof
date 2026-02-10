@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react'
 import { SmilePlus, ImagePlus } from 'lucide-react'
 import type { Page } from '../../types'
 import EmojiPicker from '../EmojiPicker/EmojiPicker'
+import CoverPicker from '../CoverPicker/CoverPicker'
 import './PageHeader.css'
 
 interface PageHeaderProps {
@@ -13,6 +14,7 @@ interface PageHeaderProps {
 
 export default function PageHeader({ page, onTitleChange, onIconChange, onCoverChange }: PageHeaderProps) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [showCoverPicker, setShowCoverPicker] = useState(false)
   const titleRef = useRef<HTMLHeadingElement>(null)
 
   const handleTitleInput = useCallback(() => {
@@ -40,27 +42,47 @@ export default function PageHeader({ page, onTitleChange, onIconChange, onCoverC
     [onIconChange]
   )
 
-  const handleCoverClick = useCallback(() => {
-    // Simple cover URL prompt for now
-    if (!onCoverChange) return
-    const url = prompt('Enter image URL for cover:')
-    if (url) {
-      onCoverChange(url)
-    }
+  const handleCoverSelect = useCallback(
+    (coverUrl: string) => {
+      onCoverChange?.(coverUrl)
+      setShowCoverPicker(false)
+    },
+    [onCoverChange]
+  )
+
+  const handleCoverRemove = useCallback(() => {
+    onCoverChange?.('')
+    setShowCoverPicker(false)
   }, [onCoverChange])
+
+  const coverStyle = page.coverUrl
+    ? page.coverUrl.startsWith('gradient:')
+      ? { background: page.coverUrl.slice('gradient:'.length) }
+      : { backgroundImage: `url(${page.coverUrl})` }
+    : undefined
 
   return (
     <div className="page-header">
       {/* Cover */}
       {page.coverUrl ? (
-        <div
-          className="page-header__cover"
-          style={{ backgroundImage: `url(${page.coverUrl})` }}
-        >
+        <div className="page-header__cover" style={coverStyle}>
           {onCoverChange && (
-            <button className="page-header__cover-btn btn-secondary" onClick={handleCoverClick}>
-              Change cover
-            </button>
+            <div className="page-header__cover-actions">
+              <button
+                className="page-header__cover-btn btn-secondary"
+                onClick={() => setShowCoverPicker(!showCoverPicker)}
+              >
+                Change cover
+              </button>
+            </div>
+          )}
+          {showCoverPicker && (
+            <CoverPicker
+              currentCover={page.coverUrl}
+              onSelect={handleCoverSelect}
+              onRemove={handleCoverRemove}
+              onClose={() => setShowCoverPicker(false)}
+            />
           )}
         </div>
       ) : null}
@@ -74,10 +96,23 @@ export default function PageHeader({ page, onTitleChange, onIconChange, onCoverC
           </button>
         )}
         {!page.coverUrl && onCoverChange && (
-          <button className="page-header__action-btn" onClick={handleCoverClick}>
-            <ImagePlus size={16} />
-            <span>Add cover</span>
-          </button>
+          <div style={{ position: 'relative' }}>
+            <button
+              className="page-header__action-btn"
+              onClick={() => setShowCoverPicker(!showCoverPicker)}
+            >
+              <ImagePlus size={16} />
+              <span>Add cover</span>
+            </button>
+            {showCoverPicker && (
+              <CoverPicker
+                currentCover={page.coverUrl}
+                onSelect={handleCoverSelect}
+                onRemove={handleCoverRemove}
+                onClose={() => setShowCoverPicker(false)}
+              />
+            )}
+          </div>
         )}
       </div>
 

@@ -10,6 +10,7 @@ export default function QuoteBlock({
   onArrowDown,
   onSlash,
   onSelectionChange,
+  onFormatShortcut,
   autoFocus,
 }: BlockComponentProps) {
   return (
@@ -25,6 +26,7 @@ export default function QuoteBlock({
         onArrowDown={onArrowDown}
         onSlash={onSlash}
         onSelectionChange={onSelectionChange}
+        onFormatShortcut={onFormatShortcut}
         autoFocus={autoFocus}
         tag="blockquote"
       />

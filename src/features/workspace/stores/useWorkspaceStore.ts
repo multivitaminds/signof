@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Block, Page, BlockType, InlineMark } from '../types'
+import type { Block, Page, BlockType, InlineMark, PageSnapshot, PagePropertyValue, BlockProperties } from '../types'
 import { BlockType as BT } from '../types'
 import { splitBlock as splitBlockOp, mergeBlocks as mergeBlocksOp } from '../lib/blockOperations'
 
@@ -48,6 +48,8 @@ function createSampleData(): { pages: Record<string, Page>; blocks: Record<strin
     updatedAt: '2026-02-01T10:00:00Z',
     isFavorite: false,
     lastViewedAt: null,
+    trashedAt: null,
+    properties: {},
   }
   pages[page1.id] = page1
 
@@ -72,6 +74,8 @@ function createSampleData(): { pages: Record<string, Page>; blocks: Record<strin
     updatedAt: '2026-02-03T09:00:00Z',
     isFavorite: false,
     lastViewedAt: null,
+    trashedAt: null,
+    properties: {},
   }
   pages[page2.id] = page2
 
@@ -92,6 +96,8 @@ function createSampleData(): { pages: Record<string, Page>; blocks: Record<strin
     updatedAt: '2026-02-05T14:00:00Z',
     isFavorite: false,
     lastViewedAt: null,
+    trashedAt: null,
+    properties: {},
   }
   pages[page3.id] = page3
 
@@ -103,6 +109,8 @@ function createSampleData(): { pages: Record<string, Page>; blocks: Record<strin
 interface WorkspaceState {
   pages: Record<string, Page>
   blocks: Record<string, Block>
+  snapshots: Record<string, PageSnapshot[]>
+  editCounts: Record<string, number>
 
   // Page CRUD
   addPage: (title: string, parentId?: string | null) => string
@@ -110,6 +118,10 @@ interface WorkspaceState {
   updatePage: (id: string, updates: Partial<Pick<Page, 'title' | 'icon' | 'coverUrl' | 'isFavorite' | 'lastViewedAt'>>) => void
   deletePage: (id: string) => void
   movePage: (id: string, newParentId: string | null) => void
+  duplicatePage: (id: string) => string | null
+  restorePage: (id: string) => void
+  permanentlyDeletePage: (id: string) => void
+  updatePageProperties: (id: string, properties: Record<string, PagePropertyValue>) => void
 
   // Block CRUD
   addBlock: (pageId: string, type: BlockType, afterBlockId?: string) => string
@@ -119,6 +131,11 @@ interface WorkspaceState {
   convertBlockType: (blockId: string, newType: BlockType) => void
   splitBlock: (pageId: string, blockId: string, offset: number) => string
   mergeBlocks: (pageId: string, blockId: string) => string | null
+  reorderBlock: (pageId: string, blockId: string, newIndex: number) => void
+  duplicateBlock: (pageId: string, blockId: string) => string | null
+  insertBlocksAt: (pageId: string, blocksData: Array<{ type: BlockType; content: string }>, index: number) => void
+  addChildBlock: (parentBlockId: string, type: BlockType) => string
+  updateBlockProperties: (blockId: string, properties: Partial<BlockProperties>) => void
 
   // Queries
   getRootPages: () => Page[]
@@ -127,6 +144,13 @@ interface WorkspaceState {
   getPage: (id: string) => Page | undefined
   getBlock: (id: string) => Block | undefined
   getAllPages: () => Page[]
+  getTrashedPages: () => Page[]
+  getBacklinks: (pageId: string) => Array<{ pageId: string; pageTitle: string; blockId: string }>
+
+  // Version History
+  createSnapshot: (pageId: string) => void
+  getPageHistory: (pageId: string) => PageSnapshot[]
+  restoreSnapshot: (snapshotId: string) => void
 }
 
 export const useWorkspaceStore = create<WorkspaceState>()(
@@ -137,6 +161,8 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       return {
         pages: sample.pages,
         blocks: sample.blocks,
+        snapshots: {},
+        editCounts: {},
 
         // ─── Page CRUD ────────────────────────────────────────────
 
@@ -153,6 +179,8 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             updatedAt: now(),
             isFavorite: false,
             lastViewedAt: null,
+            trashedAt: null,
+            properties: {},
           }
 
           set((state) => ({
@@ -190,6 +218,8 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             updatedAt: now(),
             isFavorite: false,
             lastViewedAt: null,
+            trashedAt: null,
+            properties: {},
           }
 
           set((state) => ({
@@ -214,6 +244,33 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         },
 
         deletePage: (id) => {
+          // Soft delete — set trashedAt
+          set((state) => {
+            const page = state.pages[id]
+            if (!page) return state
+            return {
+              pages: {
+                ...state.pages,
+                [id]: { ...page, trashedAt: now(), updatedAt: now() },
+              },
+            }
+          })
+        },
+
+        restorePage: (id) => {
+          set((state) => {
+            const page = state.pages[id]
+            if (!page) return state
+            return {
+              pages: {
+                ...state.pages,
+                [id]: { ...page, trashedAt: null, updatedAt: now() },
+              },
+            }
+          })
+        },
+
+        permanentlyDeletePage: (id) => {
           set((state) => {
             const page = state.pages[id]
             if (!page) return state
@@ -235,7 +292,14 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 
             delete newPages[id]
 
-            return { pages: newPages, blocks: newBlocks }
+            // Remove snapshots
+            const newSnapshots = { ...state.snapshots }
+            delete newSnapshots[id]
+
+            const newEditCounts = { ...state.editCounts }
+            delete newEditCounts[id]
+
+            return { pages: newPages, blocks: newBlocks, snapshots: newSnapshots, editCounts: newEditCounts }
           })
         },
 
@@ -247,6 +311,58 @@ export const useWorkspaceStore = create<WorkspaceState>()(
               pages: {
                 ...state.pages,
                 [id]: { ...page, parentId: newParentId, updatedAt: now() },
+              },
+            }
+          })
+        },
+
+        duplicatePage: (id) => {
+          const state = get()
+          const page = state.pages[id]
+          if (!page) return null
+
+          const newBlocks: Record<string, Block> = {}
+          const newBlockIds: string[] = []
+
+          for (const blockId of page.blockIds) {
+            const block = state.blocks[blockId]
+            if (block) {
+              const newBlock: Block = {
+                ...block,
+                id: generateId(),
+                children: [],
+              }
+              newBlocks[newBlock.id] = newBlock
+              newBlockIds.push(newBlock.id)
+            }
+          }
+
+          const newPage: Page = {
+            ...page,
+            id: generateId(),
+            title: `Copy of ${page.title}`,
+            blockIds: newBlockIds,
+            createdAt: now(),
+            updatedAt: now(),
+            trashedAt: null,
+          }
+
+          set((s) => ({
+            pages: { ...s.pages, [newPage.id]: newPage },
+            blocks: { ...s.blocks, ...newBlocks },
+          }))
+
+          return newPage.id
+        },
+
+        updatePageProperties: (id, properties) => {
+          set((state) => {
+            const page = state.pages[id]
+            if (!page) return state
+            return {
+              pages: {
+                ...state.pages,
+                [id]: { ...page, properties, updatedAt: now() },
               },
             }
           })
@@ -293,6 +409,21 @@ export const useWorkspaceStore = create<WorkspaceState>()(
               blocks: { ...state.blocks, [blockId]: { ...block, content } },
             }
           })
+
+          // Auto-snapshot: track edit counts per page
+          const state = get()
+          for (const page of Object.values(state.pages)) {
+            if (page.blockIds.includes(blockId)) {
+              const count = (state.editCounts[page.id] ?? 0) + 1
+              set((s) => ({
+                editCounts: { ...s.editCounts, [page.id]: count },
+              }))
+              if (count % 20 === 0) {
+                get().createSnapshot(page.id)
+              }
+              break
+            }
+          }
         },
 
         updateBlockMarks: (blockId, marks) => {
@@ -403,19 +534,135 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           return prevBlockId
         },
 
+        reorderBlock: (pageId, blockId, newIndex) => {
+          set((state) => {
+            const page = state.pages[pageId]
+            if (!page) return state
+
+            const blockIds = [...page.blockIds]
+            const oldIndex = blockIds.indexOf(blockId)
+            if (oldIndex < 0) return state
+
+            blockIds.splice(oldIndex, 1)
+            const insertAt = newIndex > oldIndex ? newIndex - 1 : newIndex
+            blockIds.splice(insertAt, 0, blockId)
+
+            return {
+              pages: {
+                ...state.pages,
+                [pageId]: { ...page, blockIds, updatedAt: now() },
+              },
+            }
+          })
+        },
+
+        duplicateBlock: (pageId, blockId) => {
+          const state = get()
+          const page = state.pages[pageId]
+          const block = state.blocks[blockId]
+          if (!page || !block) return null
+
+          const newBlock: Block = {
+            ...block,
+            id: generateId(),
+            children: [],
+          }
+
+          set((s) => {
+            const blockIds = [...page.blockIds]
+            const idx = blockIds.indexOf(blockId)
+            blockIds.splice(idx + 1, 0, newBlock.id)
+
+            return {
+              pages: {
+                ...s.pages,
+                [pageId]: { ...page, blockIds, updatedAt: now() },
+              },
+              blocks: { ...s.blocks, [newBlock.id]: newBlock },
+            }
+          })
+
+          return newBlock.id
+        },
+
+        insertBlocksAt: (pageId, blocksData, index) => {
+          const newBlocks: Record<string, Block> = {}
+          const newBlockIds: string[] = []
+
+          for (const bd of blocksData) {
+            const block = createBlock(bd.type, bd.content)
+            newBlocks[block.id] = block
+            newBlockIds.push(block.id)
+          }
+
+          set((state) => {
+            const page = state.pages[pageId]
+            if (!page) return state
+
+            const blockIds = [...page.blockIds]
+            blockIds.splice(index, 0, ...newBlockIds)
+
+            return {
+              pages: {
+                ...state.pages,
+                [pageId]: { ...page, blockIds, updatedAt: now() },
+              },
+              blocks: { ...state.blocks, ...newBlocks },
+            }
+          })
+        },
+
+        addChildBlock: (parentBlockId, type) => {
+          const newBlock = createBlock(type)
+
+          set((state) => {
+            const parentBlock = state.blocks[parentBlockId]
+            if (!parentBlock) return state
+
+            return {
+              blocks: {
+                ...state.blocks,
+                [newBlock.id]: newBlock,
+                [parentBlockId]: {
+                  ...parentBlock,
+                  children: [...parentBlock.children, newBlock.id],
+                },
+              },
+            }
+          })
+
+          return newBlock.id
+        },
+
+        updateBlockProperties: (blockId, properties) => {
+          set((state) => {
+            const block = state.blocks[blockId]
+            if (!block) return state
+            return {
+              blocks: {
+                ...state.blocks,
+                [blockId]: {
+                  ...block,
+                  properties: { ...block.properties, ...properties },
+                },
+              },
+            }
+          })
+        },
+
         // ─── Queries ──────────────────────────────────────────────
 
         getRootPages: () => {
           const state = get()
           return Object.values(state.pages)
-            .filter((p) => p.parentId === null)
+            .filter((p) => p.parentId === null && !p.trashedAt)
             .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
         },
 
         getChildPages: (parentId) => {
           const state = get()
           return Object.values(state.pages)
-            .filter((p) => p.parentId === parentId)
+            .filter((p) => p.parentId === parentId && !p.trashedAt)
             .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
         },
 
@@ -434,9 +681,122 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         getBlock: (id) => get().blocks[id],
 
         getAllPages: () => {
-          return Object.values(get().pages).sort(
-            (a, b) => b.updatedAt.localeCompare(a.updatedAt)
+          return Object.values(get().pages)
+            .filter((p) => !p.trashedAt)
+            .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+        },
+
+        getTrashedPages: () => {
+          return Object.values(get().pages)
+            .filter((p) => p.trashedAt !== null)
+            .sort((a, b) => (b.trashedAt ?? '').localeCompare(a.trashedAt ?? ''))
+        },
+
+        getBacklinks: (pageId) => {
+          const state = get()
+          const results: Array<{ pageId: string; pageTitle: string; blockId: string }> = []
+
+          for (const page of Object.values(state.pages)) {
+            if (page.trashedAt) continue
+            for (const blockId of page.blockIds) {
+              const block = state.blocks[blockId]
+              if (!block) continue
+              for (const mark of block.marks) {
+                if (mark.type === 'link' && mark.attrs?.pageId === pageId) {
+                  results.push({
+                    pageId: page.id,
+                    pageTitle: page.title,
+                    blockId: block.id,
+                  })
+                  break
+                }
+              }
+            }
+          }
+
+          return results
+        },
+
+        // ─── Version History ──────────────────────────────────────
+
+        createSnapshot: (pageId) => {
+          const state = get()
+          const page = state.pages[pageId]
+          if (!page) return
+
+          const blockData: Block[] = page.blockIds
+            .map((bid) => state.blocks[bid])
+            .filter((b): b is Block => b !== undefined)
+
+          const snapshot: PageSnapshot = {
+            id: generateId(),
+            pageId,
+            title: page.title,
+            blockData: JSON.parse(JSON.stringify(blockData)),
+            timestamp: now(),
+          }
+
+          set((s) => ({
+            snapshots: {
+              ...s.snapshots,
+              [pageId]: [...(s.snapshots[pageId] ?? []), snapshot],
+            },
+          }))
+        },
+
+        getPageHistory: (pageId) => {
+          const state = get()
+          return (state.snapshots[pageId] ?? []).sort(
+            (a, b) => b.timestamp.localeCompare(a.timestamp)
           )
+        },
+
+        restoreSnapshot: (snapshotId) => {
+          const state = get()
+
+          // Find the snapshot
+          for (const [pageId, snapshots] of Object.entries(state.snapshots)) {
+            const snapshot = snapshots.find((s) => s.id === snapshotId)
+            if (!snapshot) continue
+
+            const page = state.pages[pageId]
+            if (!page) return
+
+            // Create snapshot of current state before restoring
+            get().createSnapshot(pageId)
+
+            // Remove old blocks
+            const newBlocks = { ...state.blocks }
+            for (const blockId of page.blockIds) {
+              delete newBlocks[blockId]
+            }
+
+            // Add restored blocks
+            const newBlockIds: string[] = []
+            for (const blockData of snapshot.blockData) {
+              const restoredBlock: Block = {
+                ...blockData,
+                id: generateId(),
+              }
+              newBlocks[restoredBlock.id] = restoredBlock
+              newBlockIds.push(restoredBlock.id)
+            }
+
+            set((s) => ({
+              pages: {
+                ...s.pages,
+                [pageId]: {
+                  ...page,
+                  title: snapshot.title,
+                  blockIds: newBlockIds,
+                  updatedAt: now(),
+                },
+              },
+              blocks: newBlocks,
+            }))
+
+            return
+          }
         },
       }
     },
@@ -445,6 +805,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       partialize: (state) => ({
         pages: state.pages,
         blocks: state.blocks,
+        snapshots: state.snapshots,
       }),
     }
   )

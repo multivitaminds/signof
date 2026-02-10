@@ -1,5 +1,6 @@
 import { useRef, useEffect, useCallback } from 'react'
-import type { InlineMark } from '../../types'
+import type { InlineMark, MarkType } from '../../types'
+import { MarkType as MT } from '../../types'
 import { renderMarkedContent } from '../../lib/renderMarks'
 import { createRoot } from 'react-dom/client'
 import './EditableContent.css'
@@ -10,12 +11,15 @@ interface EditableContentProps {
   placeholder?: string
   onContentChange: (content: string) => void
   onMarksChange?: (marks: InlineMark[]) => void
-  onEnter: () => void
+  onEnter: (offset: number) => void
   onBackspace: () => void
   onArrowUp: () => void
   onArrowDown: () => void
   onSlash?: (rect: DOMRect) => void
   onSelectionChange?: (from: number, to: number) => void
+  onFormatShortcut?: (markType: MarkType) => void
+  onMention?: (trigger: '@' | '[[', rect: DOMRect) => void
+  onPasteBlocks?: (blocks: Array<{ type: string; content: string; marks?: InlineMark[] }>) => void
   autoFocus?: boolean
   tag?: 'div' | 'p' | 'h1' | 'h2' | 'h3' | 'li' | 'pre' | 'blockquote'
 }
@@ -71,12 +75,16 @@ export default function EditableContent({
   onArrowDown,
   onSlash,
   onSelectionChange,
+  onFormatShortcut,
+  onMention,
+  onPasteBlocks,
   autoFocus,
   tag: Tag = 'div',
 }: EditableContentProps) {
   const ref = useRef<HTMLElement>(null)
   const lastContentRef = useRef(content)
   const isComposingRef = useRef(false)
+  const lastTwoCharsRef = useRef('')
 
   // Sync content from React → DOM only when content changes externally
   useEffect(() => {
@@ -130,9 +138,46 @@ export default function EditableContent({
       const el = ref.current
       if (!el) return
 
+      const metaKey = e.metaKey || e.ctrlKey
+
+      // Format shortcuts
+      if (metaKey && onFormatShortcut) {
+        if (e.key === 'b') {
+          e.preventDefault()
+          onFormatShortcut(MT.Bold)
+          return
+        }
+        if (e.key === 'i') {
+          e.preventDefault()
+          onFormatShortcut(MT.Italic)
+          return
+        }
+        if (e.key === 'u') {
+          e.preventDefault()
+          onFormatShortcut(MT.Underline)
+          return
+        }
+        if (e.key === 'e') {
+          e.preventDefault()
+          onFormatShortcut(MT.Code)
+          return
+        }
+        if (e.key === 'k') {
+          e.preventDefault()
+          onFormatShortcut(MT.Link)
+          return
+        }
+        if (e.shiftKey && (e.key === 's' || e.key === 'S')) {
+          e.preventDefault()
+          onFormatShortcut(MT.Strikethrough)
+          return
+        }
+      }
+
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
-        onEnter()
+        const offset = getCaretOffset(el)
+        onEnter(offset)
         return
       }
 
@@ -180,8 +225,73 @@ export default function EditableContent({
           }, 0)
         }
       }
+
+      // Mention detection: track last two chars for [[ trigger
+      if (onMention && e.key === '[') {
+        const last = lastTwoCharsRef.current
+        if (last.endsWith('[')) {
+          setTimeout(() => {
+            const sel = window.getSelection()
+            if (sel && sel.rangeCount > 0) {
+              const range = sel.getRangeAt(0)
+              const rect = range.getBoundingClientRect()
+              onMention('[[', rect)
+            }
+          }, 0)
+        }
+      }
+
+      // @ mention detection
+      if (onMention && e.key === '@') {
+        const offset = getCaretOffset(el)
+        const textBefore = (el.textContent ?? '').slice(0, offset)
+        if (textBefore.length === 0 || textBefore.endsWith(' ') || textBefore.endsWith('\n')) {
+          setTimeout(() => {
+            const sel = window.getSelection()
+            if (sel && sel.rangeCount > 0) {
+              const range = sel.getRangeAt(0)
+              const rect = range.getBoundingClientRect()
+              onMention('@', rect)
+            }
+          }, 0)
+        }
+      }
+
+      // Track last two chars for [[ detection
+      if (e.key.length === 1) {
+        lastTwoCharsRef.current = (lastTwoCharsRef.current + e.key).slice(-2)
+      } else {
+        lastTwoCharsRef.current = ''
+      }
     },
-    [onEnter, onBackspace, onArrowUp, onArrowDown, onSlash]
+    [onEnter, onBackspace, onArrowUp, onArrowDown, onSlash, onFormatShortcut, onMention]
+  )
+
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent) => {
+      if (!onPasteBlocks) return
+
+      const text = e.clipboardData.getData('text/plain')
+      if (!text) return
+
+      // Check if clipboard text looks like markdown
+      const hasMarkdown =
+        /^#{1,3}\s/.test(text) ||
+        /^[-*]\s/.test(text) ||
+        /^\d+\.\s/.test(text) ||
+        /^>\s/.test(text) ||
+        /^```/.test(text) ||
+        /^---\s*$/.test(text) ||
+        /^- \[[ x]\]\s/i.test(text)
+
+      if (hasMarkdown) {
+        e.preventDefault()
+        // Dynamic import would be ideal but we pass raw text to handler
+        // The BlockEditor will handle parsing via markdownParser
+        onPasteBlocks([{ type: '__markdown__', content: text }])
+      }
+    },
+    [onPasteBlocks]
   )
 
   // Selection change tracking
@@ -232,6 +342,7 @@ export default function EditableContent({
       data-placeholder={placeholder}
       onInput={handleInput}
       onKeyDown={handleKeyDown}
+      onPaste={handlePaste}
       onCompositionStart={handleCompositionStart}
       onCompositionEnd={handleCompositionEnd}
       spellCheck

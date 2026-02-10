@@ -1,0 +1,72 @@
+/* ─── Todo Block ──────────────────────────────────────────────── */
+
+.block-todo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2, 0.5rem);
+  padding-left: var(--space-2, 0.5rem);
+}
+
+.block-todo__checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  cursor: pointer;
+}
+
+.block-todo__checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.block-todo__checkmark {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--text-muted, #9CA3AF);
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  transition: all 150ms ease;
+}
+
+.block-todo__checkbox:checked + .block-todo__checkmark {
+  background: var(--color-primary, #4F46E5);
+  border-color: var(--color-primary, #4F46E5);
+}
+
+.block-todo__checkbox:checked + .block-todo__checkmark::after {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin: 0 auto;
+  margin-top: 1px;
+}
+
+.block-todo__checkbox:focus-visible + .block-todo__checkmark {
+  outline: 2px solid var(--color-primary, #4F46E5);
+  outline-offset: 2px;
+}
+
+.block-todo__content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Checked state */
+.block-todo--checked .block-todo__content .editable-content {
+  text-decoration: line-through;
+  opacity: 0.5;
+  color: var(--text-muted, #9CA3AF);
+}

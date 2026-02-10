@@ -1,5 +1,12 @@
+import { useState } from 'react'
 import EditableContent from '../EditableContent/EditableContent'
 import type { BlockComponentProps } from './types'
+
+const LANGUAGES = [
+  'javascript', 'typescript', 'python', 'java', 'c', 'cpp', 'csharp',
+  'go', 'rust', 'ruby', 'php', 'swift', 'kotlin', 'html', 'css',
+  'sql', 'bash', 'json', 'yaml', 'markdown', 'plaintext',
+]
 
 export default function CodeBlock({
   block,
@@ -10,14 +17,36 @@ export default function CodeBlock({
   onArrowDown,
   onSlash,
   onSelectionChange,
+  onFormatShortcut,
   autoFocus,
 }: BlockComponentProps) {
   const language = block.properties.language ?? ''
+  const [showPicker, setShowPicker] = useState(false)
 
   return (
     <div className="block-code">
-      {language && (
-        <div className="block-code__language">{language}</div>
+      <button
+        className="block-code__language"
+        onClick={() => setShowPicker(!showPicker)}
+        title="Change language"
+      >
+        {language || 'plain text'}
+      </button>
+      {showPicker && (
+        <div className="block-code__language-picker">
+          {LANGUAGES.map((lang) => (
+            <button
+              key={lang}
+              className={`block-code__language-option ${lang === language ? 'block-code__language-option--active' : ''}`}
+              onMouseDown={(e) => {
+                e.preventDefault()
+                setShowPicker(false)
+              }}
+            >
+              {lang}
+            </button>
+          ))}
+        </div>
       )}
       <EditableContent
         content={block.content}
@@ -30,6 +59,7 @@ export default function CodeBlock({
         onArrowDown={onArrowDown}
         onSlash={onSlash}
         onSelectionChange={onSelectionChange}
+        onFormatShortcut={onFormatShortcut}
         autoFocus={autoFocus}
         tag="pre"
       />

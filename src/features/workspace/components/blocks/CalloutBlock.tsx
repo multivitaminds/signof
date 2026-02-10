@@ -10,14 +10,16 @@ export default function CalloutBlock({
   onArrowDown,
   onSlash,
   onSelectionChange,
+  onFormatShortcut,
   autoFocus,
 }: BlockComponentProps) {
   const color = block.properties.color ?? 'default'
+  const icon = block.properties.calloutIcon ?? '💡'
 
   return (
     <div className={`block-callout block-callout--${color}`}>
       <span className="block-callout__icon" aria-hidden="true">
-        💡
+        {icon}
       </span>
       <div className="block-callout__content">
         <EditableContent
@@ -31,6 +33,7 @@ export default function CalloutBlock({
           onArrowDown={onArrowDown}
           onSlash={onSlash}
           onSelectionChange={onSelectionChange}
+          onFormatShortcut={onFormatShortcut}
           autoFocus={autoFocus}
         />
       </div>
