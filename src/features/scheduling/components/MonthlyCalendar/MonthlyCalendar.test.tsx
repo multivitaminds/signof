@@ -45,8 +45,10 @@ describe('MonthlyCalendar', () => {
 
   it('renders day numbers for the month', () => {
     render(<MonthlyCalendar {...defaultProps} />)
-    expect(screen.getByText('1')).toBeInTheDocument()
-    expect(screen.getByText('28')).toBeInTheDocument()
+    // Use aria-labels to target specific February dates, since bare day
+    // numbers like '1' appear in both the current and adjacent months.
+    expect(screen.getByLabelText(/February 1, 2026/)).toBeInTheDocument()
+    expect(screen.getByLabelText(/February 28, 2026/)).toBeInTheDocument()
   })
 
   it('calls onDateClick when clicking a cell', async () => {

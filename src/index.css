@@ -140,14 +140,14 @@
   --z-toast: 80;
   --z-command: 100;
 
-  /* ─── Surface Colors (Light Mode — SignOf brand) ────── */
+  /* ─── Surface Colors (Light Mode) ────────────────────── */
   --bg-primary: #FFFFFF;
-  --bg-secondary: #F6F9FC;
-  --bg-tertiary: #E3E8EE;
-  --text-primary: #1A1A2E;
-  --text-secondary: #425466;
-  --text-muted: #8898AA;
-  --border-color: #E6E8EB;
+  --bg-secondary: #F8FAFC;
+  --bg-tertiary: #E5E7EB;
+  --text-primary: #1E293B;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+  --border-color: #E2E8F0;
 
   /* ─── Component Tokens ─────────────────────────────────── */
   --header-height: 56px;
@@ -156,15 +156,15 @@
   --content-max-width: 1200px;
 }
 
-/* ─── Dark Mode (SignOf brand Dark) ─────────────────────── */
+/* ─── Dark Mode ────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg-primary: #1A1A2E;
-  --bg-secondary: #091D33;
-  --bg-tertiary: #0D2B4A;
-  --text-primary: #F6F9FC;
-  --text-secondary: #A3ACB9;
-  --text-muted: #6A7383;
-  --border-color: #1D3A5C;
+  --bg-primary: #0F0F1A;
+  --bg-secondary: #1A1A2E;
+  --bg-tertiary: #2D2D44;
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --border-color: #334155;
   --color-primary-light: #2D2A6E;
   --color-success-light: #064e3b;
   --color-warning-light: #78350f;

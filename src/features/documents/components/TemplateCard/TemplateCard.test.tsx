@@ -79,7 +79,7 @@ describe('TemplateCard', () => {
       />
     )
 
-    await user.click(screen.getByRole('button', { name: /Duplicate Employment Agreement/ }))
+    await user.click(screen.getByLabelText('Duplicate Employment Agreement'))
     expect(onDuplicate).toHaveBeenCalledTimes(1)
     expect(onClick).not.toHaveBeenCalled()
   })
@@ -97,7 +97,7 @@ describe('TemplateCard', () => {
       />
     )
 
-    await user.click(screen.getByRole('button', { name: /Delete Employment Agreement/ }))
+    await user.click(screen.getByLabelText('Delete Employment Agreement'))
     expect(onDelete).toHaveBeenCalledTimes(1)
     expect(onClick).not.toHaveBeenCalled()
   })

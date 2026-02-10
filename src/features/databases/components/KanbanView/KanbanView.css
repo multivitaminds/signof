@@ -96,6 +96,6 @@
 }
 
 [data-theme="dark"] .kanban-view__card {
-  background: var(--bg-tertiary, #16213E);
+  background: var(--bg-tertiary, #1E1E36);
   border-color: var(--border-color, #334155);
 }

@@ -56,8 +56,8 @@ describe('SignOf App', () => {
     renderWithRouter(['/nonexistent-route'])
     expect(screen.getByText('404')).toBeInTheDocument()
     expect(screen.getByText('Page not found')).toBeInTheDocument()
-    expect(screen.getByText('Go home')).toBeInTheDocument()
-    expect(screen.getByText('Go back')).toBeInTheDocument()
+    expect(screen.getByText('Go Home')).toBeInTheDocument()
+    expect(screen.getByText('Go Back')).toBeInTheDocument()
   })
 
   it('cycles theme on toggle button click', async () => {

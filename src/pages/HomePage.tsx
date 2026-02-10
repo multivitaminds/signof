@@ -15,12 +15,16 @@ import {
   Inbox,
   Receipt,
   Code2,
+  Activity,
 } from 'lucide-react'
 import { useDocumentStore } from '../stores/useDocumentStore'
+import { useAppStore } from '../stores/useAppStore'
 import { useWorkspaceStore } from '../features/workspace/stores/useWorkspaceStore'
 import { useProjectStore } from '../features/projects/stores/useProjectStore'
 import { useSchedulingStore } from '../features/scheduling/stores/useSchedulingStore'
 import { useInboxStore } from '../features/inbox/stores/useInboxStore'
+import ActivityFeed from '../features/activity/components/ActivityFeed/ActivityFeed'
+import DashboardCharts from '../features/activity/components/DashboardCharts/DashboardCharts'
 import { ACTIVE_STATUSES, DocumentStatus } from '../types'
 import './HomePage.css'
 
@@ -37,6 +41,7 @@ function timeAgo(dateStr: string): string {
 
 export default function HomePage() {
   const documents = useDocumentStore((state) => state.documents)
+  const recentItems = useAppStore((s) => s.recentItems)
 
   const pagesMap = useWorkspaceStore((s) => s.pages)
   const recentPages = useMemo(
@@ -84,6 +89,11 @@ export default function HomePage() {
 
   const recentDocuments = documents.slice(0, 3)
 
+  const recentWork = useMemo(
+    () => recentItems.slice(0, 5),
+    [recentItems]
+  )
+
   const quickActions = [
     { label: 'New Page', icon: FileText, path: '/pages/new', color: '#4F46E5' },
     { label: 'New Project', icon: FolderKanban, path: '/projects/new', color: '#0EA5E9' },
@@ -100,7 +110,7 @@ export default function HomePage() {
       {/* Welcome Section */}
       <section className="home-page__welcome">
         <h1 className="home-page__title">
-          Welcome to SignOf<span className="home-page__title-check">✓</span>
+          Welcome to SignOf<span className="home-page__title-check">{'\u2713'}</span>
         </h1>
         <p className="home-page__subtitle">
           Your unified workspace for documents, projects, scheduling, databases, and more.
@@ -197,7 +207,119 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Activity Feed - Two column layout */}
+      {/* Dashboard Charts */}
+      <section className="home-page__section">
+        <h2 className="home-page__section-title">Overview</h2>
+        <DashboardCharts />
+      </section>
+
+      {/* Activity Feed + Recent Work - Two column layout */}
+      <div className="home-page__feed-grid">
+        {/* Activity Feed */}
+        <section className="home-page__section">
+          <div className="home-page__section-header">
+            <h2 className="home-page__section-title">
+              <Activity size={18} className="home-page__section-icon" />
+              Activity Feed
+            </h2>
+          </div>
+          <ActivityFeed maxItems={10} showFilters={true} />
+        </section>
+
+        {/* Your Recent Work */}
+        <div className="home-page__sidebar-sections">
+          {recentWork.length > 0 && (
+            <section className="home-page__section">
+              <h2 className="home-page__section-title">Your Recent Work</h2>
+              <div className="recent-list">
+                {recentWork.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className="recent-item"
+                  >
+                    <Clock size={16} className="recent-item__icon" />
+                    <div className="recent-item__content">
+                      <span className="recent-item__name">{item.label}</span>
+                      <span className="recent-item__meta">
+                        {timeAgo(new Date(item.timestamp).toISOString())}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Upcoming Bookings */}
+          {upcomingBookings.length > 0 && (
+            <section className="home-page__section">
+              <div className="home-page__section-header">
+                <h2 className="home-page__section-title">Upcoming Bookings</h2>
+                <Link to="/calendar/bookings" className="home-page__see-all">
+                  See all <ArrowRight size={16} />
+                </Link>
+              </div>
+              <div className="recent-list">
+                {upcomingBookings.map((booking) => {
+                  const et = eventTypes.find((e) => e.id === booking.eventTypeId)
+                  return (
+                    <Link
+                      key={booking.id}
+                      to="/calendar/bookings"
+                      className="recent-item"
+                    >
+                      <div
+                        className="recent-item__color-dot"
+                        style={{ backgroundColor: et?.color ?? '#6B7280' }}
+                      />
+                      <div className="recent-item__content">
+                        <span className="recent-item__name">{et?.name ?? 'Event'}</span>
+                        <span className="recent-item__meta">
+                          {new Date(booking.date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} {'\u00B7'} {booking.startTime}
+                        </span>
+                      </div>
+                      <span className="recent-item__status recent-item__status--confirmed">
+                        {booking.status}
+                      </span>
+                    </Link>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* Quick Links */}
+          <section className="home-page__section">
+            <h2 className="home-page__section-title">Explore</h2>
+            <div className="recent-list">
+              <Link to="/inbox" className="recent-item">
+                <Inbox size={20} className="recent-item__icon" />
+                <div className="recent-item__content">
+                  <span className="recent-item__name">Inbox</span>
+                  <span className="recent-item__meta">Notifications and updates</span>
+                </div>
+              </Link>
+              <Link to="/calendar" className="recent-item">
+                <Calendar size={20} className="recent-item__icon" />
+                <div className="recent-item__content">
+                  <span className="recent-item__name">Calendar</span>
+                  <span className="recent-item__meta">Schedule meetings and events</span>
+                </div>
+              </Link>
+              <Link to="/data" className="recent-item">
+                <Database size={20} className="recent-item__icon" />
+                <div className="recent-item__content">
+                  <span className="recent-item__name">Databases</span>
+                  <span className="recent-item__meta">Relational data with multiple views</span>
+                </div>
+              </Link>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      {/* Activity Feed - Two column layout (existing content sections) */}
       <div className="home-page__activity-grid">
         {/* Recent Documents */}
         {recentDocuments.length > 0 && (
@@ -247,7 +369,7 @@ export default function HomePage() {
                   to={`/pages/${page.id}`}
                   className="recent-item"
                 >
-                  <span className="recent-item__page-icon">{page.icon || '📄'}</span>
+                  <span className="recent-item__page-icon">{page.icon || '\uD83D\uDCC4'}</span>
                   <div className="recent-item__content">
                     <span className="recent-item__name">{page.title}</span>
                     <span className="recent-item__meta">
@@ -280,7 +402,7 @@ export default function HomePage() {
                   <div className="recent-item__content">
                     <span className="recent-item__name">{issue.title}</span>
                     <span className="recent-item__meta">
-                      {issue.status} · {timeAgo(issue.updatedAt)}
+                      {issue.status} {'\u00B7'} {timeAgo(issue.updatedAt)}
                     </span>
                   </div>
                   <span className={`recent-item__priority recent-item__priority--${issue.priority}`}>
@@ -291,72 +413,6 @@ export default function HomePage() {
             </div>
           </section>
         )}
-
-        {/* Upcoming Bookings */}
-        {upcomingBookings.length > 0 && (
-          <section className="home-page__section">
-            <div className="home-page__section-header">
-              <h2 className="home-page__section-title">Upcoming Bookings</h2>
-              <Link to="/calendar/bookings" className="home-page__see-all">
-                See all <ArrowRight size={16} />
-              </Link>
-            </div>
-            <div className="recent-list">
-              {upcomingBookings.map((booking) => {
-                const et = eventTypes.find((e) => e.id === booking.eventTypeId)
-                return (
-                  <Link
-                    key={booking.id}
-                    to="/calendar/bookings"
-                    className="recent-item"
-                  >
-                    <div
-                      className="recent-item__color-dot"
-                      style={{ backgroundColor: et?.color ?? '#6B7280' }}
-                    />
-                    <div className="recent-item__content">
-                      <span className="recent-item__name">{et?.name ?? 'Event'}</span>
-                      <span className="recent-item__meta">
-                        {new Date(booking.date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} · {booking.startTime}
-                      </span>
-                    </div>
-                    <span className="recent-item__status recent-item__status--confirmed">
-                      {booking.status}
-                    </span>
-                  </Link>
-                )
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* Quick Links */}
-        <section className="home-page__section">
-          <h2 className="home-page__section-title">Explore</h2>
-          <div className="recent-list">
-            <Link to="/inbox" className="recent-item">
-              <Inbox size={20} className="recent-item__icon" />
-              <div className="recent-item__content">
-                <span className="recent-item__name">Inbox</span>
-                <span className="recent-item__meta">Notifications and updates</span>
-              </div>
-            </Link>
-            <Link to="/calendar" className="recent-item">
-              <Calendar size={20} className="recent-item__icon" />
-              <div className="recent-item__content">
-                <span className="recent-item__name">Calendar</span>
-                <span className="recent-item__meta">Schedule meetings and events</span>
-              </div>
-            </Link>
-            <Link to="/data" className="recent-item">
-              <Database size={20} className="recent-item__icon" />
-              <div className="recent-item__content">
-                <span className="recent-item__name">Databases</span>
-                <span className="recent-item__meta">Relational data with multiple views</span>
-              </div>
-            </Link>
-          </div>
-        </section>
       </div>
 
       {/* Getting Started */}

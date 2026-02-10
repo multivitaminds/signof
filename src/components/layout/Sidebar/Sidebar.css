@@ -1,14 +1,14 @@
 /* ═══════════════════════════════════════════════════════════════
    Sidebar — SignOf brand premium design
    Palette: #4F46E5 (primary), #1A1A2E (navy), #059669 (success),
-            #F6F9FC (light bg), #425466 (text secondary)
+            #F8FAFC (light bg), #64748B (text secondary)
    ═══════════════════════════════════════════════════════════════ */
 
 .sidebar {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: linear-gradient(180deg, #1A1A2E 0%, #16213E 100%);
+  background: linear-gradient(180deg, #1A1A2E 0%, #1E1E36 100%);
   color: #E2E8F0;
   transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
@@ -228,7 +228,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #425466;
+  color: #64748B;
 }
 
 /* ─── Favorites ──────────────────────────────────────────────── */
@@ -483,18 +483,18 @@
    ═══════════════════════════════════════════════════════════════ */
 @media (prefers-color-scheme: light) {
   .sidebar {
-    background: linear-gradient(180deg, #F6F9FC 0%, #FFFFFF 100%);
+    background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
     color: #1A1A2E;
-    border-right: 1px solid #E3E8EE;
+    border-right: 1px solid #E5E7EB;
   }
 
   .sidebar__header {
-    border-bottom: 1px solid #E3E8EE;
+    border-bottom: 1px solid #E5E7EB;
   }
 
   .sidebar__toggle {
     background: rgba(10, 37, 64, 0.04);
-    color: #425466;
+    color: #64748B;
   }
 
   .sidebar__toggle:hover {
@@ -503,9 +503,9 @@
   }
 
   .sidebar__search-btn {
-    border: 1px solid #E3E8EE;
+    border: 1px solid #E5E7EB;
     background: #FFFFFF;
-    color: #425466;
+    color: #64748B;
   }
 
   .sidebar__search-btn:hover {
@@ -517,8 +517,8 @@
 
   .sidebar__search-kbd {
     background: #F0F3F7;
-    border: 1px solid #E3E8EE;
-    color: #425466;
+    border: 1px solid #E5E7EB;
+    color: #64748B;
   }
 
   .sidebar__action-btn {
@@ -533,14 +533,14 @@
 
   .sidebar__new-menu {
     background: #FFFFFF;
-    border: 1px solid #E3E8EE;
+    border: 1px solid #E5E7EB;
     box-shadow:
       0 4px 12px rgba(0, 0, 0, 0.08),
       0 12px 32px rgba(0, 0, 0, 0.1);
   }
 
   .sidebar__new-menu-item {
-    color: #425466;
+    color: #64748B;
   }
 
   .sidebar__new-menu-item:hover {
@@ -549,11 +549,11 @@
   }
 
   .sidebar__section-label {
-    color: #8898AA;
+    color: #94A3B8;
   }
 
   .sidebar__favorites {
-    border-bottom: 1px solid #E3E8EE;
+    border-bottom: 1px solid #E5E7EB;
   }
 
   .sidebar__favorite-item--drag-over {
@@ -562,7 +562,7 @@
 
   .sidebar__favorite-remove {
     background: rgba(10, 37, 64, 0.05);
-    color: #8898AA;
+    color: #94A3B8;
   }
 
   .sidebar__favorite-remove:hover {
@@ -576,7 +576,7 @@
   }
 
   .sidebar__nav-link {
-    color: #425466;
+    color: #64748B;
   }
 
   .sidebar__nav-link:hover {
@@ -604,11 +604,11 @@
   }
 
   .sidebar__divider {
-    background: #E3E8EE;
+    background: #E5E7EB;
   }
 
   .sidebar__footer {
-    border-top: 1px solid #E3E8EE;
+    border-top: 1px solid #E5E7EB;
   }
 
   .sidebar__resize-handle:hover {
@@ -628,7 +628,7 @@
    Dark mode overrides (data-theme attribute)
    ═══════════════════════════════════════════════════════════════ */
 [data-theme="dark"] .sidebar {
-  background: linear-gradient(180deg, #1A1A2E 0%, #16213E 100%);
+  background: linear-gradient(180deg, #1A1A2E 0%, #1E1E36 100%);
   color: #E2E8F0;
   border-right: 1px solid rgba(255, 255, 255, 0.04);
 }
@@ -683,7 +683,7 @@
 }
 
 [data-theme="dark"] .sidebar__section-label {
-  color: #425466;
+  color: #64748B;
 }
 
 [data-theme="dark"] .sidebar__favorites {

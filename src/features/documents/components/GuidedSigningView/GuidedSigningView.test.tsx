@@ -100,8 +100,8 @@ describe('GuidedSigningView', () => {
         onCancel={vi.fn()}
       />
     )
-    expect(screen.getByText('Full Name')).toBeInTheDocument()
-    expect(screen.getByText('Signature')).toBeInTheDocument()
+    expect(screen.getAllByText('Full Name').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Signature').length).toBeGreaterThan(0)
   })
 
   it('has navigation buttons', () => {

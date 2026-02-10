@@ -35,7 +35,7 @@ function highlightPath(path: string): React.ReactNode {
 function EndpointCard({ endpoint, expanded, onToggle }: EndpointCardProps) {
   const [codeTab, setCodeTab] = useState<CodeTab>('curl')
 
-  const methodColor = METHOD_COLORS[endpoint.method] ?? '#8898AA'
+  const methodColor = METHOD_COLORS[endpoint.method] ?? '#94A3B8'
 
   const handleTabChange = useCallback((tab: CodeTab) => {
     setCodeTab(tab)

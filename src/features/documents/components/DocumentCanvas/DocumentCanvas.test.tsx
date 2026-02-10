@@ -83,7 +83,7 @@ describe('DocumentCanvas', () => {
       />
     )
 
-    await user.click(screen.getByText('Sign Here'))
+    await user.click(screen.getByRole('button', { name: /Sign Here/ }))
     expect(onFieldSelect).toHaveBeenCalledWith('f1')
   })
 

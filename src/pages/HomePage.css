@@ -120,10 +120,17 @@
   font-weight: 600;
   color: var(--text-primary, #1F2937);
   margin: 0 0 var(--space-4, 16px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
 }
 
 .home-page__section-header .home-page__section-title {
   margin: 0;
+}
+
+.home-page__section-icon {
+  color: var(--text-secondary, #6B7280);
 }
 
 .home-page__see-all {
@@ -255,7 +262,33 @@
   color: #059669;
 }
 
-/* Activity Grid */
+/* Feed Grid (Activity Feed + Sidebar) */
+.home-page__feed-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: var(--space-5, 24px);
+  margin-bottom: var(--space-6, 32px);
+}
+
+.home-page__feed-grid > .home-page__section {
+  margin-bottom: 0;
+}
+
+.home-page__sidebar-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.home-page__sidebar-sections > .home-page__section {
+  margin-bottom: var(--space-5, 24px);
+}
+
+.home-page__sidebar-sections > .home-page__section:last-child {
+  margin-bottom: 0;
+}
+
+/* Activity Grid (existing content sections) */
 .home-page__activity-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -395,7 +428,7 @@
 }
 
 [data-theme="dark"] .recent-item:hover {
-  background: var(--bg-tertiary, #16213E);
+  background: var(--bg-tertiary, #1E1E36);
 }
 
 [data-theme="dark"] .recent-item__name {
@@ -408,6 +441,10 @@
 
 [data-theme="dark"] .stat-card--link:hover {
   border-color: var(--color-primary, #4F46E5);
+}
+
+[data-theme="dark"] .home-page__section-icon {
+  color: var(--text-muted, #64748B);
 }
 
 .stat-card__icon--bookings {
@@ -430,4 +467,11 @@
 .recent-item__status--confirmed {
   background: rgba(16, 185, 129, 0.1);
   color: #059669;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .home-page__feed-grid {
+    grid-template-columns: 1fr;
+  }
 }

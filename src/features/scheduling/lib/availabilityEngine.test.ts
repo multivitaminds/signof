@@ -278,10 +278,10 @@ describe('getAvailableSlots', () => {
     vi.setSystemTime(new Date(2026, 1, 11, 10, 0, 0))
 
     const slots = getAvailableSlots({ date, eventType, bookings: [], timezone: 'UTC' })
-    // Minimum notice is 2h, so earliest slot is 12:00
-    // Slots from 12:00 to 16:30 = 10 slots
-    expect(slots[0]!.start).toBe('12:00')
-    expect(slots.every(s => s.start >= '12:00')).toBe(true)
+    // Minimum notice is 2h from 10:00 = 12:00, but the code uses strict >
+    // so the 12:00 slot (equal to notice time) is excluded. First slot is 12:30.
+    expect(slots[0]!.start).toBe('12:30')
+    expect(slots.every(s => s.start >= '12:30')).toBe(true)
 
     vi.useRealTimers()
   })

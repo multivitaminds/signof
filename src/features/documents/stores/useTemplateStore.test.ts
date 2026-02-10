@@ -31,6 +31,9 @@ describe('useTemplateStore', () => {
 
   describe('updateTemplate', () => {
     it('updates a template by id', () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date(2026, 0, 1, 0, 0, 0))
+
       const tmpl = useTemplateStore.getState().addTemplate({
         name: 'Original',
         description: 'Desc',
@@ -39,10 +42,15 @@ describe('useTemplateStore', () => {
         recipientRoles: [],
       })
 
+      // Advance time so updatedAt differs
+      vi.advanceTimersByTime(1000)
+
       useTemplateStore.getState().updateTemplate(tmpl.id, { name: 'Updated' })
       const updated = useTemplateStore.getState().templates.find((t) => t.id === tmpl.id)
       expect(updated?.name).toBe('Updated')
       expect(updated?.updatedAt).not.toBe(tmpl.updatedAt)
+
+      vi.useRealTimers()
     })
   })
 

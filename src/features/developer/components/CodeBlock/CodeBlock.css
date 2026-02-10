@@ -17,7 +17,7 @@
 .code-block__language {
   font-size: var(--text-xs);
   font-weight: var(--font-medium);
-  color: #8898AA;
+  color: #94A3B8;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -27,7 +27,7 @@
   align-items: center;
   gap: var(--space-1);
   background: none;
-  color: #8898AA;
+  color: #94A3B8;
   font-size: var(--text-xs);
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);

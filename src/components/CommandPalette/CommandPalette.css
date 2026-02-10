@@ -218,7 +218,7 @@
 
 /* Dark mode */
 [data-theme="dark"] .command-palette {
-  background: var(--signof-dark, #16213E);
+  background: var(--signof-dark, #1E1E36);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 

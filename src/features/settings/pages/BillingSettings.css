@@ -16,12 +16,12 @@
   --billing-danger: #DC2626;
   --billing-danger-light: #FFF0F0;
   --billing-bg: #FFFFFF;
-  --billing-bg-secondary: #F6F9FC;
-  --billing-bg-tertiary: #E3E8EE;
+  --billing-bg-secondary: #F8FAFC;
+  --billing-bg-tertiary: #E5E7EB;
   --billing-text-primary: #1A1A2E;
-  --billing-text-secondary: #425466;
-  --billing-text-muted: #8898AA;
-  --billing-border: #E6E8EB;
+  --billing-text-secondary: #64748B;
+  --billing-text-muted: #94A3B8;
+  --billing-border: #E2E8F0;
   --billing-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   --billing-card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
   --billing-radius: 12px;
