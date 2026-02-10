@@ -185,6 +185,26 @@
   background: var(--bg-secondary, #F9FAFB);
 }
 
+/* ─── Computed / Relational field styles ─────────────────────────── */
+
+.grid-view__cell-text--computed {
+  cursor: default;
+  color: var(--text-secondary, #6B7280);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.grid-view__cell-text--error {
+  color: var(--color-danger, #DC2626);
+  font-size: var(--text-xs, 0.75rem);
+}
+
+/* ─── Dark mode ──────────────────────────────────────────────────── */
+
 [data-theme="dark"] .grid-view__table-wrapper {
   border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .grid-view__cell-text--computed {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-muted, #64748B);
 }

@@ -1,0 +1,212 @@
+.field-config-popover {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 50;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
+  min-width: 220px;
+  max-height: 420px;
+  display: flex;
+  flex-direction: column;
+}
+
+.field-config-popover--wide {
+  min-width: 320px;
+}
+
+.field-config-popover__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3, 0.75rem) var(--space-3, 0.75rem) var(--space-2, 0.5rem);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+}
+
+.field-config-popover__title {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.field-config-popover__close {
+  background: none;
+  border: none;
+  color: var(--text-muted, #9CA3AF);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm, 4px);
+  display: flex;
+  align-items: center;
+  transition: all 100ms ease;
+}
+
+.field-config-popover__close:hover {
+  color: var(--text-primary, #111827);
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+/* ─── Type List ──────────────────────────────────────────────────── */
+
+.field-config-popover__type-list {
+  overflow-y: auto;
+  padding: var(--space-1, 0.25rem);
+  flex: 1;
+}
+
+.field-config-popover__type-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  width: 100%;
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  text-align: left;
+  border-radius: var(--radius-sm, 4px);
+  transition: background 100ms ease;
+}
+
+.field-config-popover__type-option:hover {
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+.field-config-popover__type-icon {
+  width: 24px;
+  text-align: center;
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-secondary, #6B7280);
+  flex-shrink: 0;
+}
+
+.field-config-popover__type-label {
+  font-weight: 400;
+}
+
+/* ─── Config Form ────────────────────────────────────────────────── */
+
+.field-config-popover__form {
+  padding: var(--space-3, 0.75rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.field-config-popover__field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 0.25rem);
+}
+
+.field-config-popover__field-group--checkbox {
+  flex-direction: row;
+  align-items: center;
+}
+
+.field-config-popover__label {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  color: var(--text-secondary, #6B7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.field-config-popover__input,
+.field-config-popover__select,
+.field-config-popover__textarea {
+  padding: var(--space-2, 0.5rem) var(--space-2, 0.5rem);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--text-sm, 0.875rem);
+  font-family: inherit;
+  color: var(--text-primary, #111827);
+  background: var(--bg-primary, #fff);
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.field-config-popover__input:focus,
+.field-config-popover__select:focus,
+.field-config-popover__textarea:focus {
+  border-color: var(--color-primary, #4F46E5);
+}
+
+.field-config-popover__textarea {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  resize: vertical;
+}
+
+.field-config-popover__checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  cursor: pointer;
+}
+
+.field-config-popover__checkbox-label input {
+  accent-color: var(--color-primary, #4F46E5);
+}
+
+.field-config-popover__hint {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ─── Actions ────────────────────────────────────────────────────── */
+
+.field-config-popover__actions {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border-top: 1px solid var(--border-color, #E5E7EB);
+}
+
+.field-config-popover__back-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #6B7280);
+  cursor: pointer;
+  font-size: var(--text-sm, 0.875rem);
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  border-radius: var(--radius-sm, 4px);
+  transition: all 100ms ease;
+}
+
+.field-config-popover__back-btn:hover {
+  color: var(--text-primary, #111827);
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+/* ─── Dark mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .field-config-popover {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .field-config-popover__type-option:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .field-config-popover__input,
+[data-theme="dark"] .field-config-popover__select,
+[data-theme="dark"] .field-config-popover__textarea {
+  background: var(--bg-primary, #0F0F1A);
+  border-color: var(--border-color, #334155);
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .field-config-popover__back-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}

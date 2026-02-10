@@ -18,7 +18,9 @@ export default function PageEditorPage() {
   const updatePageProperties = useWorkspaceStore((s) => s.updatePageProperties)
   const getBacklinks = useWorkspaceStore((s) => s.getBacklinks)
   const getPageHistory = useWorkspaceStore((s) => s.getPageHistory)
+  const createSnapshot = useWorkspaceStore((s) => s.createSnapshot)
   const restoreSnapshot = useWorkspaceStore((s) => s.restoreSnapshot)
+  const deleteSnapshot = useWorkspaceStore((s) => s.deleteSnapshot)
 
   const [showVersionHistory, setShowVersionHistory] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
@@ -93,11 +95,28 @@ export default function PageEditorPage() {
     [page, blocks]
   )
 
+  const handleCreateSnapshot = useCallback(() => {
+    if (pageId) {
+      createSnapshot(pageId)
+    }
+  }, [pageId, createSnapshot])
+
   const handleRestoreSnapshot = useCallback(
     (snapshotId: string) => {
-      restoreSnapshot(snapshotId)
+      if (pageId) {
+        restoreSnapshot(snapshotId, pageId)
+      }
     },
-    [restoreSnapshot]
+    [pageId, restoreSnapshot]
+  )
+
+  const handleDeleteSnapshot = useCallback(
+    (snapshotId: string) => {
+      if (pageId) {
+        deleteSnapshot(snapshotId, pageId)
+      }
+    },
+    [pageId, deleteSnapshot]
   )
 
   if (!page) {
@@ -114,90 +133,94 @@ export default function PageEditorPage() {
   const snapshots = pageId ? getPageHistory(pageId) : []
 
   return (
-    <div className="page-editor">
-      {/* Page toolbar */}
-      <div className="page-editor__toolbar">
-        <div className="page-editor__toolbar-actions">
-          <div className="page-editor__export-wrapper">
+    <div className={`page-editor-layout ${showVersionHistory ? 'page-editor-layout--with-history' : ''}`}>
+      <div className="page-editor">
+        {/* Page toolbar */}
+        <div className="page-editor__toolbar">
+          <div className="page-editor__toolbar-actions">
+            <div className="page-editor__export-wrapper">
+              <button
+                className="page-editor__toolbar-btn"
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                title="Export"
+              >
+                <Download size={16} />
+              </button>
+              {showExportMenu && (
+                <div className="page-editor__export-menu">
+                  <button
+                    className="page-editor__export-option"
+                    onClick={() => handleExport('markdown')}
+                  >
+                    <FileDown size={14} />
+                    Markdown
+                  </button>
+                  <button
+                    className="page-editor__export-option"
+                    onClick={() => handleExport('html')}
+                  >
+                    <FileDown size={14} />
+                    HTML
+                  </button>
+                </div>
+              )}
+            </div>
             <button
-              className="page-editor__toolbar-btn"
-              onClick={() => setShowExportMenu(!showExportMenu)}
-              title="Export"
+              className={`page-editor__toolbar-btn ${showVersionHistory ? 'page-editor__toolbar-btn--active' : ''}`}
+              onClick={() => setShowVersionHistory(!showVersionHistory)}
+              title="Version history"
             >
-              <Download size={16} />
+              <Clock size={16} />
             </button>
-            {showExportMenu && (
-              <div className="page-editor__export-menu">
-                <button
-                  className="page-editor__export-option"
-                  onClick={() => handleExport('markdown')}
-                >
-                  <FileDown size={14} />
-                  Markdown
-                </button>
-                <button
-                  className="page-editor__export-option"
-                  onClick={() => handleExport('html')}
-                >
-                  <FileDown size={14} />
-                  HTML
-                </button>
-              </div>
-            )}
           </div>
-          <button
-            className="page-editor__toolbar-btn"
-            onClick={() => setShowVersionHistory(!showVersionHistory)}
-            title="Version history"
-          >
-            <Clock size={16} />
-          </button>
         </div>
+
+        <PageHeader
+          page={page}
+          onTitleChange={handleTitleChange}
+          onIconChange={handleIconChange}
+          onCoverChange={handleCoverChange}
+        />
+
+        <PageProperties
+          properties={page.properties}
+          onUpdate={handlePropertiesChange}
+        />
+
+        <BlockEditor
+          pageId={page.id}
+          blockIds={page.blockIds}
+        />
+
+        {/* Backlinks */}
+        {backlinks.length > 0 && (
+          <div className="page-editor__backlinks">
+            <h3 className="page-editor__backlinks-title">Linked to this page</h3>
+            <div className="page-editor__backlinks-list">
+              {backlinks.map((link) => (
+                <Link
+                  key={`${link.pageId}-${link.blockId}`}
+                  to={`/pages/${link.pageId}`}
+                  className="page-editor__backlink"
+                >
+                  {link.pageTitle}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      <PageHeader
-        page={page}
-        onTitleChange={handleTitleChange}
-        onIconChange={handleIconChange}
-        onCoverChange={handleCoverChange}
-      />
-
-      <PageProperties
-        properties={page.properties}
-        onUpdate={handlePropertiesChange}
-      />
-
-      <BlockEditor
-        pageId={page.id}
-        blockIds={page.blockIds}
-      />
-
-      {/* Backlinks */}
-      {backlinks.length > 0 && (
-        <div className="page-editor__backlinks">
-          <h3 className="page-editor__backlinks-title">Linked to this page</h3>
-          <div className="page-editor__backlinks-list">
-            {backlinks.map((link) => (
-              <Link
-                key={`${link.pageId}-${link.blockId}`}
-                to={`/pages/${link.pageId}`}
-                className="page-editor__backlink"
-              >
-                {link.pageTitle}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Version History Panel */}
-      {showVersionHistory && (
-        <VersionHistory
-          snapshots={snapshots}
-          onRestore={handleRestoreSnapshot}
-          onClose={() => setShowVersionHistory(false)}
-        />
-      )}
+      <VersionHistory
+        isOpen={showVersionHistory}
+        pageId={pageId ?? ''}
+        snapshots={snapshots}
+        onCreateSnapshot={handleCreateSnapshot}
+        onRestore={handleRestoreSnapshot}
+        onDelete={handleDeleteSnapshot}
+        onClose={() => setShowVersionHistory(false)}
+      />
     </div>
   )
 }

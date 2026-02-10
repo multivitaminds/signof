@@ -13,6 +13,10 @@ export const DbFieldType = {
   CreatedTime: 'created_time',
   LastEditedTime: 'last_edited_time',
   Attachment: 'attachment',
+  Relation: 'relation',
+  Lookup: 'lookup',
+  Rollup: 'rollup',
+  Formula: 'formula',
 } as const
 
 export type DbFieldType = (typeof DbFieldType)[keyof typeof DbFieldType]
@@ -44,6 +48,43 @@ export const FilterOperator = {
 
 export type FilterOperator = (typeof FilterOperator)[keyof typeof FilterOperator]
 
+// ─── Rollup Aggregation (const object pattern) ──────────────────────
+
+export const RollupAggregation = {
+  Count: 'count',
+  Sum: 'sum',
+  Avg: 'avg',
+  Min: 'min',
+  Max: 'max',
+  PercentEmpty: 'percent_empty',
+  PercentFilled: 'percent_filled',
+} as const
+
+export type RollupAggregation = (typeof RollupAggregation)[keyof typeof RollupAggregation]
+
+// ─── Field Config Types ─────────────────────────────────────────────
+
+export interface RelationConfig {
+  targetTableId: string
+  targetFieldId: string
+  allowMultiple: boolean
+}
+
+export interface LookupConfig {
+  relationFieldId: string
+  targetFieldId: string
+}
+
+export interface RollupConfig {
+  relationFieldId: string
+  targetFieldId: string
+  aggregation: RollupAggregation
+}
+
+export interface FormulaConfig {
+  expression: string
+}
+
 // ─── Data Types ──────────────────────────────────────────────────────
 
 export interface FieldChoice {
@@ -59,6 +100,10 @@ export interface DbField {
   options?: { choices: FieldChoice[] }
   required?: boolean
   width?: number
+  relationConfig?: RelationConfig
+  lookupConfig?: LookupConfig
+  rollupConfig?: RollupConfig
+  formulaConfig?: FormulaConfig
 }
 
 export interface Filter {
@@ -128,6 +173,10 @@ export const FIELD_TYPE_LABELS: Record<DbFieldType, string> = {
   [DbFieldType.CreatedTime]: 'Created Time',
   [DbFieldType.LastEditedTime]: 'Last Edited',
   [DbFieldType.Attachment]: 'Attachment',
+  [DbFieldType.Relation]: 'Relation',
+  [DbFieldType.Lookup]: 'Lookup',
+  [DbFieldType.Rollup]: 'Rollup',
+  [DbFieldType.Formula]: 'Formula',
 }
 
 export const SELECT_COLORS = [

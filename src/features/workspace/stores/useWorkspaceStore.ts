@@ -149,8 +149,10 @@ interface WorkspaceState {
 
   // Version History
   createSnapshot: (pageId: string) => void
+  autoSnapshot: (pageId: string) => void
   getPageHistory: (pageId: string) => PageSnapshot[]
-  restoreSnapshot: (snapshotId: string) => void
+  restoreSnapshot: (snapshotId: string, pageId: string) => void
+  deleteSnapshot: (snapshotId: string, pageId: string) => void
 }
 
 export const useWorkspaceStore = create<WorkspaceState>()(
@@ -389,14 +391,19 @@ export const useWorkspaceStore = create<WorkspaceState>()(
               newBlockIds.push(block.id)
             }
 
+            const count = (state.editCounts[pageId] ?? 0) + 1
+
             return {
               pages: {
                 ...state.pages,
                 [pageId]: { ...page, blockIds: newBlockIds, updatedAt: now() },
               },
               blocks: { ...state.blocks, [block.id]: block },
+              editCounts: { ...state.editCounts, [pageId]: count },
             }
           })
+
+          get().autoSnapshot(pageId)
 
           return block.id
         },
@@ -418,9 +425,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
               set((s) => ({
                 editCounts: { ...s.editCounts, [page.id]: count },
               }))
-              if (count % 20 === 0) {
-                get().createSnapshot(page.id)
-              }
+              get().autoSnapshot(page.id)
               break
             }
           }
@@ -448,14 +453,19 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             const newBlocks = { ...state.blocks }
             delete newBlocks[blockId]
 
+            const count = (state.editCounts[pageId] ?? 0) + 1
+
             return {
               pages: {
                 ...state.pages,
                 [pageId]: { ...page, blockIds: newBlockIds, updatedAt: now() },
               },
               blocks: newBlocks,
+              editCounts: { ...state.editCounts, [pageId]: count },
             }
           })
+
+          get().autoSnapshot(pageId)
         },
 
         convertBlockType: (blockId, newType) => {
@@ -484,6 +494,8 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             const newBlockIds = [...page.blockIds]
             newBlockIds.splice(idx + 1, 0, after.id)
 
+            const count = (s.editCounts[pageId] ?? 0) + 1
+
             return {
               pages: {
                 ...s.pages,
@@ -494,8 +506,11 @@ export const useWorkspaceStore = create<WorkspaceState>()(
                 [blockId]: before,
                 [after.id]: after,
               },
+              editCounts: { ...s.editCounts, [pageId]: count },
             }
           })
+
+          get().autoSnapshot(pageId)
 
           return after.id
         },
@@ -724,9 +739,15 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           const page = state.pages[pageId]
           if (!page) return
 
-          const blockData: Block[] = page.blockIds
+          const blockData = page.blockIds
             .map((bid) => state.blocks[bid])
             .filter((b): b is Block => b !== undefined)
+            .map((b) => ({
+              id: b.id,
+              type: b.type as string,
+              content: b.content,
+              properties: { ...b.properties } as Record<string, unknown>,
+            }))
 
           const snapshot: PageSnapshot = {
             id: generateId(),
@@ -734,6 +755,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             title: page.title,
             blockData: JSON.parse(JSON.stringify(blockData)),
             timestamp: now(),
+            editCount: state.editCounts[pageId] ?? 0,
           }
 
           set((s) => ({
@@ -744,6 +766,14 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           }))
         },
 
+        autoSnapshot: (pageId) => {
+          const state = get()
+          const count = state.editCounts[pageId] ?? 0
+          if (count > 0 && count % 20 === 0) {
+            get().createSnapshot(pageId)
+          }
+        },
+
         getPageHistory: (pageId) => {
           const state = get()
           return (state.snapshots[pageId] ?? []).sort(
@@ -751,52 +781,68 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           )
         },
 
-        restoreSnapshot: (snapshotId) => {
+        restoreSnapshot: (snapshotId, pageId) => {
           const state = get()
+          const pageSnapshots = state.snapshots[pageId]
+          if (!pageSnapshots) return
 
-          // Find the snapshot
-          for (const [pageId, snapshots] of Object.entries(state.snapshots)) {
-            const snapshot = snapshots.find((s) => s.id === snapshotId)
-            if (!snapshot) continue
+          const snapshot = pageSnapshots.find((s) => s.id === snapshotId)
+          if (!snapshot) return
 
-            const page = state.pages[pageId]
-            if (!page) return
+          const page = state.pages[pageId]
+          if (!page) return
 
-            // Create snapshot of current state before restoring
-            get().createSnapshot(pageId)
+          // Create snapshot of current state before restoring
+          get().createSnapshot(pageId)
 
-            // Remove old blocks
-            const newBlocks = { ...state.blocks }
-            for (const blockId of page.blockIds) {
-              delete newBlocks[blockId]
-            }
-
-            // Add restored blocks
-            const newBlockIds: string[] = []
-            for (const blockData of snapshot.blockData) {
-              const restoredBlock: Block = {
-                ...blockData,
-                id: generateId(),
-              }
-              newBlocks[restoredBlock.id] = restoredBlock
-              newBlockIds.push(restoredBlock.id)
-            }
-
-            set((s) => ({
-              pages: {
-                ...s.pages,
-                [pageId]: {
-                  ...page,
-                  title: snapshot.title,
-                  blockIds: newBlockIds,
-                  updatedAt: now(),
-                },
-              },
-              blocks: newBlocks,
-            }))
-
-            return
+          // Remove old blocks
+          const newBlocks = { ...state.blocks }
+          for (const blockId of page.blockIds) {
+            delete newBlocks[blockId]
           }
+
+          // Add restored blocks
+          const newBlockIds: string[] = []
+          for (const blockData of snapshot.blockData) {
+            const restoredBlock: Block = {
+              id: generateId(),
+              type: blockData.type as BlockType,
+              content: blockData.content,
+              marks: [],
+              properties: blockData.properties as BlockProperties,
+              children: [],
+            }
+            newBlocks[restoredBlock.id] = restoredBlock
+            newBlockIds.push(restoredBlock.id)
+          }
+
+          set((s) => ({
+            pages: {
+              ...s.pages,
+              [pageId]: {
+                ...page,
+                title: snapshot.title,
+                blockIds: newBlockIds,
+                updatedAt: now(),
+              },
+            },
+            blocks: newBlocks,
+            editCounts: { ...s.editCounts, [pageId]: 0 },
+          }))
+        },
+
+        deleteSnapshot: (snapshotId, pageId) => {
+          set((state) => {
+            const pageSnapshots = state.snapshots[pageId]
+            if (!pageSnapshots) return state
+
+            return {
+              snapshots: {
+                ...state.snapshots,
+                [pageId]: pageSnapshots.filter((s) => s.id !== snapshotId),
+              },
+            }
+          })
         },
       }
     },
@@ -807,6 +853,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         pages: state.pages,
         blocks: state.blocks,
         snapshots: state.snapshots,
+        editCounts: state.editCounts,
       }),
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as Record<string, unknown>

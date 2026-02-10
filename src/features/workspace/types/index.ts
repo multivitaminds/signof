@@ -105,8 +105,9 @@ export interface PageSnapshot {
   id: string
   pageId: string
   title: string
-  blockData: Block[]
+  blockData: Array<{ id: string; type: string; content: string; properties: Record<string, unknown> }>
   timestamp: string
+  editCount: number
 }
 
 // ─── Slash Command Item ─────────────────────────────────────────────

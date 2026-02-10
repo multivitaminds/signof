@@ -1,0 +1,200 @@
+.relation-field-editor {
+  position: relative;
+  width: 100%;
+}
+
+.relation-field-editor__display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+  padding: 2px var(--space-2, 0.5rem);
+  cursor: pointer;
+  gap: var(--space-1, 0.25rem);
+}
+
+.relation-field-editor__display:focus-visible {
+  outline: 2px solid var(--color-primary, #4F46E5);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.relation-field-editor__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.relation-field-editor__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: var(--color-primary, #4F46E5);
+  color: #fff;
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  max-width: 160px;
+  white-space: nowrap;
+}
+
+.relation-field-editor__pill-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.relation-field-editor__pill-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 0;
+  border-radius: 2px;
+  transition: color 100ms ease;
+}
+
+.relation-field-editor__pill-remove:hover {
+  color: #fff;
+}
+
+.relation-field-editor__placeholder {
+  color: var(--text-muted, #9CA3AF);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.relation-field-editor__chevron {
+  flex-shrink: 0;
+  color: var(--text-muted, #9CA3AF);
+}
+
+.relation-field-editor__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  min-width: 220px;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
+  z-index: 50;
+  max-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.relation-field-editor__search {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2, 0.5rem);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  gap: var(--space-2, 0.5rem);
+}
+
+.relation-field-editor__search-icon {
+  color: var(--text-muted, #9CA3AF);
+  flex-shrink: 0;
+}
+
+.relation-field-editor__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: var(--text-sm, 0.875rem);
+  font-family: inherit;
+  color: var(--text-primary, #111827);
+  background: transparent;
+}
+
+.relation-field-editor__search-input::placeholder {
+  color: var(--text-muted, #9CA3AF);
+}
+
+.relation-field-editor__options {
+  overflow-y: auto;
+  flex: 1;
+  padding: var(--space-1, 0.25rem);
+}
+
+.relation-field-editor__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  width: 100%;
+  padding: var(--space-2, 0.5rem) var(--space-2, 0.5rem);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  text-align: left;
+  border-radius: var(--radius-sm, 4px);
+  transition: background 100ms ease;
+}
+
+.relation-field-editor__option:hover {
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+.relation-field-editor__option--selected {
+  background: rgba(79, 70, 229, 0.08);
+}
+
+.relation-field-editor__option--selected:hover {
+  background: rgba(79, 70, 229, 0.12);
+}
+
+.relation-field-editor__option-check {
+  width: 16px;
+  text-align: center;
+  color: var(--color-primary, #4F46E5);
+  font-weight: 600;
+  font-size: var(--text-xs, 0.75rem);
+}
+
+.relation-field-editor__option-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relation-field-editor__no-results {
+  padding: var(--space-3, 0.75rem);
+  text-align: center;
+  color: var(--text-muted, #9CA3AF);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.relation-field-editor__empty {
+  display: block;
+  padding: 0 var(--space-3, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+  font-size: var(--text-sm, 0.875rem);
+  font-style: italic;
+  line-height: 36px;
+}
+
+/* ─── Dark mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .relation-field-editor__dropdown {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .relation-field-editor__option:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .relation-field-editor__option--selected {
+  background: rgba(79, 70, 229, 0.15);
+}
+
+[data-theme="dark"] .relation-field-editor__pill {
+  background: var(--color-primary, #4F46E5);
+}

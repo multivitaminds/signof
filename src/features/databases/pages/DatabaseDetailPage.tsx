@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronLeft, Upload, Plus } from 'lucide-react'
 import { useDatabaseStore } from '../stores/useDatabaseStore'
 import { ViewType, DbFieldType } from '../types'
-import type { CellValue, Filter, Sort, DbRow } from '../types'
+import type { CellValue, Filter, Sort, DbRow, RelationConfig, LookupConfig, RollupConfig, FormulaConfig } from '../types'
 import type { DbFieldType as DbFieldTypeType } from '../types'
 import ViewSwitcher from '../components/ViewSwitcher/ViewSwitcher'
 import ToolbarRow from '../components/ToolbarRow/ToolbarRow'
@@ -29,6 +29,7 @@ export default function DatabaseDetailPage() {
   const updateCell = useDatabaseStore((s) => s.updateCell)
   const deleteRow = useDatabaseStore((s) => s.deleteRow)
   const addField = useDatabaseStore((s) => s.addField)
+  const updateField = useDatabaseStore((s) => s.updateField)
   const addView = useDatabaseStore((s) => s.addView)
   const updateView = useDatabaseStore((s) => s.updateView)
   const getFilteredRows = useDatabaseStore((s) => s.getFilteredRows)
@@ -110,9 +111,23 @@ export default function DatabaseDetailPage() {
     if (resolvedTable) deleteRow(resolvedTable.id, rowId)
   }, [resolvedTable, deleteRow])
 
-  const handleAddField = useCallback(() => {
-    if (resolvedTable) addField(resolvedTable.id, 'New Field', DbFieldType.Text)
-  }, [resolvedTable, addField])
+  const handleAddField = useCallback((
+    name: string,
+    type: DbFieldTypeType,
+    config?: {
+      relationConfig?: RelationConfig
+      lookupConfig?: LookupConfig
+      rollupConfig?: RollupConfig
+      formulaConfig?: FormulaConfig
+    }
+  ) => {
+    if (!resolvedTable) return
+    const fieldId = addField(resolvedTable.id, name, type)
+    // Apply config if provided (for relational/formula field types)
+    if (config) {
+      updateField(resolvedTable.id, fieldId, config)
+    }
+  }, [resolvedTable, addField, updateField])
 
   const handleAddView = useCallback((type: ViewType) => {
     if (!resolvedTable) return
@@ -302,6 +317,8 @@ export default function DatabaseDetailPage() {
             onAddRow={() => handleAddRow()}
             onAddField={handleAddField}
             onDeleteRow={handleDeleteRow}
+            tables={tablesMap}
+            currentTableId={resolvedTableId}
           />
         )}
         {activeView?.type === ViewType.Kanban && (

@@ -1,0 +1,104 @@
+.role-permissions {
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-lg, 12px);
+  overflow: hidden;
+}
+
+/* ─── Toggle Button ───────────────────────────────────── */
+.role-permissions__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  background: var(--bg-secondary, #F9FAFB);
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary, #111827);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  transition: background var(--motion-micro, 100ms) ease;
+}
+
+.role-permissions__toggle:hover {
+  background: var(--bg-tertiary, #E5E7EB);
+}
+
+.role-permissions__toggle-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.role-permissions__toggle-title {
+  font-weight: 600;
+}
+
+/* ─── Panel ───────────────────────────────────────────── */
+.role-permissions__panel {
+  background: var(--bg-primary, #fff);
+  border-top: 1px solid var(--border-color, #E5E7EB);
+}
+
+/* ─── Table ───────────────────────────────────────────── */
+.role-permissions__table {
+  display: flex;
+  flex-direction: column;
+}
+
+.role-permissions__header {
+  display: grid;
+  grid-template-columns: 1fr repeat(4, 80px);
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  background: var(--bg-secondary, #F9FAFB);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--text-muted, #9CA3AF);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.role-permissions__row {
+  display: grid;
+  grid-template-columns: 1fr repeat(4, 80px);
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  transition: background var(--motion-micro, 100ms) ease;
+}
+
+.role-permissions__row:last-child {
+  border-bottom: none;
+}
+
+.role-permissions__row:hover {
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+.role-permissions__label-col {
+  display: flex;
+  align-items: center;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+}
+
+.role-permissions__role-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Icons ───────────────────────────────────────────── */
+.role-permissions__icon--check {
+  color: var(--color-success, #059669);
+}
+
+.role-permissions__icon--x {
+  color: var(--color-gray-300, #D1D5DB);
+}
+
+[data-theme="dark"] .role-permissions__icon--x {
+  color: var(--color-gray-600, #4B5563);
+}

@@ -261,7 +261,7 @@ describe('useWorkspaceStore', () => {
       useWorkspaceStore.getState().updateBlockContent(blockId, 'After')
 
       const history = useWorkspaceStore.getState().getPageHistory(pageId)
-      useWorkspaceStore.getState().restoreSnapshot(history[0]!.id)
+      useWorkspaceStore.getState().restoreSnapshot(history[0]!.id, pageId)
 
       const page = useWorkspaceStore.getState().pages[pageId]!
       const restoredBlock = useWorkspaceStore.getState().blocks[page.blockIds[0]!]!

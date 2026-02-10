@@ -1,8 +1,21 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { Plus } from 'lucide-react'
-import type { DbField, DbRow, CellValue } from '../../types'
+import type { DbField, DbRow, DbTable, CellValue, RelationConfig, LookupConfig, RollupConfig, FormulaConfig } from '../../types'
 import { DbFieldType } from '../../types'
+import { resolveRelation } from '../../lib/relationResolver'
+import { evaluateFormula } from '../../lib/formulaEngine'
+import RelationFieldEditor from '../RelationFieldEditor/RelationFieldEditor'
+import FieldConfigPopover from '../FieldConfigPopover/FieldConfigPopover'
 import './GridView.css'
+
+type DbFieldTypeValue = (typeof DbFieldType)[keyof typeof DbFieldType]
+
+interface FieldConfig {
+  relationConfig?: RelationConfig
+  lookupConfig?: LookupConfig
+  rollupConfig?: RollupConfig
+  formulaConfig?: FormulaConfig
+}
 
 interface GridViewProps {
   fields: DbField[]
@@ -11,19 +24,31 @@ interface GridViewProps {
   fieldOrder: string[]
   onCellChange: (rowId: string, fieldId: string, value: CellValue) => void
   onAddRow: () => void
-  onAddField: () => void
+  onAddField: (name: string, type: DbFieldTypeValue, config?: FieldConfig) => void
   onDeleteRow: (rowId: string) => void
+  tables?: Record<string, DbTable>
+  currentTableId?: string
 }
 
+// Field types that are computed and read-only in cells
+const COMPUTED_FIELD_TYPES: ReadonlySet<string> = new Set([
+  DbFieldType.Lookup,
+  DbFieldType.Rollup,
+  DbFieldType.Formula,
+])
+
 export default function GridView({
-  fields, rows, hiddenFields, fieldOrder, onCellChange, onAddRow, onAddField, onDeleteRow,
+  fields, rows, hiddenFields, fieldOrder, onCellChange, onAddRow, onAddField, onDeleteRow, tables, currentTableId,
 }: GridViewProps) {
   const [editingCell, setEditingCell] = useState<{ rowId: string; fieldId: string } | null>(null)
   const [editValue, setEditValue] = useState('')
+  const [showFieldPopover, setShowFieldPopover] = useState(false)
 
   const visibleFields = fieldOrder
     .map((id) => fields.find((f) => f.id === id))
     .filter((f): f is DbField => f !== undefined && !hiddenFields.includes(f.id))
+
+  const tablesMap = useMemo(() => tables ?? {}, [tables])
 
   const startEdit = useCallback((rowId: string, fieldId: string, value: CellValue) => {
     setEditingCell({ rowId, fieldId })
@@ -45,9 +70,43 @@ export default function GridView({
     if (e.key === 'Escape') setEditingCell(null)
   }, [commitEdit])
 
+  const computeCellValue = useCallback((row: DbRow, field: DbField): CellValue => {
+    if (field.type === DbFieldType.Lookup || field.type === DbFieldType.Rollup) {
+      return resolveRelation(row, field, tablesMap, fields)
+    }
+    if (field.type === DbFieldType.Formula && field.formulaConfig) {
+      return evaluateFormula(field.formulaConfig.expression, row, fields)
+    }
+    return row.cells[field.id] ?? null
+  }, [tablesMap, fields])
+
   const renderCell = (row: DbRow, field: DbField) => {
     const val = row.cells[field.id]
     const isEditing = editingCell?.rowId === row.id && editingCell?.fieldId === field.id
+
+    // Relation field: use RelationFieldEditor
+    if (field.type === DbFieldType.Relation) {
+      return (
+        <RelationFieldEditor
+          field={field}
+          value={val ?? null}
+          tables={tablesMap}
+          onChange={(newVal) => onCellChange(row.id, field.id, newVal)}
+        />
+      )
+    }
+
+    // Computed fields: read-only display
+    if (COMPUTED_FIELD_TYPES.has(field.type)) {
+      const computed = computeCellValue(row, field)
+      const display = computed !== null && computed !== undefined ? String(computed) : ''
+      const isError = typeof computed === 'string' && computed.startsWith('#ERROR')
+      return (
+        <span className={`grid-view__cell-text grid-view__cell-text--computed ${isError ? 'grid-view__cell-text--error' : ''}`}>
+          {display || <span className="grid-view__cell-placeholder">&mdash;</span>}
+        </span>
+      )
+    }
 
     if (isEditing) {
       if (field.type === DbFieldType.Select && field.options) {
@@ -59,7 +118,7 @@ export default function GridView({
             onBlur={() => setEditingCell(null)}
             autoFocus
           >
-            <option value="">—</option>
+            <option value="">&mdash;</option>
             {field.options.choices.map((c) => (
               <option key={c.id} value={c.name}>{c.name}</option>
             ))}
@@ -110,7 +169,7 @@ export default function GridView({
     const display = val !== null && val !== undefined ? String(val) : ''
     return (
       <span className="grid-view__cell-text" onClick={() => startEdit(row.id, field.id, val ?? null)}>
-        {display || <span className="grid-view__cell-placeholder">—</span>}
+        {display || <span className="grid-view__cell-placeholder">&mdash;</span>}
       </span>
     )
   }
@@ -127,10 +186,22 @@ export default function GridView({
                   <span className="grid-view__header-name">{field.name}</span>
                 </th>
               ))}
-              <th className="grid-view__add-field">
-                <button className="grid-view__add-field-btn" onClick={onAddField} title="Add field">
+              <th className="grid-view__add-field" style={{ position: 'relative' }}>
+                <button className="grid-view__add-field-btn" onClick={() => setShowFieldPopover((p) => !p)} title="Add field">
                   <Plus size={14} />
                 </button>
+                {showFieldPopover && (
+                  <FieldConfigPopover
+                    tables={tablesMap}
+                    currentTableId={currentTableId ?? ''}
+                    currentFields={fields}
+                    onCreateField={(name, type, config) => {
+                      onAddField(name, type, config)
+                      setShowFieldPopover(false)
+                    }}
+                    onClose={() => setShowFieldPopover(false)}
+                  />
+                )}
               </th>
             </tr>
           </thead>

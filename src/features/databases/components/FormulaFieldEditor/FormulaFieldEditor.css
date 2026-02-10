@@ -1,0 +1,288 @@
+.formula-field-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-4, 1rem);
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
+  min-width: 360px;
+  max-width: 480px;
+}
+
+.formula-field-editor__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  color: var(--text-primary, #111827);
+  font-weight: 600;
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.formula-field-editor__title {
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.formula-field-editor__input-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 0.25rem);
+}
+
+.formula-field-editor__label {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  color: var(--text-secondary, #6B7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.formula-field-editor__textarea-wrapper {
+  position: relative;
+}
+
+.formula-field-editor__textarea {
+  width: 100%;
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  background: var(--bg-primary, #fff);
+  resize: vertical;
+  outline: none;
+  transition: border-color 150ms ease;
+  box-sizing: border-box;
+}
+
+.formula-field-editor__textarea:focus {
+  border-color: var(--color-primary, #4F46E5);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.formula-field-editor__textarea::placeholder {
+  color: var(--text-muted, #9CA3AF);
+  font-family: inherit;
+}
+
+/* ─── Suggestions dropdown ───────────────────────────────────────── */
+
+.formula-field-editor__suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+  z-index: 60;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: var(--space-1, 0.25rem);
+}
+
+.formula-field-editor__suggestion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-2, 0.5rem);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  text-align: left;
+  border-radius: var(--radius-sm, 4px);
+  transition: background 100ms ease;
+}
+
+.formula-field-editor__suggestion:hover {
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+.formula-field-editor__suggestion-name {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-primary, #4F46E5);
+}
+
+.formula-field-editor__suggestion-type {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+}
+
+/* ─── Preview ────────────────────────────────────────────────────── */
+
+.formula-field-editor__preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  background: var(--bg-secondary, #F9FAFB);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--text-sm, 0.875rem);
+  min-height: 32px;
+}
+
+.formula-field-editor__preview-label {
+  font-weight: 500;
+  color: var(--text-secondary, #6B7280);
+  flex-shrink: 0;
+}
+
+.formula-field-editor__preview-value {
+  color: var(--color-success, #059669);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-weight: 500;
+}
+
+.formula-field-editor__preview-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  color: var(--color-danger, #DC2626);
+  font-size: var(--text-xs, 0.75rem);
+}
+
+.formula-field-editor__preview-empty {
+  color: var(--text-muted, #9CA3AF);
+  font-style: italic;
+}
+
+/* ─── Field chips ────────────────────────────────────────────────── */
+
+.formula-field-editor__fields-section,
+.formula-field-editor__functions-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.formula-field-editor__section-label {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  color: var(--text-secondary, #6B7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.formula-field-editor__field-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1, 0.25rem);
+}
+
+.formula-field-editor__field-chip {
+  padding: 2px 8px;
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-sm, 4px);
+  background: var(--bg-primary, #fff);
+  color: var(--color-primary, #4F46E5);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: var(--text-xs, 0.75rem);
+  cursor: pointer;
+  transition: all 100ms ease;
+}
+
+.formula-field-editor__field-chip:hover {
+  background: rgba(79, 70, 229, 0.08);
+  border-color: var(--color-primary, #4F46E5);
+}
+
+/* ─── Function list ──────────────────────────────────────────────── */
+
+.formula-field-editor__function-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-1, 0.25rem);
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.formula-field-editor__function-item {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-sm, 4px);
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 100ms ease;
+}
+
+.formula-field-editor__function-item:hover {
+  background: var(--bg-secondary, #F9FAFB);
+  border-color: var(--color-primary, #4F46E5);
+}
+
+.formula-field-editor__function-name {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.formula-field-editor__function-desc {
+  font-size: 10px;
+  color: var(--text-muted, #9CA3AF);
+}
+
+/* ─── Actions ────────────────────────────────────────────────────── */
+
+.formula-field-editor__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2, 0.5rem);
+  padding-top: var(--space-2, 0.5rem);
+  border-top: 1px solid var(--border-color, #E5E7EB);
+}
+
+.formula-field-editor__actions .btn-primary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+}
+
+/* ─── Dark mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .formula-field-editor {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .formula-field-editor__textarea {
+  background: var(--bg-primary, #0F0F1A);
+  border-color: var(--border-color, #334155);
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .formula-field-editor__preview {
+  background: var(--bg-primary, #0F0F1A);
+}
+
+[data-theme="dark"] .formula-field-editor__suggestions {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .formula-field-editor__suggestion:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .formula-field-editor__field-chip {
+  background: var(--bg-primary, #0F0F1A);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .formula-field-editor__function-item {
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .formula-field-editor__function-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
