@@ -18,7 +18,13 @@ import './HomePage.css'
 export default function HomePage() {
   const bookings = useSchedulingStore((s) => s.bookings)
   const eventTypes = useSchedulingStore((s) => s.eventTypes)
+  const user = useAuthStore((s) => s.user)
   const onboardingComplete = useAuthStore((s) => s.onboardingComplete)
+
+  const firstName = useMemo(() => {
+    if (!user?.name) return undefined
+    return user.name.split(' ')[0]
+  }, [user])
 
   const upcomingBookings = useMemo(
     () =>
@@ -39,7 +45,7 @@ export default function HomePage() {
   return (
     <div className="home-page">
       {/* 1. Welcome Banner */}
-      <WelcomeBanner />
+      <WelcomeBanner userName={firstName} />
 
       {/* 1.5 First Run Checklist */}
       {onboardingComplete && <FirstRunChecklist />}
