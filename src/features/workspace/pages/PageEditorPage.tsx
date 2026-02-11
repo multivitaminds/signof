@@ -14,8 +14,10 @@ import ShareDialog from '../components/ShareDialog/ShareDialog'
 import usePresenceSimulator from '../hooks/usePresenceSimulator'
 import useWordCount from '../hooks/useWordCount'
 import { pageToMarkdown, pageToHTML } from '../lib/exportPage'
-import type { PagePropertyValue } from '../types'
+import type { PagePropertyValue, BlockComment } from '../types'
 import './PageEditorPage.css'
+
+const EMPTY_COMMENTS: BlockComment[] = []
 
 export default function PageEditorPage() {
   const { pageId } = useParams<{ pageId: string }>()
@@ -31,7 +33,7 @@ export default function PageEditorPage() {
   const toggleFavorite = useWorkspaceStore((s) => s.toggleFavorite)
   const addToRecent = useWorkspaceStore((s) => s.addToRecent)
 
-  const pageComments = useWorkspaceStore((s) => (pageId ? s.comments[pageId] ?? [] : []))
+  const pageComments = useWorkspaceStore((s) => (pageId ? s.comments[pageId] ?? EMPTY_COMMENTS : EMPTY_COMMENTS))
 
   const [showVersionHistory, setShowVersionHistory] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)

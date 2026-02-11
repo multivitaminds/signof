@@ -4,6 +4,8 @@ import { useWorkspaceStore } from '../../stores/useWorkspaceStore'
 import type { BlockComment } from '../../types'
 import './CommentsSidebar.css'
 
+const EMPTY_COMMENTS: BlockComment[] = []
+
 type FilterTab = 'all' | 'open' | 'resolved'
 
 interface CommentsSidebarProps {
@@ -42,7 +44,7 @@ function truncate(text: string, maxLength: number): string {
 }
 
 export default function CommentsSidebar({ isOpen, pageId, onClose, onCommentClick }: CommentsSidebarProps) {
-  const allComments = useWorkspaceStore((s) => s.comments[pageId] ?? [])
+  const allComments = useWorkspaceStore((s) => s.comments[pageId] ?? EMPTY_COMMENTS)
   const blocks = useWorkspaceStore((s) => s.blocks)
   const resolveComment = useWorkspaceStore((s) => s.resolveComment)
   const unresolveComment = useWorkspaceStore((s) => s.unresolveComment)

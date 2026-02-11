@@ -271,6 +271,14 @@ export default function TiptapSlashMenu({ editor }: TiptapSlashMenuProps) {
   useEffect(() => {
     if (!editor) return
 
+    let dom: HTMLElement | null = null
+    try {
+      dom = editor.view.dom
+    } catch {
+      // View not mounted yet — retry on next render
+      return
+    }
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === '/' && !isOpen) {
         // Check if we're at the start of an empty paragraph
@@ -280,13 +288,17 @@ export default function TiptapSlashMenu({ editor }: TiptapSlashMenuProps) {
         const node = $from.parent
 
         if (node.type.name === 'paragraph' && node.textContent === '') {
-          // Open slash menu
-          const coords = editor.view.coordsAtPos(from)
-          setPosition({ top: coords.bottom + 4, left: coords.left })
-          setIsOpen(true)
-          setQuery('')
-          setSelectedIndex(0)
-          slashPosRef.current = from
+          try {
+            // Open slash menu
+            const coords = editor.view.coordsAtPos(from)
+            setPosition({ top: coords.bottom + 4, left: coords.left })
+            setIsOpen(true)
+            setQuery('')
+            setSelectedIndex(0)
+            slashPosRef.current = from
+          } catch {
+            // View not available
+          }
         }
       }
     }
@@ -308,11 +320,11 @@ export default function TiptapSlashMenu({ editor }: TiptapSlashMenuProps) {
       }
     }
 
-    editor.view.dom.addEventListener('keydown', handleKeyDown)
+    dom.addEventListener('keydown', handleKeyDown)
     editor.on('transaction', handleTransaction)
 
     return () => {
-      editor.view.dom.removeEventListener('keydown', handleKeyDown)
+      dom?.removeEventListener('keydown', handleKeyDown)
       editor.off('transaction', handleTransaction)
     }
   }, [editor, isOpen])
