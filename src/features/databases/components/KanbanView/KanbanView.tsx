@@ -84,7 +84,7 @@ export default function KanbanView({
       map[key]!.push(row)
     }
     return map
-  }, [table.rows, groupFieldId, columnNames])
+  }, [table, groupFieldId, columnNames])
 
   // Build the full list of displayed columns (including uncategorized if non-empty)
   const displayedColumns = useMemo(() => {

@@ -56,7 +56,7 @@ export default function CalendarView({
       }
     }
     return map
-  }, [table.rows, dateFieldId])
+  }, [table, dateFieldId])
 
   const prevMonth = useCallback(() => {
     if (month === 1) {

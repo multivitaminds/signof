@@ -149,8 +149,9 @@ export default function AIAgentsPage() {
 
   // Clean up timers on unmount
   useEffect(() => {
+    const timers = simulationTimers.current
     return () => {
-      for (const timer of simulationTimers.current.values()) {
+      for (const timer of timers.values()) {
         clearTimeout(timer)
       }
     }

@@ -25,7 +25,7 @@ export default function TOCNodeView({ editor }: NodeViewProps) {
     })
 
     return entries
-  }, [editor, editor?.state.doc])
+  }, [editor])
 
   const handleClick = (pos: number) => {
     editor?.chain().focus().setTextSelection(pos + 1).run()

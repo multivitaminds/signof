@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react'
 import { FileText, Plus, Image } from 'lucide-react'
-import type { DbTable, CellValue } from '../../types'
+import type { DbTable, DbField, CellValue } from '../../types'
 import { DbFieldType } from '../../types'
 import './GalleryView.css'
 
@@ -81,7 +81,7 @@ export default function GalleryView({
   }, [])
 
   const renderFieldValue = useCallback(
-    (field: typeof table.fields[0], value: CellValue) => {
+    (field: DbField, value: CellValue) => {
       if (value === null || value === undefined || value === '') return null
 
       if (field.type === DbFieldType.Select && field.options) {

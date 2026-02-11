@@ -11,5 +11,6 @@ export type { BadgeVariant, BadgeSize } from './Badge'
 export { default as Avatar } from './Avatar'
 export type { AvatarSize, AvatarStatus } from './Avatar'
 
-export { default as Toast, ToastContainer, useToast } from './Toast'
+export { default as Toast, ToastContainer } from './Toast'
 export type { ToastVariant, ToastData } from './Toast'
+export { useToast } from './useToast'
