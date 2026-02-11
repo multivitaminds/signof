@@ -41,16 +41,47 @@ function tiptapMarkToBlockMark(tm: TiptapMark): { type: string; attrs?: Record<s
   }
 }
 
+function mentionMarksToNodes(marks: InlineMark[]): { mentionNodes: JSONContent[]; remaining: InlineMark[] } {
+  const mentionNodes: JSONContent[] = []
+  const remaining: InlineMark[] = []
+
+  for (const mark of marks) {
+    if (mark.type === MarkType.Mention && mark.attrs) {
+      mentionNodes.push({
+        type: 'mention',
+        attrs: {
+          id: mark.attrs.id ?? null,
+          label: mark.attrs.label ?? null,
+        },
+      })
+    } else {
+      remaining.push(mark)
+    }
+  }
+
+  return { mentionNodes, remaining }
+}
+
 function inlineMarksToTiptapContent(content: string, marks: InlineMark[]): JSONContent[] {
   if (!content && marks.length === 0) return []
-  if (!content) return []
-  if (marks.length === 0) return [{ type: 'text', text: content }]
 
-  // Build boundary points
+  // Extract mention marks — they become their own nodes, not text decorations
+  const { mentionNodes, remaining } = mentionMarksToNodes(marks)
+
+  if (!content && mentionNodes.length > 0) return mentionNodes
+  if (!content) return []
+  if (remaining.length === 0 && mentionNodes.length === 0) return [{ type: 'text', text: content }]
+
+  // If there are only mention nodes and no text marks, return text + mentions
+  if (remaining.length === 0) {
+    return [{ type: 'text', text: content }, ...mentionNodes]
+  }
+
+  // Build boundary points from non-mention marks
   const points = new Set<number>()
   points.add(0)
   points.add(content.length)
-  for (const mark of marks) {
+  for (const mark of remaining) {
     points.add(Math.max(0, mark.from))
     points.add(Math.min(content.length, mark.to))
   }
@@ -66,7 +97,7 @@ function inlineMarksToTiptapContent(content: string, marks: InlineMark[]): JSONC
     if (!text) continue
 
     const activeMarks: TiptapMark[] = []
-    for (const mark of marks) {
+    for (const mark of remaining) {
       const mFrom = Math.max(0, mark.from)
       const mTo = Math.min(content.length, mark.to)
       if (mFrom <= from && mTo >= to) {
@@ -92,7 +123,8 @@ function inlineMarksToTiptapContent(content: string, marks: InlineMark[]): JSONC
     textNodes.push(node)
   }
 
-  return textNodes.length > 0 ? textNodes : [{ type: 'text', text: content }]
+  const base = textNodes.length > 0 ? textNodes : [{ type: 'text', text: content }]
+  return mentionNodes.length > 0 ? [...base, ...mentionNodes] : base
 }
 
 // ─── Tiptap text nodes → Block InlineMark[] ───────────────────────
@@ -102,6 +134,21 @@ function tiptapContentToInlineMarks(content: JSONContent[]): { text: string; mar
   const inlineMarks: InlineMark[] = []
 
   for (const node of content) {
+    // Handle mention nodes → store as mention marks
+    if (node.type === 'mention') {
+      const from = text.length
+      inlineMarks.push({
+        type: MarkType.Mention as InlineMark['type'],
+        from,
+        to: from,
+        attrs: {
+          id: String(node.attrs?.id ?? ''),
+          label: String(node.attrs?.label ?? ''),
+        },
+      })
+      continue
+    }
+
     if (node.type === 'text' && node.text) {
       const from = text.length
       const to = from + node.text.length

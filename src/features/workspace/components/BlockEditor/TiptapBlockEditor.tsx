@@ -26,10 +26,13 @@ import {
   SignofFile,
   SignofEquation,
   SignofTOC,
+  SignofMention,
 } from '../../editor/extensions'
 import { useTiptapSync } from './useTiptapSync'
 import TiptapBubbleMenu from './TiptapBubbleMenu'
 import TiptapSlashMenu from './TiptapSlashMenu'
+import TiptapMentionMenu from './TiptapMentionMenu'
+import TiptapPageLinkMenu from './TiptapPageLinkMenu'
 import type { Block } from '../../types'
 import './TiptapBlockEditor.css'
 
@@ -62,7 +65,23 @@ export default function TiptapBlockEditor({ pageId, blockIds }: TiptapBlockEdito
       Highlight.configure({ multicolor: true }),
       Color,
       TextStyle,
-      Link.configure({
+      Link.extend({
+        addAttributes() {
+          return {
+            ...this.parent?.(),
+            pageId: {
+              default: null,
+              renderHTML(attributes) {
+                if (!attributes.pageId) return {}
+                return { 'data-page-id': attributes.pageId }
+              },
+              parseHTML(element) {
+                return element.getAttribute('data-page-id')
+              },
+            },
+          }
+        },
+      }).configure({
         openOnClick: false,
         HTMLAttributes: { rel: 'noopener noreferrer', target: '_blank' },
       }),
@@ -83,6 +102,7 @@ export default function TiptapBlockEditor({ pageId, blockIds }: TiptapBlockEdito
       TableCell,
       TableHeader,
       // Custom extensions
+      SignofMention,
       SignofCallout,
       SignofToggle,
       SignofColumns,
@@ -155,6 +175,8 @@ export default function TiptapBlockEditor({ pageId, blockIds }: TiptapBlockEdito
       )}
 
       <TiptapSlashMenu editor={editor} />
+      <TiptapMentionMenu editor={editor} />
+      <TiptapPageLinkMenu editor={editor} />
 
       <EditorContent editor={editor} />
 

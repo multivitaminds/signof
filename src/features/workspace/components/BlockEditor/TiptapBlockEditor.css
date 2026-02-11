@@ -215,6 +215,20 @@
   text-decoration-color: var(--color-primary, #4f46e5);
 }
 
+/* Page Links (internal [[ links) */
+.tiptap-editor__prose a[data-page-id] {
+  background: rgba(79, 70, 229, 0.1);
+  border-radius: var(--radius-sm, 0.25rem);
+  padding: 1px 4px;
+  text-decoration: none;
+  color: var(--color-primary, #4f46e5);
+  cursor: pointer;
+}
+
+.tiptap-editor__prose a[data-page-id]:hover {
+  background: rgba(79, 70, 229, 0.18);
+}
+
 /* Marks */
 .tiptap-editor__prose mark {
   border-radius: 2px;
@@ -259,5 +273,13 @@
 
   .tiptap-editor__prose blockquote {
     color: var(--text-secondary, #94a3b8);
+  }
+
+  .tiptap-editor__prose a[data-page-id] {
+    background: rgba(79, 70, 229, 0.25);
+  }
+
+  .tiptap-editor__prose a[data-page-id]:hover {
+    background: rgba(79, 70, 229, 0.35);
   }
 }

@@ -1,0 +1,95 @@
+/* ─── Page Link Menu ───────────────────────────────────────────── */
+
+.tiptap-page-link-menu {
+  position: fixed;
+  z-index: 1000;
+  width: 300px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-lg, 0.75rem);
+  box-shadow: var(--shadow-lg, 0 4px 12px rgba(0, 0, 0, 0.15));
+  padding: 4px;
+}
+
+.tiptap-page-link-menu__header {
+  padding: 6px 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, #94a3b8);
+}
+
+.tiptap-page-link-menu__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.tiptap-page-link-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 0.5rem);
+  padding: 8px 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm, 0.25rem);
+  text-align: left;
+  width: 100%;
+  transition: background 0.1s ease;
+}
+
+.tiptap-page-link-menu__item:hover,
+.tiptap-page-link-menu__item--selected {
+  background: var(--bg-secondary, #f1f5f9);
+}
+
+.tiptap-page-link-menu__item-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+.tiptap-page-link-menu__item-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tiptap-page-link-menu__item-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tiptap-page-link-menu__item-date {
+  font-size: 0.7rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+.tiptap-page-link-menu__empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.875rem;
+}
+
+/* ─── Dark Mode ───────────────────────────────────────────────── */
+
+@media (prefers-color-scheme: dark) {
+  .tiptap-page-link-menu {
+    background: var(--bg-secondary, #1a1a2e);
+    border-color: var(--border-color, #334155);
+  }
+
+  .tiptap-page-link-menu__item:hover,
+  .tiptap-page-link-menu__item--selected {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}

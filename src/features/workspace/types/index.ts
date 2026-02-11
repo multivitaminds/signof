@@ -36,6 +36,7 @@ export const MarkType = {
   Link: 'link',
   Highlight: 'highlight',
   TextColor: 'textColor',
+  Mention: 'mention',
 } as const
 
 export type MarkType = (typeof MarkType)[keyof typeof MarkType]
