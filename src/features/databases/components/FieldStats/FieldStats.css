@@ -1,0 +1,117 @@
+/* ═══════════════════════════════════════════════════════════
+   FieldStats — BEM (footer row in GridView)
+   ═══════════════════════════════════════════════════════════ */
+
+.field-stats {
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg, 12px) var(--radius-lg, 12px);
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+.field-stats__header {
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+}
+
+.field-stats__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  background: none;
+  border: none;
+  color: var(--text-muted, #9CA3AF);
+  font-size: var(--text-xs, 0.75rem);
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+  transition: all 150ms ease;
+  margin-top: var(--space-1, 0.25rem);
+}
+
+.field-stats__toggle:hover {
+  color: var(--color-primary, #4F46E5);
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+.field-stats__toggle--active {
+  color: var(--color-primary, #4F46E5);
+  margin-top: 0;
+}
+
+/* ─── Stats Row ──────────────────────────────────────────── */
+
+.field-stats__row {
+  display: flex;
+  overflow-x: auto;
+}
+
+.field-stats__cell {
+  flex-shrink: 0;
+  padding: 0;
+  border-right: 1px solid var(--border-color, #E5E7EB);
+}
+
+.field-stats__cell:last-child {
+  border-right: none;
+}
+
+.field-stats__cell--num {
+  width: 40px;
+}
+
+.field-stats__stat-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 0;
+  transition: background 100ms ease;
+  min-height: 44px;
+  text-align: left;
+}
+
+.field-stats__stat-btn:hover {
+  background: rgba(79, 70, 229, 0.04);
+}
+
+.field-stats__stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted, #9CA3AF);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.field-stats__stat-value {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────── */
+
+[data-theme="dark"] .field-stats {
+  border-color: var(--border-color, #334155);
+  background: var(--bg-tertiary, #1E1E36);
+}
+
+[data-theme="dark"] .field-stats__header {
+  border-bottom-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .field-stats__cell {
+  border-right-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .field-stats__stat-btn:hover {
+  background: rgba(79, 70, 229, 0.08);
+}

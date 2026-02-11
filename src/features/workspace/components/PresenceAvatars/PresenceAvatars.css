@@ -1,0 +1,88 @@
+/* ─── Presence Avatars ──────────────────────────────────────────────── */
+
+.presence-avatars {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.presence-avatars__stack {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.presence-avatars__avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-primary, #fff);
+  margin-left: -8px;
+  flex-shrink: 0;
+  line-height: 1;
+  cursor: default;
+  position: relative;
+  z-index: 1;
+}
+
+.presence-avatars__avatar:last-child {
+  margin-left: 0;
+}
+
+.presence-avatars__avatar:hover {
+  z-index: 10;
+  transform: scale(1.1);
+  transition: transform 100ms ease;
+}
+
+.presence-avatars__label {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+  white-space: nowrap;
+}
+
+/* ─── Cursor Labels (used in editor) ─────────────────────────────── */
+
+.presence-cursor {
+  position: absolute;
+  left: -40px;
+  pointer-events: none;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: top 0.8s ease-out;
+}
+
+.presence-cursor__line {
+  width: 2px;
+  height: 18px;
+  border-radius: 1px;
+}
+
+.presence-cursor__label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+/* ─── Dark Mode ───────────────────────────────────────────────────── */
+
+[data-theme="dark"] .presence-avatars__avatar {
+  border-color: var(--bg-secondary, #1A1A2E);
+}
+
+@media (prefers-color-scheme: dark) {
+  .presence-avatars__avatar {
+    border-color: var(--bg-secondary, #1A1A2E);
+  }
+}

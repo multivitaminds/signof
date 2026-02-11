@@ -9,6 +9,7 @@ interface PageTreeProps {
   selectedPageId?: string
   onSelectPage: (pageId: string) => void
   onNewPage?: (parentId?: string) => void
+  onToggleFavorite?: (pageId: string) => void
   compact?: boolean
   maxItems?: number
 }
@@ -18,6 +19,7 @@ export default function PageTree({
   selectedPageId,
   onSelectPage,
   onNewPage,
+  onToggleFavorite,
   compact = false,
   maxItems,
 }: PageTreeProps) {
@@ -56,6 +58,7 @@ export default function PageTree({
             selectedPageId={selectedPageId}
             onSelectPage={onSelectPage}
             onNewPage={onNewPage}
+            onToggleFavorite={onToggleFavorite}
             compact={compact}
           />
         ))}

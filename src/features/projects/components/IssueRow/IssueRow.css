@@ -24,6 +24,21 @@
   border-radius: var(--radius-sm);
 }
 
+.issue-row__check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  flex-shrink: 0;
+}
+
+.issue-row__checkbox {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
 .issue-row__cell {
   overflow: hidden;
   text-overflow: ellipsis;

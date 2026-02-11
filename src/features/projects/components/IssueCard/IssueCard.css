@@ -27,6 +27,21 @@
   outline-offset: -2px;
 }
 
+/* ─── Checkbox ────────────────────────────────────────────────────── */
+
+.issue-card__check {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: var(--space-1);
+}
+
+.issue-card__checkbox {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
 /* ─── Identifier ───────────────────────────────────────────────────── */
 
 .issue-card__identifier {

@@ -117,6 +117,7 @@ interface WorkspaceState {
   syncedBlocks: Record<string, Block>
   undoStack: UndoSnapshot[]
   redoStack: UndoSnapshot[]
+  recentPageIds: string[]
 
   // Page CRUD
   addPage: (title: string, parentId?: string | null) => string
@@ -180,6 +181,12 @@ interface WorkspaceState {
   createSyncedBlock: (blockId: string) => string | null
   insertSyncedBlock: (pageId: string, syncedBlockId: string, afterBlockId?: string) => string | null
   updateSyncedBlockContent: (syncedBlockId: string, content: string) => void
+
+  // Favorites & Recent
+  toggleFavorite: (pageId: string) => void
+  addToRecent: (pageId: string) => void
+  getFavoritePages: () => Page[]
+  getRecentPages: () => Page[]
 }
 
 export const useWorkspaceStore = create<WorkspaceState>()(
@@ -196,6 +203,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         syncedBlocks: {},
         undoStack: [],
         redoStack: [],
+        recentPageIds: [],
 
         // ─── Page CRUD ────────────────────────────────────────────
 
@@ -1220,6 +1228,43 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             blocks: updatedBlocks,
           })
         },
+
+        // ─── Favorites & Recent ──────────────────────────────────
+
+        toggleFavorite: (pageId) => {
+          set((state) => {
+            const page = state.pages[pageId]
+            if (!page) return state
+            return {
+              pages: {
+                ...state.pages,
+                [pageId]: { ...page, isFavorite: !page.isFavorite, updatedAt: now() },
+              },
+            }
+          })
+        },
+
+        addToRecent: (pageId) => {
+          set((state) => {
+            const filtered = state.recentPageIds.filter((id) => id !== pageId)
+            const updated = [pageId, ...filtered].slice(0, 10)
+            return { recentPageIds: updated }
+          })
+        },
+
+        getFavoritePages: () => {
+          const state = get()
+          return Object.values(state.pages)
+            .filter((p) => p.isFavorite && !p.trashedAt)
+            .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+        },
+
+        getRecentPages: () => {
+          const state = get()
+          return state.recentPageIds
+            .map((id) => state.pages[id])
+            .filter((p): p is Page => p !== undefined && !p.trashedAt)
+        },
       }
     },
     {
@@ -1232,6 +1277,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         editCounts: state.editCounts,
         comments: state.comments,
         syncedBlocks: state.syncedBlocks,
+        recentPageIds: state.recentPageIds,
       }),
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as Record<string, unknown>

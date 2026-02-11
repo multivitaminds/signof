@@ -1,10 +1,10 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ChevronLeft, Upload, Plus } from 'lucide-react'
+import { ChevronLeft, Upload, Plus, Zap, Palette } from 'lucide-react'
 import { useDatabaseStore } from '../stores/useDatabaseStore'
 import { ViewType, DbFieldType } from '../types'
-import type { CellValue, Filter, Sort, DbRow, RelationConfig, LookupConfig, RollupConfig, FormulaConfig } from '../types'
+import type { CellValue, Filter, Sort, DbRow, RowColorRule, RelationConfig, LookupConfig, RollupConfig, FormulaConfig } from '../types'
 import type { DbFieldType as DbFieldTypeType } from '../types'
 import ViewSwitcher from '../components/ViewSwitcher/ViewSwitcher'
 import ToolbarRow from '../components/ToolbarRow/ToolbarRow'
@@ -14,9 +14,53 @@ import KanbanView from '../components/KanbanView/KanbanView'
 import GalleryView from '../components/GalleryView/GalleryView'
 import CalendarView from '../components/CalendarView/CalendarView'
 import FormView from '../components/FormView/FormView'
+import TimelineView from '../components/TimelineView/TimelineView'
 import CreateTableModal from '../components/CreateTableModal/CreateTableModal'
 import FileUploadParser from '../components/FileUploadParser/FileUploadParser'
+import AutomationsPanel from '../components/AutomationsPanel/AutomationsPanel'
+import RowDetailModal from '../components/RowDetailModal/RowDetailModal'
+import FieldStats from '../components/FieldStats/FieldStats'
+import RowColorSettings from '../components/RowColorSettings/RowColorSettings'
+import { RowColorOperator } from '../types'
 import './DatabaseDetailPage.css'
+
+// ─── Row color matching ─────────────────────────────────────────────
+
+function matchesColorRule(
+  cellValue: CellValue,
+  rule: RowColorRule
+): boolean {
+  const strVal = cellValue !== null && cellValue !== undefined ? String(cellValue) : ''
+
+  switch (rule.operator) {
+    case RowColorOperator.Equals:
+      return strVal === rule.value
+    case RowColorOperator.NotEquals:
+      return strVal !== rule.value
+    case RowColorOperator.Contains:
+      return strVal.toLowerCase().includes(rule.value.toLowerCase())
+    case RowColorOperator.Gt:
+      return Number(strVal) > Number(rule.value)
+    case RowColorOperator.Lt:
+      return Number(strVal) < Number(rule.value)
+    case RowColorOperator.IsEmpty:
+      return strVal === ''
+    case RowColorOperator.IsNotEmpty:
+      return strVal !== ''
+    default:
+      return false
+  }
+}
+
+function getRowColor(row: DbRow, rules: RowColorRule[]): string | undefined {
+  for (const rule of rules) {
+    const cellValue = row.cells[rule.fieldId] ?? null
+    if (matchesColorRule(cellValue, rule)) {
+      return rule.color
+    }
+  }
+  return undefined
+}
 
 export default function DatabaseDetailPage() {
   const { databaseId } = useParams<{ databaseId: string }>()
@@ -40,6 +84,9 @@ export default function DatabaseDetailPage() {
   const [titleDraft, setTitleDraft] = useState('')
   const [showCreateTable, setShowCreateTable] = useState(false)
   const [showFileUpload, setShowFileUpload] = useState(false)
+  const [showAutomations, setShowAutomations] = useState(false)
+  const [showRowColorSettings, setShowRowColorSettings] = useState(false)
+  const [detailRowId, setDetailRowId] = useState<string | null>(null)
 
   // Per-view field selections
   const [kanbanFieldId, setKanbanFieldId] = useState<string | null>(null)
@@ -69,10 +116,26 @@ export default function DatabaseDetailPage() {
     [resolvedTable, activeView, debouncedSearch, getFilteredRows, tablesMap]
   )
 
+  // Row color rules from active view
+  const rowColorRules = useMemo(
+    () => activeView?.rowColorRules ?? [],
+    [activeView?.rowColorRules]
+  )
+
+  // Compute row colors
+  const rowColors = useMemo(() => {
+    if (rowColorRules.length === 0) return {}
+    const colors: Record<string, string> = {}
+    for (const row of filteredRows) {
+      const color = getRowColor(row, rowColorRules)
+      if (color) colors[row.id] = color
+    }
+    return colors
+  }, [filteredRows, rowColorRules])
+
   // Resolve kanban and calendar field IDs
   const resolvedKanbanFieldId = useMemo(() => {
     if (!resolvedTable) return ''
-    // Use explicit selection, or view groupBy, or first select field
     if (kanbanFieldId && resolvedTable.fields.find((f) => f.id === kanbanFieldId)) return kanbanFieldId
     if (activeView?.groupBy) return activeView.groupBy
     const selectField = resolvedTable.fields.find((f) => f.type === DbFieldType.Select)
@@ -85,6 +148,15 @@ export default function DatabaseDetailPage() {
     const dateField = resolvedTable.fields.find((f) => f.type === DbFieldType.Date)
     return dateField?.id ?? ''
   }, [resolvedTable, calendarFieldId])
+
+  // Timeline date field IDs
+  const timelineDateFieldIds = useMemo(() => {
+    if (!resolvedTable) return { start: '', end: '' }
+    const dateFields = resolvedTable.fields.filter((f) => f.type === DbFieldType.Date)
+    const startId = activeView?.timelineStartFieldId ?? dateFields[0]?.id ?? ''
+    const endId = activeView?.timelineEndFieldId ?? dateFields[1]?.id ?? dateFields[0]?.id ?? ''
+    return { start: startId, end: endId }
+  }, [resolvedTable, activeView?.timelineStartFieldId, activeView?.timelineEndFieldId])
 
   // Existing table names for validation
   const existingTableNames = useMemo(() => {
@@ -105,6 +177,16 @@ export default function DatabaseDetailPage() {
       })
       .filter((t): t is NonNullable<typeof t> => t !== null)
   }, [database, tablesMap])
+
+  // Row detail modal
+  const detailRow = useMemo(
+    () => detailRowId ? filteredRows.find((r) => r.id === detailRowId) ?? null : null,
+    [detailRowId, filteredRows]
+  )
+  const detailRowIndex = useMemo(
+    () => detailRowId ? filteredRows.findIndex((r) => r.id === detailRowId) : -1,
+    [detailRowId, filteredRows]
+  )
 
   const handleSwitchTable = useCallback((tableId: string) => {
     setActiveTableId(tableId)
@@ -141,7 +223,6 @@ export default function DatabaseDetailPage() {
   ) => {
     if (!resolvedTable) return
     const fieldId = addField(resolvedTable.id, name, type)
-    // Apply config if provided (for relational/formula field types)
     if (config) {
       updateField(resolvedTable.id, fieldId, config)
     }
@@ -155,6 +236,7 @@ export default function DatabaseDetailPage() {
       [ViewType.Calendar]: 'Calendar view',
       [ViewType.Gallery]: 'Gallery view',
       [ViewType.Form]: 'Form view',
+      [ViewType.Timeline]: 'Timeline view',
     }
     const id = addView(resolvedTable.id, viewNames[type] ?? 'New view', type)
     setActiveViewId(id)
@@ -219,7 +301,6 @@ export default function DatabaseDetailPage() {
 
   const handleKanbanFieldChange = useCallback((fieldId: string) => {
     setKanbanFieldId(fieldId)
-    // Also update the view's groupBy
     if (resolvedTable && activeView) {
       updateView(resolvedTable.id, activeView.id, { groupBy: fieldId })
     }
@@ -228,6 +309,27 @@ export default function DatabaseDetailPage() {
   const handleCalendarFieldChange = useCallback((fieldId: string) => {
     setCalendarFieldId(fieldId)
   }, [])
+
+  // Row detail navigation
+  const handleRowClick = useCallback((rowId: string) => {
+    setDetailRowId(rowId)
+  }, [])
+
+  const handleDetailNavigate = useCallback((direction: 'prev' | 'next') => {
+    const idx = filteredRows.findIndex((r) => r.id === detailRowId)
+    if (idx < 0) return
+    const nextIdx = direction === 'prev' ? idx - 1 : idx + 1
+    if (nextIdx >= 0 && nextIdx < filteredRows.length) {
+      setDetailRowId(filteredRows[nextIdx]!.id)
+    }
+  }, [detailRowId, filteredRows])
+
+  // Row color rules change
+  const handleRowColorRulesChange = useCallback((rules: RowColorRule[]) => {
+    if (resolvedTable && activeView) {
+      updateView(resolvedTable.id, activeView.id, { rowColorRules: rules })
+    }
+  }, [resolvedTable, activeView, updateView])
 
   if (!database || !resolvedTable) {
     return (
@@ -262,6 +364,26 @@ export default function DatabaseDetailPage() {
             {database.name}
           </h1>
         )}
+
+        {/* Header actions */}
+        <div className="db-detail-page__header-actions">
+          <button
+            className="db-detail-page__action-btn"
+            onClick={() => setShowAutomations(true)}
+            aria-label="Automations"
+            title="Automations"
+          >
+            <Zap size={16} />
+          </button>
+          <button
+            className="db-detail-page__action-btn"
+            onClick={() => setShowRowColorSettings(true)}
+            aria-label="Row Color Rules"
+            title="Row Color Rules"
+          >
+            <Palette size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Table Tab Bar */}
@@ -336,18 +458,28 @@ export default function DatabaseDetailPage() {
 
       <div className="db-detail-page__view">
         {activeView?.type === ViewType.Grid && (
-          <GridView
-            fields={resolvedTable.fields}
-            rows={filteredRows}
-            hiddenFields={activeView.hiddenFields}
-            fieldOrder={activeView.fieldOrder}
-            onCellChange={handleCellChange}
-            onAddRow={() => handleAddRow()}
-            onAddField={handleAddField}
-            onDeleteRow={handleDeleteRow}
-            tables={tablesMap}
-            currentTableId={resolvedTableId}
-          />
+          <>
+            <GridView
+              fields={resolvedTable.fields}
+              rows={filteredRows}
+              hiddenFields={activeView.hiddenFields}
+              fieldOrder={activeView.fieldOrder}
+              onCellChange={handleCellChange}
+              onAddRow={() => handleAddRow()}
+              onAddField={handleAddField}
+              onDeleteRow={handleDeleteRow}
+              tables={tablesMap}
+              currentTableId={resolvedTableId}
+              rowColors={rowColors}
+              onRowClick={handleRowClick}
+            />
+            <FieldStats
+              fields={resolvedTable.fields}
+              rows={filteredRows}
+              hiddenFields={activeView.hiddenFields}
+              fieldOrder={activeView.fieldOrder}
+            />
+          </>
         )}
         {activeView?.type === ViewType.Kanban && resolvedKanbanFieldId && (
           <KanbanView
@@ -357,6 +489,7 @@ export default function DatabaseDetailPage() {
             onUpdateCell={handleCellChange}
             onAddRow={handleAddRow}
             onDeleteRow={handleDeleteRow}
+            onCardOpen={handleRowClick}
           />
         )}
         {activeView?.type === ViewType.Gallery && (
@@ -389,6 +522,16 @@ export default function DatabaseDetailPage() {
             onSubmit={(cells) => addRow(resolvedTable.id, cells)}
           />
         )}
+        {activeView?.type === ViewType.Timeline && timelineDateFieldIds.start && (
+          <TimelineView
+            table={resolvedTable}
+            tables={tablesMap}
+            startDateFieldId={timelineDateFieldIds.start}
+            endDateFieldId={timelineDateFieldIds.end}
+            onUpdateCell={handleCellChange}
+            onRowClick={handleRowClick}
+          />
+        )}
       </div>
 
       {/* Create Table Modal */}
@@ -409,6 +552,39 @@ export default function DatabaseDetailPage() {
           onImportToTable={handleImportToTable}
           existingTables={existingTablesInfo}
           onClose={() => setShowFileUpload(false)}
+        />
+      )}
+
+      {/* Automations Panel */}
+      {showAutomations && (
+        <AutomationsPanel
+          fields={resolvedTable.fields}
+          onClose={() => setShowAutomations(false)}
+        />
+      )}
+
+      {/* Row Color Settings */}
+      {showRowColorSettings && (
+        <RowColorSettings
+          fields={resolvedTable.fields}
+          rules={rowColorRules}
+          onRulesChange={handleRowColorRulesChange}
+          onClose={() => setShowRowColorSettings(false)}
+        />
+      )}
+
+      {/* Row Detail Modal */}
+      {detailRow && detailRowIndex >= 0 && (
+        <RowDetailModal
+          table={resolvedTable}
+          tables={tablesMap}
+          row={detailRow}
+          rowIndex={detailRowIndex}
+          totalRows={filteredRows.length}
+          onClose={() => setDetailRowId(null)}
+          onUpdateCell={handleCellChange}
+          onDeleteRow={(id) => { handleDeleteRow(id); setDetailRowId(null) }}
+          onNavigate={handleDetailNavigate}
         />
       )}
     </div>

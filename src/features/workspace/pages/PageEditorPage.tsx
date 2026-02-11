@@ -1,12 +1,18 @@
 import { useEffect, useCallback, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { FileText, Clock, Download, FileDown, MessageSquare, Undo2, Redo2 } from 'lucide-react'
+import { FileText, Clock, Download, FileDown, MessageSquare, Undo2, Redo2, Share2, Star } from 'lucide-react'
 import { useWorkspaceStore } from '../stores/useWorkspaceStore'
 import PageHeader from '../components/PageHeader/PageHeader'
 import BlockEditor from '../components/BlockEditor/BlockEditor'
 import PageProperties from '../components/PageProperties/PageProperties'
 import VersionHistory from '../components/VersionHistory/VersionHistory'
 import CommentsSidebar from '../components/CommentsSidebar/CommentsSidebar'
+import PageBreadcrumb from '../components/PageBreadcrumb/PageBreadcrumb'
+import PresenceAvatars from '../components/PresenceAvatars/PresenceAvatars'
+import PresenceCursors from '../components/PresenceAvatars/PresenceCursors'
+import ShareDialog from '../components/ShareDialog/ShareDialog'
+import usePresenceSimulator from '../hooks/usePresenceSimulator'
+import useWordCount from '../hooks/useWordCount'
 import { pageToMarkdown, pageToHTML } from '../lib/exportPage'
 import type { PagePropertyValue } from '../types'
 import './PageEditorPage.css'
@@ -22,6 +28,8 @@ export default function PageEditorPage() {
   const createSnapshot = useWorkspaceStore((s) => s.createSnapshot)
   const restoreSnapshot = useWorkspaceStore((s) => s.restoreSnapshot)
   const deleteSnapshot = useWorkspaceStore((s) => s.deleteSnapshot)
+  const toggleFavorite = useWorkspaceStore((s) => s.toggleFavorite)
+  const addToRecent = useWorkspaceStore((s) => s.addToRecent)
 
   const undo = useWorkspaceStore((s) => s.undo)
   const redo = useWorkspaceStore((s) => s.redo)
@@ -33,11 +41,19 @@ export default function PageEditorPage() {
   const [showVersionHistory, setShowVersionHistory] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
   const [showCommentsSidebar, setShowCommentsSidebar] = useState(false)
+  const [showShareDialog, setShowShareDialog] = useState(false)
 
-  // Update lastViewedAt on mount
+  // Presence simulation
+  const presenceUsers = usePresenceSimulator(pageId ?? '')
+
+  // Word count
+  const wordCountData = useWordCount(page?.blockIds ?? [])
+
+  // Update lastViewedAt and add to recent on mount
   useEffect(() => {
     if (pageId && page) {
       updatePage(pageId, { lastViewedAt: new Date().toISOString() })
+      addToRecent(pageId)
     }
   }, [pageId]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -143,6 +159,12 @@ export default function PageEditorPage() {
     []
   )
 
+  const handleToggleFavorite = useCallback(() => {
+    if (pageId) {
+      toggleFavorite(pageId)
+    }
+  }, [pageId, toggleFavorite])
+
   if (!page) {
     return (
       <div className="page-editor__not-found">
@@ -156,20 +178,61 @@ export default function PageEditorPage() {
   const backlinks = pageId ? getBacklinks(pageId) : []
   const snapshots = pageId ? getPageHistory(pageId) : []
 
+  const totalComments = pageComments.length
   const openCommentCount = pageComments.filter((c) => !c.resolved).length
   const hasSidePanel = showVersionHistory || showCommentsSidebar
 
   return (
     <div className={`page-editor-layout ${hasSidePanel ? 'page-editor-layout--with-history' : ''}`}>
       <div className="page-editor">
+        {/* Breadcrumb trail */}
+        {pageId && <PageBreadcrumb pageId={pageId} />}
+
         {/* Page toolbar */}
         <div className="page-editor__toolbar">
+          {/* Left side: info bar */}
+          <div className="page-editor__toolbar-info">
+            {/* Comment summary */}
+            {totalComments > 0 && (
+              <span className="page-editor__info-item page-editor__info-item--comments">
+                {totalComments} comment{totalComments === 1 ? '' : 's'}
+                {openCommentCount > 0 && ` (${openCommentCount} open)`}
+              </span>
+            )}
+            {/* Word count / reading time */}
+            {wordCountData.wordCount > 0 && (
+              <span className="page-editor__info-item">
+                {wordCountData.readingTimeLabel}
+              </span>
+            )}
+          </div>
+
+          {/* Right side: actions */}
           <div className="page-editor__toolbar-actions">
+            {/* Presence avatars */}
+            <PresenceAvatars users={presenceUsers} />
+
+            <button
+              className={`page-editor__toolbar-btn ${page.isFavorite ? 'page-editor__toolbar-btn--favorite' : ''}`}
+              onClick={handleToggleFavorite}
+              title={page.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              aria-label={page.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              <Star size={16} fill={page.isFavorite ? 'currentColor' : 'none'} />
+            </button>
+            <button
+              className="page-editor__toolbar-btn"
+              onClick={() => setShowShareDialog(true)}
+              title="Share"
+              aria-label="Share page"
+            >
+              <Share2 size={16} />
+            </button>
             <button
               className="page-editor__toolbar-btn"
               onClick={undo}
               disabled={!canUndo()}
-              title="Undo (⌘Z)"
+              title="Undo"
               aria-label="Undo"
             >
               <Undo2 size={16} />
@@ -178,7 +241,7 @@ export default function PageEditorPage() {
               className="page-editor__toolbar-btn"
               onClick={redo}
               disabled={!canRedo()}
-              title="Redo (⌘⇧Z)"
+              title="Redo"
               aria-label="Redo"
             >
               <Redo2 size={16} />
@@ -248,10 +311,14 @@ export default function PageEditorPage() {
           onUpdate={handlePropertiesChange}
         />
 
-        <BlockEditor
-          pageId={page.id}
-          blockIds={page.blockIds}
-        />
+        {/* Editor with presence cursors */}
+        <div className="page-editor__editor-wrapper">
+          <PresenceCursors users={presenceUsers} />
+          <BlockEditor
+            pageId={page.id}
+            blockIds={page.blockIds}
+          />
+        </div>
 
         {/* Backlinks */}
         {backlinks.length > 0 && (
@@ -289,6 +356,13 @@ export default function PageEditorPage() {
         pageId={pageId ?? ''}
         onClose={() => setShowCommentsSidebar(false)}
         onCommentClick={handleCommentClick}
+      />
+
+      {/* Share Dialog */}
+      <ShareDialog
+        isOpen={showShareDialog}
+        pageTitle={page.title}
+        onClose={() => setShowShareDialog(false)}
       />
     </div>
   )

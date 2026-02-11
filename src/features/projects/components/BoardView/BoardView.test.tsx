@@ -38,8 +38,10 @@ describe('BoardView', () => {
     issues: [] as Issue[],
     members: mockMembers,
     labels: mockLabels,
+    projectId: 'proj-1',
     onIssueClick: vi.fn(),
     onStatusChange: vi.fn(),
+    onQuickCreate: vi.fn(),
   }
 
   it('renders columns for each board status', () => {

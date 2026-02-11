@@ -2,26 +2,35 @@ import { useCallback, useState } from 'react'
 import type { Issue, Member, Label, IssueStatus } from '../../types'
 import { BOARD_STATUSES, STATUS_CONFIG } from '../../types'
 import IssueCard from '../IssueCard/IssueCard'
+import IssueQuickCreate from '../IssueQuickCreate/IssueQuickCreate'
 import './BoardView.css'
 
 interface BoardViewProps {
   issues: Issue[]
   members: Member[]
   labels: Label[]
+  projectId: string
   onIssueClick: (id: string) => void
   onStatusChange: (issueId: string, status: IssueStatus) => void
+  onQuickCreate: (data: { projectId: string; title: string; status?: IssueStatus }) => void
   selectedIssueId?: string
   focusedIndex?: number
+  selectedIssueIds?: Set<string>
+  onToggleSelection?: (issueId: string) => void
 }
 
 function BoardView({
   issues,
   members,
   labels,
+  projectId,
   onIssueClick,
   onStatusChange,
+  onQuickCreate,
   selectedIssueId,
   focusedIndex,
+  selectedIssueIds,
+  onToggleSelection,
 }: BoardViewProps) {
   const [dragOverStatus, setDragOverStatus] = useState<IssueStatus | null>(null)
 
@@ -118,11 +127,19 @@ function BoardView({
                         onClick={() => onIssueClick(issue.id)}
                         selected={selectedIssueId === issue.id}
                         focused={focusedIndex === currentIndex}
+                        checked={selectedIssueIds?.has(issue.id)}
+                        onCheckChange={onToggleSelection}
                       />
                     )
                   })
                 )}
               </div>
+              <IssueQuickCreate
+                projectId={projectId}
+                defaultStatus={status}
+                onCreateIssue={onQuickCreate}
+                variant="board"
+              />
             </div>
           )
         })}

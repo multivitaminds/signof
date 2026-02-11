@@ -401,6 +401,81 @@ describe('useWorkspaceStore', () => {
     })
   })
 
+  describe('favorites', () => {
+    it('toggleFavorite marks a page as favorite', () => {
+      const id = useWorkspaceStore.getState().addPage('Test')
+      expect(useWorkspaceStore.getState().pages[id]!.isFavorite).toBe(false)
+
+      useWorkspaceStore.getState().toggleFavorite(id)
+      expect(useWorkspaceStore.getState().pages[id]!.isFavorite).toBe(true)
+
+      useWorkspaceStore.getState().toggleFavorite(id)
+      expect(useWorkspaceStore.getState().pages[id]!.isFavorite).toBe(false)
+    })
+
+    it('getFavoritePages returns only favorites', () => {
+      const id1 = useWorkspaceStore.getState().addPage('Fav 1')
+      const id2 = useWorkspaceStore.getState().addPage('Not Fav')
+      useWorkspaceStore.getState().toggleFavorite(id1)
+
+      const favs = useWorkspaceStore.getState().getFavoritePages()
+      expect(favs.find(p => p.id === id1)).toBeDefined()
+      expect(favs.find(p => p.id === id2)).toBeUndefined()
+    })
+
+    it('getFavoritePages excludes trashed pages', () => {
+      const id = useWorkspaceStore.getState().addPage('Fav')
+      useWorkspaceStore.getState().toggleFavorite(id)
+      useWorkspaceStore.getState().deletePage(id)
+
+      const favs = useWorkspaceStore.getState().getFavoritePages()
+      expect(favs.find(p => p.id === id)).toBeUndefined()
+    })
+  })
+
+  describe('recent pages', () => {
+    it('addToRecent adds page to recent list', () => {
+      const id = useWorkspaceStore.getState().addPage('Test')
+      useWorkspaceStore.getState().addToRecent(id)
+
+      const recent = useWorkspaceStore.getState().getRecentPages()
+      expect(recent[0]!.id).toBe(id)
+    })
+
+    it('addToRecent moves existing page to front', () => {
+      const id1 = useWorkspaceStore.getState().addPage('Page 1')
+      const id2 = useWorkspaceStore.getState().addPage('Page 2')
+      useWorkspaceStore.getState().addToRecent(id1)
+      useWorkspaceStore.getState().addToRecent(id2)
+      useWorkspaceStore.getState().addToRecent(id1)
+
+      const recent = useWorkspaceStore.getState().getRecentPages()
+      expect(recent[0]!.id).toBe(id1)
+      expect(recent[1]!.id).toBe(id2)
+    })
+
+    it('addToRecent limits to 10 items', () => {
+      const ids: string[] = []
+      for (let i = 0; i < 12; i++) {
+        const id = useWorkspaceStore.getState().addPage(`Page ${i}`)
+        ids.push(id)
+        useWorkspaceStore.getState().addToRecent(id)
+      }
+
+      const recent = useWorkspaceStore.getState().recentPageIds
+      expect(recent.length).toBe(10)
+    })
+
+    it('getRecentPages excludes trashed pages', () => {
+      const id = useWorkspaceStore.getState().addPage('Trashed')
+      useWorkspaceStore.getState().addToRecent(id)
+      useWorkspaceStore.getState().deletePage(id)
+
+      const recent = useWorkspaceStore.getState().getRecentPages()
+      expect(recent.find(p => p.id === id)).toBeUndefined()
+    })
+  })
+
   describe('queries', () => {
     it('getRootPages returns pages without parents', () => {
       const roots = useWorkspaceStore.getState().getRootPages()

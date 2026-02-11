@@ -1,0 +1,195 @@
+/* ═══════════════════════════════════════════════════════════
+   RowColorSettings — BEM
+   ═══════════════════════════════════════════════════════════ */
+
+.row-color-settings {
+  max-width: 560px;
+  width: 100%;
+}
+
+.row-color-settings__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.row-color-settings__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+}
+
+.row-color-settings__empty {
+  text-align: center;
+  padding: var(--space-4, 1rem);
+  color: var(--text-secondary, #6B7280);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.row-color-settings__empty-hint {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+  margin-top: var(--space-1, 0.25rem);
+}
+
+/* ─── Rules ──────────────────────────────────────────────── */
+
+.row-color-settings__rules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+}
+
+.row-color-settings__rule {
+  padding: var(--space-3, 0.75rem);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.row-color-settings__rule-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  flex-wrap: wrap;
+}
+
+.row-color-settings__rule-label {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--text-secondary, #6B7280);
+  text-transform: uppercase;
+  min-width: 44px;
+}
+
+.row-color-settings__select {
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  background: var(--bg-primary, #fff);
+  cursor: pointer;
+}
+
+.row-color-settings__input {
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  background: var(--bg-primary, #fff);
+  flex: 1;
+  min-width: 80px;
+}
+
+.row-color-settings__input:focus,
+.row-color-settings__select:focus {
+  outline: none;
+  border-color: var(--color-primary, #4F46E5);
+}
+
+/* ─── Color Picker ───────────────────────────────────────── */
+
+.row-color-settings__color-picker {
+  position: relative;
+  flex: 1;
+}
+
+.row-color-settings__color-preview {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm, 4px);
+  border: 2px solid var(--border-color, #E5E7EB);
+  cursor: pointer;
+  transition: border-color 150ms ease;
+}
+
+.row-color-settings__color-preview:hover {
+  border-color: var(--color-primary, #4F46E5);
+}
+
+.row-color-settings__color-palette {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-2, 0.5rem);
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  z-index: 20;
+  width: 160px;
+}
+
+.row-color-settings__color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm, 4px);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 100ms ease, transform 100ms ease;
+}
+
+.row-color-settings__color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.row-color-settings__color-swatch--active {
+  border-color: var(--text-primary, #111827);
+}
+
+/* ─── Delete ─────────────────────────────────────────────── */
+
+.row-color-settings__delete-btn {
+  display: flex;
+  align-items: center;
+  padding: var(--space-1, 0.25rem);
+  background: none;
+  border: none;
+  color: var(--text-muted, #9CA3AF);
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+  transition: color 150ms ease;
+  margin-left: auto;
+}
+
+.row-color-settings__delete-btn:hover {
+  color: var(--color-danger, #DC2626);
+}
+
+/* ─── Add Button ─────────────────────────────────────────── */
+
+.row-color-settings__add-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  align-self: flex-start;
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────── */
+
+[data-theme="dark"] .row-color-settings__rule {
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .row-color-settings__select,
+[data-theme="dark"] .row-color-settings__input {
+  background: var(--bg-secondary, #1A1A2E);
+  color: var(--text-primary, #F8FAFC);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .row-color-settings__color-palette {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .row-color-settings__color-swatch--active {
+  border-color: var(--text-primary, #F8FAFC);
+}

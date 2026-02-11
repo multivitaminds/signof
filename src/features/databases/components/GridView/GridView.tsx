@@ -28,6 +28,8 @@ interface GridViewProps {
   onDeleteRow: (rowId: string) => void
   tables?: Record<string, DbTable>
   currentTableId?: string
+  rowColors?: Record<string, string>
+  onRowClick?: (rowId: string) => void
 }
 
 // Field types that are computed and read-only in cells
@@ -39,6 +41,7 @@ const COMPUTED_FIELD_TYPES: ReadonlySet<string> = new Set([
 
 export default function GridView({
   fields, rows, hiddenFields, fieldOrder, onCellChange, onAddRow, onAddField, onDeleteRow, tables, currentTableId,
+  rowColors, onRowClick,
 }: GridViewProps) {
   const [editingCell, setEditingCell] = useState<{ rowId: string; fieldId: string } | null>(null)
   const [editValue, setEditValue] = useState('')
@@ -303,8 +306,17 @@ export default function GridView({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, rowIdx) => (
-              <tr key={row.id} className="grid-view__row" role="row" onContextMenu={(e) => { e.preventDefault(); onDeleteRow(row.id) }}>
+            {rows.map((row, rowIdx) => {
+              const bgColor = rowColors?.[row.id]
+              return (
+              <tr
+                key={row.id}
+                className="grid-view__row"
+                role="row"
+                style={bgColor ? { backgroundColor: bgColor } : undefined}
+                onContextMenu={(e) => { e.preventDefault(); onDeleteRow(row.id) }}
+                onDoubleClick={() => onRowClick?.(row.id)}
+              >
                 <td className="grid-view__row-num">{rowIdx + 1}</td>
                 {visibleFields.map((field, colIdx) => {
                   const isFocused = focusedRow === rowIdx && focusedCol === colIdx
@@ -327,7 +339,8 @@ export default function GridView({
                 })}
                 <td />
               </tr>
-            ))}
+              )
+            })}
           </tbody>
         </table>
       </div>

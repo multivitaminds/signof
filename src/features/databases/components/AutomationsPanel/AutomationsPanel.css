@@ -1,0 +1,26 @@
+/* ═══════════════════════════════════════════════════════════
+   AutomationsPanel — BEM
+   ═══════════════════════════════════════════════════════════ */
+
+.automations-panel {
+  max-width: 680px;
+  width: 100%;
+}
+
+.automations-panel__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.automations-panel__body {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-top: var(--space-2, 0.5rem);
+}
+
+/* ─── Dark Mode ───────────────────────────────────────────── */
+
+[data-theme="dark"] .automations-panel {
+  background: var(--bg-secondary, #1A1A2E);
+}

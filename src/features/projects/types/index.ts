@@ -209,6 +209,92 @@ export const GOAL_STATUS_CONFIG: Record<GoalStatus, GoalStatusConfig> = {
   [GoalStatus.Cancelled]: { label: 'Cancelled', color: '#64748B' },
 }
 
+// ─── Issue Activity ─────────────────────────────────────────────────
+
+export const ActivityAction = {
+  Created: 'created',
+  StatusChanged: 'status_changed',
+  PriorityChanged: 'priority_changed',
+  AssigneeChanged: 'assignee_changed',
+  LabelsChanged: 'labels_changed',
+  TitleChanged: 'title_changed',
+  DescriptionChanged: 'description_changed',
+  DueDateChanged: 'due_date_changed',
+  RelationAdded: 'relation_added',
+  RelationRemoved: 'relation_removed',
+  SubTaskAdded: 'subtask_added',
+  SubTaskToggled: 'subtask_toggled',
+  SubTaskRemoved: 'subtask_removed',
+  TimeLogged: 'time_logged',
+  EstimateChanged: 'estimate_changed',
+} as const
+
+export type ActivityAction = (typeof ActivityAction)[keyof typeof ActivityAction]
+
+export interface IssueActivity {
+  id: string
+  issueId: string
+  userId: string | null
+  action: ActivityAction
+  field?: string
+  oldValue?: string
+  newValue?: string
+  timestamp: string
+}
+
+// ─── Issue Relations ────────────────────────────────────────────────
+
+export const RelationType = {
+  Blocks: 'blocks',
+  BlockedBy: 'blocked_by',
+  Duplicate: 'duplicate',
+  Related: 'related',
+} as const
+
+export type RelationType = (typeof RelationType)[keyof typeof RelationType]
+
+export const RELATION_LABELS: Record<RelationType, string> = {
+  [RelationType.Blocks]: 'Blocks',
+  [RelationType.BlockedBy]: 'Blocked by',
+  [RelationType.Duplicate]: 'Duplicate of',
+  [RelationType.Related]: 'Related to',
+}
+
+export interface IssueRelation {
+  id: string
+  issueId: string
+  type: RelationType
+  targetIssueId: string
+  createdAt: string
+}
+
+// ─── Sub-Tasks ──────────────────────────────────────────────────────
+
+export interface SubTask {
+  id: string
+  issueId: string
+  title: string
+  completed: boolean
+  createdAt: string
+}
+
+// ─── Time Tracking ──────────────────────────────────────────────────
+
+export interface TimeTracking {
+  estimateMinutes: number | null
+  loggedMinutes: number
+}
+
+// ─── Saved Views ────────────────────────────────────────────────────
+
+export interface SavedView {
+  id: string
+  projectId: string
+  name: string
+  filters: IssueFilters
+  createdAt: string
+}
+
 // ─── Filter/Sort Types ──────────────────────────────────────────────
 
 export interface IssueFilters {

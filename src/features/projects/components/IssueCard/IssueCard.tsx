@@ -10,6 +10,8 @@ interface IssueCardProps {
   onClick: () => void
   selected?: boolean
   focused?: boolean
+  checked?: boolean
+  onCheckChange?: (issueId: string) => void
 }
 
 const PRIORITY_SYMBOLS: Record<string, string> = {
@@ -26,7 +28,7 @@ function getInitials(name: string): string {
   return (first + last).toUpperCase()
 }
 
-function IssueCard({ issue, members, labels, onClick, selected, focused }: IssueCardProps) {
+function IssueCard({ issue, members, labels, onClick, selected, focused, checked, onCheckChange }: IssueCardProps) {
   const handleDragStart = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.dataTransfer.setData('text/plain', issue.id)
@@ -70,6 +72,17 @@ function IssueCard({ issue, members, labels, onClick, selected, focused }: Issue
         }
       }}
     >
+      {onCheckChange && (
+        <div className="issue-card__check" onClick={(e) => e.stopPropagation()}>
+          <input
+            type="checkbox"
+            checked={checked ?? false}
+            onChange={() => onCheckChange(issue.id)}
+            className="issue-card__checkbox"
+            aria-label={`Select ${issue.identifier}`}
+          />
+        </div>
+      )}
       <span className="issue-card__identifier">{issue.identifier}</span>
       <p className="issue-card__title">{issue.title}</p>
       <div className="issue-card__meta">

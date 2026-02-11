@@ -29,6 +29,7 @@ export const ViewType = {
   Calendar: 'calendar',
   Gallery: 'gallery',
   Form: 'form',
+  Timeline: 'timeline',
 } as const
 
 export type ViewType = (typeof ViewType)[keyof typeof ViewType]
@@ -128,6 +129,9 @@ export interface DbView {
   groupBy?: string
   hiddenFields: string[]
   fieldOrder: string[]
+  rowColorRules?: RowColorRule[]
+  timelineStartFieldId?: string
+  timelineEndFieldId?: string
 }
 
 export type CellValue = string | number | boolean | string[] | null
@@ -182,4 +186,61 @@ export const FIELD_TYPE_LABELS: Record<DbFieldType, string> = {
 export const SELECT_COLORS = [
   '#4F46E5', '#059669', '#D97706', '#DC2626', '#7C3AED',
   '#0891B2', '#EA580C', '#DB2777', '#2563EB', '#65A30D',
+] as const
+
+// ─── Row Color Rules ────────────────────────────────────────────────
+
+export const RowColorOperator = {
+  Equals: 'equals',
+  NotEquals: 'not_equals',
+  Contains: 'contains',
+  Gt: 'gt',
+  Lt: 'lt',
+  IsEmpty: 'is_empty',
+  IsNotEmpty: 'is_not_empty',
+} as const
+
+export type RowColorOperator = (typeof RowColorOperator)[keyof typeof RowColorOperator]
+
+export interface RowColorRule {
+  id: string
+  fieldId: string
+  operator: RowColorOperator
+  value: string
+  color: string
+}
+
+// ─── Field Stat Types ───────────────────────────────────────────────
+
+export const FieldStatType = {
+  Count: 'count',
+  Empty: 'empty',
+  Filled: 'filled',
+  Sum: 'sum',
+  Avg: 'avg',
+  Min: 'min',
+  Max: 'max',
+  Earliest: 'earliest',
+  Latest: 'latest',
+  Range: 'range',
+  Distribution: 'distribution',
+} as const
+
+export type FieldStatType = (typeof FieldStatType)[keyof typeof FieldStatType]
+
+// ─── Row Color Rule Labels ──────────────────────────────────────────
+
+export const ROW_COLOR_OPERATOR_LABELS: Record<RowColorOperator, string> = {
+  [RowColorOperator.Equals]: 'equals',
+  [RowColorOperator.NotEquals]: 'does not equal',
+  [RowColorOperator.Contains]: 'contains',
+  [RowColorOperator.Gt]: 'greater than',
+  [RowColorOperator.Lt]: 'less than',
+  [RowColorOperator.IsEmpty]: 'is empty',
+  [RowColorOperator.IsNotEmpty]: 'is not empty',
+}
+
+export const ROW_COLOR_PALETTE = [
+  '#FEE2E2', '#FEF3C7', '#D1FAE5', '#DBEAFE', '#EDE9FE',
+  '#FCE7F3', '#FFF7ED', '#ECFDF5', '#F0F9FF', '#F5F3FF',
 ] as const

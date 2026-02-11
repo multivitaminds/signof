@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { Grid3X3, Kanban, CalendarDays, LayoutGrid, FileInput, Plus, ChevronDown } from 'lucide-react'
+import { Grid3X3, Kanban, CalendarDays, LayoutGrid, FileInput, GanttChart, Plus, ChevronDown } from 'lucide-react'
 import type { DbView, DbField } from '../../types'
 import { ViewType, DbFieldType } from '../../types'
 import './ViewSwitcher.css'
@@ -22,6 +22,7 @@ const VIEW_ICONS: Record<string, React.ComponentType<{ size?: number }>> = {
   [ViewType.Calendar]: CalendarDays,
   [ViewType.Gallery]: LayoutGrid,
   [ViewType.Form]: FileInput,
+  [ViewType.Timeline]: GanttChart,
 }
 
 const VIEW_TYPE_LABELS: Record<string, string> = {
@@ -30,6 +31,7 @@ const VIEW_TYPE_LABELS: Record<string, string> = {
   [ViewType.Calendar]: 'Calendar',
   [ViewType.Gallery]: 'Gallery',
   [ViewType.Form]: 'Form',
+  [ViewType.Timeline]: 'Timeline',
 }
 
 const ADDABLE_VIEWS = [
@@ -38,6 +40,7 @@ const ADDABLE_VIEWS = [
   ViewType.Calendar,
   ViewType.Gallery,
   ViewType.Form,
+  ViewType.Timeline,
 ] as const
 
 export default function ViewSwitcher({

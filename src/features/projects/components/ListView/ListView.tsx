@@ -1,18 +1,25 @@
 import { useState, useCallback } from 'react'
-import type { Issue, Member, Label, IssueSortField, GroupByOption } from '../../types'
+import type { Issue, Member, Label, IssueSortField, GroupByOption, IssueStatus } from '../../types'
 import { STATUS_CONFIG, PRIORITY_CONFIG } from '../../types'
 import { useIssueFilters } from '../../hooks/useIssueFilters'
 import IssueRow from '../IssueRow/IssueRow'
+import IssueQuickCreate from '../IssueQuickCreate/IssueQuickCreate'
 import './ListView.css'
 
 interface ListViewProps {
   issues: Issue[]
   members: Member[]
   labels: Label[]
+  projectId: string
   onIssueClick: (id: string) => void
   onIssueUpdate: (id: string, updates: Partial<Issue>) => void
+  onQuickCreate: (data: { projectId: string; title: string; status?: IssueStatus }) => void
   selectedIssueId?: string
   focusedIndex?: number
+  selectedIssueIds?: Set<string>
+  onToggleSelection?: (issueId: string) => void
+  onSelectAll?: (issueIds: string[]) => void
+  onClearSelection?: () => void
 }
 
 interface ColumnDef {
@@ -51,10 +58,16 @@ export default function ListView({
   issues,
   members,
   labels,
+  projectId,
   onIssueClick,
   onIssueUpdate,
+  onQuickCreate,
   selectedIssueId,
   focusedIndex,
+  selectedIssueIds,
+  onToggleSelection,
+  onSelectAll,
+  onClearSelection,
 }: ListViewProps) {
   const [sortField, setSortField] = useState<IssueSortField>('created')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
@@ -100,6 +113,21 @@ export default function ListView({
     []
   )
 
+  const handleSelectAll = useCallback(() => {
+    if (!onSelectAll || !onClearSelection || !selectedIssueIds) return
+    const allIds = filteredIssues.map((i) => i.id)
+    const allSelected = allIds.length > 0 && allIds.every((id) => selectedIssueIds.has(id))
+    if (allSelected) {
+      onClearSelection()
+    } else {
+      onSelectAll(allIds)
+    }
+  }, [filteredIssues, selectedIssueIds, onSelectAll, onClearSelection])
+
+  const allSelected = filteredIssues.length > 0 &&
+    selectedIssueIds !== undefined &&
+    filteredIssues.every((i) => selectedIssueIds.has(i.id))
+
   // Flatten for index tracking
   let globalIndex = -1
 
@@ -116,14 +144,23 @@ export default function ListView({
         onClick={() => onIssueClick(issue.id)}
         selected={issue.id === selectedIssueId}
         focused={currentIndex === focusedIndex}
+        checked={selectedIssueIds?.has(issue.id)}
+        onCheckChange={onToggleSelection}
       />
     )
   }
 
   if (filteredIssues.length === 0) {
     return (
-      <div className="list-view__empty">
-        <p>No issues match the current filters.</p>
+      <div className="list-view">
+        <div className="list-view__empty">
+          <p>No issues match the current filters.</p>
+        </div>
+        <IssueQuickCreate
+          projectId={projectId}
+          onCreateIssue={onQuickCreate}
+          variant="list"
+        />
       </div>
     )
   }
@@ -148,6 +185,17 @@ export default function ListView({
 
       {/* Header */}
       <div className="list-view__header" role="row">
+        {onSelectAll && (
+          <div className="list-view__header-check">
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={handleSelectAll}
+              className="list-view__select-all"
+              aria-label="Select all issues"
+            />
+          </div>
+        )}
         {COLUMNS.map((col) => {
           const isSorted = col.sortable && sortField === col.key
           return (
@@ -180,7 +228,7 @@ export default function ListView({
               {col.label}
               {isSorted && (
                 <span className="list-view__sort-arrow">
-                  {sortDirection === 'asc' ? '↑' : '↓'}
+                  {sortDirection === 'asc' ? '\u2191' : '\u2193'}
                 </span>
               )}
             </div>
@@ -204,7 +252,7 @@ export default function ListView({
                   aria-expanded={!isCollapsed}
                 >
                   <span className="list-view__group-toggle">
-                    {isCollapsed ? '▶' : '▼'}
+                    {isCollapsed ? '\u25B6' : '\u25BC'}
                   </span>
                   <span className="list-view__group-name">{label}</span>
                   <span className="list-view__group-count">
@@ -217,6 +265,13 @@ export default function ListView({
           })
         )}
       </div>
+
+      {/* Quick create at bottom */}
+      <IssueQuickCreate
+        projectId={projectId}
+        onCreateIssue={onQuickCreate}
+        variant="list"
+      />
     </div>
   )
 }

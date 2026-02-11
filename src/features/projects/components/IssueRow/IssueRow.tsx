@@ -13,6 +13,8 @@ interface IssueRowProps {
   onClick: () => void
   selected?: boolean
   focused?: boolean
+  checked?: boolean
+  onCheckChange?: (issueId: string) => void
 }
 
 export default function IssueRow({
@@ -23,6 +25,8 @@ export default function IssueRow({
   onClick,
   selected = false,
   focused = false,
+  checked,
+  onCheckChange,
 }: IssueRowProps) {
   const issueLabels = labels.filter((l) => issue.labelIds.includes(l.id))
 
@@ -70,6 +74,20 @@ export default function IssueRow({
         if (e.key === 'Enter') onClick()
       }}
     >
+      {onCheckChange && (
+        <div
+          className="issue-row__cell issue-row__check"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <input
+            type="checkbox"
+            checked={checked ?? false}
+            onChange={() => onCheckChange(issue.id)}
+            className="issue-row__checkbox"
+            aria-label={`Select ${issue.identifier}`}
+          />
+        </div>
+      )}
       <div className="issue-row__cell issue-row__identifier">
         {issue.identifier}
       </div>

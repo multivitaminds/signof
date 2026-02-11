@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { ChevronRight, FileText, Plus } from 'lucide-react'
+import { ChevronRight, FileText, Plus, Star } from 'lucide-react'
 import type { Page } from '../../types'
 import './PageTreeItem.css'
 
@@ -10,6 +10,7 @@ interface PageTreeItemProps {
   selectedPageId?: string
   onSelectPage: (pageId: string) => void
   onNewPage?: (parentId?: string) => void
+  onToggleFavorite?: (pageId: string) => void
   compact?: boolean
 }
 
@@ -20,6 +21,7 @@ export default function PageTreeItem({
   selectedPageId,
   onSelectPage,
   onNewPage,
+  onToggleFavorite,
   compact = false,
 }: PageTreeItemProps) {
   const children = allPages.filter((p) => p.parentId === page.id)
@@ -42,6 +44,14 @@ export default function PageTreeItem({
       onNewPage?.(page.id)
     },
     [onNewPage, page.id]
+  )
+
+  const handleToggleFavorite = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      onToggleFavorite?.(page.id)
+    },
+    [onToggleFavorite, page.id]
   )
 
   return (
@@ -75,6 +85,16 @@ export default function PageTreeItem({
           {page.title || 'Untitled'}
         </span>
 
+        {!compact && onToggleFavorite && (
+          <button
+            className={`page-tree-item__star ${page.isFavorite ? 'page-tree-item__star--active' : ''}`}
+            onClick={handleToggleFavorite}
+            aria-label={page.isFavorite ? `Remove ${page.title} from favorites` : `Add ${page.title} to favorites`}
+            tabIndex={-1}
+          >
+            <Star size={12} fill={page.isFavorite ? 'currentColor' : 'none'} />
+          </button>
+        )}
         {!compact && onNewPage && (
           <button
             className="page-tree-item__add"
@@ -98,6 +118,7 @@ export default function PageTreeItem({
               selectedPageId={selectedPageId}
               onSelectPage={onSelectPage}
               onNewPage={onNewPage}
+              onToggleFavorite={onToggleFavorite}
               compact={compact}
             />
           ))}
