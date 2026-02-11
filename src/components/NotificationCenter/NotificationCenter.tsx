@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Bell, FileSignature, AtSign, MessageSquare, UserPlus,
-  ArrowRightLeft, Sparkles, CheckCheck, Calendar, Clock,
+  ArrowRightLeft, Settings2, CheckCheck, Calendar, Clock,
   ExternalLink,
 } from 'lucide-react'
 import { useInboxStore } from '../../features/inbox/stores/useInboxStore'
@@ -23,7 +23,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ size?: number }>> = {
   [NotificationType.StatusChange]: ArrowRightLeft,
   [NotificationType.Invitation]: UserPlus,
   [NotificationType.Reminder]: Clock,
-  [NotificationType.System]: Sparkles,
+  [NotificationType.System]: Settings2,
   [NotificationType.Booking]: Calendar,
   [NotificationType.TeamJoined]: UserPlus,
 }

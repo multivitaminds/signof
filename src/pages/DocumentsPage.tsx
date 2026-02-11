@@ -5,12 +5,14 @@ import SignaturePad from '../components/SignaturePad/SignaturePad'
 import AddSigners from '../components/AddSigners/AddSigners'
 import SigningCeremony from '../features/documents/components/SigningCeremony/SigningCeremony'
 import CompletionCertificate from '../features/documents/components/CompletionCertificate/CompletionCertificate'
+import AuditTrailPanel from '../features/documents/components/AuditTrailPanel/AuditTrailPanel'
 import AuditTimeline from '../components/AuditTimeline/AuditTimeline'
 import { useDocumentStore } from '../stores/useDocumentStore'
+import { useStatusToasts } from '../features/documents/hooks/useStatusToasts'
 import { SignerStatus, type Document } from '../types'
 import './DocumentsPage.css'
 
-type ModalView = 'none' | 'upload' | 'sign' | 'view' | 'add-signers' | 'ceremony' | 'certificate'
+type ModalView = 'none' | 'upload' | 'sign' | 'view' | 'add-signers' | 'ceremony' | 'certificate' | 'audit'
 
 export default function DocumentsPage() {
   const {
@@ -29,6 +31,19 @@ export default function DocumentsPage() {
   const [signingSignerId, setSigningSignerId] = useState<string | null>(null)
   const [viewingDoc, setViewingDoc] = useState<Document | null>(null)
   const [pendingUploadDocId, setPendingUploadDocId] = useState<string | null>(null)
+
+  useStatusToasts()
+
+  const handleViewAudit = useCallback(
+    (docId: string) => {
+      const doc = getDocument(docId)
+      if (doc) {
+        setViewingDoc(doc)
+        setModalView('audit')
+      }
+    },
+    [getDocument]
+  )
 
   const handleNewDocument = useCallback(() => {
     setModalView('upload')
@@ -165,6 +180,7 @@ export default function DocumentsPage() {
         onView={handleView}
         onSend={handleSend}
         onCertificate={handleCertificate}
+        onViewAudit={handleViewAudit}
       />
 
       {modalView === 'upload' && (
@@ -277,6 +293,20 @@ export default function DocumentsPage() {
               </button>
             </div>
             <CompletionCertificate document={viewingDoc} onClose={closeModal} />
+          </div>
+        </div>
+      )}
+
+      {modalView === 'audit' && viewingDoc && (
+        <div
+          className="modal-overlay"
+          onClick={closeModal}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Audit Trail"
+        >
+          <div className="modal-content modal-content--wide" onClick={(e) => e.stopPropagation()}>
+            <AuditTrailPanel document={viewingDoc} onClose={closeModal} />
           </div>
         </div>
       )}

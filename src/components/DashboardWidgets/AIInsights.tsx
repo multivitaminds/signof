@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Sparkles, AlertTriangle, TrendingUp, Clock, CheckCircle2 } from 'lucide-react'
+import { Brain, AlertTriangle, TrendingUp, Clock, CheckCircle2 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useDocumentStore } from '../../stores/useDocumentStore'
 import './DashboardWidgets.css'
@@ -86,7 +86,7 @@ export default function AIInsights() {
   return (
     <div className="dashboard-widget dashboard-widget--ai" aria-label="AI insights">
       <div className="dashboard-widget__header">
-        <Sparkles size={16} className="dashboard-widget__header-icon dashboard-widget__header-icon--ai" />
+        <Brain size={16} className="dashboard-widget__header-icon dashboard-widget__header-icon--ai" />
         <h3 className="dashboard-widget__title">AI Insights</h3>
       </div>
       {insights.length === 0 ? (

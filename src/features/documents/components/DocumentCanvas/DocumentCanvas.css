@@ -50,3 +50,63 @@
   padding: 0 var(--space-1);
   pointer-events: none;
 }
+
+/* ─── Document Background ─────────────────────────────── */
+
+.document-canvas__page--has-bg {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.document-canvas__pdf-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+  pointer-events: none;
+  user-select: none;
+}
+
+.document-canvas__pdf-placeholder span {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+
+/* ─── Resize Handles ──────────────────────────────────── */
+
+.document-canvas__resize-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--color-primary);
+  border: 1px solid var(--bg-primary);
+  border-radius: var(--radius-sm);
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.document-canvas__resize-handle--se {
+  bottom: -4px;
+  right: -4px;
+  cursor: se-resize;
+}
+
+.document-canvas__resize-handle--e {
+  top: 50%;
+  right: -4px;
+  transform: translateY(-50%);
+  cursor: e-resize;
+}
+
+.document-canvas__resize-handle--s {
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: s-resize;
+}

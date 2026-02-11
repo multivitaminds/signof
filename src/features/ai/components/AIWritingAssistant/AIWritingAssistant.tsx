@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import {
-  Sparkles,
+  Brain,
+  Loader2,
   Check,
   X,
   ChevronDown,
-  Wand2,
+  ArrowUpRight,
   SpellCheck,
   Minus,
   Plus,
@@ -191,7 +192,7 @@ export default function AIWritingAssistant({
             title="Improve writing"
             aria-label="Improve writing"
           >
-            <Wand2 size={14} />
+            <ArrowUpRight size={14} />
             <span>Improve</span>
           </button>
           <button
@@ -254,8 +255,8 @@ export default function AIWritingAssistant({
       {/* Processing state */}
       {isProcessing && (
         <div className="ai-writing-assistant__processing" aria-label="Processing">
-          <Sparkles size={16} className="ai-writing-assistant__processing-icon" />
-          <span>AI is thinking...</span>
+          <Loader2 size={16} className="ai-writing-assistant__processing-icon" />
+          <span>Processing...</span>
         </div>
       )}
 
@@ -263,7 +264,7 @@ export default function AIWritingAssistant({
       {suggestion && !isProcessing && (
         <div className="ai-writing-assistant__suggestion">
           <div className="ai-writing-assistant__suggestion-header">
-            <Sparkles size={14} />
+            <Brain size={14} />
             <span>{suggestion.action}</span>
           </div>
           <div className="ai-writing-assistant__diff">

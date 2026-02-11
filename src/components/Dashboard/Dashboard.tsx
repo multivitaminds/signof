@@ -10,6 +10,7 @@ interface DashboardProps {
   onView: (docId: string) => void
   onSend?: (docId: string) => void
   onCertificate?: (docId: string) => void
+  onViewAudit?: (docId: string) => void
 }
 
 function Dashboard({
@@ -20,6 +21,7 @@ function Dashboard({
   onView,
   onSend,
   onCertificate,
+  onViewAudit,
 }: DashboardProps) {
   const totalCount = documents.length
   const inProgressCount = documents.filter((doc) =>
@@ -57,6 +59,7 @@ function Dashboard({
         onView={onView}
         onSend={onSend}
         onCertificate={onCertificate}
+        onViewAudit={onViewAudit}
       />
     </section>
   )

@@ -656,4 +656,149 @@ describe('SigningCeremony', () => {
       expect(screen.getByRole('button', { name: /decline signing/i })).toBeDisabled()
     })
   })
+
+  describe('FieldChecklist Sidebar', () => {
+    it('shows FieldChecklist sidebar on sign step with multi-field documents', async () => {
+      const user = userEvent.setup()
+
+      const { container } = render(
+        <SigningCeremony
+          document={makeDoc({
+            fields: [
+              makeField({ id: 'f1', type: FieldType.Signature }),
+              makeField({ id: 'f2', type: FieldType.DateSigned, label: 'Date' }),
+            ],
+          })}
+          signer={makeSigner()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
+        />
+      )
+
+      await advanceToSignStep(user)
+
+      expect(container.querySelector('.field-checklist')).toBeInTheDocument()
+    })
+
+    it('hides FieldChecklist sidebar on sign step with single-field documents', async () => {
+      const user = userEvent.setup()
+
+      const { container } = render(
+        <SigningCeremony
+          document={makeDoc({
+            fields: [makeField({ id: 'f1', type: FieldType.Signature })],
+          })}
+          signer={makeSigner()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
+        />
+      )
+
+      await advanceToSignStep(user)
+
+      expect(container.querySelector('.field-checklist')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Validation Messages', () => {
+    it('shows validation message when trying to advance without completing required field', async () => {
+      const user = userEvent.setup()
+
+      render(
+        <SigningCeremony
+          document={makeDoc({
+            fields: [
+              makeField({ id: 'f1', type: FieldType.Text, label: 'Full Name', required: true }),
+              makeField({ id: 'f2', type: FieldType.DateSigned, label: 'Date' }),
+            ],
+          })}
+          signer={makeSigner()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
+        />
+      )
+
+      await advanceToSignStep(user)
+
+      // Click the primary "Next Field" button in the footer (not the chevron nav button)
+      const nextFieldButtons = screen.getAllByRole('button', { name: /next field/i })
+      const primaryNextBtn = nextFieldButtons.find(
+        (btn) => btn.classList.contains('signing-ceremony-v2__btn-primary')
+      )
+      if (!primaryNextBtn) throw new Error('Expected primary Next Field button')
+      await user.click(primaryNextBtn)
+
+      expect(screen.getByRole('alert')).toHaveTextContent('This field is required')
+    })
+  })
+
+  describe('Skip Button', () => {
+    it('shows skip button for optional fields', async () => {
+      const user = userEvent.setup()
+
+      render(
+        <SigningCeremony
+          document={makeDoc({
+            fields: [
+              makeField({ id: 'f1', type: FieldType.Text, label: 'Optional Note', required: false }),
+              makeField({ id: 'f2', type: FieldType.Signature, required: true }),
+            ],
+          })}
+          signer={makeSigner()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
+        />
+      )
+
+      await advanceToSignStep(user)
+
+      expect(screen.getByRole('button', { name: /skip/i })).toBeInTheDocument()
+    })
+
+    it('does not show skip button for required fields', async () => {
+      const user = userEvent.setup()
+
+      render(
+        <SigningCeremony
+          document={makeDoc({
+            fields: [
+              makeField({ id: 'f1', type: FieldType.Signature, required: true }),
+              makeField({ id: 'f2', type: FieldType.DateSigned, label: 'Date' }),
+            ],
+          })}
+          signer={makeSigner()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
+        />
+      )
+
+      await advanceToSignStep(user)
+
+      expect(screen.queryByRole('button', { name: /skip/i })).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Keyboard Hint', () => {
+    it('shows keyboard hint text on sign step with multi-field documents', async () => {
+      const user = userEvent.setup()
+
+      render(
+        <SigningCeremony
+          document={makeDoc({
+            fields: [
+              makeField({ id: 'f1', type: FieldType.Signature }),
+              makeField({ id: 'f2', type: FieldType.DateSigned, label: 'Date' }),
+            ],
+          })}
+          signer={makeSigner()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
+        />
+      )
+
+      await advanceToSignStep(user)
+
+      expect(screen.getByText(/Press Tab to advance/)).toBeInTheDocument()
+    })
+  })
 })

@@ -27,7 +27,7 @@ interface WelcomeBannerProps {
   userName?: string
 }
 
-export default function WelcomeBanner({ userName = 'there' }: WelcomeBannerProps) {
+export default function WelcomeBanner({ userName = 'Sam' }: WelcomeBannerProps) {
   const [dismissed, setDismissed] = useState(() => {
     try {
       return localStorage.getItem(DISMISSED_KEY) === 'true'

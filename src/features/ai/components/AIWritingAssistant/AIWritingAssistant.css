@@ -104,15 +104,15 @@
 }
 
 .ai-writing-assistant__processing-icon {
-  animation: ai-writing-pulse 1.5s ease-in-out infinite;
+  animation: ai-writing-spin 1s linear infinite;
 }
 
-@keyframes ai-writing-pulse {
-  0%, 100% {
-    opacity: 0.4;
+@keyframes ai-writing-spin {
+  from {
+    transform: rotate(0deg);
   }
-  50% {
-    opacity: 1;
+  to {
+    transform: rotate(360deg);
   }
 }
 

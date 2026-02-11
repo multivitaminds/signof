@@ -135,6 +135,12 @@
   color: #fff;
 }
 
+.document-card__btn--audit {
+  background: none;
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
 .document-card__btn--delete:hover {
   background: var(--color-danger-light);
 }

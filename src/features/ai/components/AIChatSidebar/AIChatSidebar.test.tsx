@@ -38,12 +38,12 @@ describe('AIChatSidebar', () => {
 
   it('shows empty state when no messages', () => {
     render(<AIChatSidebar />)
-    expect(screen.getByText(/ask me anything about your workspace/i)).toBeInTheDocument()
+    expect(screen.getByText(/get insights across your workspace/i)).toBeInTheDocument()
   })
 
   it('shows slash command hint in empty state', () => {
     render(<AIChatSidebar />)
-    expect(screen.getByText(/Try slash commands/)).toBeInTheDocument()
+    expect(screen.getByText(/Use commands/)).toBeInTheDocument()
   })
 
   it('renders existing messages', () => {

@@ -5,7 +5,7 @@ import { useIsMobile } from '../../../hooks/useMediaQuery'
 import { useNavigate } from 'react-router-dom'
 import {
   Bell, CheckCheck, Trash2, FileSignature, AtSign,
-  MessageSquare, UserPlus, ArrowRightLeft, Clock, Sparkles,
+  MessageSquare, UserPlus, ArrowRightLeft, Clock, Settings2,
   Search, Plus, X, ChevronDown, Check, Archive, Calendar,
   FolderOpen, Layout, Settings, ExternalLink, ChevronRight,
 } from 'lucide-react'
@@ -28,7 +28,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ size?: number }>> = {
   [NotificationType.StatusChange]: ArrowRightLeft,
   [NotificationType.Invitation]: UserPlus,
   [NotificationType.Reminder]: Clock,
-  [NotificationType.System]: Sparkles,
+  [NotificationType.System]: Settings2,
   [NotificationType.Booking]: Calendar,
   [NotificationType.TeamJoined]: UserPlus,
 }

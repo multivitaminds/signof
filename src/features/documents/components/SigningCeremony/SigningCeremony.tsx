@@ -16,9 +16,11 @@ import {
   ListChecks,
   Undo2,
   Eraser,
+  SkipForward,
 } from 'lucide-react'
 import type { Document, Signer, DocumentField } from '../../../../types'
 import { FieldType, SigningOrder, SignerStatus } from '../../../../types'
+import FieldChecklist from '../FieldChecklist/FieldChecklist'
 import './SigningCeremony.css'
 
 // ─── Types ─────────────────────────────────────────────────────────
@@ -99,6 +101,27 @@ function getFieldLabel(type: FieldType): string {
   }
 }
 
+// ─── Helper: validation messages ──────────────────────────────────
+
+function getValidationMessage(field: DocumentField): string {
+  switch (field.type) {
+    case FieldType.Signature:
+      return 'Please provide your signature to continue'
+    case FieldType.Initial:
+      return 'Please enter your initials'
+    case FieldType.Text:
+      return 'This field is required'
+    case FieldType.Checkbox:
+      return 'Please check this box to continue'
+    case FieldType.Dropdown:
+      return 'Please select an option'
+    case FieldType.DateSigned:
+      return ''
+    default:
+      return 'This field is required'
+  }
+}
+
 // ─── Component ─────────────────────────────────────────────────────
 
 function SigningCeremony({
@@ -118,6 +141,9 @@ function SigningCeremony({
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({})
   const [signedTimestamp, setSignedTimestamp] = useState('')
   const [capturedDataUrl, setCapturedDataUrl] = useState('')
+
+  // Validation state
+  const [validationMessage, setValidationMessage] = useState<string | null>(null)
 
   // Decline state
   const [showDecline, setShowDecline] = useState(false)
@@ -300,6 +326,7 @@ function SigningCeremony({
   const handlePointerUp = useCallback(() => {
     if (!isDrawing) return
     setIsDrawing(false)
+    setValidationMessage(null)
     setCurrentStroke((prev) => {
       if (prev.length > 1) {
         setStrokes((s) => [...s, prev])
@@ -327,6 +354,7 @@ function SigningCeremony({
   // ── Field value management ─────────────────────────────────────
   const setFieldValue = useCallback((fieldId: string, value: string) => {
     setFieldValues((prev) => ({ ...prev, [fieldId]: value }))
+    if (value) setValidationMessage(null)
   }, [])
 
   // Auto-fill date fields inline (computed at init time)
@@ -368,8 +396,44 @@ function SigningCeremony({
     }
   }, [currentStep])
 
+  // ── Determine if current field can advance ─────────────────────
+  const canAdvanceField = useMemo((): boolean => {
+    if (!currentField) return false
+
+    if (currentField.type === FieldType.DateSigned) {
+      return true // auto-filled
+    }
+
+    if (
+      currentField.type === FieldType.Signature ||
+      currentField.type === FieldType.Initial
+    ) {
+      if (signatureMode === 'draw') {
+        return !canvasIsEmpty || Boolean(fieldValues[currentField.id])
+      }
+      return typedSignature.trim().length > 0 || Boolean(fieldValues[currentField.id])
+    }
+
+    if (currentField.type === FieldType.Checkbox) {
+      return Boolean(fieldValues[currentField.id])
+    }
+
+    // Text, Dropdown, Attachment
+    if (currentField.required) {
+      return Boolean(fieldValues[currentField.id])
+    }
+    return true
+  }, [currentField, signatureMode, canvasIsEmpty, typedSignature, fieldValues])
+
   const handleNextField = useCallback(() => {
     if (!currentField) return
+
+    // Validate before advancing
+    if (!canAdvanceField && currentField.required) {
+      setValidationMessage(getValidationMessage(currentField))
+      return
+    }
+    setValidationMessage(null)
 
     // Save current field value from canvas or typed input
     if (
@@ -444,6 +508,7 @@ function SigningCeremony({
     effectiveFields,
     startTime,
     canvasIsEmpty,
+    canAdvanceField,
   ])
 
   const handlePrevField = useCallback(() => {
@@ -453,37 +518,52 @@ function SigningCeremony({
       setCurrentStroke([])
       setTypedSignature('')
       setSignatureMode('draw')
+      setValidationMessage(null)
     }
   }, [isFirstField])
 
-  // ── Determine if current field can advance ─────────────────────
-  const canAdvanceField = useMemo((): boolean => {
-    if (!currentField) return false
+  // ── Field select (from FieldChecklist sidebar) ──────────────────
+  const handleFieldSelect = useCallback(
+    (index: number) => {
+      if (!currentField) return
 
-    if (currentField.type === FieldType.DateSigned) {
-      return true // auto-filled
-    }
-
-    if (
-      currentField.type === FieldType.Signature ||
-      currentField.type === FieldType.Initial
-    ) {
-      if (signatureMode === 'draw') {
-        return !canvasIsEmpty || Boolean(fieldValues[currentField.id])
+      // Save current field value before jumping
+      if (
+        currentField.type === FieldType.Signature ||
+        currentField.type === FieldType.Initial
+      ) {
+        if (signatureMode === 'draw') {
+          const dataUrl = saveCurrentDrawnField()
+          if (dataUrl) {
+            setFieldValue(currentField.id, dataUrl)
+          }
+        } else if (typedSignature.trim()) {
+          setFieldValue(currentField.id, typedSignature.trim())
+        }
       }
-      return typedSignature.trim().length > 0 || Boolean(fieldValues[currentField.id])
-    }
 
-    if (currentField.type === FieldType.Checkbox) {
-      return Boolean(fieldValues[currentField.id])
-    }
+      // Jump to the selected field
+      setCurrentFieldIndex(index)
+      setStrokes([])
+      setCurrentStroke([])
+      setTypedSignature('')
+      setSignatureMode('draw')
+      setValidationMessage(null)
+    },
+    [currentField, signatureMode, typedSignature, saveCurrentDrawnField, setFieldValue]
+  )
 
-    // Text, Dropdown, Attachment
-    if (currentField.required) {
-      return Boolean(fieldValues[currentField.id])
-    }
-    return true
-  }, [currentField, signatureMode, canvasIsEmpty, typedSignature, fieldValues])
+  // ── Skip optional field ─────────────────────────────────────────
+  const handleSkipField = useCallback(() => {
+    if (!currentField || currentField.required || isLastField) return
+
+    setCurrentFieldIndex((i) => i + 1)
+    setStrokes([])
+    setCurrentStroke([])
+    setTypedSignature('')
+    setSignatureMode('draw')
+    setValidationMessage(null)
+  }, [currentField, isLastField])
 
   // ── Completed fields count ──────────────────────────────────────
   const completedFieldsCount = useMemo(() => {
@@ -519,11 +599,34 @@ function SigningCeremony({
         if (currentStep !== 'complete') {
           onCancel()
         }
+        return
+      }
+
+      // Signing step shortcuts
+      if (currentStep === 'sign' && currentField) {
+        if (e.key === 'Tab' && !e.shiftKey) {
+          e.preventDefault()
+          handleNextField()
+          return
+        }
+        if (e.key === 'Tab' && e.shiftKey) {
+          e.preventDefault()
+          handlePrevField()
+          return
+        }
+        if (
+          e.key === 'Enter' &&
+          currentField.type !== FieldType.Signature &&
+          currentField.type !== FieldType.Initial
+        ) {
+          e.preventDefault()
+          handleNextField()
+        }
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onCancel, currentStep])
+  }, [onCancel, currentStep, currentField, handleNextField, handlePrevField])
 
   // ── Render helpers ─────────────────────────────────────────────
 
@@ -734,7 +837,7 @@ function SigningCeremony({
         type="text"
         className="signing-ceremony-v2__type-input"
         value={typedSignature}
-        onChange={(e) => setTypedSignature(e.target.value)}
+        onChange={(e) => { setTypedSignature(e.target.value); setValidationMessage(null) }}
         placeholder="Type your full name"
         autoFocus
         aria-label="Type your signature"
@@ -891,68 +994,91 @@ function SigningCeremony({
   }
 
   const renderSignStep = () => (
-    <div className="signing-ceremony-v2__sign">
-      <div className="signing-ceremony-v2__sign-header">
-        <h2>Sign Document</h2>
-        <p>Complete each field below to sign the document.</p>
-      </div>
-
-      {/* Completion progress */}
-      <div className="signing-ceremony-v2__completion-progress" data-testid="completion-progress">
-        <div className="signing-ceremony-v2__progress-text">
-          {completedFieldsCount} of {effectiveFields.length} fields completed
-        </div>
-        <div className="signing-ceremony-v2__progress-bar">
-          <div
-            className="signing-ceremony-v2__progress-fill"
-            style={{ width: `${effectiveFields.length > 0 ? (completedFieldsCount / effectiveFields.length) * 100 : 0}%` }}
-          />
-        </div>
-      </div>
-
+    <div className="signing-ceremony-v2__sign-layout">
       {effectiveFields.length > 1 && (
-        <div className="signing-ceremony-v2__field-nav">
-          <span className="signing-ceremony-v2__field-counter">
-            Field <span>{currentFieldIndex + 1}</span> of {effectiveFields.length}
-          </span>
-          <div className="signing-ceremony-v2__field-nav-buttons">
-            <button
-              type="button"
-              className="signing-ceremony-v2__field-nav-btn"
-              onClick={handlePrevField}
-              disabled={isFirstField}
-              aria-label="Previous field"
-            >
-              <ChevronLeft />
-            </button>
-            <button
-              type="button"
-              className="signing-ceremony-v2__field-nav-btn"
-              onClick={handleNextField}
-              disabled={!canAdvanceField}
-              aria-label="Next field"
-            >
-              <ChevronRight />
-            </button>
-          </div>
-        </div>
+        <FieldChecklist
+          fields={effectiveFields}
+          currentFieldIndex={currentFieldIndex}
+          fieldValues={fieldValues}
+          onFieldSelect={handleFieldSelect}
+        />
       )}
-
-      {currentField && (
-        <div className="signing-ceremony-v2__field-card">
-          <div className="signing-ceremony-v2__field-card-header">
-            <span className="signing-ceremony-v2__field-card-title">
-              {getFieldIcon(currentField.type)}
-              {currentField.label ?? getFieldLabel(currentField.type)}
-            </span>
-            {currentField.required && (
-              <span className="signing-ceremony-v2__field-required-badge">Required</span>
-            )}
+      <div className="signing-ceremony-v2__sign-main">
+        <div className="signing-ceremony-v2__sign">
+          <div className="signing-ceremony-v2__sign-header">
+            <h2>Sign Document</h2>
+            <p>Complete each field below to sign the document.</p>
           </div>
 
-          {renderCurrentFieldInput()}
+          {/* Completion progress */}
+          <div className="signing-ceremony-v2__completion-progress" data-testid="completion-progress">
+            <div className="signing-ceremony-v2__progress-text">
+              {completedFieldsCount} of {effectiveFields.length} fields completed
+            </div>
+            <div className="signing-ceremony-v2__progress-bar">
+              <div
+                className="signing-ceremony-v2__progress-fill"
+                style={{ width: `${effectiveFields.length > 0 ? (completedFieldsCount / effectiveFields.length) * 100 : 0}%` }}
+              />
+            </div>
+          </div>
+
+          {effectiveFields.length > 1 && (
+            <div className="signing-ceremony-v2__field-nav">
+              <span className="signing-ceremony-v2__field-counter">
+                Field <span>{currentFieldIndex + 1}</span> of {effectiveFields.length}
+              </span>
+              <div className="signing-ceremony-v2__field-nav-buttons">
+                <button
+                  type="button"
+                  className="signing-ceremony-v2__field-nav-btn"
+                  onClick={handlePrevField}
+                  disabled={isFirstField}
+                  aria-label="Previous field"
+                >
+                  <ChevronLeft />
+                </button>
+                <button
+                  type="button"
+                  className="signing-ceremony-v2__field-nav-btn"
+                  onClick={handleNextField}
+                  aria-label="Next field"
+                >
+                  <ChevronRight />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {currentField && (
+            <div className="signing-ceremony-v2__field-card" key={currentField.id}>
+              <div className="signing-ceremony-v2__field-card-header">
+                <span className="signing-ceremony-v2__field-card-title">
+                  {getFieldIcon(currentField.type)}
+                  {currentField.label ?? getFieldLabel(currentField.type)}
+                </span>
+                {currentField.required && (
+                  <span className="signing-ceremony-v2__field-required-badge">Required</span>
+                )}
+              </div>
+
+              {renderCurrentFieldInput()}
+
+              {validationMessage && (
+                <div className="signing-ceremony-v2__field-validation" role="alert">
+                  {validationMessage}
+                </div>
+              )}
+            </div>
+          )}
+
+          {effectiveFields.length > 1 && (
+            <div className="signing-ceremony-v2__keyboard-hint">
+              Press Tab to advance &middot; Shift+Tab to go back
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 
@@ -1122,12 +1248,20 @@ function SigningCeremony({
                 Next <ChevronRight />
               </button>
             )}
+            {currentStep === 'sign' && currentField && !currentField.required && !isLastField && (
+              <button
+                type="button"
+                className="signing-ceremony-v2__btn-skip"
+                onClick={handleSkipField}
+              >
+                <SkipForward /> Skip
+              </button>
+            )}
             {currentStep === 'sign' && (
               <button
                 type="button"
                 className="signing-ceremony-v2__btn-primary"
                 onClick={handleNextField}
-                disabled={!canAdvanceField}
               >
                 {isLastField ? (
                   <>

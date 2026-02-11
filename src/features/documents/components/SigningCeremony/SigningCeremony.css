@@ -460,6 +460,28 @@
 
 /* ─── Step 2: Sign ──────────────────────────────────────────────── */
 
+/* Two-column layout: sidebar + main */
+.signing-ceremony-v2__sign-layout {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: 0;
+}
+
+/* When sign layout is active, expand the content-inner to fill */
+.signing-ceremony-v2__content-inner:has(.signing-ceremony-v2__sign-layout) {
+  max-width: 100%;
+}
+
+.signing-ceremony-v2__sign-main {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-4, 1rem) var(--space-5, 1.5rem);
+  overflow-y: auto;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
 .signing-ceremony-v2__sign {
   display: flex;
   flex-direction: column;
@@ -543,6 +565,18 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg, 12px);
   padding: var(--space-5, 1.5rem);
+  animation: signing-ceremony-v2__field-slide-in var(--motion-normal, 200ms) var(--ease-out, ease-out);
+}
+
+@keyframes signing-ceremony-v2__field-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .signing-ceremony-v2__field-card-header {
@@ -1083,6 +1117,55 @@
   height: 16px;
 }
 
+/* ─── Validation Message ──────────────────────────────────────── */
+
+.signing-ceremony-v2__field-validation {
+  margin-top: var(--space-3, 0.75rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-danger, #DC2626);
+  background: rgba(255, 90, 90, 0.08);
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+/* ─── Keyboard Hint ───────────────────────────────────────────── */
+
+.signing-ceremony-v2__keyboard-hint {
+  text-align: center;
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+  padding: var(--space-2, 0.5rem) 0;
+}
+
+/* ─── Skip Button ─────────────────────────────────────────────── */
+
+.signing-ceremony-v2__btn-skip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: var(--font-medium, 500);
+  font-size: var(--text-sm, 0.875rem);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.signing-ceremony-v2__btn-skip:hover {
+  color: var(--text-secondary);
+  border-color: var(--text-muted);
+  background: var(--bg-secondary);
+}
+
+.signing-ceremony-v2__btn-skip svg {
+  width: 16px;
+  height: 16px;
+}
+
 /* ─── Completion Progress ──────────────────────────────────────── */
 
 .signing-ceremony-v2__completion-progress {
@@ -1244,6 +1327,10 @@
 
   .signing-ceremony-v2__content {
     padding: var(--space-3, 0.75rem);
+  }
+
+  .signing-ceremony-v2__sign-layout .field-checklist {
+    display: none;
   }
 
   .signing-ceremony-v2__review-header h2,

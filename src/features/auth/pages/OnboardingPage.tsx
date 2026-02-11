@@ -10,7 +10,8 @@ import {
   Users,
   Building2,
   Palette,
-  Sparkles,
+  Layers,
+  CheckCircle2,
   Mail,
   X,
   Rocket,
@@ -28,7 +29,7 @@ import {
   BookOpen,
   CalendarDays,
   Database,
-  Bot,
+  Workflow,
   FileText,
   Code,
   Sun,
@@ -75,7 +76,7 @@ const USE_CASES = [
   { label: 'Database/CRM', icon: Database },
   { label: 'Team Collaboration', icon: Users },
   { label: 'Client Portal', icon: FileText },
-  { label: 'Automations', icon: Bot },
+  { label: 'Automations', icon: Workflow },
 ]
 
 const ACCENT_COLORS = [
@@ -479,7 +480,7 @@ export default function OnboardingPage() {
         return (
           <div className="onboarding__step" key="step-use-cases">
             <div className="onboarding__illustration">
-              <Sparkles size={48} className="onboarding__step-icon" />
+              <Layers size={48} className="onboarding__step-icon" />
             </div>
             <h1 className="onboarding__title">What will you use SignOf for?</h1>
             <p className="onboarding__subtitle">
@@ -688,7 +689,7 @@ export default function OnboardingPage() {
               ))}
             </div>
             <div className="onboarding__illustration">
-              <Sparkles size={48} className="onboarding__step-icon onboarding__step-icon--success" />
+              <CheckCircle2 size={48} className="onboarding__step-icon onboarding__step-icon--success" />
             </div>
             <h1 className="onboarding__title">You&apos;re all set!</h1>
             <p className="onboarding__subtitle">

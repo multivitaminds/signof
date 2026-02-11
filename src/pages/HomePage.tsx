@@ -39,8 +39,8 @@ export default function HomePage() {
   })
 
   const firstName = useMemo(() => {
-    if (!user?.name) return undefined
-    return user.name.split(' ')[0]
+    if (user?.name) return user.name.split(' ')[0]
+    return 'Sam' // Demo account default
   }, [user])
 
   const upcomingBookings = useMemo(

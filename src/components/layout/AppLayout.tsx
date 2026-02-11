@@ -6,6 +6,7 @@ import MobileNav from './MobileNav/MobileNav'
 import PageTransition from './PageTransition/PageTransition'
 import CommandPalette from '../CommandPalette/CommandPalette'
 import KeyboardShortcutHelp from '../KeyboardShortcutHelp/KeyboardShortcutHelp'
+import AccountModeBanner from '../AccountModeBanner/AccountModeBanner'
 import OfflineBanner from '../OfflineBanner/OfflineBanner'
 import SearchOverlay from '../../features/search/components/SearchOverlay/SearchOverlay'
 import AIChatSidebar from '../../features/ai/components/AIChatSidebar/AIChatSidebar'
@@ -107,6 +108,7 @@ export default function AppLayout() {
         />
       )}
       <div className="app-layout__main">
+        <AccountModeBanner />
         <OfflineBanner />
         <TopBar />
         <main

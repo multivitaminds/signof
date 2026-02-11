@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Pencil, Trash2, Tag, Clock, ChevronDown, ChevronUp, Zap } from 'lucide-react'
+import { Pencil, Trash2, Tag, Clock, ChevronDown, ChevronUp, CircleDot } from 'lucide-react'
 import { Button } from '../../../../components/ui'
 import { Badge } from '../../../../components/ui'
 import type { MemoryEntry, MemoryCategory } from '../../types'
@@ -63,7 +63,7 @@ export default function MemoryEntryCard({ entry, expanded = false, onEdit, onDel
           {entry.title}
           {autoCaptured && (
             <span className="memory-card__auto-badge" title="Auto-captured">
-              <Zap size={10} />
+              <CircleDot size={10} />
               Auto-captured
             </span>
           )}

@@ -9,6 +9,7 @@ interface DocumentListProps {
   onView: (docId: string) => void
   onSend?: (docId: string) => void
   onCertificate?: (docId: string) => void
+  onViewAudit?: (docId: string) => void
 }
 
 function formatDate(dateString: string): string {
@@ -34,7 +35,7 @@ function isActiveStatus(status: DocumentStatus): boolean {
   return (ACTIVE_STATUSES as string[]).includes(status)
 }
 
-function DocumentList({ documents, onSign, onDelete, onView, onSend, onCertificate }: DocumentListProps) {
+function DocumentList({ documents, onSign, onDelete, onView, onSend, onCertificate, onViewAudit }: DocumentListProps) {
   if (documents.length === 0) {
     return (
       <div className="document-list__empty">
@@ -100,6 +101,14 @@ function DocumentList({ documents, onSign, onDelete, onView, onSend, onCertifica
                 onClick={() => onCertificate(doc.id)}
               >
                 Certificate
+              </button>
+            )}
+            {doc.status !== DocumentStatus.Draft && onViewAudit && (
+              <button
+                className="document-card__btn document-card__btn--audit"
+                onClick={() => onViewAudit(doc.id)}
+              >
+                Audit
               </button>
             )}
             <button

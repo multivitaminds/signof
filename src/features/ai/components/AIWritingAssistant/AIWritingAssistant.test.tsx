@@ -31,7 +31,7 @@ describe('AIWritingAssistant', () => {
     await user.click(screen.getByRole('button', { name: /improve writing/i }))
 
     expect(screen.getByLabelText('Processing')).toBeInTheDocument()
-    expect(screen.getByText('AI is thinking...')).toBeInTheDocument()
+    expect(screen.getByText('Processing...')).toBeInTheDocument()
   })
 
   it('shows suggestion with diff view after processing', async () => {

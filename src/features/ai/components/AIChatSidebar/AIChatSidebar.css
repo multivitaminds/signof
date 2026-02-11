@@ -212,11 +212,11 @@
 }
 
 .ai-chat-sidebar__typing-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--text-muted);
-  animation: ai-chat-typing-bounce 1.4s infinite ease-in-out;
+  animation: ai-chat-typing-fade 1.4s infinite ease-in-out;
 }
 
 .ai-chat-sidebar__typing-dot:nth-child(1) {
@@ -231,13 +231,11 @@
   animation-delay: 0.4s;
 }
 
-@keyframes ai-chat-typing-bounce {
-  0%, 60%, 100% {
-    transform: translateY(0);
-    opacity: 0.4;
+@keyframes ai-chat-typing-fade {
+  0%, 100% {
+    opacity: 0.3;
   }
-  30% {
-    transform: translateY(-4px);
+  50% {
     opacity: 1;
   }
 }

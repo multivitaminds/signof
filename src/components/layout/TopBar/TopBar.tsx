@@ -1,4 +1,4 @@
-import { Search, User, Sun, Moon, Monitor, Menu, Sparkles } from 'lucide-react'
+import { Search, User, Sun, Moon, Monitor, Menu, Brain } from 'lucide-react'
 import { useAppStore } from '../../../stores/useAppStore'
 import { useTheme } from '../../../hooks/useTheme'
 import useAIChatStore from '../../../features/ai/stores/useAIChatStore'
@@ -57,7 +57,7 @@ export default function TopBar() {
           aria-label="Toggle AI assistant"
           title="AI Assistant"
         >
-          <Sparkles size={20} />
+          <Brain size={20} />
         </button>
 
         {/* Theme Toggle */}

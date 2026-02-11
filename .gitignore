@@ -34,3 +34,5 @@ design-references/
 npm-debug.log*
 .vercel
 test-results/
+playwright-report/
+blob-report/

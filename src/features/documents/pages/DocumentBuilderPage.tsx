@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import {
   Upload,
   FileText,
@@ -70,6 +70,15 @@ function DocumentBuilderPage() {
 
   // Field placement
   const fieldPlacement = useFieldPlacement('builder', [])
+
+  // File preview URL for document background
+  const filePreviewUrl = useMemo(() => (file ? URL.createObjectURL(file) : undefined), [file])
+
+  useEffect(() => {
+    return () => {
+      if (filePreviewUrl) URL.revokeObjectURL(filePreviewUrl)
+    }
+  }, [filePreviewUrl])
 
   const stepIndex = STEPS.findIndex((s) => s.key === currentStep)
 
@@ -336,7 +345,10 @@ function DocumentBuilderPage() {
             onFieldMove={fieldPlacement.updateFieldPosition}
             onFieldDrop={handleFieldDrop}
             onFieldHover={fieldPlacement.hoverField}
+            onFieldResize={fieldPlacement.updateFieldSize}
             recipientColors={recipientColors}
+            backgroundUrl={filePreviewUrl}
+            backgroundType={file?.type}
           />
         </div>
       </div>
