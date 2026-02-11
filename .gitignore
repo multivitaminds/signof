@@ -33,3 +33,4 @@ design-references/
 # Logs
 npm-debug.log*
 .vercel
+test-results/
