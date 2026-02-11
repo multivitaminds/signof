@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -21,52 +21,74 @@ const SIMULATED_USERS: Array<{ id: string; name: string; initials: string; color
   { id: 'user-taylor', name: 'Taylor Wu', initials: 'TW', color: '#0891B2' },
 ]
 
+function generatePresence(): PresenceUser[] {
+  const count = 2 + Math.floor(Math.random() * 2)
+  const shuffled = [...SIMULATED_USERS].sort(() => Math.random() - 0.5)
+  const selected = shuffled.slice(0, count)
+  return selected.map((u) => ({
+    ...u,
+    cursorY: 80 + Math.floor(Math.random() * 400),
+    isActive: true,
+  }))
+}
+
+const EMPTY: PresenceUser[] = []
+
+// ─── External store for presence simulation ─────────────────────────
+
+function createPresenceStore() {
+  let state: PresenceUser[] = EMPTY
+  const listeners = new Set<() => void>()
+
+  function emit() {
+    for (const fn of listeners) fn()
+  }
+
+  return {
+    subscribe(listener: () => void) {
+      listeners.add(listener)
+      return () => { listeners.delete(listener) }
+    },
+    getSnapshot() {
+      return state
+    },
+    setState(next: PresenceUser[]) {
+      state = next
+      emit()
+    },
+    updateUsers() {
+      state = state.map((u) => ({
+        ...u,
+        cursorY: Math.max(80, Math.min(600, u.cursorY + (Math.random() - 0.5) * 60)),
+        isActive: Math.random() > 0.1,
+      }))
+      emit()
+    },
+  }
+}
+
 // ─── Hook ───────────────────────────────────────────────────────────
 
 export default function usePresenceSimulator(pageId: string): PresenceUser[] {
-  const [users, setUsers] = useState<PresenceUser[]>([])
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  const generatePresence = useCallback(() => {
-    // Pick 2-3 random users for this page
-    const count = 2 + Math.floor(Math.random() * 2) // 2 or 3
-    const shuffled = [...SIMULATED_USERS].sort(() => Math.random() - 0.5)
-    const selected = shuffled.slice(0, count)
-
-    return selected.map((u) => ({
-      ...u,
-      cursorY: 80 + Math.floor(Math.random() * 400),
-      isActive: true,
-    }))
-  }, [])
+  const [store] = useState(() => createPresenceStore())
 
   useEffect(() => {
     if (!pageId) {
-      setUsers([])
+      store.setState(EMPTY)
       return
     }
 
-    // Initialize users on mount
-    setUsers(generatePresence())
+    store.setState(generatePresence())
 
-    // Periodically update cursor positions to simulate movement
-    intervalRef.current = setInterval(() => {
-      setUsers((prev) =>
-        prev.map((u) => ({
-          ...u,
-          cursorY: Math.max(80, Math.min(600, u.cursorY + (Math.random() - 0.5) * 60)),
-          isActive: Math.random() > 0.1, // 90% chance active
-        }))
-      )
+    const intervalId = setInterval(() => {
+      store.updateUsers()
     }, 3000)
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-        intervalRef.current = null
-      }
+      clearInterval(intervalId)
+      store.setState(EMPTY)
     }
-  }, [pageId, generatePresence])
+  }, [pageId, store])
 
-  return users
+  return useSyncExternalStore(store.subscribe, store.getSnapshot)
 }

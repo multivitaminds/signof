@@ -9,10 +9,13 @@ const isDev = import.meta.env.DEV
 export function useRenderCount(componentName: string): void {
   const count = useRef(0)
 
-  if (isDev) {
-    count.current += 1
-    console.debug(`[RenderCount] ${componentName}: ${count.current}`)
-  }
+  useEffect(() => {
+    if (isDev) {
+      count.current += 1
+      // eslint-disable-next-line no-console
+      console.debug(`[RenderCount] ${componentName}: ${count.current}`)
+    }
+  })
 }
 
 /**
@@ -42,6 +45,7 @@ export function useWhyDidYouRender(
       }
 
       if (Object.keys(changed).length > 0) {
+        // eslint-disable-next-line no-console
         console.debug(`[WhyRender] ${componentName} re-rendered because:`, changed)
       }
     }

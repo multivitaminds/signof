@@ -67,13 +67,14 @@ export default function ProjectAnalytics() {
   }, [allIssues])
 
   // ─── Velocity Chart (last 8 weeks) ────────────────────────────────
+  const [snapshotMs] = useState(() => Date.now())
+
   const velocityData = useMemo(() => {
     const weeks: { label: string; count: number }[] = []
-    const nowMs = Date.now()
 
     for (let i = 7; i >= 0; i--) {
-      const weekStart = nowMs - (i + 1) * 7 * 24 * 60 * 60 * 1000
-      const weekEnd = nowMs - i * 7 * 24 * 60 * 60 * 1000
+      const weekStart = snapshotMs - (i + 1) * 7 * 24 * 60 * 60 * 1000
+      const weekEnd = snapshotMs - i * 7 * 24 * 60 * 60 * 1000
       const count = allIssues.filter((issue) => {
         if (issue.status !== IssueStatus.Done) return false
         const updated = new Date(issue.updatedAt).getTime()
@@ -86,7 +87,7 @@ export default function ProjectAnalytics() {
     }
 
     return weeks
-  }, [allIssues])
+  }, [allIssues, snapshotMs])
 
   const maxVelocity = useMemo(
     () => Math.max(...velocityData.map((w) => w.count), 1),

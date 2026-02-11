@@ -13,7 +13,7 @@ import {
   X,
   GripVertical,
 } from 'lucide-react'
-import { FieldType, SigningOrder } from '../../../types'
+import { type FieldType, SigningOrder } from '../../../types'
 import { useDocumentStore } from '../../../stores/useDocumentStore'
 import { useFieldPlacement } from '../hooks/useFieldPlacement'
 import { FIELD_COLORS } from '../lib/fieldTypes'

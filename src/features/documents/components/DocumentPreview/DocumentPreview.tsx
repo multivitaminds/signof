@@ -51,6 +51,7 @@ function getFieldIcon(type: FieldType): React.ReactNode {
 const ZOOM_LEVELS = [0.5, 0.75, 1, 1.25, 1.5, 2]
 const PAGE_WIDTH = 612
 const PAGE_HEIGHT = 792
+const PLACEHOLDER_LINE_WIDTHS = [78, 91, 65, 83, 72, 87, 69, 94, 76, 81, 88, 63, 79, 85, 71, 90, 67, 82, 74, 86]
 
 // ─── Component ──────────────────────────────────────────────────────
 
@@ -298,12 +299,12 @@ function DocumentPreview({ document: doc, onClose }: DocumentPreviewProps) {
           <div className="doc-preview__page-bg">
             {/* Placeholder lines for document content */}
             <div className="doc-preview__placeholder-lines">
-              {Array.from({ length: 20 }).map((_, i) => (
+              {PLACEHOLDER_LINE_WIDTHS.map((w, i) => (
                 <div
                   key={i}
                   className="doc-preview__placeholder-line"
                   style={{
-                    width: `${60 + Math.random() * 30}%`,
+                    width: `${w}%`,
                     top: `${5 + i * 4.5}%`,
                   }}
                 />

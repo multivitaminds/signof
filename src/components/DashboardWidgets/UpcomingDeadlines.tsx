@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { Clock, FileText, FolderKanban, Calendar } from 'lucide-react'
 import { useDocumentStore } from '../../stores/useDocumentStore'
 import './DashboardWidgets.css'
@@ -13,13 +13,15 @@ interface DeadlineItem {
 export default function UpcomingDeadlines() {
   const documents = useDocumentStore((s) => s.documents)
 
+  const [now] = useState(() => Date.now())
+
   const deadlines = useMemo<DeadlineItem[]>(() => {
     const items: DeadlineItem[] = []
-    const now = new Date().toISOString()
+    const nowIso = new Date(now).toISOString()
 
     // Document expiry dates
     for (const doc of documents) {
-      if (doc.expiresAt && doc.expiresAt > now && doc.status !== 'completed' && doc.status !== 'voided') {
+      if (doc.expiresAt && doc.expiresAt > nowIso && doc.status !== 'completed' && doc.status !== 'voided') {
         items.push({
           id: `doc-${doc.id}`,
           label: doc.name,
@@ -33,13 +35,13 @@ export default function UpcomingDeadlines() {
     items.push({
       id: 'proj-1',
       label: 'Q1 Review sprint ends',
-      date: new Date(Date.now() + 2 * 86400000).toISOString(),
+      date: new Date(now + 2 * 86400000).toISOString(),
       type: 'project',
     })
     items.push({
       id: 'proj-2',
       label: 'Design system milestone',
-      date: new Date(Date.now() + 5 * 86400000).toISOString(),
+      date: new Date(now + 5 * 86400000).toISOString(),
       type: 'project',
     })
 
@@ -47,14 +49,14 @@ export default function UpcomingDeadlines() {
     items.push({
       id: 'book-1',
       label: 'Team standup',
-      date: new Date(Date.now() + 1 * 86400000).toISOString(),
+      date: new Date(now + 1 * 86400000).toISOString(),
       type: 'booking',
     })
 
     return items
       .sort((a, b) => a.date.localeCompare(b.date))
       .slice(0, 6)
-  }, [documents])
+  }, [documents, now])
 
   const ICON_MAP = {
     document: FileText,

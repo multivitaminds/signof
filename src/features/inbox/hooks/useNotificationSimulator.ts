@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef } from 'react'
 import { useInboxStore } from '../stores/useInboxStore'
 import { NotificationType } from '../types'
 
@@ -105,32 +105,37 @@ export default function useNotificationSimulator(): void {
   const simulatorEnabled = useInboxStore((s) => s.simulatorEnabled)
   const addNotification = useInboxStore((s) => s.addNotification)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  const generateNotification = useCallback(() => {
-    const idx = Math.floor(Math.random() * SIMULATED_NOTIFICATIONS.length)
-    const template = SIMULATED_NOTIFICATIONS[idx]
-    if (!template) return
-
-    addNotification(template.type, template.title, template.message, {
-      actionUrl: template.actionUrl,
-      actionLabel: template.actionLabel,
-      actorName: template.actorName || undefined,
-      link: template.link,
-      sourceId: template.sourceId,
-    })
-  }, [addNotification])
-
-  const scheduleNext = useCallback(() => {
-    timerRef.current = setTimeout(() => {
-      generateNotification()
-      scheduleNext()
-    }, getRandomInterval())
-  }, [generateNotification])
+  const addNotificationRef = useRef(addNotification)
 
   useEffect(() => {
-    if (simulatorEnabled) {
-      scheduleNext()
+    addNotificationRef.current = addNotification
+  }, [addNotification])
+
+  useEffect(() => {
+    if (!simulatorEnabled) return
+
+    function generateNotification() {
+      const idx = Math.floor(Math.random() * SIMULATED_NOTIFICATIONS.length)
+      const template = SIMULATED_NOTIFICATIONS[idx]
+      if (!template) return
+
+      addNotificationRef.current(template.type, template.title, template.message, {
+        actionUrl: template.actionUrl,
+        actionLabel: template.actionLabel,
+        actorName: template.actorName || undefined,
+        link: template.link,
+        sourceId: template.sourceId,
+      })
     }
+
+    function scheduleNext() {
+      timerRef.current = setTimeout(() => {
+        generateNotification()
+        scheduleNext()
+      }, getRandomInterval())
+    }
+
+    scheduleNext()
 
     return () => {
       if (timerRef.current) {
@@ -138,5 +143,5 @@ export default function useNotificationSimulator(): void {
         timerRef.current = null
       }
     }
-  }, [simulatorEnabled, scheduleNext])
+  }, [simulatorEnabled])
 }
