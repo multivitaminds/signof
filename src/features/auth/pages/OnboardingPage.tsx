@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/useAuthStore'
 import { useOnboardingStore } from '../stores/useOnboardingStore'
+import { useAppearanceStore } from '../../settings/stores/useAppearanceStore'
 import {
   ArrowRight,
   ArrowLeft,
@@ -212,6 +213,10 @@ export default function OnboardingPage() {
       onboardingStore.addInviteEmail(email)
     }
     onboardingStore.completeOnboarding()
+
+    // Sync theme choices to the appearance store (single source of truth)
+    useAppearanceStore.getState().setTheme(data.theme)
+    useAppearanceStore.getState().setAccentColor(accentColor)
   }, [data, accentColor, onboardingStore])
 
   const handleNext = useCallback(() => {

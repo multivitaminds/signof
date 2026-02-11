@@ -45,7 +45,6 @@ export interface WorkspaceSettings {
   name: string
   slug: string
   logo: string | null
-  theme: ThemeMode
   language: string
   dateFormat: string
   timezone: string
