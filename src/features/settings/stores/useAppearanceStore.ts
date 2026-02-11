@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { SidebarDensity, FontSize } from '../types'
-import type { Theme } from '../../../stores/useAppStore'
+import type { Theme } from '../../../types'
 
 interface AppearanceState {
   theme: Theme
@@ -15,12 +15,14 @@ interface AppearanceState {
   setFontSize: (size: FontSize) => void
 }
 
+function getSystemTheme(): 'light' | 'dark' {
+  if (typeof window === 'undefined') return 'light'
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 function applyTheme(theme: Theme) {
-  if (theme === 'system') {
-    document.documentElement.removeAttribute('data-theme')
-  } else {
-    document.documentElement.setAttribute('data-theme', theme)
-  }
+  const resolved = theme === 'system' ? getSystemTheme() : theme
+  document.documentElement.setAttribute('data-theme', resolved)
 }
 
 function applyFontSize(size: FontSize) {

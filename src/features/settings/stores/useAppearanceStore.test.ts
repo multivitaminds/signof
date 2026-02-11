@@ -31,12 +31,13 @@ describe('useAppearanceStore', () => {
     expect(document.documentElement.getAttribute('data-theme')).toBe('light')
   })
 
-  it('setTheme removes data-theme attribute for system', () => {
+  it('setTheme resolves system to light or dark', () => {
     useAppearanceStore.getState().setTheme('dark')
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
 
     useAppearanceStore.getState().setTheme('system')
-    expect(document.documentElement.getAttribute('data-theme')).toBeNull()
+    const resolved = document.documentElement.getAttribute('data-theme')
+    expect(resolved === 'light' || resolved === 'dark').toBe(true)
   })
 
   it('setAccentColor updates accent color', () => {

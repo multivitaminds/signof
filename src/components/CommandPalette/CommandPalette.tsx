@@ -23,6 +23,7 @@ import {
   Code2,
 } from 'lucide-react'
 import { useAppStore } from '../../stores/useAppStore'
+import { useTheme } from '../../hooks/useTheme'
 import { useDocumentStore } from '../../stores/useDocumentStore'
 import { useWorkspaceStore } from '../../features/workspace/stores/useWorkspaceStore'
 import { useProjectStore } from '../../features/projects/stores/useProjectStore'
@@ -67,7 +68,8 @@ export default function CommandPalette() {
     addRecentItem,
     recentItems,
   } = useAppStore()
-  const { theme, setTheme, compactMode, setCompactMode } = useAppStore()
+  const { theme, setTheme } = useTheme()
+  const { compactMode, setCompactMode } = useAppStore()
   const documents = useDocumentStore((s) => s.documents)
   const pagesMap = useWorkspaceStore((s) => s.pages)
   const projectsMap = useProjectStore((s) => s.projects)

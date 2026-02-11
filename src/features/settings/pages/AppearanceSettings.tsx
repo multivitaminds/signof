@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useAppearanceStore } from '../stores/useAppearanceStore'
-import type { Theme } from '../../../stores/useAppStore'
+import type { Theme } from '../../../types'
 import type { SidebarDensity, FontSize } from '../types'
 import './AppearanceSettings.css'
 

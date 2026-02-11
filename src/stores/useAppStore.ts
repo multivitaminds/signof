@@ -2,8 +2,6 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { RecentItem, FavoriteItem } from '../types'
 
-export type Theme = 'light' | 'dark' | 'system'
-
 interface AppState {
   // Sidebar
   sidebarExpanded: boolean
@@ -15,12 +13,6 @@ interface AppState {
   mobileSidebarOpen: boolean
   openMobileSidebar: () => void
   closeMobileSidebar: () => void
-
-  // Theme
-  theme: Theme
-  setTheme: (theme: Theme) => void
-  accentColor: string
-  setAccentColor: (color: string) => void
 
   // Command Palette
   commandPaletteOpen: boolean
@@ -69,12 +61,6 @@ export const useAppStore = create<AppState>()(
       mobileSidebarOpen: false,
       openMobileSidebar: () => set({ mobileSidebarOpen: true }),
       closeMobileSidebar: () => set({ mobileSidebarOpen: false }),
-
-      // Theme
-      theme: 'system',
-      setTheme: (theme) => set({ theme }),
-      accentColor: '#4F46E5',
-      setAccentColor: (color) => set({ accentColor: color }),
 
       // Command Palette
       commandPaletteOpen: false,
@@ -139,8 +125,6 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => ({
         sidebarExpanded: state.sidebarExpanded,
         sidebarWidth: state.sidebarWidth,
-        theme: state.theme,
-        accentColor: state.accentColor,
         compactMode: state.compactMode,
         recentItems: state.recentItems,
         favorites: state.favorites,

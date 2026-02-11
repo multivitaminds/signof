@@ -1,3 +1,7 @@
+// ─── Theme Type ────────────────────────────────────────────────────
+
+export type Theme = 'light' | 'dark' | 'system'
+
 // ─── Status Enums (const object pattern) ───────────────────────────
 
 export const DocumentStatus = {

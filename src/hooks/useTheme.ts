@@ -1,5 +1,6 @@
 import { useEffect, useCallback } from 'react'
-import { useAppStore, type Theme } from '../stores/useAppStore'
+import { useAppearanceStore } from '../features/settings/stores/useAppearanceStore'
+import type { Theme } from '../types'
 
 function getSystemTheme(): 'light' | 'dark' {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
@@ -12,9 +13,9 @@ function resolveTheme(theme: Theme): 'light' | 'dark' {
 const CYCLE_ORDER: readonly Theme[] = ['light', 'dark', 'system'] as const
 
 export function useTheme() {
-  const theme = useAppStore((s) => s.theme)
-  const setTheme = useAppStore((s) => s.setTheme)
-  const accentColor = useAppStore((s) => s.accentColor)
+  const theme = useAppearanceStore((s) => s.theme)
+  const setTheme = useAppearanceStore((s) => s.setTheme)
+  const accentColor = useAppearanceStore((s) => s.accentColor)
 
   const resolvedTheme = resolveTheme(theme)
 
