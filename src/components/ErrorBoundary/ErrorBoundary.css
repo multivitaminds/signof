@@ -1,0 +1,77 @@
+/* ═══════════════════════════════════════════════════════════
+   ErrorBoundary — friendly error fallback UI
+   ═══════════════════════════════════════════════════════════ */
+
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: var(--space-6);
+}
+
+.error-boundary__card {
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8) var(--space-6);
+  box-shadow: var(--shadow-md);
+}
+
+.error-boundary__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+  margin-bottom: var(--space-4);
+}
+
+.error-boundary__title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.error-boundary__message {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-5);
+  word-break: break-word;
+}
+
+.error-boundary__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.error-boundary__retry {
+  padding: 0.5rem 1.25rem;
+}
+
+.error-boundary__report {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.error-boundary__report:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+/* ─── Dark mode ────────────────────────────────────────── */
+[data-theme="dark"] .error-boundary__icon {
+  background: rgba(220, 38, 38, 0.15);
+}

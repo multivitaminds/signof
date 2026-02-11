@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { Plus, GripVertical } from 'lucide-react'
 import type { DbTable, DbField, CellValue } from '../../types'
 import { DbFieldType } from '../../types'
@@ -11,6 +11,7 @@ interface KanbanViewProps {
   onUpdateCell: (rowId: string, fieldId: string, value: CellValue) => void
   onAddRow: (cells?: Record<string, CellValue>) => void
   onDeleteRow: (rowId: string) => void
+  onCardOpen?: (rowId: string) => void
 }
 
 export default function KanbanView({
@@ -20,9 +21,16 @@ export default function KanbanView({
   onUpdateCell,
   onAddRow,
   onDeleteRow,
+  onCardOpen,
 }: KanbanViewProps) {
   const [dragRowId, setDragRowId] = useState<string | null>(null)
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null)
+  // Keyboard navigation state
+  const [focusedColIdx, setFocusedColIdx] = useState<number>(-1)
+  const [focusedCardIdx, setFocusedCardIdx] = useState<number>(-1)
+  const [kbMovingRowId, setKbMovingRowId] = useState<string | null>(null)
+  const [kbMoveTargetCol, setKbMoveTargetCol] = useState<number>(-1)
+  const boardRef = useRef<HTMLDivElement>(null)
 
   // Suppress unused variable
   void _tables
@@ -77,6 +85,15 @@ export default function KanbanView({
     }
     return map
   }, [table.rows, groupFieldId, columnNames])
+
+  // Build the full list of displayed columns (including uncategorized if non-empty)
+  const displayedColumns = useMemo(() => {
+    const cols = [...columnNames]
+    if ((rowsByColumn['__uncategorized']?.length ?? 0) > 0) {
+      cols.push('__uncategorized')
+    }
+    return cols
+  }, [columnNames, rowsByColumn])
 
   const getChoiceColor = useCallback(
     (name: string): string => {
@@ -148,41 +165,172 @@ export default function KanbanView({
     []
   )
 
+  // Focus a specific card in the DOM
+  const focusCardElement = useCallback((colIdx: number, cardIdx: number) => {
+    if (!boardRef.current) return
+    const card = boardRef.current.querySelector<HTMLElement>(
+      `[data-kanban-col="${colIdx}"][data-kanban-card="${cardIdx}"]`
+    )
+    if (card) {
+      card.focus()
+    }
+  }, [])
+
+  // Keyboard navigation handler
+  const handleBoardKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (focusedColIdx < 0) return
+
+    const currentCol = displayedColumns[focusedColIdx]
+    if (!currentCol) return
+    const currentCards = rowsByColumn[currentCol] ?? []
+
+    // If in keyboard-move mode (Space was pressed)
+    if (kbMovingRowId !== null) {
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault()
+          setKbMoveTargetCol(Math.max(0, kbMoveTargetCol - 1))
+          break
+        case 'ArrowRight':
+          e.preventDefault()
+          setKbMoveTargetCol(Math.min(displayedColumns.length - 1, kbMoveTargetCol + 1))
+          break
+        case 'Enter': {
+          e.preventDefault()
+          const targetColName = displayedColumns[kbMoveTargetCol]
+          if (targetColName) {
+            const newValue = targetColName === '__uncategorized' ? null : targetColName
+            onUpdateCell(kbMovingRowId, groupFieldId, newValue)
+          }
+          setKbMovingRowId(null)
+          setKbMoveTargetCol(-1)
+          break
+        }
+        case 'Escape':
+          e.preventDefault()
+          setKbMovingRowId(null)
+          setKbMoveTargetCol(-1)
+          break
+      }
+      return
+    }
+
+    switch (e.key) {
+      case 'ArrowLeft':
+        e.preventDefault()
+        if (focusedColIdx > 0) {
+          const newCol = focusedColIdx - 1
+          setFocusedColIdx(newCol)
+          setFocusedCardIdx(0)
+          focusCardElement(newCol, 0)
+        }
+        break
+      case 'ArrowRight':
+        e.preventDefault()
+        if (focusedColIdx < displayedColumns.length - 1) {
+          const newCol = focusedColIdx + 1
+          setFocusedColIdx(newCol)
+          setFocusedCardIdx(0)
+          focusCardElement(newCol, 0)
+        }
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        if (focusedCardIdx > 0) {
+          const newCard = focusedCardIdx - 1
+          setFocusedCardIdx(newCard)
+          focusCardElement(focusedColIdx, newCard)
+        }
+        break
+      case 'ArrowDown':
+        e.preventDefault()
+        if (focusedCardIdx < currentCards.length - 1) {
+          const newCard = focusedCardIdx + 1
+          setFocusedCardIdx(newCard)
+          focusCardElement(focusedColIdx, newCard)
+        }
+        break
+      case 'Enter': {
+        e.preventDefault()
+        const row = currentCards[focusedCardIdx]
+        if (row && onCardOpen) {
+          onCardOpen(row.id)
+        }
+        break
+      }
+      case ' ': {
+        e.preventDefault()
+        const row = currentCards[focusedCardIdx]
+        if (row) {
+          setKbMovingRowId(row.id)
+          setKbMoveTargetCol(focusedColIdx)
+        }
+        break
+      }
+      case 'Escape':
+        e.preventDefault()
+        setFocusedColIdx(-1)
+        setFocusedCardIdx(-1)
+        break
+    }
+  }, [
+    focusedColIdx, focusedCardIdx, displayedColumns, rowsByColumn,
+    kbMovingRowId, kbMoveTargetCol, focusCardElement, onUpdateCell,
+    groupFieldId, onCardOpen,
+  ])
+
+  const handleCardFocus = useCallback((colIdx: number, cardIdx: number) => {
+    setFocusedColIdx(colIdx)
+    setFocusedCardIdx(cardIdx)
+  }, [])
+
   const renderColumn = useCallback(
-    (columnName: string, displayName: string, color: string) => {
+    (columnName: string, displayName: string, color: string, colIdx: number) => {
       const rows = rowsByColumn[columnName] ?? []
       const isOver = dragOverColumn === columnName
+      const isKbMoveTarget = kbMovingRowId !== null && kbMoveTargetCol === colIdx
 
       return (
         <div
           key={columnName}
-          className={`kanban-view__column ${isOver ? 'kanban-view__column--drag-over' : ''}`}
+          className={`kanban-view__column ${isOver ? 'kanban-view__column--drag-over' : ''} ${isKbMoveTarget ? 'kanban-view__column--kb-move-target' : ''}`}
           onDragOver={(e) => handleDragOver(e, columnName)}
           onDragLeave={handleDragLeave}
           onDrop={(e) => handleDrop(e, columnName)}
+          role="group"
+          aria-label={`Column: ${displayName}, ${rows.length} items`}
         >
           <div className="kanban-view__column-header">
             <span className="kanban-view__column-dot" style={{ backgroundColor: color }} />
             <span className="kanban-view__column-name">{displayName}</span>
             <span className="kanban-view__column-count">{rows.length}</span>
           </div>
-          <div className="kanban-view__cards">
+          <div className="kanban-view__cards" role="list">
             {rows.length === 0 && (
               <div className="kanban-view__empty">No items</div>
             )}
-            {rows.map((row) => {
+            {rows.map((row, cardIdx) => {
               const title = primaryField
                 ? (row.cells[primaryField.id] ? String(row.cells[primaryField.id]) : 'Untitled')
                 : 'Untitled'
               const isDragging = dragRowId === row.id
+              const isKbMoving = kbMovingRowId === row.id
+              const isFocused = focusedColIdx === colIdx && focusedCardIdx === cardIdx
 
               return (
                 <div
                   key={row.id}
-                  className={`kanban-view__card ${isDragging ? 'kanban-view__card--dragging' : ''}`}
+                  className={`kanban-view__card ${isDragging ? 'kanban-view__card--dragging' : ''} ${isKbMoving ? 'kanban-view__card--kb-moving' : ''} ${isFocused ? 'kanban-view__card--focused' : ''}`}
                   draggable
                   onDragStart={(e) => handleDragStart(e, row.id)}
                   onDragEnd={handleDragEnd}
+                  role="listitem"
+                  tabIndex={isFocused ? 0 : -1}
+                  data-kanban-col={colIdx}
+                  data-kanban-card={cardIdx}
+                  onFocus={() => handleCardFocus(colIdx, cardIdx)}
+                  aria-label={title}
+                  aria-grabbed={isKbMoving}
                 >
                   <div className="kanban-view__card-header">
                     <GripVertical size={12} className="kanban-view__card-grip" />
@@ -248,14 +396,29 @@ export default function KanbanView({
       rowsByColumn, dragOverColumn, dragRowId, primaryField, previewFields,
       handleDragOver, handleDragLeave, handleDrop, handleDragStart,
       handleDragEnd, handleAddToColumn, renderPreviewValue, onDeleteRow,
+      focusedColIdx, focusedCardIdx, kbMovingRowId, kbMoveTargetCol,
+      handleCardFocus,
     ]
   )
 
   return (
-    <div className="kanban-view" role="region" aria-label="Kanban board">
-      {columnNames.map((name) => renderColumn(name, name, getChoiceColor(name)))}
-      {(rowsByColumn['__uncategorized']?.length ?? 0) > 0 &&
-        renderColumn('__uncategorized', 'Uncategorized', '#94A3B8')}
+    <div
+      className="kanban-view"
+      role="region"
+      aria-label="Kanban board"
+      ref={boardRef}
+      onKeyDown={handleBoardKeyDown}
+    >
+      {displayedColumns.map((name, colIdx) => {
+        const displayName = name === '__uncategorized' ? 'Uncategorized' : name
+        const color = name === '__uncategorized' ? '#94A3B8' : getChoiceColor(name)
+        return renderColumn(name, displayName, color, colIdx)
+      })}
+      {kbMovingRowId && (
+        <div className="kanban-view__kb-move-hint" role="status" aria-live="assertive">
+          Use arrow keys to choose column, Enter to drop, Escape to cancel
+        </div>
+      )}
     </div>
   )
 }

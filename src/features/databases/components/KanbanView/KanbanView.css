@@ -205,6 +205,38 @@
   background: var(--bg-primary, #fff);
 }
 
+/* ─── Keyboard Navigation ────────────────────────────────────────── */
+
+.kanban-view__card--focused {
+  box-shadow: 0 0 0 2px var(--color-primary, #4F46E5);
+  outline: none;
+}
+
+.kanban-view__card--kb-moving {
+  border: 2px dashed var(--color-primary, #4F46E5);
+  opacity: 0.7;
+}
+
+.kanban-view__column--kb-move-target {
+  background: rgba(79, 70, 229, 0.08);
+  box-shadow: inset 0 0 0 2px var(--color-primary, #4F46E5);
+}
+
+.kanban-view__kb-move-hint {
+  position: fixed;
+  bottom: var(--space-5, 24px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  background: var(--bg-secondary, #1A1A2E);
+  color: var(--text-primary, #F1F5F9);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-tooltip, 70);
+  white-space: nowrap;
+}
+
 /* ─── Dark mode ──────────────────────────────────────────────────── */
 
 [data-theme="dark"] .kanban-view__column {

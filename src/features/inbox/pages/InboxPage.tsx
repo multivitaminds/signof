@@ -1,4 +1,7 @@
 import { useState, useMemo, useCallback } from 'react'
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue'
+import { usePullToRefresh } from '../../../hooks/usePullToRefresh'
+import { useIsMobile } from '../../../hooks/useMediaQuery'
 import { useNavigate } from 'react-router-dom'
 import {
   Bell, CheckCheck, Trash2, FileSignature, AtSign,
@@ -181,6 +184,16 @@ function getSourceGroupCounts(notifications: Notification[]): Map<string, number
 
 export default function InboxPage() {
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
+
+  const handleRefresh = useCallback(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+  }, [])
+
+  const { isRefreshing, pullDistance, ref: pullRef } = usePullToRefresh<HTMLDivElement>({
+    onRefresh: handleRefresh,
+    enabled: isMobile,
+  })
 
   /* Store -----------------------------------------------------------*/
   const notifications = useInboxStore((s) => s.notifications)
@@ -231,19 +244,21 @@ export default function InboxPage() {
     return counts
   }, [activeNotifications])
 
+  const debouncedSearch = useDebouncedValue(searchQuery, 200)
+
   const filtered = useMemo(() => {
     let result = activeNotifications
     if (activeCategory !== NotificationCategory.All) {
       result = result.filter((n) => n.category === activeCategory)
     }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase()
+    if (debouncedSearch.trim()) {
+      const q = debouncedSearch.toLowerCase()
       result = result.filter(
         (n) => n.title.toLowerCase().includes(q) || n.message.toLowerCase().includes(q)
       )
     }
     return result
-  }, [activeNotifications, activeCategory, searchQuery])
+  }, [activeNotifications, activeCategory, debouncedSearch])
 
   const groups = useMemo(() => groupByDate(filtered), [filtered])
   const sourceGroupCounts = useMemo(() => getSourceGroupCounts(filtered), [filtered])
@@ -384,7 +399,16 @@ export default function InboxPage() {
   const emptyState = EMPTY_MESSAGES[activeCategory] ?? EMPTY_MESSAGES[NotificationCategory.All]
 
   return (
-    <div className="inbox-page">
+    <div className="inbox-page" ref={pullRef}>
+      {/* Pull-to-refresh indicator (mobile only) */}
+      {isMobile && (
+        <div
+          className={`pull-to-refresh__indicator ${isRefreshing ? 'pull-to-refresh__indicator--active' : ''}`}
+          style={!isRefreshing && pullDistance > 0 ? { height: `${pullDistance}px` } : undefined}
+        >
+          <div className="pull-to-refresh__spinner" />
+        </div>
+      )}
       {/* Header */}
       <div className="inbox-page__header">
         <div>

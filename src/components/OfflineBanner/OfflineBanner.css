@@ -1,0 +1,43 @@
+/* ================================================================
+   OfflineBanner — Yellow notification bar for offline state
+   ================================================================ */
+
+.offline-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 8px);
+  padding: var(--space-2, 8px) var(--space-4, 16px);
+  background: var(--color-warning, #D97706);
+  color: #ffffff;
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-toast, 80);
+  transform: translateY(-100%);
+  transition: transform var(--motion-smooth, 300ms) cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 40px;
+}
+
+.offline-banner--visible {
+  transform: translateY(0);
+}
+
+.offline-banner--hiding {
+  transform: translateY(-100%);
+}
+
+.offline-banner__icon {
+  flex-shrink: 0;
+}
+
+.offline-banner__text {
+  line-height: 1.4;
+}
+
+/* ─── Dark Mode ───────────────────────────────────────────── */
+[data-theme="dark"] .offline-banner {
+  background: #92400E;
+  color: #FEF3C7;
+}

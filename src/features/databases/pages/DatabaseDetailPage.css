@@ -183,3 +183,57 @@
   background: var(--bg-secondary, #1A1A2E);
   color: var(--text-primary, #F8FAFC);
 }
+
+/* ─── Responsive ─────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .db-detail-page {
+    padding: var(--space-3, 0.75rem) var(--space-3, 0.75rem);
+  }
+
+  .db-detail-page__header {
+    flex-wrap: wrap;
+  }
+
+  .db-detail-page__title {
+    font-size: var(--text-lg, 1.125rem);
+  }
+
+  /* Horizontal scroll for grid view on mobile */
+  .db-detail-page__view {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Kanban columns stack vertically on mobile */
+  .db-detail-page__view .kanban-view {
+    flex-direction: column;
+  }
+
+  .db-detail-page__view .kanban-view__column {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  /* Table tab bar scrollable */
+  .db-detail-page__table-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .db-detail-page__table-tabs::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .db-detail-page {
+    padding: var(--space-4, 1rem);
+  }
+
+  .db-detail-page__view {
+    overflow-x: auto;
+  }
+}

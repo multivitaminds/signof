@@ -99,6 +99,15 @@ export default function ToastProvider({ children }: ToastProviderProps) {
       return next
     })
 
+    // Announce toast to screen readers via ARIA live region
+    const liveRegion = document.querySelector('.app-layout__live-region')
+    if (liveRegion) {
+      const message = input.description
+        ? `${input.title}: ${input.description}`
+        : input.title
+      liveRegion.textContent = message
+    }
+
     return id
   }, [])
 

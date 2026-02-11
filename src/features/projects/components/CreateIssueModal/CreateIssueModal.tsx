@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react'
 import type { Issue, IssueStatus, IssuePriority } from '../../types'
 import { IssueStatus as IS, IssuePriority as IP } from '../../types'
 import { useProjectStore } from '../../stores/useProjectStore'
+import { useFocusTrap } from '../../../../hooks/useFocusTrap'
 import StatusSelect from '../StatusSelect/StatusSelect'
 import PrioritySelect from '../PrioritySelect/PrioritySelect'
 import AssigneePicker from '../AssigneePicker/AssigneePicker'
@@ -162,6 +163,11 @@ export default function CreateIssueModal({
     [onClose]
   )
 
+  const modalContentRef = useRef<HTMLDivElement>(null)
+
+  // Focus trap: keeps Tab/Shift+Tab within the modal
+  useFocusTrap(modalContentRef)
+
   if (!open) return null
 
   // Increment to get a fresh key each time modal opens, remounting the form
@@ -176,7 +182,7 @@ export default function CreateIssueModal({
       aria-modal="true"
       aria-label="Create issue"
     >
-      <div className="modal-content create-issue">
+      <div className="modal-content create-issue" ref={modalContentRef}>
         <div className="modal-header">
           <h2>New Issue</h2>
           <button

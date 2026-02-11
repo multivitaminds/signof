@@ -1,7 +1,8 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { X, Check } from 'lucide-react'
 import type { EventType, Booking, TimeRange } from '../../types'
 import { BookingStatus } from '../../types'
+import { useFocusTrap } from '../../../../hooks/useFocusTrap'
 import TimeSlotPicker from '../TimeSlotPicker/TimeSlotPicker'
 import './BookingModal.css'
 
@@ -38,6 +39,11 @@ export default function BookingModal({
   onClose,
 }: BookingModalProps) {
   void _bookings // reserved for availability filtering
+  const modalRef = useRef<HTMLDivElement>(null)
+
+  // Focus trap: keeps Tab/Shift+Tab within the modal
+  useFocusTrap(modalRef)
+
   const [step, setStep] = useState(0)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
@@ -128,6 +134,7 @@ export default function BookingModal({
     <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal-content booking-modal"
+        ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-label={`Book ${eventType.name}`}

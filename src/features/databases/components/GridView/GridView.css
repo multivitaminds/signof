@@ -59,6 +59,13 @@
   border-bottom: 1px solid var(--border-color, #E5E7EB);
   height: 36px;
   vertical-align: middle;
+  outline: none;
+}
+
+.grid-view__cell--focused {
+  box-shadow: inset 0 0 0 2px var(--color-primary, #4F46E5);
+  position: relative;
+  z-index: 1;
 }
 
 .grid-view__cell-text {

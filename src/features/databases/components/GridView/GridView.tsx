@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { Plus } from 'lucide-react'
 import type { DbField, DbRow, DbTable, CellValue, RelationConfig, LookupConfig, RollupConfig, FormulaConfig } from '../../types'
 import { DbFieldType } from '../../types'
@@ -43,6 +43,9 @@ export default function GridView({
   const [editingCell, setEditingCell] = useState<{ rowId: string; fieldId: string } | null>(null)
   const [editValue, setEditValue] = useState('')
   const [showFieldPopover, setShowFieldPopover] = useState(false)
+  const [focusedRow, setFocusedRow] = useState<number>(-1)
+  const [focusedCol, setFocusedCol] = useState<number>(-1)
+  const tableRef = useRef<HTMLTableElement>(null)
 
   const visibleFields = fieldOrder
     .map((id) => fields.find((f) => f.id === id))
@@ -65,7 +68,7 @@ export default function GridView({
     setEditingCell(null)
   }, [editingCell, editValue, fields, onCellChange])
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+  const handleCellInputKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') { e.preventDefault(); commitEdit() }
     if (e.key === 'Escape') setEditingCell(null)
   }, [commitEdit])
@@ -79,6 +82,96 @@ export default function GridView({
     }
     return row.cells[field.id] ?? null
   }, [tablesMap, fields])
+
+  // Focus a specific cell in the table
+  const focusCell = useCallback((row: number, col: number) => {
+    if (!tableRef.current) return
+    const clampedRow = Math.max(0, Math.min(row, rows.length - 1))
+    const clampedCol = Math.max(0, Math.min(col, visibleFields.length - 1))
+    if (rows.length === 0 || visibleFields.length === 0) return
+
+    setFocusedRow(clampedRow)
+    setFocusedCol(clampedCol)
+
+    // Focus the DOM element
+    const cell = tableRef.current.querySelector<HTMLElement>(
+      `[data-row="${clampedRow}"][data-col="${clampedCol}"]`
+    )
+    if (cell) {
+      cell.focus()
+    }
+  }, [rows.length, visibleFields.length])
+
+  // Keyboard navigation handler for the table
+  const handleTableKeyDown = useCallback((e: React.KeyboardEvent) => {
+    // Only handle navigation when not editing
+    if (editingCell) return
+    if (focusedRow < 0 || focusedCol < 0) return
+
+    switch (e.key) {
+      case 'ArrowUp':
+        e.preventDefault()
+        focusCell(focusedRow - 1, focusedCol)
+        break
+      case 'ArrowDown':
+        e.preventDefault()
+        focusCell(focusedRow + 1, focusedCol)
+        break
+      case 'ArrowLeft':
+        e.preventDefault()
+        focusCell(focusedRow, focusedCol - 1)
+        break
+      case 'ArrowRight':
+        e.preventDefault()
+        focusCell(focusedRow, focusedCol + 1)
+        break
+      case 'Home':
+        e.preventDefault()
+        focusCell(focusedRow, 0)
+        break
+      case 'End':
+        e.preventDefault()
+        focusCell(focusedRow, visibleFields.length - 1)
+        break
+      case 'Tab':
+        e.preventDefault()
+        if (e.shiftKey) {
+          // Move to previous cell
+          if (focusedCol > 0) {
+            focusCell(focusedRow, focusedCol - 1)
+          } else if (focusedRow > 0) {
+            focusCell(focusedRow - 1, visibleFields.length - 1)
+          }
+        } else {
+          // Move to next cell
+          if (focusedCol < visibleFields.length - 1) {
+            focusCell(focusedRow, focusedCol + 1)
+          } else if (focusedRow < rows.length - 1) {
+            focusCell(focusedRow + 1, 0)
+          }
+        }
+        break
+      case 'Enter': {
+        e.preventDefault()
+        const field = visibleFields[focusedCol]
+        const row = rows[focusedRow]
+        if (field && row && !COMPUTED_FIELD_TYPES.has(field.type) && field.type !== DbFieldType.Relation) {
+          startEdit(row.id, field.id, row.cells[field.id] ?? null)
+        }
+        break
+      }
+      case 'Escape':
+        e.preventDefault()
+        setFocusedRow(-1)
+        setFocusedCol(-1)
+        break
+    }
+  }, [editingCell, focusedRow, focusedCol, focusCell, visibleFields, rows, startEdit])
+
+  const handleCellFocus = useCallback((rowIdx: number, colIdx: number) => {
+    setFocusedRow(rowIdx)
+    setFocusedCol(colIdx)
+  }, [])
 
   const renderCell = (row: DbRow, field: DbField) => {
     const val = row.cells[field.id]
@@ -132,7 +225,7 @@ export default function GridView({
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onBlur={commitEdit}
-          onKeyDown={handleKeyDown}
+          onKeyDown={handleCellInputKeyDown}
           autoFocus
         />
       )
@@ -175,14 +268,18 @@ export default function GridView({
   }
 
   return (
-    <div className="grid-view">
+    <div className="grid-view" role="grid" aria-label="Data table">
       <div className="grid-view__table-wrapper">
-        <table className="grid-view__table">
+        <table
+          className="grid-view__table"
+          ref={tableRef}
+          onKeyDown={handleTableKeyDown}
+        >
           <thead>
-            <tr>
-              <th className="grid-view__row-num">#</th>
+            <tr role="row">
+              <th className="grid-view__row-num" role="columnheader">#</th>
               {visibleFields.map((field) => (
-                <th key={field.id} className="grid-view__header" style={{ width: field.width ?? 160 }}>
+                <th key={field.id} className="grid-view__header" style={{ width: field.width ?? 160 }} role="columnheader">
                   <span className="grid-view__header-name">{field.name}</span>
                 </th>
               ))}
@@ -206,14 +303,28 @@ export default function GridView({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, idx) => (
-              <tr key={row.id} className="grid-view__row" onContextMenu={(e) => { e.preventDefault(); onDeleteRow(row.id) }}>
-                <td className="grid-view__row-num">{idx + 1}</td>
-                {visibleFields.map((field) => (
-                  <td key={field.id} className="grid-view__cell" style={{ width: field.width ?? 160 }}>
-                    {renderCell(row, field)}
-                  </td>
-                ))}
+            {rows.map((row, rowIdx) => (
+              <tr key={row.id} className="grid-view__row" role="row" onContextMenu={(e) => { e.preventDefault(); onDeleteRow(row.id) }}>
+                <td className="grid-view__row-num">{rowIdx + 1}</td>
+                {visibleFields.map((field, colIdx) => {
+                  const isFocused = focusedRow === rowIdx && focusedCol === colIdx
+                  return (
+                    <td
+                      key={field.id}
+                      className={`grid-view__cell ${isFocused ? 'grid-view__cell--focused' : ''}`}
+                      style={{ width: field.width ?? 160 }}
+                      role="gridcell"
+                      tabIndex={isFocused ? 0 : -1}
+                      data-row={rowIdx}
+                      data-col={colIdx}
+                      onFocus={() => handleCellFocus(rowIdx, colIdx)}
+                      onClick={() => focusCell(rowIdx, colIdx)}
+                      aria-label={`${field.name}: ${row.cells[field.id] ?? 'empty'}`}
+                    >
+                      {renderCell(row, field)}
+                    </td>
+                  )
+                })}
                 <td />
               </tr>
             ))}

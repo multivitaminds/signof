@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronLeft, Upload, Plus } from 'lucide-react'
 import { useDatabaseStore } from '../stores/useDatabaseStore'
@@ -60,10 +61,12 @@ export default function DatabaseDetailPage() {
     [resolvedTable, activeViewId]
   )
 
+  const debouncedSearch = useDebouncedValue(searchQuery, 200)
+
   const filteredRows = useMemo(
-    () => (resolvedTable && activeView ? getFilteredRows(resolvedTable.id, activeView.id, searchQuery) : []),
+    () => (resolvedTable && activeView ? getFilteredRows(resolvedTable.id, activeView.id, debouncedSearch) : []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [resolvedTable, activeView, searchQuery, getFilteredRows, tablesMap]
+    [resolvedTable, activeView, debouncedSearch, getFilteredRows, tablesMap]
   )
 
   // Resolve kanban and calendar field IDs

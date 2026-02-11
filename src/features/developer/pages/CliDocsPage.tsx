@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { ChevronDown, ChevronRight, Search } from 'lucide-react'
 import type { CliCommand } from '../types'
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue'
 import CodeBlock from '../components/CodeBlock/CodeBlock'
 import './CliDocsPage.css'
 
@@ -283,9 +284,11 @@ function CliDocsPage() {
     return found ?? INSTALL_METHODS[0]!
   }, [installMethod])
 
+  const debouncedSearch = useDebouncedValue(searchQuery, 200)
+
   const filteredCommands = useMemo(() => {
-    if (!searchQuery.trim()) return CLI_COMMANDS
-    const q = searchQuery.toLowerCase().trim()
+    if (!debouncedSearch.trim()) return CLI_COMMANDS
+    const q = debouncedSearch.toLowerCase().trim()
     return CLI_COMMANDS.filter(cmd =>
       cmd.name.toLowerCase().includes(q) ||
       cmd.description.toLowerCase().includes(q) ||
@@ -296,7 +299,7 @@ function CliDocsPage() {
       ) ||
       cmd.examples.some(ex => ex.toLowerCase().includes(q))
     )
-  }, [searchQuery])
+  }, [debouncedSearch])
 
   // Group filtered commands by category
   const groupedCommands = useMemo(() => {

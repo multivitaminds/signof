@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { X, Send, Plus, Trash2, Users, FileText } from 'lucide-react'
 import type { Document } from '../../../../types'
+import { useFocusTrap } from '../../../../hooks/useFocusTrap'
 import './BulkSendModal.css'
 
 // ─── Types ────────────────────────────────────────────────────────────
@@ -28,6 +29,10 @@ function BulkSendModal({ document: doc, onSend, onCancel }: BulkSendModalProps) 
     { id: generateId(), name: '', email: '' },
   ])
   const [error, setError] = useState('')
+  const modalRef = useRef<HTMLDivElement>(null)
+
+  // Focus trap: keeps Tab/Shift+Tab within the modal
+  useFocusTrap(modalRef)
 
   // ── Handlers ────────────────────────────────────────────────────
   const handleAddRecipient = useCallback(() => {
@@ -102,7 +107,7 @@ function BulkSendModal({ document: doc, onSend, onCancel }: BulkSendModalProps) 
       onKeyDown={handleKeyDown}
     >
       <div className="bulk-send-modal__overlay" onClick={onCancel} />
-      <div className="bulk-send-modal__content">
+      <div className="bulk-send-modal__content" ref={modalRef}>
         {/* Header */}
         <div className="bulk-send-modal__header">
           <div className="bulk-send-modal__header-left">

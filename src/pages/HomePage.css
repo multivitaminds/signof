@@ -163,3 +163,26 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 767px) {
+  .home-page {
+    padding: 0 var(--space-2, 8px);
+  }
+
+  .home-page__main-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4, 16px);
+  }
+
+  .home-page__section {
+    margin-bottom: var(--space-4, 16px);
+  }
+
+  .home-page__section-title {
+    font-size: 1rem;
+  }
+
+  .home-page__booking-item {
+    padding: var(--space-3, 12px);
+  }
+}

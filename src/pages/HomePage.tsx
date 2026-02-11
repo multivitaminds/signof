@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowRight,
@@ -6,6 +6,8 @@ import {
 } from 'lucide-react'
 import { useSchedulingStore } from '../features/scheduling/stores/useSchedulingStore'
 import { useAuthStore } from '../features/auth/stores/useAuthStore'
+import { usePullToRefresh } from '../hooks/usePullToRefresh'
+import { useIsMobile } from '../hooks/useMediaQuery'
 import WelcomeBanner from '../components/WelcomeBanner/WelcomeBanner'
 import StatsOverview from '../components/StatsOverview/StatsOverview'
 import QuickActions from '../components/QuickActions/QuickActions'
@@ -20,6 +22,17 @@ export default function HomePage() {
   const eventTypes = useSchedulingStore((s) => s.eventTypes)
   const user = useAuthStore((s) => s.user)
   const onboardingComplete = useAuthStore((s) => s.onboardingComplete)
+  const isMobile = useIsMobile()
+
+  const handleRefresh = useCallback(async () => {
+    // Simulated refresh delay
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+  }, [])
+
+  const { isRefreshing, pullDistance, ref: pullRef } = usePullToRefresh<HTMLDivElement>({
+    onRefresh: handleRefresh,
+    enabled: isMobile,
+  })
 
   const firstName = useMemo(() => {
     if (!user?.name) return undefined
@@ -43,7 +56,16 @@ export default function HomePage() {
   )
 
   return (
-    <div className="home-page">
+    <div className="home-page" ref={pullRef}>
+      {/* Pull-to-refresh indicator (mobile only) */}
+      {isMobile && (
+        <div
+          className={`pull-to-refresh__indicator ${isRefreshing ? 'pull-to-refresh__indicator--active' : ''}`}
+          style={!isRefreshing && pullDistance > 0 ? { height: `${pullDistance}px` } : undefined}
+        >
+          <div className="pull-to-refresh__spinner" />
+        </div>
+      )}
       {/* 1. Welcome Banner */}
       <WelcomeBanner userName={firstName} />
 

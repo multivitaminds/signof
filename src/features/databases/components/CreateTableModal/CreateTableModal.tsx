@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { X, Plus } from 'lucide-react'
+import { useFocusTrap } from '../../../../hooks/useFocusTrap'
 import './CreateTableModal.css'
 
 const PRESET_ICONS = ['\uD83D\uDCCB', '\uD83D\uDCCA', '\uD83D\uDCC1', '\uD83D\uDCDD', '\uD83D\uDCCC', '\uD83D\uDDC2\uFE0F', '\uD83D\uDCCE', '\uD83D\uDCD1']
@@ -22,10 +23,14 @@ export default function CreateTableModal({
   const [description, setDescription] = useState('')
   const [error, setError] = useState('')
   const nameInputRef = useRef<HTMLInputElement>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
 
   // Suppress unused variable lint — databaseId is part of the public API
   void databaseId
   void description
+
+  // Focus trap: keeps Tab/Shift+Tab within the modal
+  useFocusTrap(modalRef)
 
   useEffect(() => {
     nameInputRef.current?.focus()
@@ -63,7 +68,7 @@ export default function CreateTableModal({
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick} role="dialog" aria-modal="true" aria-label="Create Table">
-      <div className="modal-content create-table-modal">
+      <div className="modal-content create-table-modal" ref={modalRef}>
         <div className="modal-header">
           <h2>Create New Table</h2>
           <button className="modal-close" onClick={onClose} aria-label="Close">

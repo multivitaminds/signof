@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import InboxPage from './InboxPage'
@@ -257,8 +257,10 @@ describe('InboxPage', () => {
     const searchInput = screen.getByLabelText('Search notifications')
     await user.type(searchInput, 'signature')
 
-    // Only the notification with "signature" in title should remain
-    expect(screen.getByText('Document awaiting your signature')).toBeInTheDocument()
-    expect(screen.queryByText('You were mentioned')).not.toBeInTheDocument()
+    // Wait for debounce, then verify filtering
+    await waitFor(() => {
+      expect(screen.getByText('Document awaiting your signature')).toBeInTheDocument()
+      expect(screen.queryByText('You were mentioned')).not.toBeInTheDocument()
+    })
   })
 })

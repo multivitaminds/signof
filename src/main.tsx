@@ -5,7 +5,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 // Critical path — direct imports (not lazy-loaded)
 import AppLayout from './components/layout/AppLayout'
 import ToastProvider from './components/Toast/ToastProvider'
-import LoadingSpinner from './components/layout/LoadingSpinner/LoadingSpinner'
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary'
+import ModuleErrorBoundary from './components/ErrorBoundary/ModuleErrorBoundary'
 import HomePage from './pages/HomePage'
 import DocumentsPage from './pages/DocumentsPage'
 import NotFoundPage from './pages/NotFoundPage'
@@ -13,6 +14,11 @@ import LoginPage from './features/auth/pages/LoginPage'
 import SignupPage from './features/auth/pages/SignupPage'
 import OnboardingPage from './features/auth/pages/OnboardingPage'
 import InboxPage from './features/inbox/pages/InboxPage'
+
+// Skeleton fallbacks
+import TableSkeleton from './components/skeletons/TableSkeleton'
+import CardGridSkeleton from './components/skeletons/CardGridSkeleton'
+import EditorSkeleton from './components/skeletons/EditorSkeleton'
 
 // Lazy-loaded feature modules
 const WorkspaceLayout = lazy(() => import('./features/workspace/pages/WorkspaceLayout'))
@@ -72,10 +78,14 @@ if (!root) {
   throw new Error('Root element not found. Ensure index.html contains <div id="root"></div>')
 }
 
-const LazyFallback = <LoadingSpinner />
+// Module-specific skeleton fallbacks
+const EditorFallback = <EditorSkeleton />
+const TableFallback = <TableSkeleton />
+const CardFallback = <CardGridSkeleton />
 
 createRoot(root).render(
   <StrictMode>
+    <ErrorBoundary>
     <ToastProvider>
     <BrowserRouter>
       <Routes>
@@ -85,84 +95,132 @@ createRoot(root).render(
         <Route path="/onboarding" element={<OnboardingPage />} />
 
         {/* Public booking page (outside main layout, standalone) */}
-        <Route path="/book/:slug" element={<Suspense fallback={LazyFallback}><PublicBookingPage /></Suspense>} />
+        <Route path="/book/:slug" element={
+          <ModuleErrorBoundary moduleName="Scheduling">
+            <Suspense fallback={CardFallback}><PublicBookingPage /></Suspense>
+          </ModuleErrorBoundary>
+        } />
 
         {/* Main app */}
         <Route path="/" element={<AppLayout />}>
           <Route index element={<HomePage />} />
 
           {/* Workspace (Notion) */}
-          <Route path="pages" element={<Suspense fallback={LazyFallback}><WorkspaceLayout /></Suspense>}>
-            <Route index element={<Suspense fallback={LazyFallback}><WorkspaceAllPages /></Suspense>} />
-            <Route path="new" element={<Suspense fallback={LazyFallback}><NewPagePage /></Suspense>} />
-            <Route path="trash" element={<Suspense fallback={LazyFallback}><TrashPage /></Suspense>} />
-            <Route path=":pageId" element={<Suspense fallback={LazyFallback}><PageEditorPage /></Suspense>} />
+          <Route path="pages" element={
+            <ModuleErrorBoundary moduleName="Workspace">
+              <Suspense fallback={EditorFallback}><WorkspaceLayout /></Suspense>
+            </ModuleErrorBoundary>
+          }>
+            <Route index element={<Suspense fallback={CardFallback}><WorkspaceAllPages /></Suspense>} />
+            <Route path="new" element={<Suspense fallback={EditorFallback}><NewPagePage /></Suspense>} />
+            <Route path="trash" element={<Suspense fallback={TableFallback}><TrashPage /></Suspense>} />
+            <Route path=":pageId" element={<Suspense fallback={EditorFallback}><PageEditorPage /></Suspense>} />
           </Route>
 
           {/* Projects (Linear) */}
-          <Route path="projects" element={<Suspense fallback={LazyFallback}><ProjectsLayout /></Suspense>}>
-            <Route index element={<Suspense fallback={LazyFallback}><ProjectListPage /></Suspense>} />
-            <Route path="new" element={<Suspense fallback={LazyFallback}><NewProjectPage /></Suspense>} />
-            <Route path=":projectId" element={<Suspense fallback={LazyFallback}><ProjectDetailPage /></Suspense>} />
+          <Route path="projects" element={
+            <ModuleErrorBoundary moduleName="Projects">
+              <Suspense fallback={CardFallback}><ProjectsLayout /></Suspense>
+            </ModuleErrorBoundary>
+          }>
+            <Route index element={<Suspense fallback={CardFallback}><ProjectListPage /></Suspense>} />
+            <Route path="new" element={<Suspense fallback={EditorFallback}><NewProjectPage /></Suspense>} />
+            <Route path=":projectId" element={<Suspense fallback={CardFallback}><ProjectDetailPage /></Suspense>} />
           </Route>
 
           {/* Documents (DocuSign / PandaDoc) */}
-          <Route path="documents/analytics" element={<Suspense fallback={LazyFallback}><DocumentAnalyticsPage /></Suspense>} />
-          <Route path="documents/*" element={<DocumentsPage />} />
+          <Route path="documents/analytics" element={
+            <ModuleErrorBoundary moduleName="Documents">
+              <Suspense fallback={TableFallback}><DocumentAnalyticsPage /></Suspense>
+            </ModuleErrorBoundary>
+          } />
+          <Route path="documents/*" element={
+            <ModuleErrorBoundary moduleName="Documents">
+              <DocumentsPage />
+            </ModuleErrorBoundary>
+          } />
 
           {/* Scheduling (Calendly) */}
-          <Route path="calendar" element={<Suspense fallback={LazyFallback}><SchedulingLayout /></Suspense>}>
+          <Route path="calendar" element={
+            <ModuleErrorBoundary moduleName="Scheduling">
+              <Suspense fallback={CardFallback}><SchedulingLayout /></Suspense>
+            </ModuleErrorBoundary>
+          }>
             <Route index element={<Navigate to="/calendar/events" replace />} />
-            <Route path="events" element={<Suspense fallback={LazyFallback}><EventTypesPage /></Suspense>} />
-            <Route path="schedule" element={<Suspense fallback={LazyFallback}><SchedulingCalendarPage /></Suspense>} />
-            <Route path="bookings" element={<Suspense fallback={LazyFallback}><BookingsPage /></Suspense>} />
+            <Route path="events" element={<Suspense fallback={CardFallback}><EventTypesPage /></Suspense>} />
+            <Route path="schedule" element={<Suspense fallback={TableFallback}><SchedulingCalendarPage /></Suspense>} />
+            <Route path="bookings" element={<Suspense fallback={TableFallback}><BookingsPage /></Suspense>} />
           </Route>
 
           {/* Databases (Airtable) */}
-          <Route path="data" element={<Suspense fallback={LazyFallback}><DatabasesLayout /></Suspense>}>
-            <Route index element={<Suspense fallback={LazyFallback}><DatabaseListPage /></Suspense>} />
-            <Route path=":databaseId" element={<Suspense fallback={LazyFallback}><DatabaseDetailPage /></Suspense>} />
+          <Route path="data" element={
+            <ModuleErrorBoundary moduleName="Databases">
+              <Suspense fallback={TableFallback}><DatabasesLayout /></Suspense>
+            </ModuleErrorBoundary>
+          }>
+            <Route index element={<Suspense fallback={CardFallback}><DatabaseListPage /></Suspense>} />
+            <Route path=":databaseId" element={<Suspense fallback={TableFallback}><DatabaseDetailPage /></Suspense>} />
           </Route>
 
           {/* Inbox */}
-          <Route path="inbox" element={<InboxPage />} />
+          <Route path="inbox" element={
+            <ModuleErrorBoundary moduleName="Inbox">
+              <InboxPage />
+            </ModuleErrorBoundary>
+          } />
 
           {/* AI */}
-          <Route path="ai" element={<Suspense fallback={LazyFallback}><AILayout /></Suspense>}>
+          <Route path="ai" element={
+            <ModuleErrorBoundary moduleName="AI">
+              <Suspense fallback={CardFallback}><AILayout /></Suspense>
+            </ModuleErrorBoundary>
+          }>
             <Route index element={<Navigate to="/ai/memory" replace />} />
-            <Route path="memory" element={<Suspense fallback={LazyFallback}><AIMemoryPage /></Suspense>} />
-            <Route path="agents" element={<Suspense fallback={LazyFallback}><AIAgentsPage /></Suspense>} />
+            <Route path="memory" element={<Suspense fallback={TableFallback}><AIMemoryPage /></Suspense>} />
+            <Route path="agents" element={<Suspense fallback={CardFallback}><AIAgentsPage /></Suspense>} />
           </Route>
 
           {/* Tax E-Filing (TaxBandit) */}
-          <Route path="tax" element={<Suspense fallback={LazyFallback}><TaxLayout /></Suspense>}>
+          <Route path="tax" element={
+            <ModuleErrorBoundary moduleName="Tax">
+              <Suspense fallback={TableFallback}><TaxLayout /></Suspense>
+            </ModuleErrorBoundary>
+          }>
             <Route index element={<Navigate to="/tax/dashboard" replace />} />
-            <Route path="dashboard" element={<Suspense fallback={LazyFallback}><TaxDashboard /></Suspense>} />
-            <Route path="documents" element={<Suspense fallback={LazyFallback}><TaxDocumentsPage /></Suspense>} />
-            <Route path="forms" element={<Suspense fallback={LazyFallback}><TaxFormsPage /></Suspense>} />
-            <Route path="filing" element={<Suspense fallback={LazyFallback}><TaxFilingPage /></Suspense>} />
+            <Route path="dashboard" element={<Suspense fallback={CardFallback}><TaxDashboard /></Suspense>} />
+            <Route path="documents" element={<Suspense fallback={TableFallback}><TaxDocumentsPage /></Suspense>} />
+            <Route path="forms" element={<Suspense fallback={TableFallback}><TaxFormsPage /></Suspense>} />
+            <Route path="filing" element={<Suspense fallback={TableFallback}><TaxFilingPage /></Suspense>} />
           </Route>
 
           {/* Developer Platform */}
-          <Route path="developer" element={<Suspense fallback={LazyFallback}><DeveloperLayout /></Suspense>}>
+          <Route path="developer" element={
+            <ModuleErrorBoundary moduleName="Developer">
+              <Suspense fallback={EditorFallback}><DeveloperLayout /></Suspense>
+            </ModuleErrorBoundary>
+          }>
             <Route index element={<Navigate to="/developer/api" replace />} />
-            <Route path="api" element={<Suspense fallback={LazyFallback}><ApiDocsPage /></Suspense>} />
-            <Route path="cli" element={<Suspense fallback={LazyFallback}><CliDocsPage /></Suspense>} />
-            <Route path="webhooks" element={<Suspense fallback={LazyFallback}><WebhooksPage /></Suspense>} />
-            <Route path="sdks" element={<Suspense fallback={LazyFallback}><SdkPage /></Suspense>} />
-            <Route path="sandbox" element={<Suspense fallback={LazyFallback}><SandboxPage /></Suspense>} />
-            <Route path="keys" element={<Suspense fallback={LazyFallback}><ApiKeysPage /></Suspense>} />
+            <Route path="api" element={<Suspense fallback={EditorFallback}><ApiDocsPage /></Suspense>} />
+            <Route path="cli" element={<Suspense fallback={EditorFallback}><CliDocsPage /></Suspense>} />
+            <Route path="webhooks" element={<Suspense fallback={TableFallback}><WebhooksPage /></Suspense>} />
+            <Route path="sdks" element={<Suspense fallback={CardFallback}><SdkPage /></Suspense>} />
+            <Route path="sandbox" element={<Suspense fallback={EditorFallback}><SandboxPage /></Suspense>} />
+            <Route path="keys" element={<Suspense fallback={TableFallback}><ApiKeysPage /></Suspense>} />
           </Route>
 
           {/* Settings */}
-          <Route path="settings" element={<Suspense fallback={LazyFallback}><SettingsLayout /></Suspense>}>
+          <Route path="settings" element={
+            <ModuleErrorBoundary moduleName="Settings">
+              <Suspense fallback={EditorFallback}><SettingsLayout /></Suspense>
+            </ModuleErrorBoundary>
+          }>
             <Route index element={<Navigate to="/settings/general" replace />} />
-            <Route path="general" element={<Suspense fallback={LazyFallback}><GeneralSettings /></Suspense>} />
-            <Route path="members" element={<Suspense fallback={LazyFallback}><MembersSettings /></Suspense>} />
-            <Route path="notifications" element={<Suspense fallback={LazyFallback}><NotificationsSettings /></Suspense>} />
-            <Route path="appearance" element={<Suspense fallback={LazyFallback}><AppearanceSettings /></Suspense>} />
-            <Route path="integrations" element={<Suspense fallback={LazyFallback}><IntegrationsSettings /></Suspense>} />
-            <Route path="billing" element={<Suspense fallback={LazyFallback}><BillingSettings /></Suspense>} />
+            <Route path="general" element={<Suspense fallback={EditorFallback}><GeneralSettings /></Suspense>} />
+            <Route path="members" element={<Suspense fallback={TableFallback}><MembersSettings /></Suspense>} />
+            <Route path="notifications" element={<Suspense fallback={EditorFallback}><NotificationsSettings /></Suspense>} />
+            <Route path="appearance" element={<Suspense fallback={EditorFallback}><AppearanceSettings /></Suspense>} />
+            <Route path="integrations" element={<Suspense fallback={CardFallback}><IntegrationsSettings /></Suspense>} />
+            <Route path="billing" element={<Suspense fallback={EditorFallback}><BillingSettings /></Suspense>} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />
@@ -170,5 +228,6 @@ createRoot(root).render(
       </Routes>
     </BrowserRouter>
     </ToastProvider>
+    </ErrorBoundary>
   </StrictMode>,
 )

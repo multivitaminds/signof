@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import CliDocsPage from './CliDocsPage'
 
@@ -135,12 +135,12 @@ describe('CliDocsPage', () => {
     )
     await user.type(searchInput, 'deploy')
 
-    // Deploy category should still be visible
-    const commandSection = screen.getByText('Commands').closest('.cli-docs-page__commands') as HTMLElement
-    expect(within(commandSection).getByText('Deployment')).toBeInTheDocument()
-
-    // Non-matching categories should not be visible
-    expect(within(commandSection).queryByText('Authentication')).not.toBeInTheDocument()
+    // Wait for debounce
+    await waitFor(() => {
+      const commandSection = screen.getByText('Commands').closest('.cli-docs-page__commands') as HTMLElement
+      expect(within(commandSection).getByText('Deployment')).toBeInTheDocument()
+      expect(within(commandSection).queryByText('Authentication')).not.toBeInTheDocument()
+    })
   })
 
   it('shows no results message when search has no matches', async () => {
@@ -152,7 +152,9 @@ describe('CliDocsPage', () => {
     )
     await user.type(searchInput, 'zzzznonexistent')
 
-    expect(screen.getByText(/No commands match/)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText(/No commands match/)).toBeInTheDocument()
+    })
   })
 
   it('clears search and shows all commands', async () => {
@@ -198,7 +200,9 @@ describe('CliDocsPage', () => {
     )
     await user.type(searchInput, 'webhook')
 
-    // Should show filtered count
-    expect(screen.getByText(/of \d+ commands/)).toBeInTheDocument()
+    // Wait for debounce, then check filtered count
+    await waitFor(() => {
+      expect(screen.getByText(/of \d+ commands/)).toBeInTheDocument()
+    })
   })
 })

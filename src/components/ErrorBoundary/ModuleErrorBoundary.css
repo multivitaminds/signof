@@ -1,0 +1,79 @@
+/* ═══════════════════════════════════════════════════════════
+   ModuleErrorBoundary — route-level error recovery UI
+   ═══════════════════════════════════════════════════════════ */
+
+.module-error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: var(--space-6);
+}
+
+.module-error-boundary__card {
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8) var(--space-6);
+  box-shadow: var(--shadow-md);
+}
+
+.module-error-boundary__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+  margin-bottom: var(--space-4);
+}
+
+.module-error-boundary__title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.module-error-boundary__module {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.module-error-boundary__module strong {
+  color: var(--text-primary);
+}
+
+.module-error-boundary__message {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-5);
+  word-break: break-word;
+}
+
+.module-error-boundary__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.module-error-boundary__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 1.25rem;
+}
+
+/* ─── Dark mode ────────────────────────────────────────── */
+[data-theme="dark"] .module-error-boundary__icon {
+  background: rgba(217, 119, 6, 0.15);
+}
