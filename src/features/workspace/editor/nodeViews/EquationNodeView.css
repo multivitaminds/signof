@@ -1,0 +1,57 @@
+.tiptap-equation {
+  margin: var(--space-xs, 0.25rem) 0;
+}
+
+.tiptap-equation__editor {
+  display: flex;
+  gap: var(--space-xs, 0.25rem);
+  padding: var(--space-sm, 0.5rem);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-sm, 0.25rem);
+}
+
+.tiptap-equation__input {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-sm, 0.25rem);
+  font-size: 0.875rem;
+  background: var(--bg-primary, #fff);
+  color: var(--text-primary, #1e293b);
+}
+
+.tiptap-equation__btn {
+  padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
+  font-size: 0.8rem;
+}
+
+.tiptap-equation__display {
+  display: flex;
+  align-items: center;
+  padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm, 0.25rem);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.tiptap-equation__display:hover {
+  border-color: var(--border-color, #e2e8f0);
+}
+
+.tiptap-equation__formula {
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  color: var(--text-primary, #1e293b);
+}
+
+@media (prefers-color-scheme: dark) {
+  .tiptap-equation__editor {
+    border-color: var(--border-color, #334155);
+  }
+  .tiptap-equation__input {
+    background: var(--bg-primary, #0f0f1a);
+    border-color: var(--border-color, #334155);
+  }
+}

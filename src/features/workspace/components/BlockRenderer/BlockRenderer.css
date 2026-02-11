@@ -1,9 +1,0 @@
-.block-renderer {
-  position: relative;
-  padding: 2px 0;
-  transition: background 100ms ease;
-}
-
-.block-renderer:hover {
-  border-radius: var(--radius-sm, 4px);
-}

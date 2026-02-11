@@ -1,0 +1,22 @@
+.tiptap-columns {
+  margin: var(--space-sm, 0.5rem) 0;
+}
+
+.tiptap-columns__inner {
+  display: flex;
+  gap: var(--space-md, 1rem);
+}
+
+.tiptap-columns__inner > [data-type="signof-column"] {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-xs, 0.25rem);
+  border: 1px dashed var(--border-color, #e2e8f0);
+  border-radius: var(--radius-sm, 0.25rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  .tiptap-columns__inner > [data-type="signof-column"] {
+    border-color: var(--border-color, #334155);
+  }
+}

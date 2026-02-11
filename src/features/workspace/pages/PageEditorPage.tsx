@@ -1,9 +1,9 @@
 import { useEffect, useCallback, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { FileText, Clock, Download, FileDown, MessageSquare, Undo2, Redo2, Share2, Star } from 'lucide-react'
+import { FileText, Clock, Download, FileDown, MessageSquare, Share2, Star } from 'lucide-react'
 import { useWorkspaceStore } from '../stores/useWorkspaceStore'
 import PageHeader from '../components/PageHeader/PageHeader'
-import BlockEditor from '../components/BlockEditor/BlockEditor'
+import TiptapBlockEditor from '../components/BlockEditor/TiptapBlockEditor'
 import PageProperties from '../components/PageProperties/PageProperties'
 import VersionHistory from '../components/VersionHistory/VersionHistory'
 import CommentsSidebar from '../components/CommentsSidebar/CommentsSidebar'
@@ -30,11 +30,6 @@ export default function PageEditorPage() {
   const deleteSnapshot = useWorkspaceStore((s) => s.deleteSnapshot)
   const toggleFavorite = useWorkspaceStore((s) => s.toggleFavorite)
   const addToRecent = useWorkspaceStore((s) => s.addToRecent)
-
-  const undo = useWorkspaceStore((s) => s.undo)
-  const redo = useWorkspaceStore((s) => s.redo)
-  const canUndo = useWorkspaceStore((s) => s.canUndo)
-  const canRedo = useWorkspaceStore((s) => s.canRedo)
 
   const pageComments = useWorkspaceStore((s) => (pageId ? s.comments[pageId] ?? [] : []))
 
@@ -228,24 +223,6 @@ export default function PageEditorPage() {
             >
               <Share2 size={16} />
             </button>
-            <button
-              className="page-editor__toolbar-btn"
-              onClick={undo}
-              disabled={!canUndo()}
-              title="Undo"
-              aria-label="Undo"
-            >
-              <Undo2 size={16} />
-            </button>
-            <button
-              className="page-editor__toolbar-btn"
-              onClick={redo}
-              disabled={!canRedo()}
-              title="Redo"
-              aria-label="Redo"
-            >
-              <Redo2 size={16} />
-            </button>
             <div className="page-editor__export-wrapper">
               <button
                 className="page-editor__toolbar-btn"
@@ -314,7 +291,7 @@ export default function PageEditorPage() {
         {/* Editor with presence cursors */}
         <div className="page-editor__editor-wrapper">
           <PresenceCursors users={presenceUsers} />
-          <BlockEditor
+          <TiptapBlockEditor
             pageId={page.id}
             blockIds={page.blockIds}
           />

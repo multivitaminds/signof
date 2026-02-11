@@ -1,0 +1,60 @@
+.tiptap-file {
+  margin: var(--space-xs, 0.25rem) 0;
+}
+
+.tiptap-file__placeholder {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 0.5rem);
+  padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
+  border: 1px dashed var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 0.5rem);
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.tiptap-file__placeholder:hover {
+  background: var(--bg-secondary, #f8fafc);
+}
+
+.tiptap-file__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 0.5rem);
+  padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 0.5rem);
+  background: var(--bg-secondary, #f8fafc);
+}
+
+.tiptap-file__icon {
+  flex-shrink: 0;
+}
+
+.tiptap-file__name {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--text-primary, #1e293b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tiptap-file__download {
+  font-size: 0.8rem;
+  color: var(--color-primary, #4f46e5);
+  text-decoration: none;
+}
+
+.tiptap-file__download:hover {
+  text-decoration: underline;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tiptap-file__placeholder:hover,
+  .tiptap-file__info {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-color, #334155);
+  }
+}

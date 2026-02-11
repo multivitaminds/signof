@@ -1,0 +1,50 @@
+.tiptap-toggle {
+  display: flex;
+  gap: var(--space-xs, 0.25rem);
+  margin: var(--space-xs, 0.25rem) 0;
+}
+
+.tiptap-toggle__chevron {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm, 0.25rem);
+  color: var(--text-secondary, #6b7280);
+  font-size: 14px;
+  transition: transform 0.15s ease;
+  margin-top: 2px;
+  padding: 0;
+}
+
+.tiptap-toggle__chevron:hover {
+  background: var(--bg-secondary, #f1f5f9);
+}
+
+.tiptap-toggle__chevron--open {
+  transform: rotate(90deg);
+}
+
+.tiptap-toggle__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.tiptap-toggle__body > .tiptap-toggle__content > *:not(:first-child) {
+  display: none;
+}
+
+.tiptap-toggle__body--open > .tiptap-toggle__content > * {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tiptap-toggle__chevron:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}

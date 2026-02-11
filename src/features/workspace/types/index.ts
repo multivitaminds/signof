@@ -113,25 +113,6 @@ export interface PageSnapshot {
   editCount: number
 }
 
-// ─── Undo Snapshot ─────────────────────────────────────────────────
-
-export interface UndoSnapshot {
-  pageId: string
-  page: Page
-  blocks: Record<string, Block>
-}
-
-// ─── Slash Command Item ─────────────────────────────────────────────
-
-export interface SlashCommandItem {
-  id: string
-  label: string
-  description: string
-  icon: string
-  type: BlockType
-  keywords: string[]
-}
-
 // ─── Comments ───────────────────────────────────────────────────────
 
 export interface CommentReply {

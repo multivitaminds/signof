@@ -163,6 +163,36 @@
   background: var(--bg-secondary, #F3F4F6);
 }
 
+/* ─── Editor Toggle (feature flag) ──────────────────────────────── */
+
+.page-editor__editor-toggle {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--bg-secondary, #f3f4f6);
+  border-radius: var(--radius-sm, 4px);
+  width: fit-content;
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.page-editor__toggle-btn {
+  padding: 4px 12px;
+  border: none;
+  background: transparent;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted, #9ca3af);
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+  transition: all 0.15s ease;
+}
+
+.page-editor__toggle-btn--active {
+  background: var(--bg-primary, #fff);
+  color: var(--text-primary, #1e293b);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
 /* ─── Editor Wrapper (relative for cursors) ───────────────────────── */
 
 .page-editor__editor-wrapper {
