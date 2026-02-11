@@ -1,6 +1,6 @@
 import { create } from 'zustand'
-import type { EventType, Booking, BookingFilter } from '../types'
-import { BookingStatus } from '../types'
+import type { EventType, Booking, BookingFilter, CalendarConnection, WaitlistEntry } from '../types'
+import { BookingStatus, CalendarProvider, SyncDirection, WaitlistStatus } from '../types'
 import { SAMPLE_EVENT_TYPES, SAMPLE_BOOKINGS } from '../lib/sampleData'
 
 function generateId(): string {
@@ -11,9 +11,44 @@ function now(): string {
   return new Date().toISOString()
 }
 
+const SAMPLE_CALENDAR_CONNECTIONS: CalendarConnection[] = [
+  {
+    id: 'cal-google',
+    provider: CalendarProvider.Google,
+    name: 'Google Calendar',
+    email: 'user@gmail.com',
+    syncDirection: SyncDirection.TwoWay,
+    checkConflicts: true,
+    connected: true,
+    lastSyncedAt: '2026-02-10T08:30:00Z',
+  },
+  {
+    id: 'cal-outlook',
+    provider: CalendarProvider.Outlook,
+    name: 'Outlook Calendar',
+    email: 'user@outlook.com',
+    syncDirection: SyncDirection.OneWay,
+    checkConflicts: false,
+    connected: false,
+    lastSyncedAt: null,
+  },
+  {
+    id: 'cal-apple',
+    provider: CalendarProvider.Apple,
+    name: 'Apple Calendar',
+    email: 'user@icloud.com',
+    syncDirection: SyncDirection.OneWay,
+    checkConflicts: false,
+    connected: false,
+    lastSyncedAt: null,
+  },
+]
+
 export interface SchedulingState {
   eventTypes: EventType[]
   bookings: Booking[]
+  calendarConnections: CalendarConnection[]
+  waitlist: WaitlistEntry[]
 
   // Event type actions
   addEventType: (eventType: Omit<EventType, 'id' | 'createdAt' | 'updatedAt'>) => EventType
@@ -24,6 +59,7 @@ export interface SchedulingState {
 
   // Booking actions
   addBooking: (booking: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>) => Booking
+  addRecurringBookings: (bookings: Array<Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>>) => Booking[]
   updateBooking: (id: string, updates: Partial<Booking>) => void
   cancelBooking: (id: string, reason?: string) => void
   rescheduleBooking: (id: string, newDate: string, newStartTime: string, newEndTime: string, reason?: string) => void
@@ -35,11 +71,27 @@ export interface SchedulingState {
 
   // Convenience
   getFilteredBookings: (filter: BookingFilter) => Booking[]
+
+  // Calendar sync actions
+  connectCalendar: (id: string) => void
+  disconnectCalendar: (id: string) => void
+  updateCalendarSync: (id: string, updates: Partial<CalendarConnection>) => void
+  syncCalendar: (id: string) => void
+
+  // Waitlist actions
+  addToWaitlist: (entry: Omit<WaitlistEntry, 'id' | 'createdAt' | 'status'>) => WaitlistEntry
+  removeFromWaitlist: (id: string) => void
+  approveWaitlistEntry: (id: string) => void
+  rejectWaitlistEntry: (id: string) => void
+  getWaitlistForEvent: (eventTypeId: string) => WaitlistEntry[]
+  notifyNextWaitlistEntry: (eventTypeId: string, date: string) => WaitlistEntry | undefined
 }
 
 export const useSchedulingStore = create<SchedulingState>((set, get) => ({
   eventTypes: SAMPLE_EVENT_TYPES,
   bookings: SAMPLE_BOOKINGS,
+  calendarConnections: SAMPLE_CALENDAR_CONNECTIONS,
+  waitlist: [],
 
   addEventType: (data) => {
     const timestamp = now()
@@ -105,6 +157,22 @@ export const useSchedulingStore = create<SchedulingState>((set, get) => ({
     return newBooking
   },
 
+  addRecurringBookings: (bookingsData) => {
+    const timestamp = now()
+    const groupId = generateId()
+    const newBookings: Booking[] = bookingsData.map((data) => ({
+      ...data,
+      id: generateId(),
+      recurrenceGroupId: groupId,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    }))
+    set((state) => ({
+      bookings: [...state.bookings, ...newBookings],
+    }))
+    return newBookings
+  },
+
   updateBooking: (id, updates) => {
     set((state) => ({
       bookings: state.bookings.map((b) =>
@@ -114,6 +182,7 @@ export const useSchedulingStore = create<SchedulingState>((set, get) => ({
   },
 
   cancelBooking: (id, reason) => {
+    const booking = get().bookings.find((b) => b.id === id)
     set((state) => ({
       bookings: state.bookings.map((b) =>
         b.id === id
@@ -126,6 +195,10 @@ export const useSchedulingStore = create<SchedulingState>((set, get) => ({
           : b
       ),
     }))
+    // Auto-notify first waitlist entry when a booking is cancelled
+    if (booking) {
+      get().notifyNextWaitlistEntry(booking.eventTypeId, booking.date)
+    }
   },
 
   rescheduleBooking: (id, newDate, newStartTime, newEndTime, reason) => {
@@ -187,6 +260,99 @@ export const useSchedulingStore = create<SchedulingState>((set, get) => ({
       default:
         return [...bookings].sort((a, b) => b.date.localeCompare(a.date))
     }
+  },
+
+  // Calendar sync actions
+  connectCalendar: (id) => {
+    set((state) => ({
+      calendarConnections: state.calendarConnections.map((c) =>
+        c.id === id ? { ...c, connected: true, lastSyncedAt: now() } : c
+      ),
+    }))
+  },
+
+  disconnectCalendar: (id) => {
+    set((state) => ({
+      calendarConnections: state.calendarConnections.map((c) =>
+        c.id === id ? { ...c, connected: false } : c
+      ),
+    }))
+  },
+
+  updateCalendarSync: (id, updates) => {
+    set((state) => ({
+      calendarConnections: state.calendarConnections.map((c) =>
+        c.id === id ? { ...c, ...updates } : c
+      ),
+    }))
+  },
+
+  syncCalendar: (id) => {
+    set((state) => ({
+      calendarConnections: state.calendarConnections.map((c) =>
+        c.id === id && c.connected ? { ...c, lastSyncedAt: now() } : c
+      ),
+    }))
+  },
+
+  // Waitlist actions
+  addToWaitlist: (data) => {
+    const entry: WaitlistEntry = {
+      ...data,
+      id: generateId(),
+      status: WaitlistStatus.Waiting,
+      createdAt: now(),
+    }
+    set((state) => ({
+      waitlist: [...state.waitlist, entry],
+    }))
+    return entry
+  },
+
+  removeFromWaitlist: (id) => {
+    set((state) => ({
+      waitlist: state.waitlist.filter((w) => w.id !== id),
+    }))
+  },
+
+  approveWaitlistEntry: (id) => {
+    set((state) => ({
+      waitlist: state.waitlist.map((w) =>
+        w.id === id ? { ...w, status: WaitlistStatus.Approved } : w
+      ),
+    }))
+  },
+
+  rejectWaitlistEntry: (id) => {
+    set((state) => ({
+      waitlist: state.waitlist.map((w) =>
+        w.id === id ? { ...w, status: WaitlistStatus.Rejected } : w
+      ),
+    }))
+  },
+
+  getWaitlistForEvent: (eventTypeId) => {
+    return get().waitlist.filter(
+      (w) => w.eventTypeId === eventTypeId && w.status === WaitlistStatus.Waiting
+    )
+  },
+
+  notifyNextWaitlistEntry: (eventTypeId, date) => {
+    const { waitlist } = get()
+    const next = waitlist.find(
+      (w) =>
+        w.eventTypeId === eventTypeId &&
+        w.date === date &&
+        w.status === WaitlistStatus.Waiting
+    )
+    if (next) {
+      set((state) => ({
+        waitlist: state.waitlist.map((w) =>
+          w.id === next.id ? { ...w, status: WaitlistStatus.Notified } : w
+        ),
+      }))
+    }
+    return next
   },
 }))
 

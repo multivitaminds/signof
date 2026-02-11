@@ -1,0 +1,225 @@
+/* ─── WaitlistPanel ───────────────────────────────────────────── */
+.waitlist-panel {
+  margin-top: var(--space-4, 1rem);
+}
+
+.waitlist-panel__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  color: var(--text-primary, #111827);
+  margin-bottom: var(--space-3, 0.75rem);
+}
+
+.waitlist-panel__title {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ─── Empty ──────────────────────────────────────────────────── */
+.waitlist-panel__empty {
+  text-align: center;
+  padding: var(--space-6, 2rem) var(--space-4, 1rem);
+  color: var(--text-muted, #9CA3AF);
+}
+
+.waitlist-panel__empty p {
+  margin: var(--space-2, 0.5rem) 0 0;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+}
+
+.waitlist-panel__empty-hint {
+  font-size: var(--text-xs, 0.75rem) !important;
+  color: var(--text-muted, #9CA3AF) !important;
+}
+
+/* ─── Section ────────────────────────────────────────────────── */
+.waitlist-panel__section {
+  margin-bottom: var(--space-3, 0.75rem);
+}
+
+.waitlist-panel__section-title {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--text-muted, #9CA3AF);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 var(--space-2, 0.5rem);
+}
+
+/* ─── List ───────────────────────────────────────────────────── */
+.waitlist-panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+/* ─── Entry ──────────────────────────────────────────────────── */
+.waitlist-panel__entry {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-3, 0.75rem);
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  transition: background 100ms ease;
+}
+
+.waitlist-panel__entry:hover {
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+.waitlist-panel__entry--resolved {
+  opacity: 0.6;
+}
+
+.waitlist-panel__entry-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.waitlist-panel__entry-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.waitlist-panel__entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2, 0.5rem);
+}
+
+.waitlist-panel__entry-event {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.waitlist-panel__entry-status {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+.waitlist-panel__entry-status--waiting {
+  background: rgba(245, 158, 11, 0.1);
+  color: #D97706;
+}
+
+.waitlist-panel__entry-status--notified {
+  background: rgba(79, 70, 229, 0.1);
+  color: #4F46E5;
+}
+
+.waitlist-panel__entry-status--approved {
+  background: rgba(5, 150, 105, 0.1);
+  color: #059669;
+}
+
+.waitlist-panel__entry-status--rejected {
+  background: rgba(220, 38, 38, 0.1);
+  color: #DC2626;
+}
+
+.waitlist-panel__entry-status--expired {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6B7280;
+}
+
+.waitlist-panel__entry-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 0.5rem);
+  margin-top: 2px;
+}
+
+.waitlist-panel__entry-name {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  color: var(--text-secondary, #6B7280);
+}
+
+.waitlist-panel__entry-email {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+}
+
+.waitlist-panel__entry-meta {
+  display: flex;
+  gap: var(--space-2, 0.5rem);
+  margin-top: 2px;
+}
+
+.waitlist-panel__entry-meta span {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+}
+
+/* ─── Actions ────────────────────────────────────────────────── */
+.waitlist-panel__entry-actions {
+  display: flex;
+  gap: var(--space-1, 0.25rem);
+  flex-shrink: 0;
+}
+
+.waitlist-panel__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: var(--radius-md, 8px);
+  background: none;
+  border: 1px solid var(--border-color, #E5E7EB);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.waitlist-panel__action-btn--approve {
+  color: var(--color-success, #059669);
+}
+
+.waitlist-panel__action-btn--approve:hover {
+  background: rgba(5, 150, 105, 0.1);
+  border-color: var(--color-success, #059669);
+}
+
+.waitlist-panel__action-btn--reject {
+  color: var(--color-danger, #DC2626);
+}
+
+.waitlist-panel__action-btn--reject:hover {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: var(--color-danger, #DC2626);
+}
+
+.waitlist-panel__action-btn--remove {
+  color: var(--text-muted, #9CA3AF);
+  width: 24px;
+  height: 24px;
+  border: none;
+}
+
+.waitlist-panel__action-btn--remove:hover {
+  color: var(--text-secondary, #6B7280);
+}
+
+/* ─── Dark mode ──────────────────────────────────────────────── */
+[data-theme="dark"] .waitlist-panel__entry {
+  background: var(--bg-secondary);
+}

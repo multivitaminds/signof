@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import {
   type Document,
   type Signer,
+  type DocumentField,
   type PricingTableData,
   type DocumentNote,
   ACTIVE_STATUSES,
@@ -126,6 +127,18 @@ interface DocumentState {
   // Document Notes
   addDocumentNote: (docId: string, content: string, authorName?: string) => void
   deleteDocumentNote: (docId: string, noteId: string) => void
+
+  // Document Builder
+  createDocumentFromBuilder: (params: {
+    file: File
+    signers: { name: string; email: string }[]
+    fields: DocumentField[]
+    signingOrder: SigningOrder
+    message?: string
+  }) => Document
+
+  // Decline
+  declineDocument: (docId: string, signerId: string, reason: string) => void
 
   // Computed
   totalCount: number
@@ -514,6 +527,97 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
           ...doc,
           notes: doc.notes.filter((n) => n.id !== noteId),
           updatedAt: timestamp,
+        }
+      }),
+    }))
+  },
+
+  // ─── Document Builder ────────────────────────────────────────────────
+
+  createDocumentFromBuilder: (params) => {
+    const timestamp = now()
+    const signers: Signer[] = params.signers.map((s, i) => ({
+      id: generateId(),
+      name: s.name,
+      email: s.email,
+      status: SignerStatus.Pending,
+      signedAt: null,
+      order: i + 1,
+    }))
+
+    // Re-map field recipientIds from temporary indices to generated signer IDs
+    const fields: DocumentField[] = params.fields.map((f) => {
+      // Find if field.recipientId is a temp index like "signer-0", "signer-1"
+      const match = f.recipientId.match(/^signer-(\d+)$/)
+      if (match && match[1] !== undefined) {
+        const idx = parseInt(match[1], 10)
+        const signer = signers[idx]
+        if (signer) {
+          return { ...f, recipientId: signer.id }
+        }
+      }
+      // If recipientId is 'default' or already an id, assign to first signer
+      const firstSigner = signers[0]
+      if (firstSigner && (f.recipientId === 'default' || !signers.find(s => s.id === f.recipientId))) {
+        return { ...f, recipientId: firstSigner.id }
+      }
+      return f
+    })
+
+    const newDoc: Document = {
+      id: generateId(),
+      name: params.file.name,
+      status: DocumentStatus.Sent,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      fileUrl: URL.createObjectURL(params.file),
+      fileType: params.file.type,
+      signers,
+      signatures: [],
+      audit: [
+        { action: 'created', timestamp, userId: 'you' },
+        { action: 'sent', timestamp, userId: 'you', detail: params.message ?? `Sent to ${signers.length} signers` },
+      ],
+      fields,
+      folderId: null,
+      templateId: null,
+      expiresAt: null,
+      reminderSentAt: null,
+      signingOrder: params.signingOrder,
+      pricingTable: null,
+      notes: [],
+    }
+
+    set((state) => ({ documents: [newDoc, ...state.documents] }))
+    return newDoc
+  },
+
+  // ─── Decline Document ───────────────────────────────────────────────
+
+  declineDocument: (docId: string, signerId: string, reason: string) => {
+    const timestamp = now()
+    set((state) => ({
+      documents: state.documents.map((doc) => {
+        if (doc.id !== docId) return doc
+        const signer = doc.signers.find((s) => s.id === signerId)
+        return {
+          ...doc,
+          status: DocumentStatus.Declined,
+          updatedAt: timestamp,
+          signers: doc.signers.map((s) =>
+            s.id === signerId
+              ? { ...s, status: SignerStatus.Declined as typeof s.status, signedAt: timestamp }
+              : s
+          ),
+          audit: [
+            ...doc.audit,
+            {
+              action: 'declined',
+              timestamp,
+              userId: signerId,
+              detail: `Declined by ${signer?.name ?? 'Unknown'}: ${reason}`,
+            },
+          ],
         }
       }),
     }))

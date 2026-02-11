@@ -574,6 +574,70 @@
   background-color: var(--bg-tertiary);
 }
 
+/* ─── Waitlist offer ──────────────────────────────────────────── */
+.public-booking__waitlist-offer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: rgba(79, 70, 229, 0.06);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(79, 70, 229, 0.15);
+  color: var(--color-primary, #4F46E5);
+}
+
+.public-booking__waitlist-offer p {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary, #6B7280);
+}
+
+.public-booking__waitlist-success {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: rgba(5, 150, 105, 0.08);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  color: var(--color-success, #059669);
+  font-size: var(--text-sm);
+}
+
+/* ─── Submit group ───────────────────────────────────────────── */
+.public-booking__submit-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.public-booking__recurring-link {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #6B7280);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  text-align: center;
+  padding: var(--space-1);
+  transition: color 150ms ease;
+}
+
+.public-booking__recurring-link:hover {
+  color: var(--color-primary, #4F46E5);
+}
+
+.public-booking__recurring-link:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ─── Recurring step ─────────────────────────────────────────── */
+.public-booking__recurring-step {
+  display: flex;
+  flex-direction: column;
+}
+
 [data-theme="dark"] .public-booking__duplicate-warning {
   background-color: rgba(245, 158, 11, 0.12);
   border-color: rgba(245, 158, 11, 0.25);
@@ -581,4 +645,12 @@
 
 [data-theme="dark"] .public-booking__duplicate-warning-text {
   color: var(--text-primary);
+}
+
+[data-theme="dark"] .public-booking__waitlist-offer {
+  background: rgba(79, 70, 229, 0.1);
+}
+
+[data-theme="dark"] .public-booking__waitlist-success {
+  background: rgba(5, 150, 105, 0.12);
 }

@@ -1,0 +1,261 @@
+/* ─── CalendarSync ────────────────────────────────────────────── */
+.calendar-sync {
+  max-width: 720px;
+}
+
+.calendar-sync__header {
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.calendar-sync__title {
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0 0 var(--space-1, 0.25rem);
+}
+
+.calendar-sync__description {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  margin: 0;
+}
+
+/* ─── List ───────────────────────────────────────────────────── */
+.calendar-sync__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+}
+
+/* ─── Item ───────────────────────────────────────────────────── */
+.calendar-sync__item {
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-lg, 12px);
+  background: var(--bg-primary, #fff);
+  overflow: hidden;
+  transition: border-color 150ms ease;
+}
+
+.calendar-sync__item--connected {
+  border-color: var(--color-success, #059669);
+  border-color: rgba(5, 150, 105, 0.3);
+}
+
+.calendar-sync__item-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+}
+
+/* ─── Icon ───────────────────────────────────────────────────── */
+.calendar-sync__item-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md, 8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--text-sm, 0.875rem);
+  flex-shrink: 0;
+}
+
+/* ─── Info ───────────────────────────────────────────────────── */
+.calendar-sync__item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-sync__item-name {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.calendar-sync__item-email {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+}
+
+/* ─── Status badge ───────────────────────────────────────────── */
+.calendar-sync__badge {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.calendar-sync__badge--connected {
+  background: rgba(5, 150, 105, 0.1);
+  color: #059669;
+}
+
+.calendar-sync__badge--disconnected {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6B7280;
+}
+
+/* ─── Actions ────────────────────────────────────────────────── */
+.calendar-sync__item-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  flex-shrink: 0;
+}
+
+.calendar-sync__connect-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: 6px 14px;
+  font-size: var(--text-xs, 0.75rem);
+}
+
+.calendar-sync__disconnect-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: 6px 14px;
+  font-size: var(--text-xs, 0.75rem);
+  background: none;
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  color: var(--text-secondary, #6B7280);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.calendar-sync__disconnect-btn:hover {
+  color: var(--color-danger, #DC2626);
+  border-color: var(--color-danger, #DC2626);
+}
+
+.calendar-sync__sync-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  color: var(--text-secondary, #6B7280);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.calendar-sync__sync-btn:hover {
+  color: var(--color-primary, #4F46E5);
+  border-color: var(--color-primary, #4F46E5);
+}
+
+/* ─── Settings (when connected) ──────────────────────────────── */
+.calendar-sync__item-settings {
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  border-top: 1px solid var(--border-color, #E5E7EB);
+  background: var(--bg-secondary, #F9FAFB);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+}
+
+.calendar-sync__setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3, 0.75rem);
+}
+
+.calendar-sync__setting-label {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  font-weight: 500;
+}
+
+.calendar-sync__setting-select {
+  padding: 4px 8px;
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-primary, #111827);
+  background: var(--bg-primary, #fff);
+  cursor: pointer;
+}
+
+.calendar-sync__setting-select:focus {
+  outline: none;
+  border-color: var(--color-primary, #4F46E5);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.calendar-sync__last-synced {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+}
+
+.calendar-sync__setting-hint {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+  margin: 0;
+  font-style: italic;
+}
+
+/* ─── Toggle switch ──────────────────────────────────────────── */
+.calendar-sync__toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border: none;
+  border-radius: 11px;
+  background: var(--color-gray-300, #D1D5DB);
+  cursor: pointer;
+  padding: 0;
+  transition: background 150ms ease;
+}
+
+.calendar-sync__toggle--on {
+  background: var(--color-primary, #4F46E5);
+}
+
+.calendar-sync__toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 150ms ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.calendar-sync__toggle--on .calendar-sync__toggle-thumb {
+  transform: translateX(18px);
+}
+
+/* ─── Dark mode ──────────────────────────────────────────────── */
+[data-theme="dark"] .calendar-sync__item {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .calendar-sync__item-settings {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .calendar-sync__setting-select {
+  background: var(--bg-primary);
+}
+
+[data-theme="dark"] .calendar-sync__toggle {
+  background: var(--color-gray-600, #4B5563);
+}
+
+[data-theme="dark"] .calendar-sync__toggle--on {
+  background: var(--color-primary, #4F46E5);
+}

@@ -1,0 +1,177 @@
+/* ─── BookingConfirmation ─────────────────────────────────────── */
+.booking-confirmation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-4, 1rem) 0;
+}
+
+/* ─── Success header ─────────────────────────────────────────── */
+.booking-confirmation__success {
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.booking-confirmation__success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--color-success-light, #D1FAE5);
+  color: var(--color-success, #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-3, 0.75rem);
+}
+
+.booking-confirmation__success-title {
+  font-size: var(--text-xl, 1.25rem);
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0 0 var(--space-1, 0.25rem);
+}
+
+.booking-confirmation__success-subtitle {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  margin: 0;
+}
+
+/* ─── Details card ───────────────────────────────────────────── */
+.booking-confirmation__details-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg-secondary, #F9FAFB);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-4, 1rem);
+  margin-bottom: var(--space-4, 1rem);
+  text-align: left;
+}
+
+.booking-confirmation__details-bar {
+  width: 48px;
+  height: 4px;
+  border-radius: var(--radius-full, 9999px);
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.booking-confirmation__details-name {
+  font-size: var(--text-base, 1rem);
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+  margin: 0 0 var(--space-3, 0.75rem);
+}
+
+.booking-confirmation__details-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.booking-confirmation__detail-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+}
+
+.booking-confirmation__attendee {
+  margin-top: var(--space-3, 0.75rem);
+  padding-top: var(--space-3, 0.75rem);
+  border-top: 1px solid var(--border-color, #E5E7EB);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+/* ─── QR Code placeholder ────────────────────────────────────── */
+.booking-confirmation__qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  margin-bottom: var(--space-3, 0.75rem);
+}
+
+.booking-confirmation__qr-svg {
+  width: 100px;
+  height: 100px;
+}
+
+.booking-confirmation__qr-label {
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-muted, #9CA3AF);
+  letter-spacing: 0.05em;
+}
+
+/* ─── Email notice ───────────────────────────────────────────── */
+.booking-confirmation__email-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  background: rgba(79, 70, 229, 0.06);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  margin-bottom: var(--space-4, 1rem);
+  max-width: 400px;
+  width: 100%;
+  text-align: left;
+}
+
+.booking-confirmation__email-notice strong {
+  color: var(--text-primary, #111827);
+}
+
+/* ─── Actions ────────────────────────────────────────────────── */
+.booking-confirmation__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+  width: 100%;
+  max-width: 400px;
+}
+
+.booking-confirmation__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 0.5rem);
+  width: 100%;
+}
+
+.booking-confirmation__action-btn--cancel:hover {
+  color: var(--color-danger, #DC2626);
+  border-color: var(--color-danger, #DC2626);
+}
+
+.booking-confirmation__book-another {
+  margin-top: var(--space-3, 0.75rem);
+  background: none;
+  border: none;
+  color: var(--color-primary, #4F46E5);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 0;
+  transition: opacity 150ms ease;
+}
+
+.booking-confirmation__book-another:hover {
+  opacity: 0.8;
+}
+
+/* ─── Dark mode ──────────────────────────────────────────────── */
+[data-theme="dark"] .booking-confirmation__details-card {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .booking-confirmation__email-notice {
+  background: rgba(79, 70, 229, 0.1);
+}

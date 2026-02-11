@@ -1,9 +1,10 @@
 import { useCallback } from 'react'
-import { Pencil, Trash2, Tag, Clock, ChevronDown, ChevronUp } from 'lucide-react'
+import { Pencil, Trash2, Tag, Clock, ChevronDown, ChevronUp, Zap } from 'lucide-react'
 import { Button } from '../../../../components/ui'
 import { Badge } from '../../../../components/ui'
 import type { MemoryEntry, MemoryCategory } from '../../types'
 import { formatTokenCount } from '../../lib/tokenCount'
+import { isAutoCaptured } from '../../hooks/useAutoCapture'
 import './MemoryEntryCard.css'
 
 interface MemoryEntryCardProps {
@@ -49,6 +50,7 @@ export default function MemoryEntryCard({ entry, expanded = false, onEdit, onDel
   const preview = entry.content.length > 150
     ? entry.content.slice(0, 150) + '...'
     : entry.content
+  const autoCaptured = isAutoCaptured(entry.tags)
 
   const handleEdit = useCallback(() => onEdit(entry.id), [onEdit, entry.id])
   const handleDelete = useCallback(() => onDelete(entry.id), [onDelete, entry.id])
@@ -57,7 +59,15 @@ export default function MemoryEntryCard({ entry, expanded = false, onEdit, onDel
   return (
     <div className={`memory-card${expanded ? ' memory-card--expanded' : ''}`}>
       <div className="memory-card__header">
-        <h3 className="memory-card__title">{entry.title}</h3>
+        <h3 className="memory-card__title">
+          {entry.title}
+          {autoCaptured && (
+            <span className="memory-card__auto-badge" title="Auto-captured">
+              <Zap size={10} />
+              Auto-captured
+            </span>
+          )}
+        </h3>
         <div className="memory-card__badges">
           <Badge variant={categoryVariant[entry.category] ?? 'default'} size="sm">
             {entry.category}

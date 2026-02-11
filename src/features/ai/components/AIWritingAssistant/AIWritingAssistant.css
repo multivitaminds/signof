@@ -1,0 +1,222 @@
+/* ═══════════════════════════════════════════════════════════════
+   AIWritingAssistant — Floating toolbar for text selection
+   ═══════════════════════════════════════════════════════════════ */
+
+.ai-writing-assistant {
+  position: absolute;
+  z-index: 100;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 200px;
+  max-width: 400px;
+  animation: ai-writing-fade-in 0.15s ease-out;
+}
+
+@keyframes ai-writing-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Toolbar ──────────────────────────────────────────── */
+
+.ai-writing-assistant__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+}
+
+.ai-writing-assistant__btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.1s;
+}
+
+.ai-writing-assistant__btn:hover {
+  background: var(--bg-secondary);
+  color: var(--color-primary);
+}
+
+/* ─── Tone Dropdown ────────────────────────────────────── */
+
+.ai-writing-assistant__tone-wrapper {
+  position: relative;
+}
+
+.ai-writing-assistant__tone-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  z-index: 10;
+  min-width: 140px;
+}
+
+.ai-writing-assistant__tone-item {
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.ai-writing-assistant__tone-item:hover {
+  background: var(--bg-secondary);
+}
+
+/* ─── Processing ───────────────────────────────────────── */
+
+.ai-writing-assistant__processing {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.8125rem;
+  color: var(--color-primary);
+}
+
+.ai-writing-assistant__processing-icon {
+  animation: ai-writing-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ai-writing-pulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ─── Suggestion ───────────────────────────────────────── */
+
+.ai-writing-assistant__suggestion {
+  padding: var(--space-sm);
+}
+
+.ai-writing-assistant__suggestion-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: var(--space-sm);
+}
+
+/* ─── Diff View ────────────────────────────────────────── */
+
+.ai-writing-assistant__diff {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.ai-writing-assistant__diff-removed {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #991B1B;
+  background: #FEF2F2;
+  border-left: 3px solid #EF4444;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.ai-writing-assistant__diff-added {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #166534;
+  background: #F0FDF4;
+  border-left: 3px solid #22C55E;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+[data-theme="dark"] .ai-writing-assistant__diff-removed {
+  color: #FCA5A5;
+  background: rgba(220, 38, 38, 0.15);
+  border-left-color: #DC2626;
+}
+
+[data-theme="dark"] .ai-writing-assistant__diff-added {
+  color: #86EFAC;
+  background: rgba(34, 197, 94, 0.15);
+  border-left-color: #22C55E;
+}
+
+/* ─── Action Buttons ───────────────────────────────────── */
+
+.ai-writing-assistant__suggestion-actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.ai-writing-assistant__accept-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-success, #059669);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.ai-writing-assistant__accept-btn:hover {
+  opacity: 0.9;
+}
+
+.ai-writing-assistant__dismiss-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ai-writing-assistant__dismiss-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}

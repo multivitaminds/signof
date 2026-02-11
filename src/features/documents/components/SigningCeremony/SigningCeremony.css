@@ -1083,6 +1083,136 @@
   height: 16px;
 }
 
+/* ─── Completion Progress ──────────────────────────────────────── */
+
+.signing-ceremony-v2__completion-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 12px);
+}
+
+.signing-ceremony-v2__progress-text {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--text-muted);
+}
+
+.signing-ceremony-v2__progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--color-gray-200, #E5E7EB);
+  border-radius: var(--radius-full, 9999px);
+  overflow: hidden;
+}
+
+.signing-ceremony-v2__progress-fill {
+  height: 100%;
+  background: #059669;
+  border-radius: var(--radius-full, 9999px);
+  transition: width var(--motion-smooth, 300ms) var(--ease-spring);
+}
+
+/* ─── Decline Modal ────────────────────────────────────────────── */
+
+.signing-ceremony-v2__decline-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4, 1rem);
+  animation: signing-ceremony-v2__fade-in var(--motion-normal, 200ms) var(--ease-out, ease-out);
+}
+
+.signing-ceremony-v2__decline-modal {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl, 16px);
+  box-shadow: var(--shadow-xl);
+  max-width: 480px;
+  width: 100%;
+  padding: var(--space-5, 1.5rem);
+}
+
+.signing-ceremony-v2__decline-modal h3 {
+  font-size: var(--text-xl, 1.25rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.signing-ceremony-v2__decline-modal p {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted);
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.signing-ceremony-v2__decline-textarea {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.signing-ceremony-v2__decline-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3, 0.75rem);
+}
+
+/* Decline button in footer */
+.signing-ceremony-v2__btn-decline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  background: transparent;
+  color: var(--color-danger, #DC2626);
+  font-weight: var(--font-medium, 500);
+  font-size: var(--text-sm, 0.875rem);
+  border: 1px solid var(--color-danger, #DC2626);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-left: var(--space-3, 0.75rem);
+}
+
+.signing-ceremony-v2__btn-decline:hover {
+  background: var(--color-danger-light);
+}
+
+/* Danger button */
+.signing-ceremony-v2__btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-5, 1.5rem);
+  background: var(--color-danger, #DC2626);
+  color: #ffffff;
+  font-weight: var(--font-semibold, 600);
+  font-size: var(--text-sm, 0.875rem);
+  border-radius: var(--radius-md, 8px);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.signing-ceremony-v2__btn-danger:hover:not(:disabled) {
+  background: #c0392b;
+}
+
+.signing-ceremony-v2__btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ─── Responsive ────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {

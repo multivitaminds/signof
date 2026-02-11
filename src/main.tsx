@@ -36,6 +36,8 @@ const SchedulingLayout = lazy(() => import('./features/scheduling/pages/Scheduli
 const EventTypesPage = lazy(() => import('./features/scheduling/pages/EventTypesPage'))
 const SchedulingCalendarPage = lazy(() => import('./features/scheduling/pages/SchedulingCalendarPage'))
 const BookingsPage = lazy(() => import('./features/scheduling/pages/BookingsPage'))
+const CalendarSyncPage = lazy(() => import('./features/scheduling/pages/CalendarSyncPage'))
+const BookingAnalyticsPage = lazy(() => import('./features/scheduling/pages/BookingAnalyticsPage'))
 const PublicBookingPage = lazy(() => import('./features/scheduling/pages/PublicBookingPage'))
 
 const DatabasesLayout = lazy(() => import('./features/databases/pages/DatabasesLayout'))
@@ -61,6 +63,7 @@ const TaxFormsPage = lazy(() => import('./features/tax/pages/TaxFormsPage'))
 const TaxFilingPage = lazy(() => import('./features/tax/pages/TaxFilingPage'))
 
 const DocumentAnalyticsPage = lazy(() => import('./features/documents/components/DocumentAnalytics/DocumentAnalytics'))
+const DocumentBuilderPage = lazy(() => import('./features/documents/pages/DocumentBuilderPage'))
 
 const DeveloperLayout = lazy(() => import('./features/developer/pages/DeveloperLayout'))
 const ApiDocsPage = lazy(() => import('./features/developer/pages/ApiDocsPage'))
@@ -129,6 +132,11 @@ createRoot(root).render(
           </Route>
 
           {/* Documents (DocuSign / PandaDoc) */}
+          <Route path="documents/builder" element={
+            <ModuleErrorBoundary moduleName="Documents">
+              <Suspense fallback={EditorFallback}><DocumentBuilderPage /></Suspense>
+            </ModuleErrorBoundary>
+          } />
           <Route path="documents/analytics" element={
             <ModuleErrorBoundary moduleName="Documents">
               <Suspense fallback={TableFallback}><DocumentAnalyticsPage /></Suspense>
@@ -150,6 +158,8 @@ createRoot(root).render(
             <Route path="events" element={<Suspense fallback={CardFallback}><EventTypesPage /></Suspense>} />
             <Route path="schedule" element={<Suspense fallback={TableFallback}><SchedulingCalendarPage /></Suspense>} />
             <Route path="bookings" element={<Suspense fallback={TableFallback}><BookingsPage /></Suspense>} />
+            <Route path="sync" element={<Suspense fallback={CardFallback}><CalendarSyncPage /></Suspense>} />
+            <Route path="analytics" element={<Suspense fallback={CardFallback}><BookingAnalyticsPage /></Suspense>} />
           </Route>
 
           {/* Databases (Airtable) */}

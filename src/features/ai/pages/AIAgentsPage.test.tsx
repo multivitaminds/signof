@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import useAIAgentStore from '../stores/useAIAgentStore'
-import { AgentType } from '../types'
+import { AgentType, StepStatus } from '../types'
 import AIAgentsPage from './AIAgentsPage'
 
 describe('AIAgentsPage', () => {
@@ -158,5 +158,80 @@ describe('AIAgentsPage', () => {
   it('does not show run history section when no completed runs', () => {
     render(<AIAgentsPage />)
     expect(screen.queryByText(/Run History/)).not.toBeInTheDocument()
+  })
+
+  // ─── New: Step output display ──────────────────────────────────────
+
+  it('displays step output text when step has output', () => {
+    const run = useAIAgentStore.getState().startAgent(AgentType.Researcher, 'Research task')
+    useAIAgentStore.getState().updateRunStep(run.id, 0, StepStatus.Completed, 'Found 12 data sources')
+
+    render(<AIAgentsPage />)
+
+    expect(screen.getByText('Found 12 data sources')).toBeInTheDocument()
+  })
+
+  // ─── New: View Results button ──────────────────────────────────────
+
+  it('shows View Results button for completed runs with results', async () => {
+    const user = userEvent.setup()
+    const run = useAIAgentStore.getState().startAgent(AgentType.Analyst, 'Analysis')
+    useAIAgentStore.getState().setRunResult(run.id, 'Analysis complete.')
+    useAIAgentStore.getState().completeRun(run.id)
+
+    render(<AIAgentsPage />)
+
+    // Expand history
+    await user.click(screen.getByRole('button', { name: /Run History/ }))
+
+    expect(screen.getByRole('button', { name: /view results/i })).toBeInTheDocument()
+  })
+
+  it('shows results modal when View Results is clicked', async () => {
+    const user = userEvent.setup()
+    const run = useAIAgentStore.getState().startAgent(AgentType.Analyst, 'Data analysis')
+    useAIAgentStore.getState().setRunResult(run.id, 'Here are the results of the analysis.')
+    useAIAgentStore.getState().completeRun(run.id)
+
+    render(<AIAgentsPage />)
+
+    await user.click(screen.getByRole('button', { name: /Run History/ }))
+    await user.click(screen.getByRole('button', { name: /view results/i }))
+
+    expect(screen.getByRole('dialog', { name: /run results/i })).toBeInTheDocument()
+    expect(screen.getByText('Run Results')).toBeInTheDocument()
+    expect(screen.getByText('Here are the results of the analysis.')).toBeInTheDocument()
+  })
+
+  it('closes results modal when close button is clicked', async () => {
+    const user = userEvent.setup()
+    const run = useAIAgentStore.getState().startAgent(AgentType.Analyst, 'Data analysis')
+    useAIAgentStore.getState().setRunResult(run.id, 'Results here.')
+    useAIAgentStore.getState().completeRun(run.id)
+
+    render(<AIAgentsPage />)
+
+    await user.click(screen.getByRole('button', { name: /Run History/ }))
+    await user.click(screen.getByRole('button', { name: /view results/i }))
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /close results/i }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  // ─── New: History table has Actions column ─────────────────────────
+
+  it('shows Actions column in history table', async () => {
+    const user = userEvent.setup()
+    const run = useAIAgentStore.getState().startAgent(AgentType.Analyst, 'Analyze data')
+    useAIAgentStore.getState().completeRun(run.id)
+
+    render(<AIAgentsPage />)
+
+    await user.click(screen.getByRole('button', { name: /Run History/ }))
+
+    expect(screen.getByText('Actions')).toBeInTheDocument()
   })
 })

@@ -121,6 +121,8 @@ export interface EventType {
   customQuestions: CustomQuestion[]
   maxAttendees: number
   recurrence?: RecurrenceRule
+  waitlistEnabled: boolean
+  maxWaitlist: number
   isActive: boolean
   createdAt: string
   updatedAt: string
@@ -145,8 +147,76 @@ export interface Booking {
   notes: string
   cancelReason?: string
   rescheduleReason?: string
+  recurrenceGroupId?: string // Links bookings that were created as a recurring group
   createdAt: string
   updatedAt: string
+}
+
+// ─── Calendar Sync Types ────────────────────────────────────────
+
+export const SyncDirection = {
+  OneWay: 'one_way',
+  TwoWay: 'two_way',
+} as const
+
+export type SyncDirection = (typeof SyncDirection)[keyof typeof SyncDirection]
+
+export const CalendarProvider = {
+  Google: 'google',
+  Outlook: 'outlook',
+  Apple: 'apple',
+} as const
+
+export type CalendarProvider = (typeof CalendarProvider)[keyof typeof CalendarProvider]
+
+export interface CalendarConnection {
+  id: string
+  provider: CalendarProvider
+  name: string
+  email: string
+  syncDirection: SyncDirection
+  checkConflicts: boolean
+  connected: boolean
+  lastSyncedAt: string | null
+}
+
+// ─── Waitlist Types ─────────────────────────────────────────────
+
+export const WaitlistStatus = {
+  Waiting: 'waiting',
+  Notified: 'notified',
+  Approved: 'approved',
+  Rejected: 'rejected',
+  Expired: 'expired',
+} as const
+
+export type WaitlistStatus = (typeof WaitlistStatus)[keyof typeof WaitlistStatus]
+
+export interface WaitlistEntry {
+  id: string
+  eventTypeId: string
+  date: string       // ISO date string YYYY-MM-DD
+  timeSlot: string   // HH:mm format
+  name: string
+  email: string
+  status: WaitlistStatus
+  createdAt: string
+}
+
+// ─── Recurring Booking Types ────────────────────────────────────
+
+export const RecurringPattern = {
+  Weekly: 'weekly',
+  Biweekly: 'biweekly',
+  Monthly: 'monthly',
+} as const
+
+export type RecurringPattern = (typeof RecurringPattern)[keyof typeof RecurringPattern]
+
+export const RECURRING_PATTERN_LABELS: Record<RecurringPattern, string> = {
+  [RecurringPattern.Weekly]: 'Weekly',
+  [RecurringPattern.Biweekly]: 'Bi-weekly',
+  [RecurringPattern.Monthly]: 'Monthly',
 }
 
 // ─── Constants ──────────────────────────────────────────────────
@@ -220,3 +290,14 @@ export const ALL_DAYS_OF_WEEK: DayOfWeek[] = [
   DayOfWeek.Saturday,
   DayOfWeek.Sunday,
 ]
+
+export const CALENDAR_PROVIDER_LABELS: Record<CalendarProvider, string> = {
+  [CalendarProvider.Google]: 'Google Calendar',
+  [CalendarProvider.Outlook]: 'Outlook Calendar',
+  [CalendarProvider.Apple]: 'Apple Calendar',
+}
+
+export const SYNC_DIRECTION_LABELS: Record<SyncDirection, string> = {
+  [SyncDirection.OneWay]: 'One-way (read only)',
+  [SyncDirection.TwoWay]: 'Two-way (read + write)',
+}

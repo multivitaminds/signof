@@ -15,6 +15,10 @@ import RecentItems from '../components/RecentItems/RecentItems'
 import FirstRunChecklist from '../components/FirstRunChecklist/FirstRunChecklist'
 import ActivityFeed from '../features/activity/components/ActivityFeed/ActivityFeed'
 import DashboardCharts from '../features/activity/components/DashboardCharts/DashboardCharts'
+import UpcomingDeadlines from '../components/DashboardWidgets/UpcomingDeadlines'
+import RecentActivity from '../components/DashboardWidgets/RecentActivity'
+import QuickStatsWidget from '../components/DashboardWidgets/QuickStats'
+import AIInsights from '../components/DashboardWidgets/AIInsights'
 import './HomePage.css'
 
 export default function HomePage() {
@@ -77,6 +81,14 @@ export default function HomePage() {
 
       {/* 3. Quick Actions */}
       <QuickActions />
+
+      {/* 3.5 Cross-Module Dashboard Widgets */}
+      <div className="dashboard-widgets-grid">
+        <QuickStatsWidget />
+        <AIInsights />
+        <UpcomingDeadlines />
+        <RecentActivity />
+      </div>
 
       {/* 4. Two-column layout: RecentItems + Activity sidebar */}
       <div className="home-page__main-grid">

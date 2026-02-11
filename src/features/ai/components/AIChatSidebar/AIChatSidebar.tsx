@@ -1,6 +1,10 @@
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { X, Send, Sparkles, Trash2 } from 'lucide-react'
-import useAIChatStore from '../../stores/useAIChatStore'
+import useAIChatStore, {
+  getContextHintForRoute,
+  AVAILABLE_SLASH_COMMANDS,
+  isSlashCommand,
+} from '../../stores/useAIChatStore'
 import './AIChatSidebar.css'
 
 const QUICK_ACTIONS = [
@@ -14,19 +18,35 @@ export default function AIChatSidebar() {
   const messages = useAIChatStore((s) => s.messages)
   const isOpen = useAIChatStore((s) => s.isOpen)
   const contextLabel = useAIChatStore((s) => s.contextLabel)
+  const currentRoute = useAIChatStore((s) => s.currentRoute)
+  const isTyping = useAIChatStore((s) => s.isTyping)
   const sendMessage = useAIChatStore((s) => s.sendMessage)
   const setOpen = useAIChatStore((s) => s.setOpen)
   const clearMessages = useAIChatStore((s) => s.clearMessages)
 
   const [inputValue, setInputValue] = useState('')
+  const [showSlashMenu, setShowSlashMenu] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const contextHint = useMemo(
+    () => getContextHintForRoute(currentRoute),
+    [currentRoute],
+  )
+
+  const filteredCommands = useMemo(() => {
+    if (!showSlashMenu) return []
+    const typed = inputValue.toLowerCase()
+    return AVAILABLE_SLASH_COMMANDS.filter((c) =>
+      c.command.startsWith(typed)
+    )
+  }, [showSlashMenu, inputValue])
 
   useEffect(() => {
     if (messagesEndRef.current && typeof messagesEndRef.current.scrollIntoView === 'function') {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
-  }, [messages.length])
+  }, [messages.length, isTyping])
 
   useEffect(() => {
     if (isOpen) {
@@ -47,6 +67,7 @@ export default function AIChatSidebar() {
     if (!trimmed) return
     sendMessage(trimmed)
     setInputValue('')
+    setShowSlashMenu(false)
   }, [inputValue, sendMessage])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -54,7 +75,27 @@ export default function AIChatSidebar() {
       e.preventDefault()
       handleSend()
     }
-  }, [handleSend])
+    if (e.key === 'Escape' && showSlashMenu) {
+      setShowSlashMenu(false)
+    }
+  }, [handleSend, showSlashMenu])
+
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    setInputValue(val)
+    // Show slash command menu when input starts with /
+    if (val.startsWith('/') && !val.includes(' ')) {
+      setShowSlashMenu(true)
+    } else {
+      setShowSlashMenu(false)
+    }
+  }, [])
+
+  const handleSlashCommandSelect = useCallback((command: string) => {
+    setInputValue(command + ' ')
+    setShowSlashMenu(false)
+    inputRef.current?.focus()
+  }, [])
 
   const handleQuickAction = useCallback((action: string) => {
     sendMessage(action)
@@ -96,12 +137,22 @@ export default function AIChatSidebar() {
         Reading: {contextLabel}
       </div>
 
+      {/* Route-based context hint */}
+      {contextHint && (
+        <div className="ai-chat-sidebar__context-hint" role="status">
+          {contextHint}
+        </div>
+      )}
+
       <div className="ai-chat-sidebar__messages">
-        {messages.length === 0 && (
+        {messages.length === 0 && !isTyping && (
           <div className="ai-chat-sidebar__empty">
             <Sparkles size={32} className="ai-chat-sidebar__empty-icon" />
             <p className="ai-chat-sidebar__empty-text">
               Ask me anything about your workspace. I can summarize pages, create action items, and more.
+            </p>
+            <p className="ai-chat-sidebar__empty-hint">
+              Try slash commands: /summarize, /translate, /simplify
             </p>
           </div>
         )}
@@ -110,12 +161,23 @@ export default function AIChatSidebar() {
             key={msg.id}
             className={`ai-chat-sidebar__message ai-chat-sidebar__message--${msg.role}`}
           >
+            {msg.role === 'user' && isSlashCommand(msg.content) && (
+              <span className="ai-chat-sidebar__command-badge">command</span>
+            )}
             <span className="ai-chat-sidebar__message-content">{msg.content}</span>
             <span className="ai-chat-sidebar__message-time">
               {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
         ))}
+        {/* Typing Indicator */}
+        {isTyping && (
+          <div className="ai-chat-sidebar__typing" aria-label="AI is typing">
+            <span className="ai-chat-sidebar__typing-dot" />
+            <span className="ai-chat-sidebar__typing-dot" />
+            <span className="ai-chat-sidebar__typing-dot" />
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -132,25 +194,44 @@ export default function AIChatSidebar() {
         ))}
       </div>
 
-      <div className="ai-chat-sidebar__input-row">
-        <input
-          ref={inputRef}
-          className="ai-chat-sidebar__input"
-          type="text"
-          placeholder="Ask AI anything..."
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          aria-label="Message input"
-        />
-        <button
-          className="ai-chat-sidebar__send-btn"
-          onClick={handleSend}
-          disabled={!inputValue.trim()}
-          aria-label="Send message"
-        >
-          <Send size={16} />
-        </button>
+      <div className="ai-chat-sidebar__input-area">
+        {/* Slash command dropdown */}
+        {showSlashMenu && filteredCommands.length > 0 && (
+          <div className="ai-chat-sidebar__slash-menu" role="listbox" aria-label="Slash commands">
+            {filteredCommands.map((cmd) => (
+              <button
+                key={cmd.command}
+                className="ai-chat-sidebar__slash-item"
+                role="option"
+                aria-selected={false}
+                onClick={() => handleSlashCommandSelect(cmd.command)}
+              >
+                <span className="ai-chat-sidebar__slash-cmd">{cmd.command}</span>
+                <span className="ai-chat-sidebar__slash-desc">{cmd.description}</span>
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="ai-chat-sidebar__input-row">
+          <input
+            ref={inputRef}
+            className="ai-chat-sidebar__input"
+            type="text"
+            placeholder="Ask AI anything... (/ for commands)"
+            value={inputValue}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            aria-label="Message input"
+          />
+          <button
+            className="ai-chat-sidebar__send-btn"
+            onClick={handleSend}
+            disabled={!inputValue.trim()}
+            aria-label="Send message"
+          >
+            <Send size={16} />
+          </button>
+        </div>
       </div>
     </div>
   )

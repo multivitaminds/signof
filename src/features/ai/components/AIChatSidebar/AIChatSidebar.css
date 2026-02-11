@@ -86,6 +86,23 @@
   flex-shrink: 0;
 }
 
+/* ─── Context Hint ──────────────────────────────────────── */
+
+.ai-chat-sidebar__context-hint {
+  padding: var(--space-xs) var(--space-md);
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  background: rgba(79, 70, 229, 0.06);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+[data-theme="dark"] .ai-chat-sidebar__context-hint {
+  background: rgba(79, 70, 229, 0.12);
+  color: #A5B4FC;
+}
+
 /* ─── Messages ──────────────────────────────────────────── */
 
 .ai-chat-sidebar__messages {
@@ -118,6 +135,14 @@
   color: var(--text-muted);
   line-height: 1.5;
   max-width: 240px;
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.ai-chat-sidebar__empty-hint {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+  margin: 0;
 }
 
 .ai-chat-sidebar__message {
@@ -156,6 +181,67 @@
   align-self: flex-end;
 }
 
+/* ─── Command Badge ────────────────────────────────────── */
+
+.ai-chat-sidebar__command-badge {
+  display: inline-block;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  align-self: flex-start;
+  margin-bottom: 2px;
+}
+
+/* ─── Typing Indicator ─────────────────────────────────── */
+
+.ai-chat-sidebar__typing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border-bottom-left-radius: 2px;
+  align-self: flex-start;
+  max-width: 60px;
+}
+
+.ai-chat-sidebar__typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: ai-chat-typing-bounce 1.4s infinite ease-in-out;
+}
+
+.ai-chat-sidebar__typing-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.ai-chat-sidebar__typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.ai-chat-sidebar__typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes ai-chat-typing-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
 /* ─── Quick Actions ─────────────────────────────────────── */
 
 .ai-chat-sidebar__quick-actions {
@@ -183,6 +269,58 @@
 .ai-chat-sidebar__chip:hover {
   background: rgba(79, 70, 229, 0.15);
   border-color: var(--color-primary);
+}
+
+/* ─── Input Area ───────────────────────────────────────── */
+
+.ai-chat-sidebar__input-area {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* ─── Slash Command Menu ───────────────────────────────── */
+
+.ai-chat-sidebar__slash-menu {
+  position: absolute;
+  bottom: 100%;
+  left: var(--space-md);
+  right: var(--space-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  z-index: 10;
+}
+
+.ai-chat-sidebar__slash-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-xs) var(--space-sm);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+}
+
+.ai-chat-sidebar__slash-item:hover {
+  background: var(--bg-secondary);
+}
+
+.ai-chat-sidebar__slash-cmd {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+.ai-chat-sidebar__slash-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
 /* ─── Input ─────────────────────────────────────────────── */

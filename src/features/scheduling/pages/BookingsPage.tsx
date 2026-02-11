@@ -14,6 +14,7 @@ import { useSchedulingStore } from '../stores/useSchedulingStore'
 import type { BookingFilter, Booking } from '../types'
 import { BookingFilter as BookingFilterEnum, BookingStatus } from '../types'
 import { generateICS } from '../lib/icsGenerator'
+import WaitlistPanel from '../components/WaitlistPanel/WaitlistPanel'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import './BookingsPage.css'
 
@@ -350,6 +351,9 @@ export default function BookingsPage() {
           ))}
         </div>
       )}
+
+      {/* Waitlist management */}
+      <WaitlistPanel />
     </div>
   )
 }

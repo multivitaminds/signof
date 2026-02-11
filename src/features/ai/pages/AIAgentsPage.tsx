@@ -5,10 +5,11 @@ import {
   Play, Pause, Square, MessageSquare,
   ChevronDown, ChevronUp,
   CheckCircle2, Loader2, Circle, XCircle, Clock,
+  X, Eye,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Badge } from '../../../components/ui'
-import useAIAgentStore from '../stores/useAIAgentStore'
+import useAIAgentStore, { getStepOutput } from '../stores/useAIAgentStore'
 import { RunStatus, StepStatus } from '../types'
 import type { AgentType, AgentRun, RunStep } from '../types'
 import './AIAgentsPage.css'
@@ -143,6 +144,7 @@ export default function AIAgentsPage() {
   const [runTaskInputs, setRunTaskInputs] = useState<Record<string, string>>({})
   const [showHistory, setShowHistory] = useState(false)
   const [chatRunId, setChatRunId] = useState<string | null>(null)
+  const [viewResultRunId, setViewResultRunId] = useState<string | null>(null)
   const simulationTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
 
   // Clean up timers on unmount
@@ -168,6 +170,11 @@ export default function AIAgentsPage() {
     [runs],
   )
 
+  const viewingRun = useMemo(
+    () => viewResultRunId ? runs.find(r => r.id === viewResultRunId) ?? null : null,
+    [viewResultRunId, runs],
+  )
+
   const simulateSteps = useCallback((run: AgentRun) => {
     let stepIndex = 0
 
@@ -177,14 +184,16 @@ export default function AIAgentsPage() {
       // Mark current step running
       updateRunStep(run.id, stepIndex, StepStatus.Running as typeof StepStatus.Running)
 
-      const delay = 1500 + Math.random() * 2000
+      const delay = 1000 + Math.random() * 2000
+      const currentIndex = stepIndex
       const timerId = setTimeout(() => {
-        updateRunStep(run.id, stepIndex, StepStatus.Completed as typeof StepStatus.Completed)
+        const output = getStepOutput(run.agentType, currentIndex)
+        updateRunStep(run.id, currentIndex, StepStatus.Completed as typeof StepStatus.Completed, output)
         stepIndex++
         if (stepIndex < run.steps.length) {
           processNextStep()
         }
-        simulationTimers.current.delete(`${run.id}-${stepIndex - 1}`)
+        simulationTimers.current.delete(`${run.id}-${currentIndex}`)
       }, delay)
 
       simulationTimers.current.set(`${run.id}-${stepIndex}`, timerId)
@@ -245,6 +254,14 @@ export default function AIAgentsPage() {
 
   const toggleHistory = useCallback(() => {
     setShowHistory(prev => !prev)
+  }, [])
+
+  const handleViewResults = useCallback((runId: string) => {
+    setViewResultRunId(runId)
+  }, [])
+
+  const handleCloseResults = useCallback(() => {
+    setViewResultRunId(null)
   }, [])
 
   return (
@@ -334,14 +351,19 @@ export default function AIAgentsPage() {
                     <div className="ai-agents__progress-fill" style={{ width: `${progressPercent}%` }} />
                   </div>
 
-                  {/* Steps */}
+                  {/* Steps with output text */}
                   <div className="ai-agents__steps" role="list" aria-label="Run steps">
                     {run.steps.map((step: RunStep) => {
                       const StepIcon = STEP_ICON[step.status]
                       return (
                         <div key={step.id} className={`ai-agents__step ai-agents__step--${step.status}`} role="listitem">
                           <StepIcon size={16} className={`ai-agents__step-icon ${STEP_CLASS[step.status]}`} />
-                          <span className="ai-agents__step-label">{step.label}</span>
+                          <div className="ai-agents__step-content">
+                            <span className="ai-agents__step-label">{step.label}</span>
+                            {step.output && (
+                              <span className="ai-agents__step-output">{step.output}</span>
+                            )}
+                          </div>
                         </div>
                       )
                     })}
@@ -397,6 +419,7 @@ export default function AIAgentsPage() {
                     <th>Status</th>
                     <th>Duration</th>
                     <th>Date</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -413,6 +436,18 @@ export default function AIAgentsPage() {
                         </td>
                         <td>{formatDuration(run.startedAt, run.completedAt)}</td>
                         <td>{new Date(run.startedAt).toLocaleDateString()}</td>
+                        <td>
+                          {run.status === RunStatus.Completed && run.result && (
+                            <button
+                              className="ai-agents__view-results-btn"
+                              onClick={() => handleViewResults(run.id)}
+                              aria-label={`View results for ${run.task}`}
+                            >
+                              <Eye size={14} />
+                              View Results
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     )
                   })}
@@ -421,6 +456,35 @@ export default function AIAgentsPage() {
             </div>
           )}
         </section>
+      )}
+
+      {/* View Results Modal */}
+      {viewingRun && (
+        <div className="ai-agents__result-overlay" onClick={handleCloseResults} role="dialog" aria-label="Run results" aria-modal="true">
+          <div className="ai-agents__result-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="ai-agents__result-header">
+              <div>
+                <h3 className="ai-agents__result-title">Run Results</h3>
+                <span className="ai-agents__result-task">{viewingRun.task}</span>
+              </div>
+              <button
+                className="ai-agents__result-close"
+                onClick={handleCloseResults}
+                aria-label="Close results"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="ai-agents__result-body">
+              <pre className="ai-agents__result-content">{viewingRun.result}</pre>
+            </div>
+            <div className="ai-agents__result-footer">
+              <span className="ai-agents__result-meta">
+                Completed {viewingRun.completedAt ? new Date(viewingRun.completedAt).toLocaleString() : ''} | Duration: {formatDuration(viewingRun.startedAt, viewingRun.completedAt)}
+              </span>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

@@ -1,0 +1,182 @@
+/* ═══════════════════════════════════════════════════════════════
+   Dashboard Widgets — Shared styles for cross-module widgets
+   ═══════════════════════════════════════════════════════════════ */
+
+.dashboard-widget {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+}
+
+.dashboard-widget--ai {
+  border-color: rgba(79, 70, 229, 0.2);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(79, 70, 229, 0.03) 100%);
+}
+
+[data-theme="dark"] .dashboard-widget--ai {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(79, 70, 229, 0.08) 100%);
+}
+
+/* ─── Header ───────────────────────────────────────────── */
+
+.dashboard-widget__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.dashboard-widget__header-icon {
+  color: var(--text-secondary);
+}
+
+.dashboard-widget__header-icon--ai {
+  color: var(--color-primary);
+}
+
+.dashboard-widget__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ─── List Items ───────────────────────────────────────── */
+
+.dashboard-widget__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.dashboard-widget__list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) 0;
+  font-size: 0.8125rem;
+}
+
+.dashboard-widget__item-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
+.dashboard-widget__item-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── Empty ────────────────────────────────────────────── */
+
+.dashboard-widget__empty {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: var(--space-md) 0;
+  margin: 0;
+}
+
+/* ─── Stats Grid ───────────────────────────────────────── */
+
+.dashboard-widget__stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+}
+
+.dashboard-widget__stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-sm);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.dashboard-widget__stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.dashboard-widget__stat-label {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* ─── AI Insights ──────────────────────────────────────── */
+
+.dashboard-widget__insight {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+}
+
+.dashboard-widget__insight--warning {
+  background: rgba(217, 119, 6, 0.06);
+}
+
+.dashboard-widget__insight--info {
+  background: rgba(79, 70, 229, 0.06);
+}
+
+.dashboard-widget__insight--success {
+  background: rgba(5, 150, 105, 0.06);
+}
+
+[data-theme="dark"] .dashboard-widget__insight--warning {
+  background: rgba(217, 119, 6, 0.12);
+}
+
+[data-theme="dark"] .dashboard-widget__insight--info {
+  background: rgba(79, 70, 229, 0.12);
+}
+
+[data-theme="dark"] .dashboard-widget__insight--success {
+  background: rgba(5, 150, 105, 0.12);
+}
+
+.dashboard-widget__insight-text {
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+/* ─── Widget Grid (used in HomePage) ───────────────────── */
+
+.dashboard-widgets-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+@media (max-width: 900px) {
+  .dashboard-widgets-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-widget__stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

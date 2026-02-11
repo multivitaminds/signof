@@ -28,6 +28,7 @@ interface SigningCeremonyProps {
   signer: Signer
   onComplete: (dataUrl: string) => void
   onCancel: () => void
+  onDecline?: (reason: string) => void
 }
 
 type CeremonyStep = 'review' | 'sign' | 'complete'
@@ -105,16 +106,22 @@ function SigningCeremony({
   signer,
   onComplete,
   onCancel,
+  onDecline,
 }: SigningCeremonyProps) {
   // ── State ──────────────────────────────────────────────────────
   const [currentStep, setCurrentStep] = useState<CeremonyStep>('review')
   const [reviewConfirmed, setReviewConfirmed] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const [currentFieldIndex, setCurrentFieldIndex] = useState(0)
   const [signatureMode, setSignatureMode] = useState<SignatureMode>('draw')
   const [typedSignature, setTypedSignature] = useState('')
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({})
   const [signedTimestamp, setSignedTimestamp] = useState('')
   const [capturedDataUrl, setCapturedDataUrl] = useState('')
+
+  // Decline state
+  const [showDecline, setShowDecline] = useState(false)
+  const [declineReason, setDeclineReason] = useState('')
 
   // Canvas drawing state
   const [strokes, setStrokes] = useState<Point[][]>([])
@@ -478,6 +485,20 @@ function SigningCeremony({
     return true
   }, [currentField, signatureMode, canvasIsEmpty, typedSignature, fieldValues])
 
+  // ── Completed fields count ──────────────────────────────────────
+  const completedFieldsCount = useMemo(() => {
+    return effectiveFields.filter((f) => {
+      if (f.type === FieldType.DateSigned) return true // auto-filled
+      return Boolean(fieldValues[f.id])
+    }).length
+  }, [effectiveFields, fieldValues])
+
+  // ── Decline handler ─────────────────────────────────────────────
+  const handleDeclineSubmit = useCallback(() => {
+    if (!declineReason.trim() || !onDecline) return
+    onDecline(declineReason.trim())
+  }, [declineReason, onDecline])
+
   const handleDone = useCallback(() => {
     onComplete(capturedDataUrl)
   }, [onComplete, capturedDataUrl])
@@ -640,8 +661,16 @@ function SigningCeremony({
           />
           I have reviewed this document and agree to sign it electronically.
         </label>
+        <label className="signing-ceremony-v2__review-checkbox">
+          <input
+            type="checkbox"
+            checked={termsAccepted}
+            onChange={(e) => setTermsAccepted(e.target.checked)}
+          />
+          I agree to use electronic signatures for this document.
+        </label>
         <div className="signing-ceremony-v2__legal-notice">
-          By checking this box, you consent to sign this document electronically.
+          By checking these boxes, you consent to sign this document electronically.
           Electronic signatures are legally binding under the ESIGN Act and UETA.
           You may request a paper copy at any time.
         </div>
@@ -868,6 +897,19 @@ function SigningCeremony({
         <p>Complete each field below to sign the document.</p>
       </div>
 
+      {/* Completion progress */}
+      <div className="signing-ceremony-v2__completion-progress" data-testid="completion-progress">
+        <div className="signing-ceremony-v2__progress-text">
+          {completedFieldsCount} of {effectiveFields.length} fields completed
+        </div>
+        <div className="signing-ceremony-v2__progress-bar">
+          <div
+            className="signing-ceremony-v2__progress-fill"
+            style={{ width: `${effectiveFields.length > 0 ? (completedFieldsCount / effectiveFields.length) * 100 : 0}%` }}
+          />
+        </div>
+      </div>
+
       {effectiveFields.length > 1 && (
         <div className="signing-ceremony-v2__field-nav">
           <span className="signing-ceremony-v2__field-counter">
@@ -1009,6 +1051,42 @@ function SigningCeremony({
         </div>
       </div>
 
+      {/* Decline modal */}
+      {showDecline && (
+        <div className="signing-ceremony-v2__decline-overlay" role="dialog" aria-modal="true" aria-label="Decline signing">
+          <div className="signing-ceremony-v2__decline-modal">
+            <h3>Decline to Sign</h3>
+            <p>Please provide a reason for declining to sign this document.</p>
+            <textarea
+              className="signing-ceremony-v2__decline-textarea"
+              value={declineReason}
+              onChange={(e) => setDeclineReason(e.target.value)}
+              placeholder="Enter your reason for declining..."
+              rows={4}
+              aria-label="Decline reason"
+              autoFocus
+            />
+            <div className="signing-ceremony-v2__decline-actions">
+              <button
+                type="button"
+                className="signing-ceremony-v2__btn-secondary"
+                onClick={() => { setShowDecline(false); setDeclineReason('') }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="signing-ceremony-v2__btn-danger"
+                onClick={handleDeclineSubmit}
+                disabled={!declineReason.trim()}
+              >
+                Decline Signing
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer navigation (not shown on complete step) */}
       {currentStep !== 'complete' && (
         <div className="signing-ceremony-v2__footer">
@@ -1022,6 +1100,16 @@ function SigningCeremony({
                 <ChevronLeft /> Back
               </button>
             )}
+            {onDecline && (
+              <button
+                type="button"
+                className="signing-ceremony-v2__btn-decline"
+                onClick={() => setShowDecline(true)}
+                aria-label="Decline to sign"
+              >
+                Decline
+              </button>
+            )}
           </div>
           <div className="signing-ceremony-v2__footer-right">
             {currentStep === 'review' && (
@@ -1029,7 +1117,7 @@ function SigningCeremony({
                 type="button"
                 className="signing-ceremony-v2__btn-primary"
                 onClick={handleNextStep}
-                disabled={!reviewConfirmed}
+                disabled={!reviewConfirmed || !termsAccepted}
               >
                 Next <ChevronRight />
               </button>

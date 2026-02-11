@@ -36,6 +36,27 @@
   white-space: nowrap;
 }
 
+.memory-card__auto-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: var(--space-1, 4px);
+  padding: 1px 6px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #D97706;
+  background: rgba(217, 119, 6, 0.1);
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
+[data-theme="dark"] .memory-card__auto-badge {
+  color: #FCD34D;
+  background: rgba(217, 119, 6, 0.2);
+}
+
 .memory-card__badges {
   display: flex;
   gap: var(--space-1);

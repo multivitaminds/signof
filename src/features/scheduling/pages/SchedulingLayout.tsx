@@ -1,11 +1,13 @@
 import { NavLink, Outlet, useLocation, Navigate } from 'react-router-dom'
-import { CalendarDays, Clock, List } from 'lucide-react'
+import { CalendarDays, Clock, List, Link2, BarChart3 } from 'lucide-react'
 import './SchedulingLayout.css'
 
 const TABS = [
   { path: '/calendar/events', label: 'Event Types', icon: CalendarDays },
   { path: '/calendar/schedule', label: 'Calendar', icon: Clock },
   { path: '/calendar/bookings', label: 'Bookings', icon: List },
+  { path: '/calendar/sync', label: 'Calendar Sync', icon: Link2 },
+  { path: '/calendar/analytics', label: 'Analytics', icon: BarChart3 },
 ]
 
 export default function SchedulingLayout() {

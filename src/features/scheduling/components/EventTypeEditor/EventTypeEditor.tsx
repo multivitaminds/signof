@@ -82,6 +82,12 @@ export default function EventTypeEditor({
   const [maxAttendees, setMaxAttendees] = useState(
     eventType?.maxAttendees ?? 1
   )
+  const [waitlistEnabled, setWaitlistEnabled] = useState(
+    eventType?.waitlistEnabled ?? false
+  )
+  const [maxWaitlist, setMaxWaitlist] = useState(
+    eventType?.maxWaitlist ?? 5
+  )
   const [schedule, setSchedule] = useState<WeeklySchedule>(
     eventType?.schedule ?? { ...DEFAULT_SCHEDULE }
   )
@@ -153,12 +159,14 @@ export default function EventTypeEditor({
       dateOverrides: eventType?.dateOverrides ?? [],
       customQuestions: questions,
       maxAttendees,
+      waitlistEnabled,
+      maxWaitlist,
       isActive: eventType?.isActive ?? true,
     })
   }, [
     name, description, slug, category, color, durationMinutes, location,
     bufferBefore, bufferAfter, maxBookings, minimumNotice, schedulingWindow,
-    schedule, questions, maxAttendees, eventType, onSave,
+    schedule, questions, maxAttendees, waitlistEnabled, maxWaitlist, eventType, onSave,
   ])
 
   const TABS: Array<{ id: EditorTab; label: string; icon: typeof Settings }> = [
@@ -437,6 +445,43 @@ export default function EventTypeEditor({
                     className="event-type-editor__input"
                   />
                 </div>
+              </div>
+
+              {/* Waitlist */}
+              <div className="event-type-editor__row">
+                <div className="event-type-editor__field">
+                  <label className="event-type-editor__label">
+                    Enable Waitlist
+                  </label>
+                  <button
+                    type="button"
+                    className={`event-type-editor__toggle${
+                      waitlistEnabled ? ' event-type-editor__toggle--on' : ''
+                    }`}
+                    role="switch"
+                    aria-checked={waitlistEnabled}
+                    aria-label="Enable waitlist"
+                    onClick={() => setWaitlistEnabled(!waitlistEnabled)}
+                  >
+                    <span className="event-type-editor__toggle-thumb" />
+                  </button>
+                </div>
+                {waitlistEnabled && (
+                  <div className="event-type-editor__field">
+                    <label className="event-type-editor__label" htmlFor="ete-max-waitlist">
+                      Max Waitlist Size
+                    </label>
+                    <input
+                      id="ete-max-waitlist"
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={maxWaitlist}
+                      onChange={(e) => setMaxWaitlist(Number(e.target.value))}
+                      className="event-type-editor__input"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )}

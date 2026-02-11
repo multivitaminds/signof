@@ -20,6 +20,8 @@ function makeEventTypeInput() {
     dateOverrides: [],
     customQuestions: [],
     maxAttendees: 1,
+    waitlistEnabled: false,
+    maxWaitlist: 5,
     isActive: true,
   }
 }

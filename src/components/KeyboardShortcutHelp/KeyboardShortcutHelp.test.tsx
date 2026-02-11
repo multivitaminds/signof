@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import KeyboardShortcutHelp from './KeyboardShortcutHelp'
 import { useAppStore } from '../../stores/useAppStore'
@@ -100,7 +100,9 @@ describe('KeyboardShortcutHelp', () => {
     const searchInput = screen.getByLabelText('Search keyboard shortcuts')
     await user.type(searchInput, 'xyznonexistent')
 
-    expect(screen.getByText(/No shortcuts match/)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText(/No shortcuts match/)).toBeInTheDocument()
+    })
   })
 
   it('clears search when clear button is clicked', async () => {

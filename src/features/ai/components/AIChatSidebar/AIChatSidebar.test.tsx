@@ -9,6 +9,8 @@ describe('AIChatSidebar', () => {
       messages: [],
       isOpen: true,
       contextLabel: 'Home',
+      currentRoute: '/',
+      isTyping: false,
     })
   })
 
@@ -39,6 +41,11 @@ describe('AIChatSidebar', () => {
     expect(screen.getByText(/ask me anything about your workspace/i)).toBeInTheDocument()
   })
 
+  it('shows slash command hint in empty state', () => {
+    render(<AIChatSidebar />)
+    expect(screen.getByText(/Try slash commands/)).toBeInTheDocument()
+  })
+
   it('renders existing messages', () => {
     useAIChatStore.setState({
       messages: [
@@ -60,9 +67,9 @@ describe('AIChatSidebar', () => {
     expect(screen.getByText('Explain')).toBeInTheDocument()
   })
 
-  it('has a message input field', () => {
+  it('has a message input field with slash command hint', () => {
     render(<AIChatSidebar />)
-    expect(screen.getByPlaceholderText('Ask AI anything...')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/Ask AI anything/)).toBeInTheDocument()
   })
 
   it('has a send button', () => {
@@ -79,7 +86,7 @@ describe('AIChatSidebar', () => {
     const user = userEvent.setup()
     render(<AIChatSidebar />)
 
-    await user.type(screen.getByPlaceholderText('Ask AI anything...'), 'Hello')
+    await user.type(screen.getByPlaceholderText(/Ask AI anything/), 'Hello')
     expect(screen.getByRole('button', { name: /send message/i })).not.toBeDisabled()
   })
 
@@ -87,7 +94,7 @@ describe('AIChatSidebar', () => {
     const user = userEvent.setup()
     render(<AIChatSidebar />)
 
-    const input = screen.getByPlaceholderText('Ask AI anything...')
+    const input = screen.getByPlaceholderText(/Ask AI anything/)
     await user.type(input, 'Test message')
     await user.click(screen.getByRole('button', { name: /send message/i }))
 
@@ -101,7 +108,7 @@ describe('AIChatSidebar', () => {
     const user = userEvent.setup()
     render(<AIChatSidebar />)
 
-    const input = screen.getByPlaceholderText('Ask AI anything...')
+    const input = screen.getByPlaceholderText(/Ask AI anything/)
     await user.type(input, 'Enter test{Enter}')
 
     expect(screen.getByText('Enter test')).toBeInTheDocument()
@@ -153,5 +160,107 @@ describe('AIChatSidebar', () => {
 
     // isOpen should now be false, so sidebar won't render
     expect(useAIChatStore.getState().isOpen).toBe(false)
+  })
+
+  // ─── Context-aware hint tests ──────────────────────────────────────
+
+  it('shows context hint for /pages route', () => {
+    useAIChatStore.setState({ currentRoute: '/pages/my-page' })
+    render(<AIChatSidebar />)
+    expect(screen.getByText(/I can help with this page/)).toBeInTheDocument()
+  })
+
+  it('shows context hint for /projects route', () => {
+    useAIChatStore.setState({ currentRoute: '/projects/proj-1' })
+    render(<AIChatSidebar />)
+    expect(screen.getByText(/I can help with this project/)).toBeInTheDocument()
+  })
+
+  it('shows context hint for /data route', () => {
+    useAIChatStore.setState({ currentRoute: '/data/db-1' })
+    render(<AIChatSidebar />)
+    expect(screen.getByText(/I can help with this database/)).toBeInTheDocument()
+  })
+
+  it('shows context hint for /calendar route', () => {
+    useAIChatStore.setState({ currentRoute: '/calendar' })
+    render(<AIChatSidebar />)
+    expect(screen.getByText(/I can help with scheduling/)).toBeInTheDocument()
+  })
+
+  it('does not show context hint for unknown routes', () => {
+    useAIChatStore.setState({ currentRoute: '/' })
+    render(<AIChatSidebar />)
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  })
+
+  // ─── Typing indicator tests ────────────────────────────────────────
+
+  it('shows typing indicator when isTyping is true', () => {
+    useAIChatStore.setState({ isTyping: true })
+    render(<AIChatSidebar />)
+    expect(screen.getByLabelText('AI is typing')).toBeInTheDocument()
+  })
+
+  it('does not show typing indicator when isTyping is false', () => {
+    useAIChatStore.setState({ isTyping: false })
+    render(<AIChatSidebar />)
+    expect(screen.queryByLabelText('AI is typing')).not.toBeInTheDocument()
+  })
+
+  // ─── Slash command tests ───────────────────────────────────────────
+
+  it('shows slash command menu when typing /', async () => {
+    const user = userEvent.setup()
+    render(<AIChatSidebar />)
+
+    const input = screen.getByPlaceholderText(/Ask AI anything/)
+    await user.type(input, '/')
+
+    expect(screen.getByRole('listbox', { name: /slash commands/i })).toBeInTheDocument()
+  })
+
+  it('shows slash command options when typing /', async () => {
+    const user = userEvent.setup()
+    render(<AIChatSidebar />)
+
+    const input = screen.getByPlaceholderText(/Ask AI anything/)
+    await user.type(input, '/')
+
+    expect(screen.getByText('/summarize')).toBeInTheDocument()
+    expect(screen.getByText('/translate')).toBeInTheDocument()
+    expect(screen.getByText('/simplify')).toBeInTheDocument()
+  })
+
+  it('filters slash commands as user types', async () => {
+    const user = userEvent.setup()
+    render(<AIChatSidebar />)
+
+    const input = screen.getByPlaceholderText(/Ask AI anything/)
+    await user.type(input, '/su')
+
+    expect(screen.getByText('/summarize')).toBeInTheDocument()
+    expect(screen.queryByText('/translate')).not.toBeInTheDocument()
+  })
+
+  it('selects a slash command from the menu', async () => {
+    const user = userEvent.setup()
+    render(<AIChatSidebar />)
+
+    const input = screen.getByPlaceholderText(/Ask AI anything/)
+    await user.type(input, '/')
+    await user.click(screen.getByText('/summarize'))
+
+    expect(input).toHaveValue('/summarize ')
+  })
+
+  it('shows command badge on slash command messages', () => {
+    useAIChatStore.setState({
+      messages: [
+        { id: '1', role: 'user', content: '/summarize', timestamp: new Date().toISOString() },
+      ],
+    })
+    render(<AIChatSidebar />)
+    expect(screen.getByText('command')).toBeInTheDocument()
   })
 })

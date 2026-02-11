@@ -45,6 +45,7 @@ export default function AppLayout() {
   const searchOverlayOpen = useAppStore((s) => s.searchOverlayOpen)
   const closeSearchOverlay = useAppStore((s) => s.closeSearchOverlay)
   const setAIChatContext = useAIChatStore((s) => s.setContextLabel)
+  const setAIChatRoute = useAIChatStore((s) => s.setCurrentRoute)
 
   // Focus management for screen readers on route changes
   useFocusOnRouteChange(mainRef)
@@ -87,7 +88,8 @@ export default function AppLayout() {
       addRecentItem({ path: location.pathname, label })
       setAIChatContext(label)
     }
-  }, [location.pathname, addRecentItem, setAIChatContext])
+    setAIChatRoute(location.pathname)
+  }, [location.pathname, addRecentItem, setAIChatContext, setAIChatRoute])
 
   return (
     <div className="app-layout">

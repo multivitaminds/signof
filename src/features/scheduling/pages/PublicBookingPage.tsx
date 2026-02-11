@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import {
   Check,
@@ -7,14 +7,15 @@ import {
   Clock,
   Globe,
   Calendar,
-  CalendarPlus,
   User,
   Mail,
   FileText,
   AlertTriangle,
+  Users,
 } from 'lucide-react'
 import { useSchedulingStore } from '../stores/useSchedulingStore'
 import { BookingStatus, LOCATION_LABELS } from '../types'
+import type { Booking } from '../types'
 import {
   getCalendarGrid,
   formatDate,
@@ -23,10 +24,11 @@ import {
   getMonthName,
 } from '../lib/calendarUtils'
 import { getAvailableSlots, isDateAvailable } from '../lib/availabilityEngine'
-import { generateICS } from '../lib/icsGenerator'
+import BookingConfirmation from '../components/BookingConfirmation/BookingConfirmation'
+import RecurringBookingPicker from '../components/RecurringBookingPicker/RecurringBookingPicker'
 import './PublicBookingPage.css'
 
-const STEPS = ['Select Date', 'Select Time', 'Your Details', 'Confirmed']
+const STEPS = ['Select Date', 'Select Time', 'Your Details', 'Recurring', 'Confirmed']
 
 function formatTime12(time: string): string {
   const [h, m] = time.split(':').map(Number) as [number, number]
@@ -42,6 +44,8 @@ export default function PublicBookingPage() {
   const eventTypes = useSchedulingStore((s) => s.eventTypes)
   const bookings = useSchedulingStore((s) => s.bookings)
   const addBooking = useSchedulingStore((s) => s.addBooking)
+  const addRecurringBookings = useSchedulingStore((s) => s.addRecurringBookings)
+  const addToWaitlist = useSchedulingStore((s) => s.addToWaitlist)
   const hasDuplicateBooking = useSchedulingStore((s) => s.hasDuplicateBooking)
 
   const eventType = useMemo(
@@ -58,6 +62,8 @@ export default function PublicBookingPage() {
   const [email, setEmail] = useState('')
   const [notes, setNotes] = useState('')
   const [duplicateWarning, setDuplicateWarning] = useState(false)
+  const [waitlistJoined, setWaitlistJoined] = useState(false)
+  const confirmedBookingRef = useRef<Booking | null>(null)
 
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
@@ -78,6 +84,12 @@ export default function PublicBookingPage() {
     const slot = availableSlots.find((s) => s.start === selectedTime)
     return slot?.end ?? null
   }, [selectedTime, availableSlots])
+
+  // Check if all slots are booked for a date (for waitlist)
+  const isFullyBooked = useMemo(() => {
+    if (!eventType || !selectedDate) return false
+    return availableSlots.length === 0
+  }, [eventType, selectedDate, availableSlots])
 
   const handlePrevMonth = useCallback(() => {
     if (calMonth === 1) {
@@ -103,6 +115,7 @@ export default function PublicBookingPage() {
     setSelectedDate(date)
     setSelectedTime(null)
     setDuplicateWarning(false)
+    setWaitlistJoined(false)
     setStep(1)
   }, [eventType, bookings])
 
@@ -110,6 +123,23 @@ export default function PublicBookingPage() {
     setSelectedTime(time)
     setStep(2)
   }, [])
+
+  const createBooking = useCallback(() => {
+    if (!eventType || !selectedDate || !selectedTime || !selectedEndTime) return null
+
+    const dateStr = formatDate(selectedDate, 'iso')
+    const booking = addBooking({
+      eventTypeId: eventType.id,
+      date: dateStr,
+      startTime: selectedTime,
+      endTime: selectedEndTime,
+      timezone,
+      status: BookingStatus.Confirmed,
+      attendees: [{ name, email, timezone }],
+      notes,
+    })
+    return booking
+  }, [eventType, selectedDate, selectedTime, selectedEndTime, timezone, name, email, notes, addBooking])
 
   const handleSubmit = useCallback(() => {
     if (!eventType || !selectedDate || !selectedTime || !selectedEndTime) return
@@ -122,37 +152,52 @@ export default function PublicBookingPage() {
       return
     }
 
-    addBooking({
-      eventTypeId: eventType.id,
-      date: dateStr,
-      startTime: selectedTime,
-      endTime: selectedEndTime,
-      timezone,
-      status: BookingStatus.Confirmed,
-      attendees: [{ name, email, timezone }],
-      notes,
-    })
-    setDuplicateWarning(false)
-    setStep(3)
+    const booking = createBooking()
+    if (booking) {
+      confirmedBookingRef.current = booking
+      setDuplicateWarning(false)
+      // Skip recurring step (step 3) and go to confirmation (step 4)
+      setStep(4)
+    }
   }, [
     eventType,
     selectedDate,
     selectedTime,
     selectedEndTime,
-    timezone,
-    name,
     email,
-    notes,
-    addBooking,
     hasDuplicateBooking,
+    createBooking,
   ])
+
+  const handleSubmitWithRecurring = useCallback(() => {
+    if (!eventType || !selectedDate || !selectedTime || !selectedEndTime) return
+
+    const dateStr = formatDate(selectedDate, 'iso')
+
+    // Check for duplicate booking
+    if (hasDuplicateBooking(email, eventType.id, dateStr)) {
+      setDuplicateWarning(true)
+      return
+    }
+
+    // Go to recurring selection step
+    setDuplicateWarning(false)
+    setStep(3)
+  }, [eventType, selectedDate, selectedTime, selectedEndTime, email, hasDuplicateBooking])
 
   const handleConfirmDuplicate = useCallback(() => {
-    if (!eventType || !selectedDate || !selectedTime || !selectedEndTime) return
+    const booking = createBooking()
+    if (booking) {
+      confirmedBookingRef.current = booking
+      setDuplicateWarning(false)
+      setStep(4)
+    }
+  }, [createBooking])
 
-    const dateStr = formatDate(selectedDate, 'iso')
+  const handleRecurringConfirm = useCallback((dates: string[]) => {
+    if (!eventType || !selectedTime || !selectedEndTime) return
 
-    addBooking({
+    const bookingsData = dates.map((dateStr) => ({
       eventTypeId: eventType.id,
       date: dateStr,
       startTime: selectedTime,
@@ -161,50 +206,35 @@ export default function PublicBookingPage() {
       status: BookingStatus.Confirmed,
       attendees: [{ name, email, timezone }],
       notes,
-    })
-    setDuplicateWarning(false)
-    setStep(3)
-  }, [
-    eventType,
-    selectedDate,
-    selectedTime,
-    selectedEndTime,
-    timezone,
-    name,
-    email,
-    notes,
-    addBooking,
-  ])
+    }))
 
-  const handleDownloadICS = useCallback(() => {
-    if (!eventType || !selectedDate || !selectedTime || !selectedEndTime) return
+    const created = addRecurringBookings(bookingsData)
+    if (created.length > 0) {
+      confirmedBookingRef.current = created[0]!
+    }
+    setStep(4)
+  }, [eventType, selectedTime, selectedEndTime, timezone, name, email, notes, addRecurringBookings])
+
+  const handleRecurringSkip = useCallback(() => {
+    const booking = createBooking()
+    if (booking) {
+      confirmedBookingRef.current = booking
+      setStep(4)
+    }
+  }, [createBooking])
+
+  const handleJoinWaitlist = useCallback(() => {
+    if (!eventType || !selectedDate || !selectedTime || !name || !email) return
     const dateStr = formatDate(selectedDate, 'iso')
-    const icsContent = generateICS(
-      {
-        id: 'temp',
-        eventTypeId: eventType.id,
-        date: dateStr,
-        startTime: selectedTime,
-        endTime: selectedEndTime,
-        timezone,
-        status: BookingStatus.Confirmed,
-        attendees: [{ name, email, timezone }],
-        notes,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      eventType
-    )
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `${eventType.slug}-${dateStr}.ics`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-  }, [eventType, selectedDate, selectedTime, selectedEndTime, timezone, name, email, notes])
+    addToWaitlist({
+      eventTypeId: eventType.id,
+      date: dateStr,
+      timeSlot: selectedTime,
+      name,
+      email,
+    })
+    setWaitlistJoined(true)
+  }, [eventType, selectedDate, selectedTime, name, email, addToWaitlist])
 
   const handleBookAnother = useCallback(() => {
     setStep(0)
@@ -213,6 +243,8 @@ export default function PublicBookingPage() {
     setName('')
     setEmail('')
     setNotes('')
+    setWaitlistJoined(false)
+    confirmedBookingRef.current = null
   }, [])
 
   const canSubmit = name.trim() !== '' && email.trim() !== ''
@@ -261,19 +293,26 @@ export default function PublicBookingPage() {
 
         {/* Step progress */}
         <div className="public-booking__progress">
-          {STEPS.map((label, i) => (
-            <div
-              key={label}
-              className={`public-booking__progress-step${
-                i === step ? ' public-booking__progress-step--active' : ''
-              }${i < step ? ' public-booking__progress-step--completed' : ''}`}
-            >
-              <span className="public-booking__progress-dot">
-                {i < step ? <Check size={12} /> : i + 1}
-              </span>
-              <span className="public-booking__progress-label">{label}</span>
-            </div>
-          ))}
+          {STEPS.map((label, i) => {
+            // Skip showing the "Recurring" step dot if step < 3
+            if (i === 3 && step < 3) return null
+            const displayIndex = i > 3 ? i - 1 : i
+            const stepActive = i === step
+            const stepCompleted = i < step
+            return (
+              <div
+                key={label}
+                className={`public-booking__progress-step${
+                  stepActive ? ' public-booking__progress-step--active' : ''
+                }${stepCompleted ? ' public-booking__progress-step--completed' : ''}`}
+              >
+                <span className="public-booking__progress-dot">
+                  {stepCompleted ? <Check size={12} /> : displayIndex + 1}
+                </span>
+                <span className="public-booking__progress-label">{label}</span>
+              </div>
+            )
+          })}
         </div>
 
         {/* Step content */}
@@ -318,7 +357,6 @@ export default function PublicBookingPage() {
                         ? isSameDay(date, selectedDate)
                         : false
 
-                      // Use the availability engine to determine if a date is available
                       const dateAvailable = isCurrentMonth && eventType
                         ? isDateAvailable({ date, eventType, bookings })
                         : false
@@ -390,6 +428,21 @@ export default function PublicBookingPage() {
                 <div className="public-booking__no-slots">
                   <Clock size={24} />
                   <p>No available time slots for this date.</p>
+
+                  {/* Waitlist option */}
+                  {eventType.waitlistEnabled && !waitlistJoined && (
+                    <div className="public-booking__waitlist-offer">
+                      <Users size={16} />
+                      <p>Want to be notified if a slot opens up?</p>
+                      <button
+                        className="btn-primary"
+                        onClick={() => setStep(2)}
+                      >
+                        Join Waitlist
+                      </button>
+                    </div>
+                  )}
+
                   <button
                     className="btn-secondary"
                     onClick={() => setStep(0)}
@@ -434,21 +487,23 @@ export default function PublicBookingPage() {
                 Back to time selection
               </button>
 
-              <div className="public-booking__selected-summary">
-                <span>
-                  <Calendar size={14} />
-                  {selectedDate.toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </span>
-                <span>
-                  <Clock size={14} />
-                  {selectedTime ? formatTime12(selectedTime) : ''} -{' '}
-                  {selectedEndTime ? formatTime12(selectedEndTime) : ''}
-                </span>
-              </div>
+              {!isFullyBooked && selectedTime && (
+                <div className="public-booking__selected-summary">
+                  <span>
+                    <Calendar size={14} />
+                    {selectedDate.toLocaleDateString('en-US', {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </span>
+                  <span>
+                    <Clock size={14} />
+                    {selectedTime ? formatTime12(selectedTime) : ''} -{' '}
+                    {selectedEndTime ? formatTime12(selectedEndTime) : ''}
+                  </span>
+                </div>
+              )}
 
               <div className="public-booking__form">
                 <div className="public-booking__form-field">
@@ -483,20 +538,22 @@ export default function PublicBookingPage() {
                   />
                 </div>
 
-                <div className="public-booking__form-field">
-                  <label htmlFor="pb-notes" className="public-booking__form-label">
-                    <FileText size={14} />
-                    Notes (optional)
-                  </label>
-                  <textarea
-                    id="pb-notes"
-                    className="public-booking__form-textarea"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    rows={3}
-                    placeholder="Any additional details..."
-                  />
-                </div>
+                {!isFullyBooked && (
+                  <div className="public-booking__form-field">
+                    <label htmlFor="pb-notes" className="public-booking__form-label">
+                      <FileText size={14} />
+                      Notes (optional)
+                    </label>
+                    <textarea
+                      id="pb-notes"
+                      className="public-booking__form-textarea"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      rows={3}
+                      placeholder="Any additional details..."
+                    />
+                  </div>
+                )}
 
                 <div className="public-booking__form-tz">
                   <Globe size={12} />
@@ -528,73 +585,73 @@ export default function PublicBookingPage() {
                   </div>
                 )}
 
-                <button
-                  className="btn-primary public-booking__submit-btn"
-                  onClick={handleSubmit}
-                  disabled={!canSubmit}
-                >
-                  Confirm Booking
-                </button>
+                {/* Waitlist join (when fully booked) */}
+                {isFullyBooked && eventType.waitlistEnabled ? (
+                  <>
+                    {waitlistJoined ? (
+                      <div className="public-booking__waitlist-success" role="status">
+                        <Check size={16} />
+                        <span>You have been added to the waitlist. We will notify you when a slot opens up.</span>
+                      </div>
+                    ) : (
+                      <button
+                        className="btn-primary public-booking__submit-btn"
+                        onClick={handleJoinWaitlist}
+                        disabled={!canSubmit}
+                      >
+                        <Users size={16} />
+                        Join Waitlist
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <div className="public-booking__submit-group">
+                    <button
+                      className="btn-primary public-booking__submit-btn"
+                      onClick={handleSubmit}
+                      disabled={!canSubmit}
+                    >
+                      Confirm Booking
+                    </button>
+                    <button
+                      className="public-booking__recurring-link"
+                      onClick={handleSubmitWithRecurring}
+                      disabled={!canSubmit}
+                    >
+                      Book as recurring...
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
-          {/* Step 3: Confirmation */}
-          {step === 3 && selectedDate && (
-            <div className="public-booking__confirm-step">
-              <div className="public-booking__success-icon">
-                <Check size={32} />
-              </div>
-              <h2 className="public-booking__success-title">
-                Booking Confirmed!
-              </h2>
-              <p className="public-booking__success-msg">
-                Your {eventType.name} has been scheduled. A confirmation will be
-                sent to {email}.
-              </p>
-
-              <div className="public-booking__success-details">
-                <div className="public-booking__success-row">
-                  <span className="public-booking__success-label">Event</span>
-                  <span>{eventType.name}</span>
-                </div>
-                <div className="public-booking__success-row">
-                  <span className="public-booking__success-label">Date</span>
-                  <span>
-                    {selectedDate.toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </span>
-                </div>
-                <div className="public-booking__success-row">
-                  <span className="public-booking__success-label">Time</span>
-                  <span>
-                    {selectedTime ? formatTime12(selectedTime) : ''} -{' '}
-                    {selectedEndTime ? formatTime12(selectedEndTime) : ''}
-                  </span>
-                </div>
-                <div className="public-booking__success-row">
-                  <span className="public-booking__success-label">Duration</span>
-                  <span>{eventType.durationMinutes} min</span>
-                </div>
-              </div>
-
-              <div className="public-booking__success-actions">
-                <button
-                  className="btn-primary"
-                  onClick={handleDownloadICS}
-                >
-                  <CalendarPlus size={16} />
-                  Add to Calendar
-                </button>
-                <button className="btn-secondary" onClick={handleBookAnother}>
-                  Book Another
-                </button>
-              </div>
+          {/* Step 3: Recurring booking picker */}
+          {step === 3 && selectedDate && selectedTime && (
+            <div className="public-booking__recurring-step">
+              <button
+                className="public-booking__back-btn"
+                onClick={() => setStep(2)}
+              >
+                <ChevronLeft size={16} />
+                Back to details
+              </button>
+              <RecurringBookingPicker
+                selectedDate={selectedDate}
+                selectedTime={selectedTime}
+                onConfirm={handleRecurringConfirm}
+                onSkip={handleRecurringSkip}
+              />
             </div>
+          )}
+
+          {/* Step 4: Confirmation */}
+          {step === 4 && confirmedBookingRef.current && eventType && (
+            <BookingConfirmation
+              booking={confirmedBookingRef.current}
+              eventType={eventType}
+              onBookAnother={handleBookAnother}
+            />
           )}
         </div>
 

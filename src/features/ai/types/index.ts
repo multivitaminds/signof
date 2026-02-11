@@ -148,6 +148,7 @@ export interface RunStep {
   description: string
   status: StepStatus
   output?: string
+  _stepIndex?: number
 }
 
 export interface AgentRun {
@@ -159,6 +160,7 @@ export interface AgentRun {
   startedAt: string
   completedAt: string | null
   lastRunAt: string | null
+  result?: string
 }
 
 // ─── AI Chat Types ──────────────────────────────────────────────────

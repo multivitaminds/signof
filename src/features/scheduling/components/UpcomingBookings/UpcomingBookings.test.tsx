@@ -37,6 +37,8 @@ const mockEventTypes: EventType[] = [
     dateOverrides: [],
     customQuestions: [],
     maxAttendees: 1,
+    waitlistEnabled: false,
+    maxWaitlist: 5,
     isActive: true,
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-01-01T00:00:00Z',

@@ -82,7 +82,13 @@ const makeDoc = (overrides?: Partial<Document>): Document => ({
 
 /** Helper to advance from review to sign step */
 async function advanceToSignStep(user: ReturnType<typeof userEvent.setup>) {
-  await user.click(screen.getByLabelText(/I have reviewed this document/i))
+  // Check both the review checkbox and the terms checkbox
+  const checkboxes = screen.getAllByRole('checkbox')
+  for (const cb of checkboxes) {
+    if (!(cb as HTMLInputElement).checked) {
+      await user.click(cb)
+    }
+  }
   await user.click(screen.getByRole('button', { name: /next/i }))
 }
 
@@ -138,7 +144,7 @@ describe('SigningCeremony', () => {
       expect(screen.getByText(/Fields to complete/)).toBeInTheDocument()
     })
 
-    it('Next button is disabled until review checkbox is checked', async () => {
+    it('Next button is disabled until both review and terms checkboxes are checked', async () => {
       const user = userEvent.setup()
 
       render(
@@ -153,10 +159,18 @@ describe('SigningCeremony', () => {
       const nextBtn = screen.getByRole('button', { name: /next/i })
       expect(nextBtn).toBeDisabled()
 
+      // Check review checkbox only
       await user.click(
         screen.getByLabelText(/I have reviewed this document/i)
       )
+      // Still disabled since terms not accepted
+      expect(nextBtn).toBeDisabled()
 
+      // Check terms checkbox
+      await user.click(
+        screen.getByLabelText(/I agree to use electronic signatures/i)
+      )
+      // Now enabled
       expect(nextBtn).toBeEnabled()
     })
 
@@ -514,6 +528,132 @@ describe('SigningCeremony', () => {
       expect(
         screen.getByRole('navigation', { name: 'Signing progress' })
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('Completion Progress', () => {
+    it('shows completion progress on sign step', async () => {
+      const user = userEvent.setup()
+
+      render(
+        <SigningCeremony
+          document={makeDoc({
+            fields: [
+              makeField({ id: 'f1', type: FieldType.Signature }),
+              makeField({ id: 'f2', type: FieldType.DateSigned, label: 'Date' }),
+            ],
+          })}
+          signer={makeSigner()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
+        />
+      )
+
+      await advanceToSignStep(user)
+
+      // Date field is auto-filled, so 1 of 2 should be completed
+      expect(screen.getByTestId('completion-progress')).toBeInTheDocument()
+      expect(screen.getByText(/of 2 fields completed/)).toBeInTheDocument()
+    })
+  })
+
+  describe('Terms Acceptance', () => {
+    it('shows terms checkbox on review step', () => {
+      render(
+        <SigningCeremony
+          document={makeDoc()}
+          signer={makeSigner()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
+        />
+      )
+
+      expect(screen.getByLabelText(/I agree to use electronic signatures/i)).toBeInTheDocument()
+    })
+  })
+
+  describe('Decline', () => {
+    it('shows decline button when onDecline is provided', () => {
+      render(
+        <SigningCeremony
+          document={makeDoc()}
+          signer={makeSigner()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
+          onDecline={vi.fn()}
+        />
+      )
+
+      expect(screen.getByLabelText('Decline to sign')).toBeInTheDocument()
+    })
+
+    it('does not show decline button when onDecline is not provided', () => {
+      render(
+        <SigningCeremony
+          document={makeDoc()}
+          signer={makeSigner()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
+        />
+      )
+
+      expect(screen.queryByLabelText('Decline to sign')).not.toBeInTheDocument()
+    })
+
+    it('opens decline modal when decline button is clicked', async () => {
+      const user = userEvent.setup()
+
+      render(
+        <SigningCeremony
+          document={makeDoc()}
+          signer={makeSigner()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
+          onDecline={vi.fn()}
+        />
+      )
+
+      await user.click(screen.getByLabelText('Decline to sign'))
+      expect(screen.getByText('Decline to Sign')).toBeInTheDocument()
+      expect(screen.getByLabelText('Decline reason')).toBeInTheDocument()
+    })
+
+    it('calls onDecline with reason when submitted', async () => {
+      const user = userEvent.setup()
+      const onDecline = vi.fn()
+
+      render(
+        <SigningCeremony
+          document={makeDoc()}
+          signer={makeSigner()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
+          onDecline={onDecline}
+        />
+      )
+
+      await user.click(screen.getByLabelText('Decline to sign'))
+      await user.type(screen.getByLabelText('Decline reason'), 'Wrong document version')
+      await user.click(screen.getByRole('button', { name: /decline signing/i }))
+
+      expect(onDecline).toHaveBeenCalledWith('Wrong document version')
+    })
+
+    it('decline submit button is disabled when reason is empty', async () => {
+      const user = userEvent.setup()
+
+      render(
+        <SigningCeremony
+          document={makeDoc()}
+          signer={makeSigner()}
+          onComplete={vi.fn()}
+          onCancel={vi.fn()}
+          onDecline={vi.fn()}
+        />
+      )
+
+      await user.click(screen.getByLabelText('Decline to sign'))
+      expect(screen.getByRole('button', { name: /decline signing/i })).toBeDisabled()
     })
   })
 })
