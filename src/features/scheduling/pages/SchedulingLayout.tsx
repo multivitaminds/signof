@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation, Navigate } from 'react-router-dom'
-import { CalendarDays, Clock, List, Link2, BarChart3 } from 'lucide-react'
+import { CalendarDays, Clock, List, Link2, BarChart3, UserX } from 'lucide-react'
 import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
 import './SchedulingLayout.css'
 
@@ -9,6 +9,7 @@ const TABS = [
   { path: '/calendar/bookings', label: 'Bookings', icon: List },
   { path: '/calendar/sync', label: 'Calendar Sync', icon: Link2 },
   { path: '/calendar/analytics', label: 'Analytics', icon: BarChart3 },
+  { path: '/calendar/no-shows', label: 'No-Shows', icon: UserX },
 ]
 
 export default function SchedulingLayout() {

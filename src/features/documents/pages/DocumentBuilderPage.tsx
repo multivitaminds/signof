@@ -13,8 +13,10 @@ import {
   X,
   GripVertical,
   DollarSign,
+  Calendar,
+  Bell,
 } from 'lucide-react'
-import { type FieldType, type PricingTableData, SigningOrder } from '../../../types'
+import { type FieldType, type PricingTableData, SigningOrder, SignerRole, SIGNER_ROLE_LABELS } from '../../../types'
 import { useDocumentStore } from '../../../stores/useDocumentStore'
 import { useFieldPlacement } from '../hooks/useFieldPlacement'
 import { FIELD_COLORS } from '../lib/fieldTypes'
@@ -31,6 +33,7 @@ interface BuilderSigner {
   tempId: string
   name: string
   email: string
+  role: SignerRole
 }
 
 const STEPS: { key: BuilderStep; label: string; icon: React.ReactNode }[] = [
@@ -72,6 +75,17 @@ function DocumentBuilderPage() {
   const [isSent, setIsSent] = useState(false)
   const [pricingTable, setPricingTable] = useState<PricingTableData | null>(null)
   const [showPricing, setShowPricing] = useState(false)
+  const [expiresAt, setExpiresAt] = useState<string>('')
+  const [reminderDays, setReminderDays] = useState<number>(0)
+  const [showReminder, setShowReminder] = useState(false)
+  const [newSignerRole, setNewSignerRole] = useState<SignerRole>(SignerRole.Signer)
+
+  // Minimum expiration date (tomorrow)
+  const minExpirationDate = useMemo(() => {
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    return tomorrow.toISOString().split('T')[0]
+  }, [])
 
   // Field placement
   const fieldPlacement = useFieldPlacement('builder', [])
@@ -139,11 +153,12 @@ function DocumentBuilderPage() {
     if (!newSignerName.trim() || !newSignerEmail.trim()) return
     setSigners((prev) => [
       ...prev,
-      { tempId: generateTempId(), name: newSignerName.trim(), email: newSignerEmail.trim() },
+      { tempId: generateTempId(), name: newSignerName.trim(), email: newSignerEmail.trim(), role: newSignerRole },
     ])
     setNewSignerName('')
     setNewSignerEmail('')
-  }, [newSignerName, newSignerEmail])
+    setNewSignerRole(SignerRole.Signer)
+  }, [newSignerName, newSignerEmail, newSignerRole])
 
   const handleRemoveSigner = useCallback((tempId: string) => {
     setSigners((prev) => prev.filter((s) => s.tempId !== tempId))
@@ -205,15 +220,16 @@ function DocumentBuilderPage() {
 
     createDocumentFromBuilder({
       file,
-      signers: signers.map((s) => ({ name: s.name, email: s.email })),
+      signers: signers.map((s) => ({ name: s.name, email: s.email, role: s.role })),
       fields: fieldPlacement.fields,
       signingOrder,
       message: message.trim() || undefined,
       pricingTable: pricingTable ?? undefined,
+      expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
     })
 
     setIsSent(true)
-  }, [file, signers, fieldPlacement.fields, signingOrder, message, pricingTable, createDocumentFromBuilder])
+  }, [file, signers, fieldPlacement.fields, signingOrder, message, pricingTable, expiresAt, createDocumentFromBuilder])
 
   // ── Render step indicator ────────────────────────────────────────
 
@@ -436,6 +452,16 @@ function DocumentBuilderPage() {
               if (e.key === 'Enter') handleAddSigner()
             }}
           />
+          <select
+            value={newSignerRole}
+            onChange={(e) => setNewSignerRole(e.target.value as SignerRole)}
+            className="doc-builder__signer-role-select"
+            aria-label="Signer role"
+          >
+            <option value={SignerRole.Signer}>Signer</option>
+            <option value={SignerRole.CC}>CC (copy only)</option>
+            <option value={SignerRole.Viewer}>Viewer</option>
+          </select>
           <button
             type="button"
             className="doc-builder__add-signer-btn"
@@ -466,6 +492,9 @@ function DocumentBuilderPage() {
                   <span className="doc-builder__signer-name">{signer.name}</span>
                   <span className="doc-builder__signer-email">{signer.email}</span>
                 </div>
+                <span className={`doc-builder__signer-role doc-builder__signer-role--${signer.role}`}>
+                  {SIGNER_ROLE_LABELS[signer.role]}
+                </span>
                 <button
                   type="button"
                   className="doc-builder__signer-remove"
@@ -548,6 +577,9 @@ function DocumentBuilderPage() {
               <span className="doc-builder__review-signer-order">{i + 1}</span>
               <span className="doc-builder__review-signer-name">{s.name}</span>
               <span className="doc-builder__review-signer-email">{s.email}</span>
+              <span className={`doc-builder__signer-role doc-builder__signer-role--${s.role}`}>
+                {SIGNER_ROLE_LABELS[s.role]}
+              </span>
             </div>
           ))}
         </div>
@@ -571,6 +603,60 @@ function DocumentBuilderPage() {
           <PricingTable data={pricingTable} onChange={() => {}} readOnly />
         </div>
       )}
+
+      <div className="doc-builder__expiration">
+        <h3><Calendar size={16} /> Expiration & Reminders</h3>
+        <div className="doc-builder__expiration-date">
+          <label htmlFor="builder-expiration" className="doc-builder__expiration-label">
+            Expiration date
+          </label>
+          <input
+            id="builder-expiration"
+            type="date"
+            className="doc-builder__expiration-input"
+            value={expiresAt}
+            onChange={(e) => setExpiresAt(e.target.value)}
+            min={minExpirationDate}
+            aria-label="Expiration date"
+          />
+        </div>
+
+        <div className="doc-builder__expiration-reminder">
+          <label className="doc-builder__reminder-toggle">
+            <input
+              type="checkbox"
+              checked={showReminder}
+              onChange={(e) => {
+                setShowReminder(e.target.checked)
+                if (!e.target.checked) setReminderDays(0)
+              }}
+            />
+            <Bell size={14} /> Send reminder before expiration
+          </label>
+          {showReminder && (
+            <select
+              value={reminderDays}
+              onChange={(e) => setReminderDays(Number(e.target.value))}
+              className="doc-builder__reminder-select"
+              aria-label="Reminder days before expiration"
+            >
+              <option value={0}>Select reminder timing</option>
+              <option value={1}>1 day before</option>
+              <option value={3}>3 days before</option>
+              <option value={7}>7 days before</option>
+            </select>
+          )}
+        </div>
+
+        {expiresAt && (
+          <div className="doc-builder__expiration-preview">
+            <p>This document will expire on {new Date(expiresAt + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+            {showReminder && reminderDays > 0 && (
+              <p>A reminder will be sent {reminderDays} day{reminderDays !== 1 ? 's' : ''} before expiration</p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 

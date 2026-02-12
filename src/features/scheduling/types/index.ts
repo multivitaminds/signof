@@ -121,6 +121,10 @@ export interface EventType {
   customQuestions: CustomQuestion[]
   maxAttendees: number
   recurrence?: RecurrenceRule
+  brandingLogo?: string            // URL or data URL of logo image
+  brandingCompanyName?: string     // Company name shown on booking page
+  brandingAccentColor?: string     // Override color (defaults to eventType.color)
+  brandingHideSignOf?: boolean     // Hide "Powered by SignOf" footer
   waitlistEnabled: boolean
   maxWaitlist: number
   isActive: boolean

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import CompletionCertificate from './CompletionCertificate'
-import { DocumentStatus, SignerStatus } from '../../types'
+import { DocumentStatus, SignerStatus, SignerRole } from '../../types'
 import type { Document } from '../../types'
 
 const makeCompletedDoc = (): Document => ({
@@ -19,7 +19,7 @@ const makeCompletedDoc = (): Document => ({
       email: 'alice@example.com',
       status: SignerStatus.Signed,
       signedAt: '2026-01-20T09:00:00Z',
-      order: 1,
+      order: 1, role: SignerRole.Signer,
     },
     {
       id: 's2',
@@ -27,7 +27,7 @@ const makeCompletedDoc = (): Document => ({
       email: 'bob@example.com',
       status: SignerStatus.Signed,
       signedAt: '2026-01-21T11:00:00Z',
-      order: 2,
+      order: 2, role: SignerRole.Signer,
     },
   ],
   signatures: [

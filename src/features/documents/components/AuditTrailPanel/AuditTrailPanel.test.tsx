@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AuditTrailPanel from './AuditTrailPanel'
-import { DocumentStatus, SignerStatus, SigningOrder, type Document } from '../../../../types'
+import { DocumentStatus, SignerStatus, SignerRole, SigningOrder, type Document } from '../../../../types'
 
 function createDoc(overrides: Partial<Document> = {}): Document {
   return {
@@ -13,7 +13,7 @@ function createDoc(overrides: Partial<Document> = {}): Document {
     fileUrl: '',
     fileType: 'application/pdf',
     signers: [
-      { id: 's1', name: 'Alice', email: 'alice@test.com', status: SignerStatus.Pending, signedAt: null, order: 1 },
+      { id: 's1', name: 'Alice', email: 'alice@test.com', status: SignerStatus.Pending, signedAt: null, order: 1, role: SignerRole.Signer },
     ],
     signatures: [],
     audit: [

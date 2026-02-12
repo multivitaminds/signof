@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import GuidedSigningView from './GuidedSigningView'
 import type { Document } from '../../../../types'
-import { DocumentStatus, SignerStatus, FieldType } from '../../../../types'
+import { DocumentStatus, SignerStatus, SignerRole, FieldType } from '../../../../types'
 
 function createDocument(overrides: Partial<Document> = {}): Document {
   return {
@@ -14,7 +14,7 @@ function createDocument(overrides: Partial<Document> = {}): Document {
     fileUrl: '',
     fileType: 'application/pdf',
     signers: [
-      { id: 's1', name: 'John Doe', email: 'john@example.com', status: SignerStatus.Pending, signedAt: null, order: 1 },
+      { id: 's1', name: 'John Doe', email: 'john@example.com', status: SignerStatus.Pending, signedAt: null, order: 1, role: SignerRole.Signer },
     ],
     signatures: [],
     audit: [],

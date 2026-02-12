@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react'
-import { Plus, Copy, Trash2, MoreVertical, CalendarDays } from 'lucide-react'
+import { Plus, Copy, Trash2, MoreVertical, CalendarDays, Share2 } from 'lucide-react'
 import { useSchedulingStore } from '../stores/useSchedulingStore'
 import type { EventType } from '../types'
 import EventTypeCard from '../components/EventTypeCard/EventTypeCard'
 import EventTypeEditor from '../components/EventTypeEditor/EventTypeEditor'
 import { useSchedulingShortcuts } from '../hooks/useSchedulingShortcuts'
 import EmptyState from '../../../components/EmptyState/EmptyState'
+import ShareBooking from '../components/ShareBooking/ShareBooking'
 import './EventTypesPage.css'
 
 export default function EventTypesPage() {
@@ -20,6 +21,7 @@ export default function EventTypesPage() {
   const [editingEventType, setEditingEventType] = useState<EventType | undefined>(undefined)
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [sharingEventType, setSharingEventType] = useState<EventType | null>(null)
 
   useSchedulingShortcuts({
     onNewEventType: () => {
@@ -154,6 +156,16 @@ export default function EventTypesPage() {
                         <Copy size={13} />
                         Duplicate
                       </button>
+                      <button
+                        className="event-types-page__menu-item"
+                        onClick={() => {
+                          setSharingEventType(et)
+                          setMenuOpenId(null)
+                        }}
+                      >
+                        <Share2 size={13} />
+                        Share
+                      </button>
                       {deleteConfirmId === et.id ? (
                         <button
                           className="event-types-page__menu-item event-types-page__menu-item--danger"
@@ -197,6 +209,15 @@ export default function EventTypesPage() {
           eventType={editingEventType}
           onSave={handleSave}
           onClose={handleCloseEditor}
+        />
+      )}
+
+      {/* ShareBooking Modal */}
+      {sharingEventType && (
+        <ShareBooking
+          eventType={sharingEventType}
+          isOpen={true}
+          onClose={() => setSharingEventType(null)}
         />
       )}
     </div>

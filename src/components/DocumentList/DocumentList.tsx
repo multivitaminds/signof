@@ -1,4 +1,4 @@
-import { type Document, ACTIVE_STATUSES, DocumentStatus, SignerStatus, STATUS_LABELS } from '../../types'
+import { type Document, ACTIVE_STATUSES, DocumentStatus, SignerStatus, SignerRole, STATUS_LABELS, SIGNER_ROLE_LABELS } from '../../types'
 import StatusProgress from '../StatusProgress/StatusProgress'
 import './DocumentList.css'
 
@@ -73,6 +73,11 @@ function DocumentList({ documents, onSign, onDelete, onView, onSend, onCertifica
                     {getSignerStatusIcon(signer.status)}
                   </span>
                   <span className="document-card__signer-name">{signer.name}</span>
+                  {signer.role !== SignerRole.Signer && (
+                    <span className={`document-card__signer-role document-card__signer-role--${signer.role}`}>
+                      {SIGNER_ROLE_LABELS[signer.role]}
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

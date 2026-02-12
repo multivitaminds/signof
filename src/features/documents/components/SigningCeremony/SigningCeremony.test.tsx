@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import SigningCeremony from './SigningCeremony'
-import { DocumentStatus, SignerStatus, FieldType } from '../../../../types'
+import { DocumentStatus, SignerStatus, SignerRole, FieldType } from '../../../../types'
 import type { Document, Signer, DocumentField } from '../../../../types'
 
 // Mock ResizeObserver for canvas tests
@@ -40,7 +40,7 @@ const makeSigner = (overrides?: Partial<Signer>): Signer => ({
   email: 'jane@example.com',
   status: SignerStatus.Pending,
   signedAt: null,
-  order: 1,
+  order: 1, role: SignerRole.Signer,
   ...overrides,
 })
 

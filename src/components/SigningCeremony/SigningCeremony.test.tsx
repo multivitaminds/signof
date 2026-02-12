@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import SigningCeremony from './SigningCeremony'
-import { DocumentStatus, SignerStatus } from '../../types'
+import { DocumentStatus, SignerStatus, SignerRole } from '../../types'
 import type { Document, Signer } from '../../types'
 
 // Mock SignaturePad to avoid canvas/ResizeObserver issues in tests
@@ -27,7 +27,7 @@ const makeSigner = (): Signer => ({
   email: 'jane@example.com',
   status: SignerStatus.Pending,
   signedAt: null,
-  order: 1,
+  order: 1, role: SignerRole.Signer,
 })
 
 const makeDoc = (): Document => ({

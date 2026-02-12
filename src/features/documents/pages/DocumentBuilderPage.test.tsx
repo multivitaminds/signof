@@ -175,4 +175,101 @@ describe('DocumentBuilderPage', () => {
     expect(screen.getByRole('heading', { name: 'Pricing' })).toBeInTheDocument()
     expect(screen.getByText('Include pricing table')).toBeInTheDocument()
   })
+
+  it('renders expiration settings in review step', async () => {
+    const user = userEvent.setup()
+    render(<DocumentBuilderPage />)
+
+    // Upload file
+    const fileInput = screen.getByLabelText('Upload document file')
+    await user.upload(fileInput, new File(['pdf'], 'doc.pdf', { type: 'application/pdf' }))
+
+    // Advance to fields
+    await user.click(screen.getByRole('button', { name: /next/i }))
+    // Advance to pricing
+    await user.click(screen.getByRole('button', { name: /next/i }))
+    // Advance to signers
+    await user.click(screen.getByRole('button', { name: /next/i }))
+
+    // Add a signer so we can proceed
+    await user.type(screen.getByLabelText('Signer name'), 'Jane Smith')
+    await user.type(screen.getByLabelText('Signer email'), 'jane@example.com')
+    await user.click(screen.getByRole('button', { name: 'Add signer' }))
+
+    // Advance to review
+    await user.click(screen.getByRole('button', { name: /next/i }))
+
+    expect(screen.getByRole('heading', { name: 'Review' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Expiration date')).toBeInTheDocument()
+    expect(screen.getByText('Send reminder before expiration')).toBeInTheDocument()
+  })
+
+  it('sets expiration date and shows preview', async () => {
+    const user = userEvent.setup()
+    render(<DocumentBuilderPage />)
+
+    // Upload file
+    const fileInput = screen.getByLabelText('Upload document file')
+    await user.upload(fileInput, new File(['pdf'], 'doc.pdf', { type: 'application/pdf' }))
+
+    // Advance through steps
+    await user.click(screen.getByRole('button', { name: /next/i }))
+    await user.click(screen.getByRole('button', { name: /next/i }))
+    await user.click(screen.getByRole('button', { name: /next/i }))
+
+    // Add a signer
+    await user.type(screen.getByLabelText('Signer name'), 'Jane Smith')
+    await user.type(screen.getByLabelText('Signer email'), 'jane@example.com')
+    await user.click(screen.getByRole('button', { name: 'Add signer' }))
+
+    // Advance to review
+    await user.click(screen.getByRole('button', { name: /next/i }))
+
+    // Set expiration date
+    const dateInput = screen.getByLabelText('Expiration date')
+    fireEvent.change(dateInput, { target: { value: '2026-12-31' } })
+
+    expect(screen.getByText(/This document will expire on/)).toBeInTheDocument()
+  })
+
+  it('shows role selector when adding signers', async () => {
+    const user = userEvent.setup()
+    render(<DocumentBuilderPage />)
+
+    // Upload file
+    const fileInput = screen.getByLabelText('Upload document file')
+    await user.upload(fileInput, new File(['pdf'], 'doc.pdf', { type: 'application/pdf' }))
+
+    // Advance to signers step
+    await user.click(screen.getByRole('button', { name: /next/i }))
+    await user.click(screen.getByRole('button', { name: /next/i }))
+    await user.click(screen.getByRole('button', { name: /next/i }))
+
+    expect(screen.getByLabelText('Signer role')).toBeInTheDocument()
+  })
+
+  it('adds signer with CC role and shows role badge', async () => {
+    const user = userEvent.setup()
+    render(<DocumentBuilderPage />)
+
+    // Upload file
+    const fileInput = screen.getByLabelText('Upload document file')
+    await user.upload(fileInput, new File(['pdf'], 'doc.pdf', { type: 'application/pdf' }))
+
+    // Advance to signers step
+    await user.click(screen.getByRole('button', { name: /next/i }))
+    await user.click(screen.getByRole('button', { name: /next/i }))
+    await user.click(screen.getByRole('button', { name: /next/i }))
+
+    // Select CC role
+    await user.selectOptions(screen.getByLabelText('Signer role'), 'cc')
+
+    // Add a signer
+    await user.type(screen.getByLabelText('Signer name'), 'Copy Person')
+    await user.type(screen.getByLabelText('Signer email'), 'copy@example.com')
+    await user.click(screen.getByRole('button', { name: 'Add signer' }))
+
+    expect(screen.getByText('Copy Person')).toBeInTheDocument()
+    expect(screen.getByText('CC')).toBeInTheDocument()
+  })
 })

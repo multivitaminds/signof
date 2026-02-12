@@ -78,6 +78,11 @@ export interface SchedulingState {
   updateCalendarSync: (id: string, updates: Partial<CalendarConnection>) => void
   syncCalendar: (id: string) => void
 
+  // No-show actions
+  markNoShow: (bookingId: string) => void
+  undoNoShow: (bookingId: string) => void
+  getNoShowRate: (eventTypeId?: string) => number
+
   // Waitlist actions
   addToWaitlist: (entry: Omit<WaitlistEntry, 'id' | 'createdAt' | 'status'>) => WaitlistEntry
   removeFromWaitlist: (id: string) => void
@@ -293,6 +298,46 @@ export const useSchedulingStore = create<SchedulingState>((set, get) => ({
         c.id === id && c.connected ? { ...c, lastSyncedAt: now() } : c
       ),
     }))
+  },
+
+  // No-show actions
+  markNoShow: (bookingId) => {
+    set((state) => ({
+      bookings: state.bookings.map((b) =>
+        b.id === bookingId
+          ? { ...b, status: BookingStatus.NoShow, updatedAt: now() }
+          : b
+      ),
+    }))
+  },
+
+  undoNoShow: (bookingId) => {
+    set((state) => ({
+      bookings: state.bookings.map((b) =>
+        b.id === bookingId
+          ? { ...b, status: BookingStatus.Confirmed, updatedAt: now() }
+          : b
+      ),
+    }))
+  },
+
+  getNoShowRate: (eventTypeId) => {
+    const { bookings } = get()
+    const today = new Date()
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+
+    const pastBookings = bookings.filter(
+      (b) =>
+        b.date < todayStr &&
+        (b.status === BookingStatus.Confirmed ||
+          b.status === BookingStatus.Completed ||
+          b.status === BookingStatus.NoShow) &&
+        (eventTypeId ? b.eventTypeId === eventTypeId : true)
+    )
+
+    if (pastBookings.length === 0) return 0
+    const noShows = pastBookings.filter((b) => b.status === BookingStatus.NoShow).length
+    return Math.round((noShows / pastBookings.length) * 100)
   },
 
   // Waitlist actions

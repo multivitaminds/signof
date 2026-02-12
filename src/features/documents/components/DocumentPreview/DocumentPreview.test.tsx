@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import DocumentPreview from './DocumentPreview'
-import { DocumentStatus, SignerStatus, FieldType, SigningOrder } from '../../../../types'
+import { DocumentStatus, SignerStatus, SignerRole, FieldType, SigningOrder } from '../../../../types'
 import type { Document, DocumentField } from '../../../../types'
 
 const makeField = (overrides?: Partial<DocumentField>): DocumentField => ({
@@ -33,7 +33,7 @@ const makeDoc = (overrides?: Partial<Document>): Document => ({
       email: 'jane@example.com',
       status: SignerStatus.Pending,
       signedAt: null,
-      order: 1,
+      order: 1, role: SignerRole.Signer,
     },
   ],
   signatures: [],

@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import DocumentComparison from './DocumentComparison'
 import { useDocumentStore } from '../../../../stores/useDocumentStore'
-import { DocumentStatus, FieldType } from '../../../../types'
+import { DocumentStatus, FieldType, SignerRole } from '../../../../types'
 import type { Document } from '../../../../types'
 
 function makeDocWithFields(): Document {
@@ -16,7 +16,7 @@ function makeDocWithFields(): Document {
     fileUrl: '',
     fileType: 'application/pdf',
     signers: [
-      { id: 's1', name: 'Jane Doe', email: 'jane@example.com', status: 'pending' as const, signedAt: null, order: 1 },
+      { id: 's1', name: 'Jane Doe', email: 'jane@example.com', status: 'pending' as const, signedAt: null, order: 1, role: SignerRole.Signer },
     ],
     signatures: [],
     audit: [

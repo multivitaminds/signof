@@ -273,8 +273,20 @@ export default function PublicBookingPage() {
         <div className="public-booking__header">
           <div
             className="public-booking__color-bar"
-            style={{ backgroundColor: eventType.color }}
+            style={{ backgroundColor: eventType.brandingAccentColor || eventType.color }}
           />
+          {eventType.brandingLogo && (
+            <img
+              src={eventType.brandingLogo}
+              alt={eventType.brandingCompanyName || 'Company logo'}
+              className="public-booking__branding-logo"
+            />
+          )}
+          {eventType.brandingCompanyName && (
+            <span className="public-booking__branding-company">
+              {eventType.brandingCompanyName}
+            </span>
+          )}
           <h1 className="public-booking__title">{eventType.name}</h1>
           <p className="public-booking__description">
             {eventType.description}
@@ -656,10 +668,12 @@ export default function PublicBookingPage() {
         </div>
 
         {/* Footer */}
-        <div className="public-booking__footer">
-          <span>Powered by</span>
-          <strong>SignOf</strong>
-        </div>
+        {!eventType.brandingHideSignOf && (
+          <div className="public-booking__footer">
+            <span>Powered by</span>
+            <strong>SignOf</strong>
+          </div>
+        )}
       </div>
     </div>
   )

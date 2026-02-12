@@ -1,7 +1,7 @@
 import { useDocumentStore } from './useDocumentStore'
 import {
   DocumentStatus,
-  SignerStatus,
+  SignerStatus, SignerRole,
   SigningOrder,
 } from '../types'
 import type { Document } from '../types'
@@ -16,9 +16,9 @@ function makeDoc(overrides: Partial<Document> = {}): Document {
     fileUrl: '',
     fileType: 'application/pdf',
     signers: [
-      { id: 's1', name: 'Alice', email: 'alice@test.com', status: SignerStatus.Pending, signedAt: null, order: 1 },
-      { id: 's2', name: 'Bob', email: 'bob@test.com', status: SignerStatus.Pending, signedAt: null, order: 2 },
-      { id: 's3', name: 'Carol', email: 'carol@test.com', status: SignerStatus.Pending, signedAt: null, order: 3 },
+      { id: 's1', name: 'Alice', email: 'alice@test.com', status: SignerStatus.Pending, signedAt: null, order: 1, role: SignerRole.Signer },
+      { id: 's2', name: 'Bob', email: 'bob@test.com', status: SignerStatus.Pending, signedAt: null, order: 2, role: SignerRole.Signer },
+      { id: 's3', name: 'Carol', email: 'carol@test.com', status: SignerStatus.Pending, signedAt: null, order: 3, role: SignerRole.Signer },
     ],
     signatures: [],
     audit: [],

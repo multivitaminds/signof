@@ -9,7 +9,7 @@ import AuditTrailPanel from '../features/documents/components/AuditTrailPanel/Au
 import AuditTimeline from '../components/AuditTimeline/AuditTimeline'
 import { useDocumentStore } from '../stores/useDocumentStore'
 import { useStatusToasts } from '../features/documents/hooks/useStatusToasts'
-import { SignerStatus, type Document } from '../types'
+import { SignerStatus, SignerRole, type Document } from '../types'
 import AIFeatureWidget from '../features/ai/components/AIFeatureWidget/AIFeatureWidget'
 import './DocumentsPage.css'
 
@@ -64,7 +64,7 @@ export default function DocumentsPage() {
       const doc = getDocument(docId)
       if (!doc) return
       const pendingSigner = doc.signers.find(
-        (s) => s.status === SignerStatus.Pending
+        (s) => s.status === SignerStatus.Pending && s.role === SignerRole.Signer
       )
       if (pendingSigner) {
         setSigningDocId(docId)

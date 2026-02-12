@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Dashboard from './Dashboard'
-import { DocumentStatus, SignerStatus } from '../../types'
+import { DocumentStatus, SignerStatus, SignerRole } from '../../types'
 import type { Document } from '../../types'
 
 const noop = () => {}
@@ -16,7 +16,7 @@ const SAMPLE_DOCS: Document[] = [
     fileUrl: '',
     fileType: 'application/pdf',
     signers: [
-      { id: 's1', name: 'Jane', email: 'jane@example.com', status: SignerStatus.Pending, signedAt: null, order: 1 },
+      { id: 's1', name: 'Jane', email: 'jane@example.com', status: SignerStatus.Pending, signedAt: null, order: 1, role: SignerRole.Signer },
     ],
     signatures: [],
     audit: [],
@@ -38,7 +38,7 @@ const SAMPLE_DOCS: Document[] = [
     fileUrl: '',
     fileType: 'application/pdf',
     signers: [
-      { id: 's2', name: 'Bob', email: 'bob@example.com', status: SignerStatus.Signed, signedAt: '2026-01-21T11:00:00Z', order: 1 },
+      { id: 's2', name: 'Bob', email: 'bob@example.com', status: SignerStatus.Signed, signedAt: '2026-01-21T11:00:00Z', order: 1, role: SignerRole.Signer },
     ],
     signatures: [],
     audit: [],

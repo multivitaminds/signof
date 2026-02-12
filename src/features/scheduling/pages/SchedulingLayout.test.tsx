@@ -12,6 +12,7 @@ function renderLayout(initialPath = '/calendar/events') {
           <Route path="bookings" element={<div>Bookings Content</div>} />
           <Route path="sync" element={<div>Sync Content</div>} />
           <Route path="analytics" element={<div>Analytics Content</div>} />
+          <Route path="no-shows" element={<div>No-Shows Content</div>} />
         </Route>
       </Routes>
     </MemoryRouter>
@@ -31,6 +32,7 @@ describe('SchedulingLayout', () => {
     expect(screen.getByText('Bookings')).toBeInTheDocument()
     expect(screen.getByText('Calendar Sync')).toBeInTheDocument()
     expect(screen.getByText('Analytics')).toBeInTheDocument()
+    expect(screen.getByText('No-Shows')).toBeInTheDocument()
   })
 
   it('renders the outlet content for events route', () => {

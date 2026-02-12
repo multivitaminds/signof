@@ -19,7 +19,7 @@ import {
   SkipForward,
 } from 'lucide-react'
 import type { Document, Signer, DocumentField } from '../../../../types'
-import { FieldType, SigningOrder, SignerStatus } from '../../../../types'
+import { FieldType, SigningOrder, SignerStatus, SignerRole } from '../../../../types'
 import FieldChecklist from '../FieldChecklist/FieldChecklist'
 import './SigningCeremony.css'
 
@@ -692,7 +692,7 @@ function SigningCeremony({
       {doc.signers.length > 1 && (
         <div className="signing-ceremony-v2__signers-progress" data-testid="signers-progress">
           <div className="signing-ceremony-v2__fields-list-title">
-            <Users /> Signer Progress ({doc.signers.filter((s) => s.status === SignerStatus.Signed).length} of {doc.signers.length} completed)
+            <Users /> Signer Progress ({doc.signers.filter((s) => s.status === SignerStatus.Signed && s.role === SignerRole.Signer).length} of {doc.signers.filter((s) => s.role === SignerRole.Signer).length} completed)
           </div>
           {[...doc.signers]
             .sort((a, b) => a.order - b.order)

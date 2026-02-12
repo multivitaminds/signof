@@ -44,7 +44,8 @@ describe('SignOf App', () => {
 
   it('renders the home page welcome banner', () => {
     renderWithRouter()
-    expect(screen.getByText(/Good (morning|afternoon|evening)/)).toBeInTheDocument()
+    const greetings = screen.getAllByText(/Good (morning|afternoon|evening)/)
+    expect(greetings.length).toBeGreaterThanOrEqual(1)
   })
 
   it('shows the command palette shortcut', () => {

@@ -57,6 +57,22 @@
   font-weight: var(--font-medium);
 }
 
+
+/* --- Branding --- */
+.public-booking__branding-logo {
+  max-width: 120px;
+  max-height: 40px;
+  object-fit: contain;
+  margin-bottom: var(--space-2);
+}
+
+.public-booking__branding-company {
+  font-size: var(--text-xs);
+  color: var(--text-muted, #9CA3AF);
+  font-weight: var(--font-medium);
+  margin-bottom: var(--space-1);
+}
+
 /* ─── Progress Steps ─────────────────────────────────────── */
 .public-booking__progress {
   display: flex;

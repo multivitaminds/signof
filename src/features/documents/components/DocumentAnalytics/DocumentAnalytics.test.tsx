@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import DocumentAnalytics from './DocumentAnalytics'
 import { useDocumentStore } from '../../../../stores/useDocumentStore'
-import { DocumentStatus, SignerStatus } from '../../../../types'
+import { DocumentStatus, SignerStatus, SignerRole } from '../../../../types'
 import type { Document } from '../../../../types'
 
 function makeDoc(overrides: Partial<Document> = {}): Document {
@@ -103,7 +103,7 @@ describe('DocumentAnalytics', () => {
               email: 'alice@example.com',
               status: SignerStatus.Signed,
               signedAt: '2026-01-15T10:00:00Z',
-              order: 1,
+              order: 1, role: SignerRole.Signer,
             },
           ],
         }),

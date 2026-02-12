@@ -9,6 +9,7 @@ import {
   DocumentStatus,
   SignerStatus,
   SigningOrder,
+  SignerRole,
 } from '../types'
 
 function generateId(): string {
@@ -29,8 +30,8 @@ const SAMPLE_DOCUMENTS: Document[] = [
     fileUrl: '',
     fileType: 'application/pdf',
     signers: [
-      { id: 's1', name: 'Jane Smith', email: 'jane@example.com', status: SignerStatus.Pending, signedAt: null, order: 1 },
-      { id: 's2', name: 'HR Director', email: 'hr@example.com', status: SignerStatus.Signed, signedAt: '2026-02-02T14:00:00Z', order: 2 },
+      { id: 's1', name: 'Jane Smith', email: 'jane@example.com', status: SignerStatus.Pending, signedAt: null, order: 1, role: SignerRole.Signer },
+      { id: 's2', name: 'HR Director', email: 'hr@example.com', status: SignerStatus.Signed, signedAt: '2026-02-02T14:00:00Z', order: 2, role: SignerRole.Signer },
     ],
     signatures: [],
     audit: [
@@ -55,7 +56,7 @@ const SAMPLE_DOCUMENTS: Document[] = [
     fileUrl: '',
     fileType: 'application/pdf',
     signers: [
-      { id: 's3', name: 'Alice Johnson', email: 'alice@example.com', status: SignerStatus.Signed, signedAt: '2026-01-21T11:00:00Z', order: 1 },
+      { id: 's3', name: 'Alice Johnson', email: 'alice@example.com', status: SignerStatus.Signed, signedAt: '2026-01-21T11:00:00Z', order: 1, role: SignerRole.Signer },
     ],
     signatures: [],
     audit: [
@@ -131,11 +132,12 @@ interface DocumentState {
   // Document Builder
   createDocumentFromBuilder: (params: {
     file: File
-    signers: { name: string; email: string }[]
+    signers: { name: string; email: string; role?: SignerRole }[]
     fields: DocumentField[]
     signingOrder: SigningOrder
     message?: string
     pricingTable?: PricingTableData | null
+    expiresAt?: string | null
   }) => Document
 
   // Decline
@@ -192,9 +194,9 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
             ? { ...s, status: SignerStatus.Signed, signedAt: timestamp }
             : s
         )
-        const allSigned = updatedSigners.every(
-          (s) => s.status === SignerStatus.Signed
-        )
+        const allSigned = updatedSigners
+          .filter((s) => s.role === SignerRole.Signer)
+          .every((s) => s.status === SignerStatus.Signed)
         return {
           ...doc,
           signers: updatedSigners,
@@ -237,9 +239,9 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         const updatedSigners = doc.signers.map((s) =>
           s.id === signerId ? { ...s, status: SignerStatus.Signed as typeof s.status, signedAt: timestamp } : s
         )
-        const allSigned = updatedSigners.every(
-          (s) => s.status === SignerStatus.Signed
-        )
+        const allSigned = updatedSigners
+          .filter((s) => s.role === SignerRole.Signer)
+          .every((s) => s.status === SignerStatus.Signed)
         return {
           ...doc,
           signers: updatedSigners,
@@ -328,6 +330,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
           status: SignerStatus.Pending,
           signedAt: null,
           order: maxOrder + 1,
+          role: SignerRole.Signer,
         }
         return {
           ...doc,
@@ -374,7 +377,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     if (doc.signingOrder === SigningOrder.Parallel) return null
 
     const sortedPending = [...doc.signers]
-      .filter((s) => s.status === SignerStatus.Pending)
+      .filter((s) => s.status === SignerStatus.Pending && s.role === SignerRole.Signer)
       .sort((a, b) => a.order - b.order)
     return sortedPending[0]?.id ?? null
   },
@@ -386,11 +389,14 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
     const signer = doc.signers.find((s) => s.id === signerId)
     if (!signer || signer.status !== SignerStatus.Pending) return false
 
+
+    // CC and Viewer roles cannot sign
+    if (signer.role === SignerRole.CC || signer.role === SignerRole.Viewer) return false
     if (doc.signingOrder === SigningOrder.Parallel) return true
 
-    // Sequential: only the lowest-order pending signer can sign
+    // Sequential: only the lowest-order pending signer (with signer role) can sign
     const sortedPending = [...doc.signers]
-      .filter((s) => s.status === SignerStatus.Pending)
+      .filter((s) => s.status === SignerStatus.Pending && s.role === SignerRole.Signer)
       .sort((a, b) => a.order - b.order)
     return sortedPending[0]?.id === signerId
   },
@@ -476,6 +482,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
           status: SignerStatus.Pending,
           signedAt: null,
           order: 1,
+          role: SignerRole.Signer,
         },
       ],
       signatures: [],
@@ -544,6 +551,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       status: SignerStatus.Pending,
       signedAt: null,
       order: i + 1,
+      role: s.role ?? SignerRole.Signer,
     }))
 
     // Re-map field recipientIds from temporary indices to generated signer IDs
@@ -582,7 +590,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       fields,
       folderId: null,
       templateId: null,
-      expiresAt: null,
+      expiresAt: params.expiresAt ?? null,
       reminderSentAt: null,
       signingOrder: params.signingOrder,
       pricingTable: params.pricingTable ?? null,

@@ -12,6 +12,7 @@ import {
   Settings,
   Calendar,
   Globe,
+  Paintbrush,
 } from 'lucide-react'
 import type { EventType, CustomQuestion, WeeklySchedule } from '../../types'
 import {
@@ -24,6 +25,7 @@ import {
   LOCATION_LABELS,
 } from '../../types'
 import AvailabilityEditor from '../AvailabilityEditor/AvailabilityEditor'
+import BookingBranding from '../BookingBranding/BookingBranding'
 import './EventTypeEditor.css'
 
 interface EventTypeEditorProps {
@@ -32,7 +34,7 @@ interface EventTypeEditorProps {
   onClose: () => void
 }
 
-type EditorTab = 'details' | 'availability' | 'questions' | 'preview'
+type EditorTab = 'details' | 'availability' | 'questions' | 'branding' | 'preview'
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
@@ -82,6 +84,11 @@ export default function EventTypeEditor({
   const [maxAttendees, setMaxAttendees] = useState(
     eventType?.maxAttendees ?? 1
   )
+  const [brandingLogo, setBrandingLogo] = useState(eventType?.brandingLogo)
+  const [brandingCompanyName, setBrandingCompanyName] = useState(eventType?.brandingCompanyName)
+  const [brandingAccentColor, setBrandingAccentColor] = useState(eventType?.brandingAccentColor)
+  const [brandingHideSignOf, setBrandingHideSignOf] = useState(eventType?.brandingHideSignOf)
+
   const [waitlistEnabled, setWaitlistEnabled] = useState(
     eventType?.waitlistEnabled ?? false
   )
@@ -159,6 +166,10 @@ export default function EventTypeEditor({
       dateOverrides: eventType?.dateOverrides ?? [],
       customQuestions: questions,
       maxAttendees,
+      brandingLogo,
+      brandingCompanyName,
+      brandingAccentColor,
+      brandingHideSignOf,
       waitlistEnabled,
       maxWaitlist,
       isActive: eventType?.isActive ?? true,
@@ -166,13 +177,15 @@ export default function EventTypeEditor({
   }, [
     name, description, slug, category, color, durationMinutes, location,
     bufferBefore, bufferAfter, maxBookings, minimumNotice, schedulingWindow,
-    schedule, questions, maxAttendees, waitlistEnabled, maxWaitlist, eventType, onSave,
+    schedule, questions, maxAttendees, brandingLogo, brandingCompanyName,
+    brandingAccentColor, brandingHideSignOf, waitlistEnabled, maxWaitlist, eventType, onSave,
   ])
 
   const TABS: Array<{ id: EditorTab; label: string; icon: typeof Settings }> = [
     { id: 'details', label: 'Details', icon: Settings },
     { id: 'availability', label: 'Availability', icon: Clock },
     { id: 'questions', label: 'Questions', icon: MessageSquare },
+    { id: 'branding', label: 'Branding', icon: Paintbrush },
     { id: 'preview', label: 'Preview', icon: Eye },
   ]
 
@@ -603,6 +616,50 @@ export default function EventTypeEditor({
                 </div>
               )}
             </div>
+          )}
+
+          {/* Branding Tab */}
+          {tab === 'branding' && (
+            <BookingBranding
+              eventType={{
+                ...(eventType ?? {
+                  id: '',
+                  name,
+                  description,
+                  slug,
+                  category: category as EventType['category'],
+                  color,
+                  durationMinutes,
+                  bufferBeforeMinutes: bufferBefore,
+                  bufferAfterMinutes: bufferAfter,
+                  maxBookingsPerDay: maxBookings,
+                  minimumNoticeMinutes: minimumNotice,
+                  schedulingWindowDays: schedulingWindow,
+                  location: location as EventType['location'],
+                  schedule,
+                  dateOverrides: [],
+                  customQuestions: questions,
+                  maxAttendees,
+                  waitlistEnabled,
+                  maxWaitlist,
+                  isActive: true,
+                  createdAt: '',
+                  updatedAt: '',
+                }),
+                name,
+                color,
+                brandingLogo,
+                brandingCompanyName,
+                brandingAccentColor,
+                brandingHideSignOf,
+              }}
+              onUpdate={(updates) => {
+                if ('brandingLogo' in updates) setBrandingLogo(updates.brandingLogo)
+                if ('brandingCompanyName' in updates) setBrandingCompanyName(updates.brandingCompanyName)
+                if ('brandingAccentColor' in updates) setBrandingAccentColor(updates.brandingAccentColor)
+                if ('brandingHideSignOf' in updates) setBrandingHideSignOf(updates.brandingHideSignOf)
+              }}
+            />
           )}
 
           {/* Preview Tab */}

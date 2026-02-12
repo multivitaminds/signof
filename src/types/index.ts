@@ -35,6 +35,16 @@ export const SigningOrder = {
 
 export type SigningOrder = (typeof SigningOrder)[keyof typeof SigningOrder]
 
+// ─── Signer Role (const object pattern) ─────────────────────────────
+
+export const SignerRole = {
+  Signer: 'signer',
+  CC: 'cc',
+  Viewer: 'viewer',
+} as const
+
+export type SignerRole = (typeof SignerRole)[keyof typeof SignerRole]
+
 // ─── Core Interfaces ────────────────────────────────────────────────
 
 export interface Signer {
@@ -44,6 +54,7 @@ export interface Signer {
   status: SignerStatus
   signedAt: string | null
   order: number
+  role: SignerRole
 }
 
 export interface SignatureData {
@@ -253,4 +264,11 @@ export const ACTION_LABELS: Record<string, string> = {
   completed: 'All Signatures Complete',
   declined: 'Signature Declined',
   voided: 'Document Voided',
+}
+
+/** Human-readable labels for signer roles */
+export const SIGNER_ROLE_LABELS: Record<SignerRole, string> = {
+  [SignerRole.Signer]: 'Signer',
+  [SignerRole.CC]: 'CC',
+  [SignerRole.Viewer]: 'Viewer',
 }

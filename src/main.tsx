@@ -38,6 +38,7 @@ const SchedulingCalendarPage = lazy(() => import('./features/scheduling/pages/Sc
 const BookingsPage = lazy(() => import('./features/scheduling/pages/BookingsPage'))
 const CalendarSyncPage = lazy(() => import('./features/scheduling/pages/CalendarSyncPage'))
 const BookingAnalyticsPage = lazy(() => import('./features/scheduling/pages/BookingAnalyticsPage'))
+const NoShowPage = lazy(() => import('./features/scheduling/pages/NoShowPage/NoShowPage'))
 const PublicBookingPage = lazy(() => import('./features/scheduling/pages/PublicBookingPage'))
 
 const DatabasesLayout = lazy(() => import('./features/databases/pages/DatabasesLayout'))
@@ -160,6 +161,7 @@ createRoot(root).render(
             <Route path="bookings" element={<Suspense fallback={TableFallback}><BookingsPage /></Suspense>} />
             <Route path="sync" element={<Suspense fallback={CardFallback}><CalendarSyncPage /></Suspense>} />
             <Route path="analytics" element={<Suspense fallback={CardFallback}><BookingAnalyticsPage /></Suspense>} />
+            <Route path="no-shows" element={<Suspense fallback={TableFallback}><NoShowPage /></Suspense>} />
           </Route>
 
           {/* Databases (Airtable) */}

@@ -1,0 +1,185 @@
+/* ═══════════════════════════════════════════════════════════════
+   ShareBooking — Share/Embed booking widget modal
+   ═══════════════════════════════════════════════════════════════ */
+
+.share-booking {
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* --- Tabs --- */
+.share-booking__tabs {
+  display: flex;
+  gap: var(--space-xs, 0.25rem);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  margin-bottom: var(--space-md, 1rem);
+  padding-bottom: 0;
+}
+
+.share-booking__tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--text-secondary, #6B7280);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-medium, 500);
+  transition: all var(--motion-fast, 150ms) var(--ease-out, ease-out);
+  margin-bottom: -1px;
+  cursor: pointer;
+}
+
+.share-booking__tab:hover {
+  color: var(--text-primary, #111827);
+}
+
+.share-booking__tab--active {
+  color: var(--color-primary, #4F46E5);
+  border-bottom-color: var(--color-primary, #4F46E5);
+}
+
+/* --- Body --- */
+.share-booking__body {
+  min-height: 200px;
+  padding-bottom: var(--space-md, 1rem);
+}
+
+.share-booking__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 1rem);
+}
+
+.share-booking__panel-desc {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  margin: 0;
+  line-height: var(--leading-relaxed, 1.625);
+}
+
+/* --- URL row --- */
+.share-booking__url-row {
+  display: flex;
+  gap: var(--space-sm, 0.5rem);
+}
+
+.share-booking__url-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  background: var(--bg-secondary, #F9FAFB);
+  font-family: var(--font-mono, monospace);
+}
+
+.share-booking__url-input:focus {
+  outline: none;
+  border-color: var(--color-primary, #4F46E5);
+}
+
+/* --- Code textarea --- */
+.share-booking__code-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-primary, #111827);
+  background: var(--bg-secondary, #F9FAFB);
+  font-family: var(--font-mono, monospace);
+  line-height: var(--leading-normal, 1.5);
+  resize: vertical;
+}
+
+.share-booking__code-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary, #4F46E5);
+}
+
+/* --- Copy button --- */
+.share-booking__copy-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 0.25rem);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* --- Button tab --- */
+.share-booking__button-colors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 0.25rem);
+}
+
+.share-booking__button-colors-label {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  font-weight: var(--font-medium, 500);
+}
+
+.share-booking__button-color-row {
+  display: flex;
+  gap: var(--space-sm, 0.5rem);
+  flex-wrap: wrap;
+}
+
+.share-booking__button-color-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full, 9999px);
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: transform var(--motion-fast, 150ms) var(--ease-out, ease-out);
+}
+
+.share-booking__button-color-btn:hover {
+  transform: scale(1.15);
+}
+
+.share-booking__button-color-btn--selected {
+  border-color: var(--text-primary, #111827);
+  box-shadow: 0 0 0 2px var(--bg-primary, #fff), 0 0 0 3px var(--text-primary, #111827);
+}
+
+.share-booking__button-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 0.5rem);
+}
+
+.share-booking__button-preview-label {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  font-weight: var(--font-medium, 500);
+}
+
+.share-booking__button-demo {
+  display: inline-block;
+  padding: 12px 24px;
+  color: #fff;
+  text-decoration: none;
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-semibold, 600);
+  text-align: center;
+  width: fit-content;
+  cursor: pointer;
+  transition: opacity var(--motion-fast, 150ms) var(--ease-out, ease-out);
+}
+
+.share-booking__button-demo:hover {
+  opacity: 0.9;
+}
+
+/* --- Dark mode --- */
+[data-theme="dark"] .share-booking__url-input,
+[data-theme="dark"] .share-booking__code-textarea {
+  background: var(--bg-tertiary);
+}
