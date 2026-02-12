@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { FolderKanban } from 'lucide-react'
+import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
 import './ProjectsLayout.css'
 
 export default function ProjectsLayout() {
@@ -13,6 +14,7 @@ export default function ProjectsLayout() {
       <div className="projects-layout__content">
         <Outlet />
       </div>
+      <AIFeatureWidget featureKey="projects" />
     </div>
   )
 }

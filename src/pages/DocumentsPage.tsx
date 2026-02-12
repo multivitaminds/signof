@@ -10,6 +10,7 @@ import AuditTimeline from '../components/AuditTimeline/AuditTimeline'
 import { useDocumentStore } from '../stores/useDocumentStore'
 import { useStatusToasts } from '../features/documents/hooks/useStatusToasts'
 import { SignerStatus, type Document } from '../types'
+import AIFeatureWidget from '../features/ai/components/AIFeatureWidget/AIFeatureWidget'
 import './DocumentsPage.css'
 
 type ModalView = 'none' | 'upload' | 'sign' | 'view' | 'add-signers' | 'ceremony' | 'certificate' | 'audit'
@@ -377,6 +378,8 @@ export default function DocumentsPage() {
           </div>
         </div>
       )}
+
+      <AIFeatureWidget featureKey="documents" />
     </div>
   )
 }

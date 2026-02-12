@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useLocation, Navigate } from 'react-router-dom'
 import { CalendarDays, Clock, List, Link2, BarChart3 } from 'lucide-react'
+import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
 import './SchedulingLayout.css'
 
 const TABS = [
@@ -39,6 +40,7 @@ export default function SchedulingLayout() {
       <div className="scheduling-layout__content">
         <Outlet />
       </div>
+      <AIFeatureWidget featureKey="scheduling" />
     </div>
   )
 }

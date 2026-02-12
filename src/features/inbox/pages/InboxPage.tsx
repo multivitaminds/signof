@@ -13,6 +13,7 @@ import { useInboxStore } from '../stores/useInboxStore'
 import { NotificationType, NotificationCategory, TYPE_TO_CATEGORY } from '../types'
 import type { Notification, NotificationCategory as NotifCategoryType } from '../types'
 import EmptyState from '../../../components/EmptyState/EmptyState'
+import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
 import './InboxPage.css'
 
 /* ------------------------------------------------------------------ */
@@ -769,6 +770,7 @@ export default function InboxPage() {
           )}
         </div>
       </div>
+      <AIFeatureWidget featureKey="inbox" />
     </div>
   )
 }

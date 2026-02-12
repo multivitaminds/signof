@@ -3,6 +3,7 @@ import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import { Star, Clock } from 'lucide-react'
 import { useWorkspaceStore } from '../stores/useWorkspaceStore'
 import PageTree from '../components/PageTree/PageTree'
+import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
 import './WorkspaceLayout.css'
 
 export default function WorkspaceLayout() {
@@ -108,6 +109,7 @@ export default function WorkspaceLayout() {
       <main className="workspace-layout__content">
         <Outlet />
       </main>
+      <AIFeatureWidget featureKey="workspace" />
     </div>
   )
 }

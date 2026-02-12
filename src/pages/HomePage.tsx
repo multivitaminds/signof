@@ -19,6 +19,7 @@ import UpcomingDeadlines from '../components/DashboardWidgets/UpcomingDeadlines'
 import RecentActivity from '../components/DashboardWidgets/RecentActivity'
 import QuickStatsWidget from '../components/DashboardWidgets/QuickStats'
 import AIInsights from '../components/DashboardWidgets/AIInsights'
+import AIFeatureWidget from '../features/ai/components/AIFeatureWidget/AIFeatureWidget'
 import './HomePage.css'
 
 export default function HomePage() {
@@ -156,6 +157,8 @@ export default function HomePage() {
         <h2 className="home-page__section-title">Overview</h2>
         <DashboardCharts />
       </section>
+
+      <AIFeatureWidget featureKey="home" />
     </div>
   )
 }
