@@ -178,7 +178,7 @@ function GuidedSigningView({
         </div>
 
         <div className="guided-signing__sidebar">
-          <div className="guided-signing__field-info">
+          <div className="guided-signing__field-info" aria-live="polite">
             <h3 className="guided-signing__field-info-title">Current Field</h3>
             {currentField && (
               <>

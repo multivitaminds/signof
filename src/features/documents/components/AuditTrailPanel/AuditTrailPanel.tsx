@@ -144,6 +144,7 @@ export default function AuditTrailPanel({ document: doc, onClose }: AuditTrailPa
               className="audit-trail-panel__entry"
               key={`${entry.timestamp}-${index}`}
               role="listitem"
+              style={index < 10 ? { animationDelay: `${index * 50}ms` } : undefined}
             >
               <div className="audit-trail-panel__entry-marker">
                 <div

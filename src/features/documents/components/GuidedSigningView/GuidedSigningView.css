@@ -78,8 +78,8 @@
 
 .guided-signing__field--active {
   z-index: 2;
-  transform: scale(1.02);
-  animation: guided-field-pulse 2s infinite;
+  animation: guided-field-enter 200ms var(--ease-out, ease-out),
+             guided-field-pulse 2s infinite 200ms;
 }
 
 @keyframes guided-field-pulse {
@@ -384,4 +384,172 @@
 
 .guided-signing__document {
   scroll-behavior: smooth;
+}
+
+/* ─── Dark Mode ─────────────────────────────────────── */
+
+[data-theme="dark"] .guided-signing__header {
+  background-color: var(--bg-tertiary, #1A1A2E);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .guided-signing__document-page {
+  background-color: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .guided-signing__sidebar {
+  background-color: var(--bg-tertiary, #1A1A2E);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .guided-signing__field-info {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .guided-signing__field-info-required {
+  background-color: rgba(220, 38, 38, 0.15);
+}
+
+[data-theme="dark"] .guided-signing__signature-prompt {
+  background-color: var(--bg-secondary, #0F0F1A);
+}
+
+[data-theme="dark"] .guided-signing__field-list-item:hover {
+  background-color: var(--bg-secondary, #0F0F1A);
+}
+
+[data-theme="dark"] .guided-signing__field-list-item--active {
+  background-color: rgba(79, 70, 229, 0.15);
+  color: #818CF8;
+}
+
+[data-theme="dark"] .guided-signing__field-list-item--active .guided-signing__field-list-number {
+  background-color: #4F46E5;
+  color: #fff;
+}
+
+[data-theme="dark"] .guided-signing__field-list-number {
+  background-color: var(--bg-secondary, #0F0F1A);
+}
+
+[data-theme="dark"] .guided-signing__nav {
+  background-color: var(--bg-tertiary, #1A1A2E);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .guided-signing__field-badge--pending {
+  background-color: var(--color-gray-600, #4B5563);
+  color: var(--color-gray-300, #D1D5DB);
+}
+
+[data-theme="dark"] .guided-signing__field-action {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .guided-signing__intro-card {
+  background: var(--bg-secondary, #1A1A2E);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .guided-signing__intro-card h3 {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .guided-signing__intro-card p {
+  color: var(--text-secondary, #94A3B8);
+}
+
+[data-theme="dark"] .guided-signing__complete-card {
+  background: var(--bg-secondary, #1A1A2E);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .guided-signing__complete-card p {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .guided-signing__intro-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .guided-signing__complete-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Responsive ─────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .guided-signing__sidebar {
+    display: none;
+  }
+
+  .guided-signing__header {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .guided-signing__signer {
+    display: none;
+  }
+
+  .guided-signing__title {
+    font-size: var(--text-base);
+  }
+
+  .guided-signing__nav {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .guided-signing__btn {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+
+  .guided-signing__document {
+    padding: var(--space-3);
+  }
+
+  .guided-signing__intro-card {
+    padding: var(--space-5);
+    margin: 0 var(--space-3);
+  }
+
+  .guided-signing__intro-card h3 {
+    font-size: var(--text-lg);
+  }
+
+  .guided-signing__complete-card {
+    padding: var(--space-4) var(--space-5);
+    margin: 0 var(--space-3);
+  }
+}
+
+@media (max-width: 380px) {
+  .guided-signing__nav-buttons {
+    flex-direction: column;
+  }
+}
+
+/* ─── Animations ─────────────────────────────────────── */
+
+@keyframes guided-field-enter {
+  from {
+    opacity: 0.6;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.guided-signing__field-list-item {
+  transition: background-color var(--motion-fast, 150ms) var(--ease-out, ease-out),
+              color var(--motion-fast, 150ms) var(--ease-out, ease-out);
+}
+
+.guided-signing__field-info {
+  transition: opacity var(--motion-normal, 200ms) var(--ease-out, ease-out);
 }

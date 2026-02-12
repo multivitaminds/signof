@@ -1206,7 +1206,7 @@
   inset: 0;
   z-index: 60;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1294,6 +1294,28 @@
 .signing-ceremony-v2__btn-danger:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ─── Loading Spinner ───────────────────────────────── */
+
+@keyframes signing-ceremony-v2__spinner {
+  to { transform: rotate(360deg); }
+}
+
+.signing-ceremony-v2__spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: var(--radius-full, 9999px);
+  animation: signing-ceremony-v2__spinner 600ms linear infinite;
+  display: inline-block;
+}
+
+/* ─── Step Line Animation ───────────────────────────── */
+
+.signing-ceremony-v2__step-line {
+  transition: background var(--motion-smooth, 300ms) var(--ease-spring, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 /* ─── Responsive ────────────────────────────────────────────────── */

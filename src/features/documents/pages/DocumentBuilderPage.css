@@ -99,6 +99,7 @@
   width: 100%;
   margin: 0 auto;
   padding: var(--space-6) var(--space-5);
+  animation: builder-step-enter 250ms var(--ease-out, ease-out);
 }
 
 .doc-builder__content h2 {
@@ -835,6 +836,19 @@
 
 .doc-builder__expiration-preview p + p {
   margin-top: var(--space-1);
+}
+
+/* ─── Animations ─────────────────────────────────────── */
+
+@keyframes builder-step-enter {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
