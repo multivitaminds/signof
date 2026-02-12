@@ -670,6 +670,44 @@
   cursor: not-allowed;
 }
 
+/* ─── Pricing Step ──────────────────────────────────────────────── */
+
+.doc-builder__pricing {
+  max-width: 720px;
+}
+
+.doc-builder__pricing-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  cursor: pointer;
+  margin-bottom: var(--space-5);
+}
+
+.doc-builder__pricing-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+}
+
+.doc-builder__review-pricing {
+  margin-bottom: var(--space-4);
+}
+
+.doc-builder__review-pricing h3 {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
 @media (max-width: 768px) {

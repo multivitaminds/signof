@@ -28,12 +28,13 @@ describe('DocumentBuilderPage', () => {
     expect(screen.getByText(/Drag and drop a file here/)).toBeInTheDocument()
   })
 
-  it('shows 5-step progress indicator', () => {
+  it('shows 6-step progress indicator', () => {
     render(<DocumentBuilderPage />)
 
     expect(screen.getByRole('navigation', { name: 'Builder progress' })).toBeInTheDocument()
     expect(screen.getByText('Upload')).toBeInTheDocument()
     expect(screen.getByText('Add Fields')).toBeInTheDocument()
+    expect(screen.getByText('Pricing')).toBeInTheDocument()
     expect(screen.getByText('Signers')).toBeInTheDocument()
     expect(screen.getByText('Review')).toBeInTheDocument()
     expect(screen.getByText('Send')).toBeInTheDocument()
@@ -97,6 +98,8 @@ describe('DocumentBuilderPage', () => {
 
     // Advance to fields
     await user.click(screen.getByRole('button', { name: /next/i }))
+    // Advance to pricing
+    await user.click(screen.getByRole('button', { name: /next/i }))
     // Advance to signers
     await user.click(screen.getByRole('button', { name: /next/i }))
 
@@ -119,7 +122,8 @@ describe('DocumentBuilderPage', () => {
     const fileInput = screen.getByLabelText('Upload document file')
     await user.upload(fileInput, new File(['pdf'], 'doc.pdf', { type: 'application/pdf' }))
 
-    // Advance to fields then signers
+    // Advance to fields, pricing, then signers
+    await user.click(screen.getByRole('button', { name: /next/i }))
     await user.click(screen.getByRole('button', { name: /next/i }))
     await user.click(screen.getByRole('button', { name: /next/i }))
 
@@ -154,5 +158,21 @@ describe('DocumentBuilderPage', () => {
 
     await user.click(screen.getByLabelText('Remove file'))
     expect(screen.queryByText('doc.pdf')).not.toBeInTheDocument()
+  })
+
+  it('shows pricing step with toggle', async () => {
+    const user = userEvent.setup()
+    render(<DocumentBuilderPage />)
+
+    // Upload file
+    const fileInput = screen.getByLabelText('Upload document file')
+    await user.upload(fileInput, new File(['pdf'], 'doc.pdf', { type: 'application/pdf' }))
+
+    // Advance to fields, then pricing
+    await user.click(screen.getByRole('button', { name: /next/i }))
+    await user.click(screen.getByRole('button', { name: /next/i }))
+
+    expect(screen.getByRole('heading', { name: 'Pricing' })).toBeInTheDocument()
+    expect(screen.getByText('Include pricing table')).toBeInTheDocument()
   })
 })

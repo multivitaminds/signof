@@ -12,18 +12,20 @@ import {
   Trash2,
   X,
   GripVertical,
+  DollarSign,
 } from 'lucide-react'
-import { type FieldType, SigningOrder } from '../../../types'
+import { type FieldType, type PricingTableData, SigningOrder } from '../../../types'
 import { useDocumentStore } from '../../../stores/useDocumentStore'
 import { useFieldPlacement } from '../hooks/useFieldPlacement'
 import { FIELD_COLORS } from '../lib/fieldTypes'
 import DocumentCanvas from '../components/DocumentCanvas/DocumentCanvas'
 import FieldPalette from '../components/FieldPalette/FieldPalette'
+import PricingTable from '../components/PricingTable/PricingTable'
 import './DocumentBuilderPage.css'
 
 // ─── Types ──────────────────────────────────────────────────────────
 
-type BuilderStep = 'upload' | 'fields' | 'signers' | 'review' | 'send'
+type BuilderStep = 'upload' | 'fields' | 'pricing' | 'signers' | 'review' | 'send'
 
 interface BuilderSigner {
   tempId: string
@@ -34,6 +36,7 @@ interface BuilderSigner {
 const STEPS: { key: BuilderStep; label: string; icon: React.ReactNode }[] = [
   { key: 'upload', label: 'Upload', icon: <Upload size={16} /> },
   { key: 'fields', label: 'Add Fields', icon: <FileText size={16} /> },
+  { key: 'pricing', label: 'Pricing', icon: <DollarSign size={16} /> },
   { key: 'signers', label: 'Signers', icon: <Users size={16} /> },
   { key: 'review', label: 'Review', icon: <Eye size={16} /> },
   { key: 'send', label: 'Send', icon: <Send size={16} /> },
@@ -67,6 +70,8 @@ function DocumentBuilderPage() {
   const [signingOrder, setSigningOrder] = useState<SigningOrder>(SigningOrder.Parallel)
   const [message, setMessage] = useState('')
   const [isSent, setIsSent] = useState(false)
+  const [pricingTable, setPricingTable] = useState<PricingTableData | null>(null)
+  const [showPricing, setShowPricing] = useState(false)
 
   // Field placement
   const fieldPlacement = useFieldPlacement('builder', [])
@@ -166,6 +171,8 @@ function DocumentBuilderPage() {
         return file !== null
       case 'fields':
         return true // fields are optional
+      case 'pricing':
+        return true
       case 'signers':
         return signers.length > 0
       case 'review':
@@ -202,10 +209,11 @@ function DocumentBuilderPage() {
       fields: fieldPlacement.fields,
       signingOrder,
       message: message.trim() || undefined,
+      pricingTable: pricingTable ?? undefined,
     })
 
     setIsSent(true)
-  }, [file, signers, fieldPlacement.fields, signingOrder, message, createDocumentFromBuilder])
+  }, [file, signers, fieldPlacement.fields, signingOrder, message, pricingTable, createDocumentFromBuilder])
 
   // ── Render step indicator ────────────────────────────────────────
 
@@ -355,7 +363,47 @@ function DocumentBuilderPage() {
     </div>
   )
 
-  // ── Step 3: Add Signers ──────────────────────────────────────────
+  // ── Step 3: Pricing ────────────────────────────────────────────
+
+  const renderPricingStep = () => (
+    <div className="doc-builder__pricing">
+      <h2>Pricing</h2>
+      <p className="doc-builder__subtitle">
+        Optionally include a pricing table with your document.
+      </p>
+      <label className="doc-builder__pricing-toggle">
+        <input
+          type="checkbox"
+          checked={showPricing}
+          onChange={(e) => {
+            setShowPricing(e.target.checked)
+            if (e.target.checked && !pricingTable) {
+              setPricingTable({
+                items: [{
+                  id: generateTempId(),
+                  item: '',
+                  description: '',
+                  quantity: 1,
+                  unitPrice: 0,
+                }],
+                taxRate: 0,
+                currency: 'USD',
+              })
+            }
+            if (!e.target.checked) {
+              setPricingTable(null)
+            }
+          }}
+        />
+        Include pricing table
+      </label>
+      {showPricing && pricingTable && (
+        <PricingTable data={pricingTable} onChange={setPricingTable} />
+      )}
+    </div>
+  )
+
+  // ── Step 4: Add Signers ──────────────────────────────────────────
 
   const renderSignersStep = () => (
     <div className="doc-builder__signers">
@@ -477,6 +525,12 @@ function DocumentBuilderPage() {
           <span className="doc-builder__review-value">{fieldPlacement.fields.length} placed</span>
         </div>
         <div className="doc-builder__review-row">
+          <span className="doc-builder__review-label">Pricing</span>
+          <span className="doc-builder__review-value">
+            {pricingTable ? `${pricingTable.items.length} item${pricingTable.items.length !== 1 ? 's' : ''}` : 'None'}
+          </span>
+        </div>
+        <div className="doc-builder__review-row">
           <span className="doc-builder__review-label">Signers</span>
           <span className="doc-builder__review-value">{signers.length} recipient{signers.length !== 1 ? 's' : ''}</span>
         </div>
@@ -508,6 +562,13 @@ function DocumentBuilderPage() {
               <span className="doc-builder__review-field-page">Page {f.page}</span>
             </div>
           ))}
+        </div>
+      )}
+
+      {pricingTable && (
+        <div className="doc-builder__review-pricing">
+          <h3>Pricing Table</h3>
+          <PricingTable data={pricingTable} onChange={() => {}} readOnly />
         </div>
       )}
     </div>
@@ -583,6 +644,7 @@ function DocumentBuilderPage() {
       <div className="doc-builder__content">
         {currentStep === 'upload' && renderUploadStep()}
         {currentStep === 'fields' && renderFieldsStep()}
+        {currentStep === 'pricing' && renderPricingStep()}
         {currentStep === 'signers' && renderSignersStep()}
         {currentStep === 'review' && renderReviewStep()}
         {currentStep === 'send' && renderSendStep()}

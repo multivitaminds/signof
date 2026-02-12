@@ -21,6 +21,9 @@ beforeEach(() => {
   document.documentElement.removeAttribute('data-theme')
 })
 
+// ─── scrollIntoView mock (not in jsdom) ──────────────────────────────
+Element.prototype.scrollIntoView = vi.fn()
+
 // ─── Canvas mock (for SignaturePad and any future canvas components) ──
 HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
   clearRect: vi.fn(),

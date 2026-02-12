@@ -135,6 +135,7 @@ interface DocumentState {
     fields: DocumentField[]
     signingOrder: SigningOrder
     message?: string
+    pricingTable?: PricingTableData | null
   }) => Document
 
   // Decline
@@ -584,7 +585,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
       expiresAt: null,
       reminderSentAt: null,
       signingOrder: params.signingOrder,
-      pricingTable: null,
+      pricingTable: params.pricingTable ?? null,
       notes: [],
     }
 

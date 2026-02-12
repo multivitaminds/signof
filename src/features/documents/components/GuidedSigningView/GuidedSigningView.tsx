@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Document } from '../../../../types'
 import { FieldType } from '../../../../types'
 import FieldRenderer from '../FieldRenderer/FieldRenderer'
@@ -35,13 +35,33 @@ function GuidedSigningView({
     signerFields,
   } = useGuidedSigning(doc.fields, signerId)
 
+  const [showIntro, setShowIntro] = useState(true)
+  const [showComplete, setShowComplete] = useState(false)
+  const fieldRefs = useRef<Record<string, HTMLDivElement | null>>({})
+
+  useEffect(() => {
+    if (currentField && !showIntro) {
+      fieldRefs.current[currentField.id]?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      })
+    }
+  }, [currentFieldIndex, currentField, showIntro])
+
   const signer = doc.signers.find((s) => s.id === signerId)
   const signerIndex = doc.signers.findIndex((s) => s.id === signerId)
   const recipientColor = FIELD_COLORS[signerIndex % FIELD_COLORS.length] ?? FIELD_COLORS[0] ?? '#4F46E5'
 
+  const handleStart = useCallback(() => {
+    setShowIntro(false)
+  }, [])
+
   const handleComplete = useCallback(() => {
     if (canComplete) {
-      onComplete(fieldValues)
+      setShowComplete(true)
+      setTimeout(() => {
+        onComplete(fieldValues)
+      }, 300)
     }
   }, [canComplete, fieldValues, onComplete])
 
@@ -74,6 +94,18 @@ function GuidedSigningView({
 
   return (
     <div className="guided-signing" role="main" aria-label="Document signing">
+      {showIntro && (
+        <div className="guided-signing__intro-overlay">
+          <div className="guided-signing__intro-card">
+            <h3>Ready to sign</h3>
+            <p>You have {signerFields.length} field{signerFields.length !== 1 ? 's' : ''} to complete.</p>
+            <button className="btn-primary guided-signing__intro-btn" onClick={handleStart}>
+              Start Signing
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="guided-signing__header">
         <h2 className="guided-signing__title">{doc.name}</h2>
         <span className="guided-signing__signer">
@@ -90,6 +122,7 @@ function GuidedSigningView({
                 return (
                   <div
                     key={field.id}
+                    ref={(el) => { fieldRefs.current[field.id] = el }}
                     className={`guided-signing__field ${idx === currentFieldIndex ? 'guided-signing__field--active' : ''}`}
                     style={{
                       left: `${field.x}px`,
@@ -107,6 +140,13 @@ function GuidedSigningView({
                       }
                     }}
                   >
+                    <span className={`guided-signing__field-badge${
+                      fieldValues[field.id] ? ' guided-signing__field-badge--completed' :
+                      idx === currentFieldIndex ? ' guided-signing__field-badge--current' :
+                      ' guided-signing__field-badge--pending'
+                    }`}>
+                      {fieldValues[field.id] ? '\u2713' : idx + 1}
+                    </span>
                     <FieldRenderer
                       field={fieldWithValue}
                       recipientColor={recipientColor}
@@ -115,6 +155,21 @@ function GuidedSigningView({
                       focused={idx === currentFieldIndex}
                       onValueChange={idx === currentFieldIndex ? handleFieldValueChange : undefined}
                     />
+                    {idx === currentFieldIndex && (fieldValues[field.id] || (isFirstField && !fieldValues[field.id])) && (
+                      <button
+                        className="guided-signing__field-action"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          if (isLastField && canComplete) {
+                            handleComplete()
+                          } else {
+                            goToNext()
+                          }
+                        }}
+                      >
+                        {isFirstField && !fieldValues[field.id] ? 'Start' : isLastField ? 'Finish' : 'Next'}
+                      </button>
+                    )}
                   </div>
                 )
               })}
@@ -211,6 +266,15 @@ function GuidedSigningView({
           )}
         </div>
       </div>
+
+      {showComplete && (
+        <div className="guided-signing__complete-overlay">
+          <div className="guided-signing__complete-card">
+            <span className="guided-signing__complete-check">&#10003;</span>
+            <p>All fields completed!</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

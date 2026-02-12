@@ -161,4 +161,62 @@ describe('GuidedSigningView', () => {
     )
     expect(screen.getByText('Field 1 of 2')).toBeInTheDocument()
   })
+
+  it('shows intro overlay on mount', () => {
+    render(
+      <GuidedSigningView
+        document={createDocument()}
+        signerId="s1"
+        onComplete={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    )
+    expect(screen.getByText('Ready to sign')).toBeInTheDocument()
+    expect(screen.getByText('Start Signing')).toBeInTheDocument()
+    expect(screen.getByText(/You have 2 fields to complete/)).toBeInTheDocument()
+  })
+
+  it('dismisses intro overlay on Start Signing click', async () => {
+    const user = userEvent.setup()
+    render(
+      <GuidedSigningView
+        document={createDocument()}
+        signerId="s1"
+        onComplete={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    )
+    await user.click(screen.getByText('Start Signing'))
+    expect(screen.queryByText('Ready to sign')).not.toBeInTheDocument()
+  })
+
+  it('renders field badges with numbers', () => {
+    render(
+      <GuidedSigningView
+        document={createDocument()}
+        signerId="s1"
+        onComplete={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    )
+    // Field badges show numbers 1, 2
+    const badges = document.querySelectorAll('.guided-signing__field-badge')
+    expect(badges.length).toBe(2)
+  })
+
+  it('renders anchored action button on active field', async () => {
+    const user = userEvent.setup()
+    render(
+      <GuidedSigningView
+        document={createDocument()}
+        signerId="s1"
+        onComplete={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    )
+    // Dismiss intro first
+    await user.click(screen.getByText('Start Signing'))
+    // The "Start" button should be visible on the first field (since it has no value yet and is the first field)
+    expect(screen.getByText('Start')).toBeInTheDocument()
+  })
 })
