@@ -3,11 +3,25 @@ import { persist } from 'zustand/middleware'
 import {
   type TaxFiling,
   type TaxYear,
+  type TaxBanditConfig,
+  type TaxBanditValidationError,
+  type TransmissionStatus,
   FilingState,
   FilingStatus,
   STANDARD_DEDUCTION_2025,
   TAX_BRACKETS_2025,
 } from '../types'
+import {
+  getAccessToken,
+  createBusiness,
+  create1040Return,
+  validateReturn,
+  transmitReturn,
+  getFilingStatus,
+  getReturnPdf,
+  mapTaxBanditStatusToFilingState,
+  TaxBanditError,
+} from '../lib/taxBanditApi'
 
 // ─── Pre-Filing Checklist ───────────────────────────────────────────────
 
@@ -84,6 +98,15 @@ function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
 }
 
+// ─── Default TaxBandit Config ───────────────────────────────────────────
+
+const DEFAULT_TAXBANDIT_CONFIG: TaxBanditConfig = {
+  clientId: '',
+  clientSecret: '',
+  userToken: '',
+  useSandbox: true,
+}
+
 // ─── Sample Data ────────────────────────────────────────────────────────
 
 function createSampleFiling(): TaxFiling {
@@ -122,6 +145,16 @@ function createSampleFiling(): TaxFiling {
   }
 }
 
+// ─── Helper: check if TaxBandit credentials are configured ──────────────
+
+function hasCredentials(config: TaxBanditConfig): boolean {
+  return (
+    config.clientId.length > 0 &&
+    config.clientSecret.length > 0 &&
+    config.userToken.length > 0
+  )
+}
+
 // ─── Store ──────────────────────────────────────────────────────────────
 
 interface TaxFilingState {
@@ -131,12 +164,31 @@ interface TaxFilingState {
   isAmendmentMode: boolean
   amendmentReason: string
 
+  // TaxBandit integration
+  taxBanditConfig: TaxBanditConfig
+  accessToken: string | null
+  accessTokenExpiry: string | null
+  submissionId: string | null
+  recordId: string | null
+  validationErrors: TaxBanditValidationError[]
+  transmissionStatus: TransmissionStatus
+  transmissionError: string | null
+  returnPdfUrl: string | null
+
   // Actions
   createFiling: (taxYear: TaxYear) => void
   updateFiling: (id: string, updates: Partial<TaxFiling>) => void
   calculateTax: (filingId: string) => void
   submitFiling: (filingId: string) => void
   deleteFiling: (filingId: string) => void
+
+  // TaxBandit actions
+  setTaxBanditConfig: (config: Partial<TaxBanditConfig>) => void
+  authenticateWithTaxBandit: () => Promise<boolean>
+  validateAndTransmit: (filingId: string) => Promise<void>
+  pollFilingStatus: (filingId: string) => Promise<void>
+  downloadReturnPdf: () => Promise<void>
+  isTaxBanditConnected: () => boolean
 
   // Checklist
   toggleChecklistItem: (itemId: ChecklistItemId) => void
@@ -167,6 +219,17 @@ export const useTaxFilingStore = create<TaxFilingState>()(
       confirmation: null,
       isAmendmentMode: false,
       amendmentReason: '',
+
+      // TaxBandit state
+      taxBanditConfig: { ...DEFAULT_TAXBANDIT_CONFIG },
+      accessToken: null,
+      accessTokenExpiry: null,
+      submissionId: null,
+      recordId: null,
+      validationErrors: [],
+      transmissionStatus: 'idle' as TransmissionStatus,
+      transmissionError: null,
+      returnPdfUrl: null,
 
       createFiling: (taxYear) =>
         set((state) => {
@@ -235,15 +298,25 @@ export const useTaxFilingStore = create<TaxFilingState>()(
         })),
 
       submitFiling: (filingId) => {
-        get().calculateTax(filingId)
+        const state = get()
+        state.calculateTax(filingId)
         const filing = get().filings.find((f) => f.id === filingId)
         if (!filing) return
 
+        // If TaxBandit is configured, use API flow
+        if (hasCredentials(state.taxBanditConfig) && state.accessToken) {
+          // The API flow is handled by validateAndTransmit — here we just
+          // kick it off asynchronously
+          void state.validateAndTransmit(filingId)
+          return
+        }
+
+        // Fallback: simulated flow (no API credentials)
         const refNumber = generateReferenceNumber()
         const filedAt = new Date().toISOString()
 
-        set((state) => ({
-          filings: state.filings.map((f) =>
+        set((s) => ({
+          filings: s.filings.map((f) =>
             f.id === filingId
               ? {
                   ...f,
@@ -265,8 +338,8 @@ export const useTaxFilingStore = create<TaxFilingState>()(
 
         // Simulate IRS acceptance after delay
         setTimeout(() => {
-          set((state) => ({
-            filings: state.filings.map((f) =>
+          set((s) => ({
+            filings: s.filings.map((f) =>
               f.id === filingId
                 ? {
                     ...f,
@@ -283,6 +356,220 @@ export const useTaxFilingStore = create<TaxFilingState>()(
         set((state) => ({
           filings: state.filings.filter((f) => f.id !== filingId),
         })),
+
+      // ─── TaxBandit Actions ──────────────────────────────────────────────
+
+      setTaxBanditConfig: (config) =>
+        set((state) => ({
+          taxBanditConfig: { ...state.taxBanditConfig, ...config },
+          // Reset connection state when credentials change
+          accessToken: null,
+          accessTokenExpiry: null,
+        })),
+
+      authenticateWithTaxBandit: async () => {
+        const { taxBanditConfig } = get()
+        if (!hasCredentials(taxBanditConfig)) return false
+
+        try {
+          const { token, expiresIn } = await getAccessToken(taxBanditConfig)
+          const expiry = new Date(Date.now() + expiresIn * 1000).toISOString()
+          set({
+            accessToken: token,
+            accessTokenExpiry: expiry,
+          })
+          return true
+        } catch (err) {
+          set({ accessToken: null, accessTokenExpiry: null })
+          if (err instanceof TaxBanditError) {
+            set({ transmissionError: err.message })
+          }
+          return false
+        }
+      },
+
+      validateAndTransmit: async (filingId) => {
+        const state = get()
+        const filing = state.filings.find((f) => f.id === filingId)
+        if (!filing) return
+
+        const config = state.taxBanditConfig
+        let token = state.accessToken
+
+        // Authenticate if needed
+        if (!token) {
+          set({ transmissionStatus: 'validating', transmissionError: null, validationErrors: [] })
+          try {
+            const authResult = await getAccessToken(config)
+            token = authResult.token
+            const expiry = new Date(Date.now() + authResult.expiresIn * 1000).toISOString()
+            set({ accessToken: token, accessTokenExpiry: expiry })
+          } catch (err) {
+            set({
+              transmissionStatus: 'error',
+              transmissionError: err instanceof TaxBanditError ? err.message : 'Authentication failed',
+            })
+            return
+          }
+        }
+
+        try {
+          // Step 1: Validating
+          set({ transmissionStatus: 'validating', transmissionError: null, validationErrors: [] })
+
+          // Create business record
+          const businessId = await createBusiness(config, token, filing)
+
+          // Create 1040 return
+          const { submissionId, recordId } = await create1040Return(
+            config,
+            token,
+            businessId,
+            filing
+          )
+          set({ submissionId, recordId })
+
+          // Validate
+          const errors = await validateReturn(config, token, submissionId)
+          if (errors.length > 0) {
+            set({
+              validationErrors: errors,
+              transmissionStatus: 'error',
+              transmissionError: `Validation failed with ${errors.length} error(s)`,
+            })
+            return
+          }
+
+          // Step 2: Transmitting
+          set({ transmissionStatus: 'transmitting' })
+          await transmitReturn(config, token, submissionId, [recordId])
+
+          // Update filing state
+          const filedAt = new Date().toISOString()
+          set((s) => ({
+            filings: s.filings.map((f) =>
+              f.id === filingId
+                ? { ...f, state: FilingState.Filed, filedAt, updatedAt: filedAt }
+                : f
+            ),
+          }))
+
+          // Step 3: Poll status
+          set({ transmissionStatus: 'polling' })
+          const refNumber = generateReferenceNumber()
+
+          // Poll up to 3 times with 5s intervals
+          for (let attempt = 0; attempt < 3; attempt++) {
+            await new Promise((resolve) => setTimeout(resolve, 5000))
+            const statusResult = await getFilingStatus(config, token, submissionId)
+            const mappedState = mapTaxBanditStatusToFilingState(statusResult.acknowledgementStatus)
+
+            if (mappedState === 'accepted' || mappedState === 'rejected') {
+              const filingState = mappedState === 'accepted'
+                ? FilingState.Accepted
+                : FilingState.Rejected
+
+              set((s) => ({
+                filings: s.filings.map((f) =>
+                  f.id === filingId
+                    ? { ...f, state: filingState, updatedAt: new Date().toISOString() }
+                    : f
+                ),
+                transmissionStatus: 'complete',
+                confirmation: {
+                  referenceNumber: refNumber,
+                  filedAt,
+                  estimatedRefund: filing.refundOrOwed < 0 ? Math.abs(filing.refundOrOwed) : null,
+                  estimatedOwed: filing.refundOrOwed >= 0 ? filing.refundOrOwed : null,
+                  isAmendment: false,
+                  amendmentReason: '',
+                },
+              }))
+
+              if (statusResult.irsErrors.length > 0) {
+                set({
+                  transmissionError: statusResult.irsErrors
+                    .map((e) => `${e.code}: ${e.message}`)
+                    .join('; '),
+                })
+              }
+              return
+            }
+          }
+
+          // If polling didn't resolve, mark as complete with Filed status
+          set({
+            transmissionStatus: 'complete',
+            confirmation: {
+              referenceNumber: refNumber,
+              filedAt,
+              estimatedRefund: filing.refundOrOwed < 0 ? Math.abs(filing.refundOrOwed) : null,
+              estimatedOwed: filing.refundOrOwed >= 0 ? filing.refundOrOwed : null,
+              isAmendment: false,
+              amendmentReason: '',
+            },
+          })
+        } catch (err) {
+          set({
+            transmissionStatus: 'error',
+            transmissionError:
+              err instanceof TaxBanditError
+                ? err.errors.map((e) => e.message).join('; ') || err.message
+                : err instanceof Error
+                  ? err.message
+                  : 'An unexpected error occurred',
+          })
+        }
+      },
+
+      pollFilingStatus: async (filingId) => {
+        const { taxBanditConfig, accessToken, submissionId } = get()
+        if (!accessToken || !submissionId) return
+
+        try {
+          const statusResult = await getFilingStatus(taxBanditConfig, accessToken, submissionId)
+          const mappedState = mapTaxBanditStatusToFilingState(statusResult.acknowledgementStatus)
+
+          if (mappedState === 'accepted' || mappedState === 'rejected') {
+            const filingState = mappedState === 'accepted'
+              ? FilingState.Accepted
+              : FilingState.Rejected
+
+            set((s) => ({
+              filings: s.filings.map((f) =>
+                f.id === filingId
+                  ? { ...f, state: filingState, updatedAt: new Date().toISOString() }
+                  : f
+              ),
+            }))
+          }
+        } catch {
+          // Silently fail — user can retry
+        }
+      },
+
+      downloadReturnPdf: async () => {
+        const { taxBanditConfig, accessToken, submissionId } = get()
+        if (!accessToken || !submissionId) return
+
+        try {
+          const pdfUrl = await getReturnPdf(taxBanditConfig, accessToken, submissionId)
+          set({ returnPdfUrl: pdfUrl })
+        } catch (err) {
+          set({
+            transmissionError:
+              err instanceof Error ? err.message : 'Failed to get PDF URL',
+          })
+        }
+      },
+
+      isTaxBanditConnected: () => {
+        const { accessToken, accessTokenExpiry } = get()
+        if (!accessToken || !accessTokenExpiry) return false
+        return new Date(accessTokenExpiry) > new Date()
+      },
+
+      // ─── Checklist ──────────────────────────────────────────────────────
 
       toggleChecklistItem: (itemId) =>
         set((state) => ({
@@ -304,6 +591,8 @@ export const useTaxFilingStore = create<TaxFilingState>()(
         const completed = checklist.filter((i) => i.completed).length
         return Math.round((completed / checklist.length) * 100)
       },
+
+      // ─── Amendment ──────────────────────────────────────────────────────
 
       setAmendmentMode: (enabled) =>
         set({ isAmendmentMode: enabled }),
@@ -358,6 +647,8 @@ export const useTaxFilingStore = create<TaxFilingState>()(
         }, 3000)
       },
 
+      // ─── Confirmation / Clear ───────────────────────────────────────────
+
       clearConfirmation: () =>
         set({ confirmation: null }),
 
@@ -366,8 +657,19 @@ export const useTaxFilingStore = create<TaxFilingState>()(
           filings: [],
           checklist: DEFAULT_CHECKLIST.map((item) => ({ ...item })),
           confirmation: null,
+          taxBanditConfig: { ...DEFAULT_TAXBANDIT_CONFIG },
+          accessToken: null,
+          accessTokenExpiry: null,
+          submissionId: null,
+          recordId: null,
+          validationErrors: [],
+          transmissionStatus: 'idle',
+          transmissionError: null,
+          returnPdfUrl: null,
         })
       },
+
+      // ─── Queries ────────────────────────────────────────────────────────
 
       getFilingByYear: (year) =>
         get().filings.find((f) => f.taxYear === year),
@@ -381,6 +683,7 @@ export const useTaxFilingStore = create<TaxFilingState>()(
         filings: state.filings,
         checklist: state.checklist,
         confirmation: state.confirmation,
+        taxBanditConfig: state.taxBanditConfig,
       }),
     }
   )

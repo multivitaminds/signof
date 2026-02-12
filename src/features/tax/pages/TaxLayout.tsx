@@ -69,7 +69,7 @@ function TaxLayout() {
             <span>Forms</span>
           </NavLink>
           <NavLink
-            to="/tax/file"
+            to="/tax/filing"
             className={({ isActive }) =>
               `tax-layout__tab ${isActive ? 'tax-layout__tab--active' : ''}`
             }

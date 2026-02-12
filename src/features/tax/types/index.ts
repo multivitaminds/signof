@@ -156,6 +156,34 @@ export interface TaxDeadline {
   taxYear: TaxYear
 }
 
+// ─── TaxBandit Integration ──────────────────────────────────────────
+
+export interface TaxBanditConfig {
+  clientId: string
+  clientSecret: string
+  userToken: string
+  useSandbox: boolean
+}
+
+export interface TaxBanditValidationError {
+  id: string
+  field: string
+  message: string
+  code: string
+}
+
+export const TransmissionStatus = {
+  Idle: 'idle',
+  Validating: 'validating',
+  Transmitting: 'transmitting',
+  Polling: 'polling',
+  Complete: 'complete',
+  Error: 'error',
+} as const
+
+export type TransmissionStatus =
+  (typeof TransmissionStatus)[keyof typeof TransmissionStatus]
+
 // ─── Helpers ─────────────────────────────────────────────────────────
 
 export const TAX_YEARS: TaxYear[] = [TaxYear.Y2025, TaxYear.Y2024, TaxYear.Y2023]

@@ -804,6 +804,148 @@
   color: var(--color-warning-dark);
 }
 
+/* ─── Transmission Progress ──────────────────────────────────────── */
+
+.tax-filing__transmission-progress {
+  padding: var(--space-4);
+  background-color: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+}
+
+.tax-filing__transmission-progress--error {
+  background-color: var(--color-danger-light);
+  border-color: var(--color-danger);
+}
+
+.tax-filing__transmission-progress--success {
+  background-color: var(--color-success-light);
+  border-color: var(--color-success);
+}
+
+.tax-filing__transmission-steps {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.tax-filing__transmission-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.tax-filing__transmission-step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-tertiary);
+  flex-shrink: 0;
+}
+
+.tax-filing__transmission-step--active .tax-filing__transmission-step-dot {
+  background-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+.tax-filing__transmission-step--active {
+  color: var(--color-primary);
+  font-weight: var(--font-semibold);
+}
+
+.tax-filing__transmission-step--done .tax-filing__transmission-step-dot {
+  background-color: var(--color-success);
+}
+
+.tax-filing__transmission-step--done {
+  color: var(--color-success-dark);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ─── Validation Errors ─────────────────────────────────────────── */
+
+.tax-filing__validation-errors {
+  padding: var(--space-4);
+  background-color: var(--color-danger-light);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.tax-filing__validation-errors strong {
+  font-size: var(--text-sm);
+  color: var(--color-danger-dark);
+}
+
+.tax-filing__validation-error-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.tax-filing__validation-error-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
+
+.tax-filing__validation-error-field {
+  font-weight: var(--font-semibold);
+  color: var(--color-danger-dark);
+  flex-shrink: 0;
+}
+
+.tax-filing__validation-error-message {
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.tax-filing__validation-error-code {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  background-color: var(--bg-secondary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Transmission Error ────────────────────────────────────────── */
+
+.tax-filing__transmission-error {
+  padding: var(--space-4);
+  background-color: var(--color-danger-light);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+}
+
+.tax-filing__transmission-error strong {
+  font-size: var(--text-sm);
+  color: var(--color-danger-dark);
+  display: block;
+  margin-bottom: var(--space-1);
+}
+
+.tax-filing__transmission-error p {
+  font-size: var(--text-sm);
+  color: var(--color-danger-dark);
+}
+
 /* ─── Responsive ──────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {
@@ -835,5 +977,15 @@
 
   .tax-filing__status-bar {
     padding: var(--space-2);
+  }
+
+  .tax-filing__transmission-steps {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tax-filing__validation-error-item {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

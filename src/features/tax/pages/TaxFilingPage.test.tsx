@@ -59,6 +59,17 @@ vi.mock('../stores/useTaxFilingStore', () => ({
       amendmentReason: '',
       setAmendmentReason: vi.fn(),
       submitAmendment: vi.fn(),
+      // TaxBandit state
+      taxBanditConfig: { clientId: '', clientSecret: '', userToken: '', useSandbox: true },
+      setTaxBanditConfig: vi.fn(),
+      authenticateWithTaxBandit: vi.fn().mockResolvedValue(false),
+      isTaxBanditConnected: () => false,
+      transmissionStatus: 'idle',
+      transmissionError: null,
+      validationErrors: [],
+      submissionId: null,
+      returnPdfUrl: null,
+      downloadReturnPdf: vi.fn(),
     }),
 }))
 
@@ -66,6 +77,10 @@ vi.mock('../components/FilingWizard/FilingWizard', () => ({
   default: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="filing-wizard">{children}</div>
   ),
+}))
+
+vi.mock('../components/TaxBanditSettings/TaxBanditSettings', () => ({
+  default: () => <div data-testid="taxbandit-settings" />,
 }))
 
 describe('TaxFilingPage', () => {
@@ -103,5 +118,10 @@ describe('TaxFilingPage', () => {
   it('renders checklist progress', () => {
     render(<TaxFilingPage />)
     expect(screen.getByText('50%')).toBeInTheDocument()
+  })
+
+  it('renders TaxBandit settings panel', () => {
+    render(<TaxFilingPage />)
+    expect(screen.getByTestId('taxbandit-settings')).toBeInTheDocument()
   })
 })

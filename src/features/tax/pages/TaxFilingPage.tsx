@@ -1,9 +1,10 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useTaxStore } from '../stores/useTaxStore'
 import { useTaxFilingStore } from '../stores/useTaxFilingStore'
-import { FILING_STATUS_LABELS, FILING_STATE_LABELS, FilingState, STANDARD_DEDUCTION_2025 } from '../types'
-import type { TaxFiling, FilingStatus } from '../types'
+import { FILING_STATUS_LABELS, FILING_STATE_LABELS, FilingState, STANDARD_DEDUCTION_2025, TransmissionStatus } from '../types'
+import type { TaxFiling, FilingStatus, TaxBanditConfig } from '../types'
 import FilingWizard from '../components/FilingWizard/FilingWizard'
+import TaxBanditSettings from '../components/TaxBanditSettings/TaxBanditSettings'
 import './TaxFilingPage.css'
 
 const WIZARD_STEPS = [
@@ -23,6 +24,14 @@ const US_STATES = [
   'NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV',
   'WI','WY','DC',
 ]
+
+const TRANSMISSION_STEP_LABELS: Record<string, string> = {
+  [TransmissionStatus.Validating]: 'Validating with IRS...',
+  [TransmissionStatus.Transmitting]: 'Transmitting to IRS...',
+  [TransmissionStatus.Polling]: 'Waiting for IRS response...',
+  [TransmissionStatus.Complete]: 'Transmission complete',
+  [TransmissionStatus.Error]: 'Transmission failed',
+}
 
 function TaxFilingPage() {
   const activeTaxYear = useTaxStore((s) => s.activeTaxYear)
@@ -44,6 +53,18 @@ function TaxFilingPage() {
   const amendmentReason = useTaxFilingStore((s) => s.amendmentReason)
   const setAmendmentReason = useTaxFilingStore((s) => s.setAmendmentReason)
   const submitAmendment = useTaxFilingStore((s) => s.submitAmendment)
+
+  // TaxBandit state
+  const taxBanditConfig = useTaxFilingStore((s) => s.taxBanditConfig)
+  const setTaxBanditConfig = useTaxFilingStore((s) => s.setTaxBanditConfig)
+  const authenticateWithTaxBandit = useTaxFilingStore((s) => s.authenticateWithTaxBandit)
+  const isTaxBanditConnected = useTaxFilingStore((s) => s.isTaxBanditConnected)
+  const transmissionStatus = useTaxFilingStore((s) => s.transmissionStatus)
+  const transmissionError = useTaxFilingStore((s) => s.transmissionError)
+  const validationErrors = useTaxFilingStore((s) => s.validationErrors)
+  const submissionId = useTaxFilingStore((s) => s.submissionId)
+  const returnPdfUrl = useTaxFilingStore((s) => s.returnPdfUrl)
+  const downloadReturnPdf = useTaxFilingStore((s) => s.downloadReturnPdf)
 
   const [currentStep, setCurrentStep] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -114,10 +135,22 @@ function TaxFilingPage() {
     if (!filing) return
     setIsSubmitting(true)
     submitFiling(filing.id)
-    setTimeout(() => {
-      setIsSubmitting(false)
-    }, 3500)
-  }, [filing, submitFiling])
+
+    // For simulated mode, use timeout. For TaxBandit mode, the async flow handles it.
+    if (!isTaxBanditConnected()) {
+      setTimeout(() => {
+        setIsSubmitting(false)
+      }, 3500)
+    }
+  }, [filing, submitFiling, isTaxBanditConnected])
+
+  // Derive submitting state: if TaxBandit is active, submitting is tied to transmission status
+  const isTransmitting =
+    transmissionStatus === TransmissionStatus.Validating ||
+    transmissionStatus === TransmissionStatus.Transmitting ||
+    transmissionStatus === TransmissionStatus.Polling
+
+  const effectiveIsSubmitting = isSubmitting || isTransmitting
 
   const handleAmendmentSubmit = useCallback(() => {
     if (!filing) return
@@ -140,6 +173,28 @@ function TaxFilingPage() {
   const handleToggleChecklist = useCallback(() => {
     setShowChecklist((prev) => !prev)
   }, [])
+
+  const handleConfigChange = useCallback(
+    (config: Partial<TaxBanditConfig>) => {
+      setTaxBanditConfig(config)
+    },
+    [setTaxBanditConfig]
+  )
+
+  const handleTestConnection = useCallback(async () => {
+    return authenticateWithTaxBandit()
+  }, [authenticateWithTaxBandit])
+
+  const handleDownloadPdf = useCallback(() => {
+    void downloadReturnPdf()
+  }, [downloadReturnPdf])
+
+  const handleFixErrors = useCallback(() => {
+    // Navigate back to the step with the error
+    setCurrentStep(0)
+  }, [])
+
+  const connected = isTaxBanditConnected()
 
   // Auto-populate income from extracted documents
   const autoPopulatedWages = useMemo(() => {
@@ -210,6 +265,13 @@ function TaxFilingPage() {
             <span className="tax-filing__confirmation-ref-value">{confirmation.referenceNumber}</span>
           </div>
 
+          {submissionId && (
+            <div className="tax-filing__confirmation-ref">
+              <span className="tax-filing__confirmation-ref-label">TaxBandit Submission ID</span>
+              <span className="tax-filing__confirmation-ref-value">{submissionId}</span>
+            </div>
+          )}
+
           <div className="tax-filing__confirmation-details">
             <div className="tax-filing__confirmation-row">
               <span>Filed At</span>
@@ -250,6 +312,25 @@ function TaxFilingPage() {
           </div>
 
           <div className="tax-filing__confirmation-actions">
+            {connected && !returnPdfUrl && (
+              <button
+                className="btn-primary"
+                onClick={handleDownloadPdf}
+                type="button"
+              >
+                Download Return PDF
+              </button>
+            )}
+            {returnPdfUrl && (
+              <a
+                href={returnPdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
+              >
+                View Return PDF
+              </a>
+            )}
             <button
               className="btn-secondary"
               onClick={handleStartAmendment}
@@ -337,6 +418,13 @@ function TaxFilingPage() {
             </div>
           </div>
 
+          {transmissionError && filing.state === FilingState.Rejected && (
+            <div className="tax-filing__transmission-error">
+              <strong>IRS Rejection Details</strong>
+              <p>{transmissionError}</p>
+            </div>
+          )}
+
           <div className="tax-filing__filed-actions">
             <button
               className="btn-secondary"
@@ -353,6 +441,14 @@ function TaxFilingPage() {
 
   return (
     <div className="tax-filing">
+      {/* ─── TaxBandit API Settings ──────────────────────── */}
+      <TaxBanditSettings
+        config={taxBanditConfig}
+        isConnected={connected}
+        onConfigChange={handleConfigChange}
+        onTestConnection={handleTestConnection}
+      />
+
       {/* ─── Pre-Filing Checklist ───────────────────────────── */}
       <div className="tax-filing__checklist">
         <button
@@ -467,7 +563,7 @@ function TaxFilingPage() {
         currentStep={currentStep}
         onStepChange={setCurrentStep}
         onSubmit={isAmendmentMode ? handleAmendmentSubmit : handleSubmit}
-        isSubmitting={isSubmitting}
+        isSubmitting={effectiveIsSubmitting}
         canProceed={!isAmendmentMode || amendmentReason.length > 0 || currentStep < 3}
       >
         {/* Step 1: Personal Info */}
@@ -883,7 +979,9 @@ function TaxFilingPage() {
           <div className="tax-filing__step">
             <h2 className="tax-filing__step-title">Review & File</h2>
             <p className="tax-filing__step-desc">
-              Review your tax return summary before submitting.
+              {connected
+                ? 'Review your tax return summary. Your return will be validated and transmitted via TaxBandit.'
+                : 'Review your tax return summary before submitting.'}
             </p>
 
             {!isChecklistComplete() && (
@@ -893,6 +991,72 @@ function TaxFilingPage() {
                   You have not completed all pre-filing checklist items. You can
                   still submit, but we recommend completing the checklist first.
                 </p>
+              </div>
+            )}
+
+            {/* Transmission Progress */}
+            {transmissionStatus !== TransmissionStatus.Idle && (
+              <div className={`tax-filing__transmission-progress ${
+                transmissionStatus === TransmissionStatus.Error
+                  ? 'tax-filing__transmission-progress--error'
+                  : transmissionStatus === TransmissionStatus.Complete
+                    ? 'tax-filing__transmission-progress--success'
+                    : ''
+              }`}>
+                <div className="tax-filing__transmission-steps">
+                  {[TransmissionStatus.Validating, TransmissionStatus.Transmitting, TransmissionStatus.Polling].map((step) => {
+                    const stepOrder = [TransmissionStatus.Validating, TransmissionStatus.Transmitting, TransmissionStatus.Polling]
+                    const currentIdx = stepOrder.indexOf(transmissionStatus as typeof step)
+                    const stepIdx = stepOrder.indexOf(step)
+                    const isCurrentStep = transmissionStatus === step
+                    const isPastStep = currentIdx > stepIdx || transmissionStatus === TransmissionStatus.Complete
+
+                    return (
+                      <div
+                        key={step}
+                        className={`tax-filing__transmission-step ${
+                          isCurrentStep ? 'tax-filing__transmission-step--active' : ''
+                        } ${isPastStep ? 'tax-filing__transmission-step--done' : ''}`}
+                      >
+                        <div className="tax-filing__transmission-step-dot" />
+                        <span>{TRANSMISSION_STEP_LABELS[step]}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Validation Errors */}
+            {validationErrors.length > 0 && (
+              <div className="tax-filing__validation-errors">
+                <strong>Validation Errors</strong>
+                <ul className="tax-filing__validation-error-list">
+                  {validationErrors.map((err) => (
+                    <li key={err.id} className="tax-filing__validation-error-item">
+                      <span className="tax-filing__validation-error-field">{err.field || 'General'}</span>
+                      <span className="tax-filing__validation-error-message">{err.message}</span>
+                      {err.code && (
+                        <span className="tax-filing__validation-error-code">{err.code}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  className="btn-secondary"
+                  onClick={handleFixErrors}
+                  type="button"
+                >
+                  Fix Errors
+                </button>
+              </div>
+            )}
+
+            {/* Transmission Error */}
+            {transmissionError && transmissionStatus === TransmissionStatus.Error && validationErrors.length === 0 && (
+              <div className="tax-filing__transmission-error">
+                <strong>Transmission Error</strong>
+                <p>{transmissionError}</p>
               </div>
             )}
 

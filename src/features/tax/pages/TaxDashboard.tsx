@@ -65,7 +65,7 @@ function TaxDashboard() {
     if (!filing) {
       createFiling(activeTaxYear)
     }
-    navigate('/tax/file')
+    navigate('/tax/filing')
   }, [filing, createFiling, activeTaxYear, navigate])
 
   const refundOrOwed = filing?.refundOrOwed ?? 0
