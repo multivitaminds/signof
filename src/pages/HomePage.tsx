@@ -60,6 +60,13 @@ export default function HomePage() {
     [bookings]
   )
 
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours()
+    if (hour < 12) return 'Good morning'
+    if (hour < 18) return 'Good afternoon'
+    return 'Good evening'
+  }, [])
+
   return (
     <div className="home-page" ref={pullRef}>
       {/* Pull-to-refresh indicator (mobile only) */}
@@ -71,6 +78,9 @@ export default function HomePage() {
           <div className="pull-to-refresh__spinner" />
         </div>
       )}
+      {/* 0. Salutation Greeting — always visible */}
+      <h1 className="home-page__greeting">{greeting}, {firstName}</h1>
+
       {/* 1. Welcome Banner */}
       <WelcomeBanner userName={firstName} />
 

@@ -7,6 +7,16 @@
   margin: 0 auto;
 }
 
+/* ─── Greeting ─────────────────────────────────────────────── */
+
+.home-page__greeting {
+  font-size: var(--text-2xl, 1.5rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary, #1F2937);
+  margin: var(--space-6, 32px) 0 var(--space-4, 16px);
+  padding: 0 var(--space-1, 4px);
+}
+
 /* ─── Sections ──────────────────────────────────────────────── */
 .home-page__section {
   margin-bottom: var(--space-6, 32px);

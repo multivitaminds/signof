@@ -76,6 +76,11 @@ describe('HomePage', () => {
     localStorage.clear()
   })
 
+  it('renders the salutation greeting with first name', () => {
+    renderHomePage()
+    expect(screen.getByText(/Good (morning|afternoon|evening), Sam/)).toBeInTheDocument()
+  })
+
   it('renders the welcome banner', () => {
     renderHomePage()
     expect(screen.getByTestId('welcome-banner')).toBeInTheDocument()
