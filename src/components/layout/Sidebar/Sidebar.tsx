@@ -8,7 +8,7 @@ import {
   Calendar,
   Database,
   Inbox,
-  Brain,
+  Wand2,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -127,7 +127,7 @@ export default function Sidebar() {
     { path: '/calendar', label: 'Calendar', icon: Calendar },
     { path: '/data', label: 'Databases', icon: Database },
     { path: '/inbox', label: 'Inbox', icon: Inbox, badge: unreadCount || undefined },
-    { path: '/ai', label: 'AI', icon: Brain },
+    { path: '/ai', label: 'Intelligence', icon: Wand2 },
     { path: '/tax', label: 'Tax', icon: Receipt },
     { path: '/developer', label: 'Developer', icon: Code2 },
   ]

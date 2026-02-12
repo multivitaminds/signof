@@ -53,10 +53,6 @@
   gap: 6px;
 }
 
-.ai-feature-chat__header-icon {
-  font-size: 1.125rem;
-}
-
 .ai-feature-chat__sparkle {
   color: var(--color-primary);
 }

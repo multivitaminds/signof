@@ -18,7 +18,6 @@ export interface QuickAction {
 export interface FeatureContext {
   key: FeatureKey
   label: string
-  icon: string
   placeholder: string
   quickActions: QuickAction[]
   greeting: string
@@ -28,7 +27,6 @@ export const FEATURE_CONTEXTS: Record<FeatureKey, FeatureContext> = {
   home: {
     key: 'home',
     label: 'Home',
-    icon: '🏠',
     placeholder: 'Ask about your dashboard...',
     quickActions: [
       { label: 'Show my stats', prompt: 'Show my stats' },
@@ -41,7 +39,6 @@ export const FEATURE_CONTEXTS: Record<FeatureKey, FeatureContext> = {
   workspace: {
     key: 'workspace',
     label: 'Workspace',
-    icon: '📝',
     placeholder: 'Ask about pages and notes...',
     quickActions: [
       { label: 'Create a new page', prompt: 'Create a new page' },
@@ -54,7 +51,6 @@ export const FEATURE_CONTEXTS: Record<FeatureKey, FeatureContext> = {
   projects: {
     key: 'projects',
     label: 'Projects',
-    icon: '📋',
     placeholder: 'Ask about tasks and issues...',
     quickActions: [
       { label: 'Create a task', prompt: 'Create a task' },
@@ -67,7 +63,6 @@ export const FEATURE_CONTEXTS: Record<FeatureKey, FeatureContext> = {
   documents: {
     key: 'documents',
     label: 'Documents',
-    icon: '📄',
     placeholder: 'Ask about documents and signatures...',
     quickActions: [
       { label: 'Create template', prompt: 'Create a template' },
@@ -80,7 +75,6 @@ export const FEATURE_CONTEXTS: Record<FeatureKey, FeatureContext> = {
   scheduling: {
     key: 'scheduling',
     label: 'Scheduling',
-    icon: '📅',
     placeholder: 'Ask about meetings and bookings...',
     quickActions: [
       { label: 'Schedule a meeting', prompt: 'Schedule a meeting' },
@@ -93,7 +87,6 @@ export const FEATURE_CONTEXTS: Record<FeatureKey, FeatureContext> = {
   databases: {
     key: 'databases',
     label: 'Databases',
-    icon: '🗄️',
     placeholder: 'Ask about databases and tables...',
     quickActions: [
       { label: 'Create a database', prompt: 'Create a database' },
@@ -106,7 +99,6 @@ export const FEATURE_CONTEXTS: Record<FeatureKey, FeatureContext> = {
   inbox: {
     key: 'inbox',
     label: 'Inbox',
-    icon: '📬',
     placeholder: 'Ask about notifications...',
     quickActions: [
       { label: 'Summarize', prompt: 'Summarize my notifications' },

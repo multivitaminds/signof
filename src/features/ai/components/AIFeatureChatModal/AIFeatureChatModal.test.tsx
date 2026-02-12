@@ -55,14 +55,14 @@ describe('AIFeatureChatModal', () => {
     render(
       <AIFeatureChatModal featureKey="workspace" isOpen={true} onClose={onClose} />
     )
-    expect(screen.getByText(/AI Assistant — Workspace/)).toBeInTheDocument()
+    expect(screen.getByText('Workspace')).toBeInTheDocument()
   })
 
   it('does not render when isOpen is false', () => {
     render(
       <AIFeatureChatModal featureKey="workspace" isOpen={false} onClose={onClose} />
     )
-    expect(screen.queryByText(/AI Assistant/)).not.toBeInTheDocument()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('shows feature-specific quick action chips', () => {

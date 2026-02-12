@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { X, Send, Sparkles } from 'lucide-react'
+import { X, Send, Wand2 } from 'lucide-react'
 import { FEATURE_CONTEXTS, type FeatureKey } from '../../lib/featureContexts'
 import useAIFeatureChatStore from '../../stores/useAIFeatureChatStore'
 import { parseIntent, executeIntent } from '../../lib/intentEngine'
@@ -105,16 +105,15 @@ export default function AIFeatureChatModal({ featureKey, isOpen, onClose }: AIFe
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label={`AI Assistant — ${context.label}`}
+      aria-label={context.label}
     >
       <div className="ai-feature-chat" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="ai-feature-chat__header">
           <div className="ai-feature-chat__header-left">
-            <span className="ai-feature-chat__header-icon">{context.icon}</span>
-            <Sparkles size={14} className="ai-feature-chat__sparkle" />
+            <Wand2 size={14} className="ai-feature-chat__sparkle" />
             <span className="ai-feature-chat__header-title">
-              AI Assistant — {context.label}
+              {context.label}
             </span>
           </div>
           <button

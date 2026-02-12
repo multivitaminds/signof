@@ -35,11 +35,11 @@ describe('Breadcrumbs', () => {
   it('renders "Home > AI > Memory" for /ai/memory', () => {
     renderWithRouter('/ai/memory')
     expect(screen.getByText('Home')).toBeInTheDocument()
-    expect(screen.getByText('AI')).toBeInTheDocument()
+    expect(screen.getByText('Intelligence')).toBeInTheDocument()
     expect(screen.getByText('Memory')).toBeInTheDocument()
-    // Home and AI should be links
+    // Home and Intelligence should be links
     expect(screen.getByText('Home').closest('a')).toHaveAttribute('href', '/')
-    expect(screen.getByText('AI').closest('a')).toHaveAttribute('href', '/ai')
+    expect(screen.getByText('Intelligence').closest('a')).toHaveAttribute('href', '/ai')
     // Memory should be current (not a link)
     expect(screen.getByText('Memory').closest('span')).toHaveClass(
       'breadcrumbs__current'

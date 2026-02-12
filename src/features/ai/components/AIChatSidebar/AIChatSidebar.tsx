@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
-import { X, Send, Brain, MessageSquare, Trash2 } from 'lucide-react'
+import { X, Send, Wand2, MessageSquare, Trash2 } from 'lucide-react'
 import useAIChatStore, {
   getContextHintForRoute,
   AVAILABLE_SLASH_COMMANDS,
@@ -111,7 +111,7 @@ export default function AIChatSidebar() {
     <div className="ai-chat-sidebar" role="complementary" aria-label="AI Chat">
       <div className="ai-chat-sidebar__header">
         <div className="ai-chat-sidebar__header-left">
-          <Brain size={18} className="ai-chat-sidebar__header-icon" />
+          <Wand2 size={18} className="ai-chat-sidebar__header-icon" />
           <span className="ai-chat-sidebar__header-title">AI Assistant</span>
         </div>
         <div className="ai-chat-sidebar__header-actions">

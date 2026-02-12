@@ -38,9 +38,9 @@ describe('AIFeatureWidget', () => {
     expect(screen.getByRole('button', { name: /ask ai about home/i })).toBeInTheDocument()
   })
 
-  it('shows AI badge', () => {
+  it('renders the wand icon in the button', () => {
     render(<AIFeatureWidget featureKey="workspace" />)
-    expect(screen.getByText('AI')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /ask ai about workspace/i })).toBeInTheDocument()
   })
 
   it('shows tooltip text for the feature', () => {

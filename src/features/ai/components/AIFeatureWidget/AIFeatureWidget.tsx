@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Sparkles } from 'lucide-react'
+import { Wand2 } from 'lucide-react'
 import { FEATURE_CONTEXTS, type FeatureKey } from '../../lib/featureContexts'
 import useAIFeatureChatStore from '../../stores/useAIFeatureChatStore'
 import AIFeatureChatModal from '../AIFeatureChatModal/AIFeatureChatModal'
@@ -32,8 +32,7 @@ export default function AIFeatureWidget({ featureKey }: AIFeatureWidgetProps) {
         title={`Ask AI about ${context.label}`}
         type="button"
       >
-        <Sparkles size={24} />
-        <span className="ai-feature-widget__badge">AI</span>
+        <Wand2 size={22} />
       </button>
       <div className="ai-feature-widget__tooltip">
         Ask AI about {context.label}

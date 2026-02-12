@@ -11,9 +11,9 @@ describe('AILayout', () => {
     )
   }
 
-  it('renders header with AI text', () => {
+  it('renders header with Intelligence text', () => {
     renderWithRouter()
-    expect(screen.getByText('AI')).toBeInTheDocument()
+    expect(screen.getByText('Intelligence')).toBeInTheDocument()
   })
 
   it('renders Context Memory tab link', () => {

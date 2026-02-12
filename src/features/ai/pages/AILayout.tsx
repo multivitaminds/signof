@@ -1,13 +1,13 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { Brain } from 'lucide-react'
+import { Wand2 } from 'lucide-react'
 import './AILayout.css'
 
 export default function AILayout() {
   return (
     <div className="ai-layout">
       <div className="ai-layout__header">
-        <Brain size={24} className="ai-layout__icon" />
-        <h1 className="ai-layout__title">AI</h1>
+        <Wand2 size={24} className="ai-layout__icon" />
+        <h1 className="ai-layout__title">Intelligence</h1>
       </div>
 
       <nav className="ai-layout__tabs" aria-label="AI sections">

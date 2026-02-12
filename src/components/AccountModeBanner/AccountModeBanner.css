@@ -5,13 +5,33 @@
 .account-mode-banner {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: var(--space-sm, 0.5rem);
   height: 40px;
   padding: 0 var(--space-md, 1rem);
   font-size: 0.8125rem;
   font-weight: 500;
   transition: background-color 0.2s ease;
+}
+
+.account-mode-banner__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 0.5rem);
+}
+
+.account-mode-banner__cta {
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.account-mode-banner__cta:hover {
+  opacity: 0.85;
 }
 
 /* ─── Demo Mode ───────────────────────────────────────── */
