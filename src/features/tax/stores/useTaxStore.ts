@@ -166,6 +166,9 @@ interface TaxState {
   // Year selection
   setActiveTaxYear: (year: TaxYear) => void
 
+  // Clear data
+  clearData: () => void
+
   // Queries
   getDocumentsByYear: (year: TaxYear) => TaxDocument[]
   getFilingByYear: (year: TaxYear) => TaxFiling | undefined
@@ -429,6 +432,14 @@ export const useTaxStore = create<TaxState>()(
             d.id === id ? { ...d, completed: !d.completed } : d
           ),
         })),
+
+      // Clear data (resets documents and filings but keeps deadlines as templates)
+      clearData: () => {
+        set({
+          documents: [],
+          filings: [],
+        })
+      },
 
       // Year selection
       setActiveTaxYear: (year) => set({ activeTaxYear: year }),

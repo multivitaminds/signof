@@ -15,6 +15,16 @@ export interface User {
   createdAt: string
 }
 
+export const RegistrationStep = {
+  None: 'none',
+  PlanSelection: 'plan',
+  Payment: 'payment',
+  Onboarding: 'onboarding',
+  Complete: 'complete',
+} as const
+
+export type RegistrationStep = (typeof RegistrationStep)[keyof typeof RegistrationStep]
+
 export interface OnboardingData {
   displayName: string
   workspaceName: string

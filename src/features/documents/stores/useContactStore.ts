@@ -19,6 +19,9 @@ interface ContactState {
   getContact: (id: string) => Contact | undefined
   searchContacts: (query: string) => Contact[]
   addSigningHistory: (contactId: string, entry: ContactSigningHistory) => void
+
+  // Clear data
+  clearData: () => void
 }
 
 export const useContactStore = create<ContactState>()(
@@ -73,6 +76,10 @@ export const useContactStore = create<ContactState>()(
               : c
           ),
         }))
+      },
+
+      clearData: () => {
+        set({ contacts: [] })
       },
     }),
     { name: 'signof-contacts' }

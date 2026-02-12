@@ -18,6 +18,9 @@ interface TemplateState {
   deleteTemplate: (id: string) => void
   getTemplate: (id: string) => Template | undefined
   duplicateTemplate: (id: string) => Template | undefined
+
+  // Clear data
+  clearData: () => void
 }
 
 export const useTemplateStore = create<TemplateState>()(
@@ -70,6 +73,10 @@ export const useTemplateStore = create<TemplateState>()(
         }
         set((state) => ({ templates: [duplicate, ...state.templates] }))
         return duplicate
+      },
+
+      clearData: () => {
+        set({ templates: [] })
       },
     }),
     { name: 'signof-templates' }

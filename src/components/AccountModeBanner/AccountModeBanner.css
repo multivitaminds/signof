@@ -80,6 +80,13 @@
   outline-offset: 2px;
 }
 
+/* ─── Starter (Free Plan) ────────────────────────────── */
+
+.account-mode-banner--starter {
+  background: var(--color-primary, #4F46E5);
+  color: #fff;
+}
+
 /* ─── Dark Mode ───────────────────────────────────────── */
 
 [data-theme="dark"] .account-mode-banner--demo {
@@ -88,4 +95,8 @@
 
 [data-theme="dark"] .account-mode-banner--live {
   background: #065F46;
+}
+
+[data-theme="dark"] .account-mode-banner--starter {
+  background: #3730A3;
 }

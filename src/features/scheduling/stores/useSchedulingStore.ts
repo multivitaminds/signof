@@ -90,6 +90,9 @@ export interface SchedulingState {
   rejectWaitlistEntry: (id: string) => void
   getWaitlistForEvent: (eventTypeId: string) => WaitlistEntry[]
   notifyNextWaitlistEntry: (eventTypeId: string, date: string) => WaitlistEntry | undefined
+
+  // Clear data
+  clearData: () => void
 }
 
 export const useSchedulingStore = create<SchedulingState>((set, get) => ({
@@ -398,6 +401,15 @@ export const useSchedulingStore = create<SchedulingState>((set, get) => ({
       }))
     }
     return next
+  },
+
+  clearData: () => {
+    set({
+      eventTypes: [],
+      bookings: [],
+      calendarConnections: [],
+      waitlist: [],
+    })
   },
 }))
 

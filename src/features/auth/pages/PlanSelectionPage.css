@@ -1,0 +1,607 @@
+/* ================================================================
+   PlanSelectionPage — SignOf Signup Plan Selection
+   ================================================================ */
+
+/* --- Wrapper (same auth-page gradient background) --- */
+
+.plan-selection {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: linear-gradient(135deg, #1A1A2E 0%, #0F3460 40%, #4F46E5 100%);
+  padding: var(--space-8, 3rem) var(--space-4, 1rem);
+  position: relative;
+  overflow: hidden;
+}
+
+.plan-selection::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.plan-selection::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 212, 170, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+/* --- Container --- */
+
+.plan-selection__container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6, 2rem);
+}
+
+/* --- Header --- */
+
+.plan-selection__header {
+  text-align: center;
+}
+
+.plan-selection__logo {
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.plan-selection__logo-text {
+  font-size: var(--text-2xl, 1.5rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #4F46E5, #059669);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.plan-selection__title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.plan-selection__subtitle {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 1rem;
+  margin: var(--space-2, 0.5rem) 0 0;
+  line-height: 1.5;
+}
+
+/* --- Billing Cycle Toggle --- */
+
+.plan-selection__toggle-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.plan-selection__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1.25rem;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+}
+
+.plan-selection__toggle-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 200ms ease;
+  user-select: none;
+}
+
+.plan-selection__toggle-label--active {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.plan-selection__toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 200ms ease;
+}
+
+.plan-selection__toggle-switch--yearly {
+  background: var(--color-primary, #4F46E5);
+}
+
+.plan-selection__toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.plan-selection__toggle-switch--yearly .plan-selection__toggle-thumb {
+  transform: translateX(20px);
+}
+
+.plan-selection__toggle-discount {
+  background: linear-gradient(135deg, #059669, #00B894);
+  color: #FFFFFF;
+  padding: 0.25rem 0.625rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  animation: plan-badge-pop 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes plan-badge-pop {
+  0% { opacity: 0; transform: scale(0.8); }
+  50% { transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* --- Plan Cards Grid --- */
+
+.plan-selection__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 1000px) {
+  .plan-selection__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .plan-selection__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Individual Plan Card --- */
+
+.plan-selection__card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary, #FFFFFF);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-xl, 16px);
+  padding: 1.75rem 1.5rem;
+  position: relative;
+  transition:
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 200ms ease;
+}
+
+.plan-selection__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.plan-selection__card--popular {
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg-primary, #fff), var(--bg-primary, #fff)) padding-box,
+    linear-gradient(135deg, #4F46E5, #059669) border-box;
+}
+
+.plan-selection__card--popular:hover {
+  box-shadow: 0 12px 36px rgba(79, 70, 229, 0.25);
+}
+
+/* --- "Most Popular" Badge --- */
+
+.plan-selection__card-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #4F46E5, #4338CA);
+  color: #FFFFFF;
+  padding: 0.3125rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+}
+
+/* --- Card Icon --- */
+
+.plan-selection__card-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(79, 70, 229, 0.08);
+  color: var(--color-primary, #4F46E5);
+  margin-bottom: 0.75rem;
+}
+
+/* --- Card Content --- */
+
+.plan-selection__card-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0 0 0.375rem;
+  letter-spacing: -0.01em;
+}
+
+.plan-selection__card-description {
+  font-size: 0.8125rem;
+  color: var(--text-muted, #9CA3AF);
+  margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+/* --- Card Pricing --- */
+
+.plan-selection__card-pricing {
+  display: flex;
+  align-items: baseline;
+  gap: 0.125rem;
+  margin-bottom: 0.25rem;
+}
+
+.plan-selection__card-price {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--text-primary, #111827);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.plan-selection__card-period {
+  font-size: 0.9375rem;
+  color: var(--text-muted, #9CA3AF);
+  font-weight: 500;
+}
+
+.plan-selection__card-yearly-note {
+  font-size: 0.75rem;
+  color: var(--text-muted, #9CA3AF);
+  margin-bottom: 1.25rem;
+}
+
+/* --- Card CTA Button --- */
+
+.plan-selection__card-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-primary, #FFFFFF);
+  color: var(--text-primary, #111827);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease,
+    transform 100ms ease;
+  margin-bottom: 1.25rem;
+}
+
+.plan-selection__card-cta:hover:not(:disabled) {
+  background: var(--bg-secondary, #F9FAFB);
+  border-color: var(--text-secondary, #6B7280);
+}
+
+.plan-selection__card-cta:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.plan-selection__card-cta--popular {
+  background: var(--color-primary, #4F46E5);
+  color: #FFFFFF;
+  border-color: var(--color-primary, #4F46E5);
+}
+
+.plan-selection__card-cta--popular:hover:not(:disabled) {
+  background: #4338CA;
+  border-color: #4338CA;
+}
+
+.plan-selection__card-cta--enterprise {
+  opacity: 0.7;
+}
+
+.plan-selection__card-cta:disabled {
+  cursor: not-allowed;
+}
+
+/* --- Card Features --- */
+
+.plan-selection__card-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.plan-selection__card-feature {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #6B7280);
+  line-height: 1.4;
+}
+
+.plan-selection__card-check {
+  flex-shrink: 0;
+  color: #059669;
+}
+
+/* ================================================================
+   Tax Add-on Section
+   ================================================================ */
+
+.plan-selection__tax-section {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xl, 16px);
+  padding: 1.5rem 2rem;
+  backdrop-filter: blur(8px);
+}
+
+.plan-selection__tax-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.plan-selection__tax-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.plan-selection__tax-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.plan-selection__tax-subtitle {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+/* --- Tax Toggle Switch --- */
+
+.plan-selection__tax-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background-color 200ms ease;
+}
+
+.plan-selection__tax-toggle--active {
+  background: var(--color-primary, #4F46E5);
+}
+
+.plan-selection__tax-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.plan-selection__tax-toggle--active .plan-selection__tax-toggle-thumb {
+  transform: translateX(20px);
+}
+
+/* --- Tax Plan Cards Grid --- */
+
+.plan-selection__tax-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 1.25rem;
+  animation: plan-tax-slide-in 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes plan-tax-slide-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 800px) {
+  .plan-selection__tax-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .plan-selection__tax-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Individual Tax Card --- */
+
+.plan-selection__tax-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 1.25rem 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 100ms ease;
+  position: relative;
+  text-align: center;
+}
+
+.plan-selection__tax-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.plan-selection__tax-card--selected {
+  background: rgba(79, 70, 229, 0.15);
+  border-color: var(--color-primary, #4F46E5);
+}
+
+.plan-selection__tax-card--selected:hover {
+  background: rgba(79, 70, 229, 0.2);
+  border-color: var(--color-primary, #4F46E5);
+}
+
+.plan-selection__tax-card-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.plan-selection__tax-card-price {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+}
+
+.plan-selection__tax-card-period {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.plan-selection__tax-card-target {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.plan-selection__tax-card-check-icon {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: var(--color-primary, #4F46E5);
+}
+
+/* ================================================================
+   Dark Mode
+   ================================================================ */
+
+[data-theme="dark"] .plan-selection__card {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .plan-selection__card--popular {
+  background: linear-gradient(#1E293B, #1E293B) padding-box,
+    linear-gradient(135deg, #7C75FF, #34D399) border-box;
+  border: 2px solid transparent;
+}
+
+[data-theme="dark"] .plan-selection__card-icon {
+  background: rgba(124, 117, 255, 0.15);
+  color: #7C75FF;
+}
+
+[data-theme="dark"] .plan-selection__card-name {
+  color: #F1F5F9;
+}
+
+[data-theme="dark"] .plan-selection__card-description {
+  color: #64748B;
+}
+
+[data-theme="dark"] .plan-selection__card-price {
+  color: #F1F5F9;
+}
+
+[data-theme="dark"] .plan-selection__card-period,
+[data-theme="dark"] .plan-selection__card-yearly-note {
+  color: #64748B;
+}
+
+[data-theme="dark"] .plan-selection__card-cta {
+  background: #1E293B;
+  border-color: #334155;
+  color: #F1F5F9;
+}
+
+[data-theme="dark"] .plan-selection__card-cta:hover:not(:disabled) {
+  background: #0F172A;
+  border-color: #64748B;
+}
+
+[data-theme="dark"] .plan-selection__card-cta--popular {
+  background: #7C75FF;
+  border-color: #7C75FF;
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .plan-selection__card-cta--popular:hover:not(:disabled) {
+  background: #8D87FF;
+  border-color: #8D87FF;
+}
+
+[data-theme="dark"] .plan-selection__card-feature {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .plan-selection__card-check {
+  color: #34D399;
+}
+
+[data-theme="dark"] .plan-selection__card-badge {
+  background: linear-gradient(135deg, #7C75FF, #6366F1);
+}

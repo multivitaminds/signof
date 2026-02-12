@@ -22,6 +22,7 @@ import {
   Table,
   Receipt,
   Code2,
+  Calculator,
   Star,
   ChevronDown,
 } from 'lucide-react'
@@ -49,6 +50,7 @@ const NEW_MENU_ITEMS = [
   { id: 'event', label: 'New Event', icon: CalendarPlus, path: '/calendar/new' },
   { id: 'database', label: 'New Database', icon: Table, path: '/data/new' },
   { id: 'filing', label: 'New Tax Filing', icon: Receipt, path: '/tax/filing' },
+  { id: 'invoice', label: 'New Invoice', icon: Calculator, path: '/accounting/invoices' },
 ]
 
 export default function Sidebar() {
@@ -129,6 +131,7 @@ export default function Sidebar() {
     { path: '/inbox', label: 'Inbox', icon: Inbox, badge: unreadCount || undefined },
     { path: '/ai', label: 'Intelligence', icon: Wand2 },
     { path: '/tax', label: 'Tax', icon: Receipt },
+    { path: '/accounting', label: 'Accounting', icon: Calculator },
     { path: '/developer', label: 'Developer', icon: Code2 },
   ]
 

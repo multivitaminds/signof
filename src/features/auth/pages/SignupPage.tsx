@@ -21,7 +21,7 @@ export default function SignupPage() {
       return
     }
     signup(email.trim(), name.trim())
-    navigate('/')
+    navigate('/signup/plan')
   }, [name, email, signup, navigate])
 
   return (

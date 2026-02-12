@@ -1,0 +1,92 @@
+/* ─── ExpenseForm ──────────────────────────────────────────────────── */
+
+.expense-form {
+  max-width: 520px;
+  width: 100%;
+}
+
+.expense-form__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+}
+
+.expense-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.expense-form__field--row {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.expense-form__label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+}
+
+.expense-form__input,
+.expense-form__select,
+.expense-form__textarea {
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.expense-form__input:focus,
+.expense-form__select:focus,
+.expense-form__textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.expense-form__input--mt {
+  margin-top: var(--space-2);
+}
+
+.expense-form__textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+/* ─── Receipt Drop Zone ──────────────────────────────────────────── */
+
+.expense-form__drop-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-secondary);
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+
+.expense-form__drop-zone:hover {
+  border-color: var(--color-primary);
+}
+
+.expense-form__drop-text {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* ─── Actions ────────────────────────────────────────────────────── */
+
+.expense-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-color);
+}

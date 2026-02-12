@@ -229,6 +229,9 @@ interface InboxState {
   getUnreadCountByCategory: (category: NotificationCategory) => number
   setSimulatorEnabled: (enabled: boolean) => void
   setDigestFrequency: (frequency: DigestFrequency) => void
+
+  // Clear data
+  clearData: () => void
 }
 
 export const useInboxStore = create<InboxState>()(
@@ -327,6 +330,10 @@ export const useInboxStore = create<InboxState>()(
 
       setDigestFrequency: (frequency) => {
         set({ digestFrequency: frequency })
+      },
+
+      clearData: () => {
+        set({ notifications: [] })
       },
     }),
     {

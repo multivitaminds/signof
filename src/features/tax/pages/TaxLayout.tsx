@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
-import { LayoutDashboard, FileText, FolderOpen, Send, ChevronDown } from 'lucide-react'
+import { LayoutDashboard, FileText, FolderOpen, Send, ChevronDown, CreditCard } from 'lucide-react'
 import { useTaxStore } from '../stores/useTaxStore'
 import { TAX_YEARS } from '../types'
 import type { TaxYear } from '../types'
@@ -76,6 +76,15 @@ function TaxLayout() {
           >
             <Send size={16} />
             <span>E-File</span>
+          </NavLink>
+          <NavLink
+            to="/tax/pricing"
+            className={({ isActive }) =>
+              `tax-layout__tab ${isActive ? 'tax-layout__tab--active' : ''}`
+            }
+          >
+            <CreditCard size={16} />
+            <span>Pricing</span>
           </NavLink>
         </nav>
       </header>

@@ -1,0 +1,359 @@
+/* ─── PayRunWizard ─────────────────────────────────────────────────── */
+
+.pay-run-wizard {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Step Indicator ─────────────────────────────────────────────── */
+
+.pay-run-wizard__steps {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-8);
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.pay-run-wizard__step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+}
+
+.pay-run-wizard__step--active {
+  color: var(--color-primary);
+}
+
+.pay-run-wizard__step--done {
+  color: var(--color-success-dark);
+}
+
+.pay-run-wizard__step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  border: 2px solid currentColor;
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+}
+
+.pay-run-wizard__step--active .pay-run-wizard__step-number {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.pay-run-wizard__step--done .pay-run-wizard__step-number {
+  background-color: var(--color-success-dark);
+  border-color: var(--color-success-dark);
+  color: #ffffff;
+}
+
+.pay-run-wizard__step-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+
+/* ─── Header ─────────────────────────────────────────────────────── */
+
+.pay-run-wizard__header {
+  padding: var(--space-4) var(--space-6) 0;
+}
+
+.pay-run-wizard__title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+/* ─── Body ───────────────────────────────────────────────────────── */
+
+.pay-run-wizard__body {
+  padding: var(--space-4) var(--space-6);
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ─── Step 1: Employee List ──────────────────────────────────────── */
+
+.pay-run-wizard__employee-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pay-run-wizard__select-all {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+.pay-run-wizard__employee-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--motion-fast) var(--ease-out);
+}
+
+.pay-run-wizard__employee-row:hover {
+  background-color: var(--bg-secondary);
+}
+
+.pay-run-wizard__employee-name {
+  flex: 1;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+}
+
+.pay-run-wizard__employee-rate {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.pay-run-wizard__employee-freq {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  min-width: 90px;
+  text-align: right;
+}
+
+.pay-run-wizard__empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: var(--space-8) 0;
+  font-size: var(--text-sm);
+}
+
+/* ─── Step 2: Review ─────────────────────────────────────────────── */
+
+.pay-run-wizard__review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pay-run-wizard__date-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pay-run-wizard__date-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+}
+
+.pay-run-wizard__date-input {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+.pay-run-wizard__date-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.pay-run-wizard__table-wrapper {
+  overflow-x: auto;
+}
+
+.pay-run-wizard__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.pay-run-wizard__table th {
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.pay-run-wizard__table td {
+  padding: var(--space-2) var(--space-3);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.pay-run-wizard__cell--name {
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+}
+
+.pay-run-wizard__cell--net {
+  font-weight: var(--font-semibold);
+  color: var(--color-success-dark);
+}
+
+.pay-run-wizard__totals-row {
+  background-color: var(--bg-secondary);
+}
+
+.pay-run-wizard__totals-row td {
+  font-weight: var(--font-semibold);
+  border-bottom: none;
+}
+
+/* ─── Step 3: Confirm ────────────────────────────────────────────── */
+
+.pay-run-wizard__confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+}
+
+.pay-run-wizard__summary {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.pay-run-wizard__summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.pay-run-wizard__summary-row--highlight {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-color);
+  font-weight: var(--font-bold);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+}
+
+/* ─── Processing State ───────────────────────────────────────────── */
+
+.pay-run-wizard__processing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-8) 0;
+}
+
+.pay-run-wizard__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  animation: pay-run-spin 0.8s linear infinite;
+}
+
+@keyframes pay-run-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pay-run-wizard__processing-text {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* ─── Success State ──────────────────────────────────────────────── */
+
+.pay-run-wizard__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-8) 0;
+}
+
+.pay-run-wizard__checkmark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
+  border-radius: var(--radius-full);
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.pay-run-wizard__success-text {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-success-dark);
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────── */
+
+.pay-run-wizard__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--border-color);
+}
+
+.pay-run-wizard__footer-spacer {
+  flex: 1;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .pay-run-wizard {
+    max-width: 100%;
+    margin: var(--space-4);
+  }
+
+  .pay-run-wizard__steps {
+    gap: var(--space-4);
+  }
+
+  .pay-run-wizard__employee-row {
+    flex-wrap: wrap;
+  }
+
+  .pay-run-wizard__employee-freq {
+    min-width: unset;
+  }
+}

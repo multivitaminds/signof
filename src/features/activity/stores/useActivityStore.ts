@@ -289,6 +289,9 @@ interface ActivityState {
   getRecentActivities: (limit: number) => Activity[]
   getActivitiesByType: (type: ActivityType) => Activity[]
   clearActivities: () => void
+
+  // Clear data (alias for clearActivities, used by centralized reset)
+  clearData: () => void
 }
 
 export const useActivityStore = create<ActivityState>()(
@@ -321,6 +324,10 @@ export const useActivityStore = create<ActivityState>()(
       },
 
       clearActivities: () => {
+        set({ activities: [] })
+      },
+
+      clearData: () => {
         set({ activities: [] })
       },
     }),

@@ -85,7 +85,7 @@ describe('SignupPage', () => {
     await user.click(screen.getByRole('button', { name: /create account/i }))
 
     expect(mockSignup).toHaveBeenCalledWith('jane@work.com', 'Jane Smith')
-    expect(mockNavigate).toHaveBeenCalledWith('/')
+    expect(mockNavigate).toHaveBeenCalledWith('/signup/plan')
   })
 
   it('clears error when user types in an input', async () => {

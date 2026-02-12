@@ -148,6 +148,24 @@ export const InvoiceStatus = {
 
 export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus]
 
+export const TaxPlanId = {
+  TaxFree: 'tax_free',
+  TaxPlus: 'tax_plus',
+  TaxPremium: 'tax_premium',
+  TaxBusiness: 'tax_business',
+} as const
+
+export type TaxPlanId = (typeof TaxPlanId)[keyof typeof TaxPlanId]
+
+export const AccountingPlanId = {
+  AcctFree: 'acct_free',
+  AcctPlus: 'acct_plus',
+  AcctPremium: 'acct_premium',
+  AcctAdvanced: 'acct_advanced',
+} as const
+
+export type AccountingPlanId = (typeof AccountingPlanId)[keyof typeof AccountingPlanId]
+
 export interface PaymentMethod {
   brand: string
   last4: string

@@ -1,0 +1,112 @@
+.usage-limit-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  margin-bottom: var(--space-3, 0.75rem);
+}
+
+.usage-limit-banner--caution {
+  background: #FEF3C7;
+  border: 1px solid #F59E0B;
+  color: #92400E;
+}
+
+.usage-limit-banner--warning {
+  background: #FFF7ED;
+  border: 1px solid #F97316;
+  color: #9A3412;
+}
+
+.usage-limit-banner--danger {
+  background: #FEF2F2;
+  border: 1px solid #EF4444;
+  color: #991B1B;
+}
+
+.usage-limit-banner__content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  flex: 1;
+  min-width: 0;
+}
+
+.usage-limit-banner__text {
+  font-weight: 500;
+}
+
+.usage-limit-banner__cta {
+  flex-shrink: 0;
+  padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+  border-radius: var(--radius-sm, 6px);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 150ms ease;
+}
+
+.usage-limit-banner--caution .usage-limit-banner__cta {
+  background: #F59E0B;
+  color: #fff;
+}
+
+.usage-limit-banner--caution .usage-limit-banner__cta:hover {
+  background: #D97706;
+}
+
+.usage-limit-banner--warning .usage-limit-banner__cta {
+  background: #F97316;
+  color: #fff;
+}
+
+.usage-limit-banner--warning .usage-limit-banner__cta:hover {
+  background: #EA580C;
+}
+
+.usage-limit-banner--danger .usage-limit-banner__cta {
+  background: #EF4444;
+  color: #fff;
+}
+
+.usage-limit-banner--danger .usage-limit-banner__cta:hover {
+  background: #DC2626;
+}
+
+/* ─── Dark mode ─── */
+
+[data-theme="dark"] .usage-limit-banner--caution {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #FCD34D;
+}
+
+[data-theme="dark"] .usage-limit-banner--warning {
+  background: rgba(249, 115, 22, 0.1);
+  border-color: rgba(249, 115, 22, 0.3);
+  color: #FDBA74;
+}
+
+[data-theme="dark"] .usage-limit-banner--danger {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #FCA5A5;
+}
+
+/* ─── Responsive ─── */
+
+@media (max-width: 640px) {
+  .usage-limit-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .usage-limit-banner__cta {
+    align-self: flex-end;
+  }
+}

@@ -49,6 +49,9 @@ export interface AgentState {
   resumeAgent: (teamId: string, agentId: string) => void
 
   sendMessage: (teamId: string, agentId: string, content: string) => void
+
+  // Clear data
+  clearData: () => void
 }
 
 function buildAgentInstance(config: AgentConfig): AgentInstance {
@@ -370,6 +373,21 @@ const useAgentStore = create<AgentState>()(
             })),
           }))
         }, delay)
+      },
+
+      clearData: () => {
+        // Cancel all running simulations before clearing
+        const { teams } = get()
+        for (const team of teams) {
+          for (const agent of team.agents) {
+            const ctrl = controllers.get(agent.id)
+            if (ctrl) {
+              ctrl.cancel()
+              controllers.delete(agent.id)
+            }
+          }
+        }
+        set({ teams: [], activeTeamId: null })
       },
     }),
     {

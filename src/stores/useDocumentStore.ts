@@ -143,6 +143,9 @@ interface DocumentState {
   // Decline
   declineDocument: (docId: string, signerId: string, reason: string) => void
 
+  // Clear data
+  clearData: () => void
+
   // Computed
   totalCount: number
   inProgressCount: number
@@ -630,6 +633,10 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         }
       }),
     }))
+  },
+
+  clearData: () => {
+    set({ documents: [] })
   },
 
   get totalCount() {

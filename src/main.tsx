@@ -13,6 +13,7 @@ import NotFoundPage from './pages/NotFoundPage'
 import LoginPage from './features/auth/pages/LoginPage'
 import SignupPage from './features/auth/pages/SignupPage'
 import OnboardingPage from './features/auth/pages/OnboardingPage'
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 import InboxPage from './features/inbox/pages/InboxPage'
 
 // Skeleton fallbacks
@@ -57,11 +58,26 @@ const AILayout = lazy(() => import('./features/ai/pages/AILayout'))
 const AIMemoryPage = lazy(() => import('./features/ai/pages/AIMemoryPage'))
 const AIAgentsPage = lazy(() => import('./features/ai/pages/AIAgentsPage'))
 
+const PlanSelectionPage = lazy(() => import('./features/auth/pages/PlanSelectionPage'))
+const PaymentPage = lazy(() => import('./features/auth/pages/PaymentPage'))
+
 const TaxLayout = lazy(() => import('./features/tax/pages/TaxLayout'))
 const TaxDashboard = lazy(() => import('./features/tax/pages/TaxDashboard'))
 const TaxDocumentsPage = lazy(() => import('./features/tax/pages/TaxDocumentsPage'))
 const TaxFormsPage = lazy(() => import('./features/tax/pages/TaxFormsPage'))
 const TaxFilingPage = lazy(() => import('./features/tax/pages/TaxFilingPage'))
+const TaxPricingPage = lazy(() => import('./features/tax/pages/TaxPricingPage'))
+
+const AccountingLayout = lazy(() => import('./features/accounting/pages/AccountingLayout'))
+const AccountingDashboard = lazy(() => import('./features/accounting/pages/AccountingDashboard'))
+const InvoiceListPage = lazy(() => import('./features/accounting/pages/InvoiceListPage'))
+const ExpenseListPage = lazy(() => import('./features/accounting/pages/ExpenseListPage'))
+const BankingPage = lazy(() => import('./features/accounting/pages/BankingPage'))
+const ReportsPage = lazy(() => import('./features/accounting/pages/ReportsPage'))
+const ChartOfAccountsPage = lazy(() => import('./features/accounting/pages/ChartOfAccountsPage'))
+const ContactsPage = lazy(() => import('./features/accounting/pages/ContactsPage'))
+const PayrollPage = lazy(() => import('./features/accounting/pages/PayrollPage'))
+const AccountingPricingPage = lazy(() => import('./features/accounting/pages/AccountingPricingPage'))
 
 const DocumentAnalyticsPage = lazy(() => import('./features/documents/components/DocumentAnalytics/DocumentAnalytics'))
 const DocumentBuilderPage = lazy(() => import('./features/documents/pages/DocumentBuilderPage'))
@@ -96,6 +112,8 @@ createRoot(root).render(
         {/* Auth routes (outside main layout) */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/signup/plan" element={<Suspense fallback={CardFallback}><PlanSelectionPage /></Suspense>} />
+        <Route path="/signup/payment" element={<Suspense fallback={CardFallback}><PaymentPage /></Suspense>} />
         <Route path="/onboarding" element={<OnboardingPage />} />
 
         {/* Public booking page (outside main layout, standalone) */}
@@ -106,7 +124,7 @@ createRoot(root).render(
         } />
 
         {/* Main app */}
-        <Route path="/" element={<AppLayout />}>
+        <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
           <Route index element={<HomePage />} />
 
           {/* Workspace (Notion) */}
@@ -203,6 +221,25 @@ createRoot(root).render(
             <Route path="documents" element={<Suspense fallback={TableFallback}><TaxDocumentsPage /></Suspense>} />
             <Route path="forms" element={<Suspense fallback={TableFallback}><TaxFormsPage /></Suspense>} />
             <Route path="filing" element={<Suspense fallback={TableFallback}><TaxFilingPage /></Suspense>} />
+            <Route path="pricing" element={<Suspense fallback={CardFallback}><TaxPricingPage /></Suspense>} />
+          </Route>
+
+          {/* Accounting (QuickBooks) */}
+          <Route path="accounting" element={
+            <ModuleErrorBoundary moduleName="Accounting">
+              <Suspense fallback={TableFallback}><AccountingLayout /></Suspense>
+            </ModuleErrorBoundary>
+          }>
+            <Route index element={<Navigate to="/accounting/dashboard" replace />} />
+            <Route path="dashboard" element={<Suspense fallback={CardFallback}><AccountingDashboard /></Suspense>} />
+            <Route path="invoices" element={<Suspense fallback={TableFallback}><InvoiceListPage /></Suspense>} />
+            <Route path="expenses" element={<Suspense fallback={TableFallback}><ExpenseListPage /></Suspense>} />
+            <Route path="banking" element={<Suspense fallback={TableFallback}><BankingPage /></Suspense>} />
+            <Route path="reports" element={<Suspense fallback={TableFallback}><ReportsPage /></Suspense>} />
+            <Route path="accounts" element={<Suspense fallback={TableFallback}><ChartOfAccountsPage /></Suspense>} />
+            <Route path="contacts" element={<Suspense fallback={CardFallback}><ContactsPage /></Suspense>} />
+            <Route path="payroll" element={<Suspense fallback={TableFallback}><PayrollPage /></Suspense>} />
+            <Route path="pricing" element={<Suspense fallback={CardFallback}><AccountingPricingPage /></Suspense>} />
           </Route>
 
           {/* Developer Platform */}

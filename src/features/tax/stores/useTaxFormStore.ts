@@ -166,6 +166,9 @@ interface TaxFormState {
   completeForm: (entryId: string) => void
   deleteEntry: (entryId: string) => void
 
+  // Clear data
+  clearData: () => void
+
   // Queries
   getEntry: (entryId: string) => FormEntry | undefined
   getEntryByForm: (formId: TaxFormId, taxYear: string) => FormEntry | undefined
@@ -256,6 +259,10 @@ export const useTaxFormStore = create<TaxFormState>()(
         set((state) => ({
           entries: state.entries.filter((e) => e.id !== entryId),
         })),
+
+      clearData: () => {
+        set({ entries: [] })
+      },
 
       getEntry: (entryId) => get().entries.find((e) => e.id === entryId),
 

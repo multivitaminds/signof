@@ -11,6 +11,7 @@ import {
   Play,
 } from 'lucide-react'
 import { useTaxStore } from '../stores/useTaxStore'
+import { useBillingStore } from '../../settings/stores/useBillingStore'
 import { FILING_STATE_LABELS } from '../types'
 import TaxTimeline from '../components/TaxTimeline/TaxTimeline'
 import './TaxDashboard.css'
@@ -22,6 +23,7 @@ function TaxDashboard() {
   const deadlines = useTaxStore((s) => s.deadlines)
   const toggleDeadline = useTaxStore((s) => s.toggleDeadline)
   const createFiling = useTaxStore((s) => s.createFiling)
+  const taxPlan = useBillingStore((s) => s.taxPlan)
   const navigate = useNavigate()
 
   const yearDocuments = useMemo(
@@ -69,8 +71,28 @@ function TaxDashboard() {
   const refundOrOwed = filing?.refundOrOwed ?? 0
   const isRefund = refundOrOwed < 0
 
+  const handleUpgradeTax = useCallback(() => {
+    navigate('/tax/pricing')
+  }, [navigate])
+
   return (
     <div className="tax-dashboard">
+      {/* Tax Plan Upgrade Banner */}
+      {taxPlan === 'tax_free' && (
+        <div className="tax-dashboard__upgrade-banner">
+          <span className="tax-dashboard__upgrade-text">
+            You&apos;re on <strong>Tax Free</strong> &mdash; limited to 1 filing with W-2 only.
+          </span>
+          <button
+            className="tax-dashboard__upgrade-btn"
+            onClick={handleUpgradeTax}
+            type="button"
+          >
+            Upgrade to Tax Plus
+          </button>
+        </div>
+      )}
+
       {/* Overview Cards */}
       <div className="tax-dashboard__cards">
         <div className="tax-dashboard__card">

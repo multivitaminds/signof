@@ -1,0 +1,131 @@
+/* ─── Cash Flow Statement ──────────────────────────────────────────── */
+
+.cash-flow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.cash-flow__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.cash-flow__section-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cash-flow__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cash-flow__row td {
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cash-flow__description {
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+}
+
+.cash-flow__amount {
+  text-align: right;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.cash-flow__subtotal td {
+  padding: var(--space-3) 0;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  border-top: 2px solid var(--border-color);
+}
+
+/* ─── Net Change ──────────────────────────────────────────────────── */
+
+.cash-flow__net-change {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+}
+
+.cash-flow__net-change--positive {
+  background-color: var(--color-success-light);
+  border-color: var(--color-success);
+}
+
+.cash-flow__net-change--negative {
+  background-color: var(--color-danger-light);
+  border-color: var(--color-danger);
+}
+
+.cash-flow__net-label {
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.cash-flow__net-amount {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.cash-flow__net-change--positive .cash-flow__net-amount {
+  color: var(--color-success-dark);
+}
+
+.cash-flow__net-change--negative .cash-flow__net-amount {
+  color: var(--color-danger);
+}
+
+/* ─── Cash Balances ───────────────────────────────────────────────── */
+
+.cash-flow__balances {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.cash-flow__balance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cash-flow__balance-row--ending {
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border-color);
+}
+
+.cash-flow__balance-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.cash-flow__balance-row--ending .cash-flow__balance-label {
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.cash-flow__balance-amount {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}

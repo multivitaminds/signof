@@ -115,6 +115,9 @@ interface TeamState {
   resendInvite: (inviteId: string) => void
   getMemberById: (id: string) => TeamMember | undefined
   getMembersByRole: (role: TeamRole) => TeamMember[]
+
+  // Clear data
+  clearData: () => void
 }
 
 export const useTeamStore = create<TeamState>()(
@@ -292,6 +295,17 @@ export const useTeamStore = create<TeamState>()(
 
       getMembersByRole: (role) => {
         return get().team.members.filter((m) => m.role === role)
+      },
+
+      clearData: () => {
+        set((s) => ({
+          team: {
+            ...s.team,
+            members: s.team.members.filter((m) => m.role === TeamRole.Owner),
+            invites: [],
+            activities: [],
+          },
+        }))
       },
     }),
     { name: 'signof-team-storage' }

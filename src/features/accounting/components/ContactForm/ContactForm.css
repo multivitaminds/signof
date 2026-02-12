@@ -1,0 +1,124 @@
+/* ─── ContactForm ──────────────────────────────────────────────────── */
+
+.contact-form {
+  width: 100%;
+  max-width: 520px;
+}
+
+.contact-form__title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.contact-form__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+}
+
+/* ─── Fields ──────────────────────────────────────────────────────── */
+
+.contact-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.contact-form__label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+}
+
+.contact-form__required {
+  color: var(--color-danger);
+}
+
+.contact-form__input {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.contact-form__input:focus {
+  border-color: var(--color-primary);
+}
+
+.contact-form__input::placeholder {
+  color: var(--text-muted);
+}
+
+.contact-form__textarea {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+  transition: border-color 150ms ease;
+}
+
+.contact-form__textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.contact-form__textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* ─── Segmented Control (Type Selector) ───────────────────────────── */
+
+.contact-form__segmented {
+  display: flex;
+  gap: 0;
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-1);
+}
+
+.contact-form__segment {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.contact-form__segment:hover {
+  color: var(--text-primary);
+}
+
+.contact-form__segment--active {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ─── Actions ─────────────────────────────────────────────────────── */
+
+.contact-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border-color);
+}

@@ -171,6 +171,9 @@ interface WorkspaceState {
   insertSyncedBlock: (pageId: string, syncedBlockId: string, afterBlockId?: string) => string | null
   updateSyncedBlockContent: (syncedBlockId: string, content: string) => void
 
+  // Clear data
+  clearData: () => void
+
   // Favorites & Recent
   toggleFavorite: (pageId: string) => void
   addToRecent: (pageId: string) => void
@@ -1072,6 +1075,20 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           set({
             syncedBlocks: { ...state.syncedBlocks, [syncedBlockId]: updatedSource },
             blocks: updatedBlocks,
+          })
+        },
+
+        // ─── Clear Data ─────────────────────────────────────────
+
+        clearData: () => {
+          set({
+            pages: {},
+            blocks: {},
+            snapshots: {},
+            editCounts: {},
+            comments: {},
+            syncedBlocks: {},
+            recentPageIds: [],
           })
         },
 

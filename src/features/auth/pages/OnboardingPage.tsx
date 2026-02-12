@@ -38,6 +38,7 @@ import {
   BookOpenCheck,
 } from 'lucide-react'
 import type { OnboardingData } from '../types'
+import { clearAllSampleData } from '../../../lib/clearSampleData'
 import './OnboardingPage.css'
 
 const WORKSPACE_ICONS = [
@@ -100,6 +101,7 @@ function slugify(text: string): string {
 export default function OnboardingPage() {
   const navigate = useNavigate()
   const completeOnboarding = useAuthStore((s) => s.completeOnboarding)
+  const completeRegistration = useAuthStore((s) => s.completeRegistration)
   const user = useAuthStore((s) => s.user)
   const onboardingStore = useOnboardingStore()
 
@@ -225,10 +227,12 @@ export default function OnboardingPage() {
       goToStep(step + 1, 'forward')
     } else {
       syncToStore()
+      clearAllSampleData()
       completeOnboarding(data)
+      completeRegistration()
       navigate('/')
     }
-  }, [step, data, completeOnboarding, navigate, goToStep, syncToStore])
+  }, [step, data, completeOnboarding, completeRegistration, navigate, goToStep, syncToStore])
 
   const handleBack = useCallback(() => {
     if (step > 0) {
@@ -747,7 +751,9 @@ export default function OnboardingPage() {
                 className="onboarding__tour-link"
                 onClick={() => {
                   syncToStore()
+                  clearAllSampleData()
                   completeOnboarding(data)
+                  completeRegistration()
                   navigate('/?tour=1')
                 }}
               >

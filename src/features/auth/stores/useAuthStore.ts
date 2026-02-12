@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { User, OnboardingData } from '../types'
+import type { User, OnboardingData, RegistrationStep } from '../types'
 import { AuthStatus } from '../types'
 
 function rid(): string {
@@ -14,12 +14,15 @@ interface AuthState {
   user: User | null
   onboardingComplete: boolean
   accountMode: AccountMode
+  registrationStep: RegistrationStep
 
   login: (email: string, name: string) => void
   signup: (email: string, name: string) => void
   logout: () => void
   completeOnboarding: (data: OnboardingData) => void
   setAccountMode: (mode: AccountMode) => void
+  setRegistrationStep: (step: RegistrationStep) => void
+  completeRegistration: () => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -29,6 +32,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       onboardingComplete: false,
       accountMode: 'demo' as AccountMode,
+      registrationStep: 'none' as RegistrationStep,
 
       login: (email, name) => {
         const user: User = {
@@ -49,7 +53,13 @@ export const useAuthStore = create<AuthState>()(
           avatarUrl: null,
           createdAt: new Date().toISOString(),
         }
-        set({ status: AuthStatus.Authenticated, user, onboardingComplete: false })
+        set({
+          status: AuthStatus.Authenticated,
+          user,
+          onboardingComplete: false,
+          registrationStep: 'plan',
+          accountMode: 'live',
+        })
       },
 
       logout: () => {
@@ -62,6 +72,18 @@ export const useAuthStore = create<AuthState>()(
 
       setAccountMode: (mode) => {
         set({ accountMode: mode })
+      },
+
+      setRegistrationStep: (step) => {
+        set({ registrationStep: step })
+      },
+
+      completeRegistration: () => {
+        set({
+          registrationStep: 'complete',
+          onboardingComplete: true,
+          accountMode: 'live',
+        })
       },
     }),
     { name: 'signof-auth-storage' }

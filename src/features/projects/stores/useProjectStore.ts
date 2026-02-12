@@ -138,6 +138,9 @@ interface ProjectState {
   linkIssueToMilestone: (milestoneId: string, issueId: string) => void
   unlinkIssueFromMilestone: (milestoneId: string, issueId: string) => void
 
+  // Clear data
+  clearData: () => void
+
   // UI actions
   setSelectedProject: (id: string | null) => void
   setSelectedIssue: (id: string | null) => void
@@ -834,6 +837,23 @@ export const useProjectStore = create<ProjectState>()(
               : m
           ),
         }))
+      },
+
+      // Clear data
+      clearData: () => {
+        set({
+          projects: {},
+          issues: {},
+          cycles: {},
+          members: [],
+          goals: [],
+          milestones: [],
+          activities: [],
+          relations: [],
+          subTasks: [],
+          timeTracking: {},
+          savedViews: [],
+        })
       },
 
       // UI actions

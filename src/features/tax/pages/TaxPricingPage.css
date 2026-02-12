@@ -1,0 +1,287 @@
+.tax-pricing {
+  padding: var(--space-4, 1rem) 0;
+}
+
+.tax-pricing__header {
+  margin-bottom: var(--space-6, 2rem);
+}
+
+.tax-pricing__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0 0 var(--space-1, 0.25rem);
+}
+
+.tax-pricing__subtitle {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted, #9CA3AF);
+  margin: 0;
+}
+
+/* ─── Grid ─── */
+
+.tax-pricing__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4, 1rem);
+}
+
+/* ─── Card ─── */
+
+.tax-pricing__card {
+  position: relative;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-5, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.tax-pricing__card:hover {
+  border-color: var(--color-primary, #4F46E5);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.07));
+}
+
+.tax-pricing__card--current {
+  border-color: var(--color-primary, #4F46E5);
+  box-shadow: 0 0 0 1px var(--color-primary, #4F46E5);
+}
+
+.tax-pricing__card-badge {
+  position: absolute;
+  top: -10px;
+  right: var(--space-4, 1rem);
+  background: var(--color-primary, #4F46E5);
+  color: #fff;
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+/* ─── Card Header ─── */
+
+.tax-pricing__card-header {
+  margin-bottom: var(--space-3, 0.75rem);
+}
+
+.tax-pricing__card-name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0;
+}
+
+.tax-pricing__card-target {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+  font-weight: 500;
+}
+
+/* ─── Pricing ─── */
+
+.tax-pricing__card-price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1, 0.25rem);
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.tax-pricing__card-amount {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary, #111827);
+  line-height: 1;
+}
+
+.tax-pricing__card-period {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted, #9CA3AF);
+}
+
+.tax-pricing__card-description {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  margin: 0 0 var(--space-2, 0.5rem);
+  line-height: 1.5;
+}
+
+.tax-pricing__card-state {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+  margin: 0 0 var(--space-4, 1rem);
+}
+
+/* ─── CTA ─── */
+
+.tax-pricing__card-cta {
+  width: 100%;
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border: 1px solid var(--color-primary, #4F46E5);
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-primary, #4F46E5);
+  color: #fff;
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.tax-pricing__card-cta:hover:not(:disabled) {
+  background: #4338CA;
+  border-color: #4338CA;
+}
+
+.tax-pricing__card-cta--current {
+  background: transparent;
+  color: var(--color-primary, #4F46E5);
+  cursor: default;
+}
+
+.tax-pricing__card-cta:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+/* ─── Features ─── */
+
+.tax-pricing__card-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.tax-pricing__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-1, 0.25rem) 0;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+}
+
+.tax-pricing__feature--disabled {
+  color: var(--text-muted, #9CA3AF);
+}
+
+.tax-pricing__feature-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.tax-pricing__feature-icon--check {
+  color: var(--color-success, #059669);
+}
+
+.tax-pricing__feature-icon--x {
+  color: var(--text-muted, #9CA3AF);
+}
+
+/* ─── Modal ─── */
+
+.tax-pricing__modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.tax-pricing__modal {
+  background: var(--bg-primary, #fff);
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-6, 2rem);
+  max-width: 400px;
+  width: 90%;
+  box-shadow: var(--shadow-lg, 0 10px 40px rgba(0, 0, 0, 0.15));
+}
+
+.tax-pricing__modal-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0 0 var(--space-3, 0.75rem);
+}
+
+.tax-pricing__modal-text {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #6B7280);
+  margin: 0 0 var(--space-2, 0.5rem);
+}
+
+.tax-pricing__modal-price {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #111827);
+  margin: 0 0 var(--space-5, 1.5rem);
+}
+
+.tax-pricing__modal-actions {
+  display: flex;
+  gap: var(--space-3, 0.75rem);
+  justify-content: flex-end;
+}
+
+.tax-pricing__modal-cancel {
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  color: var(--text-secondary, #6B7280);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tax-pricing__modal-cancel:hover {
+  background: var(--bg-secondary, #F9FAFB);
+}
+
+.tax-pricing__modal-confirm {
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-primary, #4F46E5);
+  color: #fff;
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tax-pricing__modal-confirm:hover {
+  background: #4338CA;
+}
+
+/* ─── Dark mode ─── */
+
+[data-theme="dark"] .tax-pricing__card {
+  background: var(--bg-secondary, #1A1A2E);
+}
+
+[data-theme="dark"] .tax-pricing__modal {
+  background: var(--bg-secondary, #1A1A2E);
+}
+
+[data-theme="dark"] .tax-pricing__modal-cancel:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ─── Responsive ─── */
+
+@media (max-width: 1024px) {
+  .tax-pricing__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .tax-pricing__grid {
+    grid-template-columns: 1fr;
+  }
+}

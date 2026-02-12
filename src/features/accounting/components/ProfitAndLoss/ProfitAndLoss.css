@@ -1,0 +1,97 @@
+/* ─── Profit & Loss ────────────────────────────────────────────────── */
+
+.profit-loss {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.profit-loss__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.profit-loss__section-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.profit-loss__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.profit-loss__row td {
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.profit-loss__account {
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+}
+
+.profit-loss__amount {
+  text-align: right;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.profit-loss__subtotal td {
+  padding: var(--space-3) 0;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  border-top: 2px solid var(--border-color);
+}
+
+.profit-loss__empty {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ─── Net Income ──────────────────────────────────────────────────── */
+
+.profit-loss__net-income {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+}
+
+.profit-loss__net-income--positive {
+  background-color: var(--color-success-light);
+  border-color: var(--color-success);
+}
+
+.profit-loss__net-income--negative {
+  background-color: var(--color-danger-light);
+  border-color: var(--color-danger);
+}
+
+.profit-loss__net-label {
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.profit-loss__net-amount {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.profit-loss__net-income--positive .profit-loss__net-amount {
+  color: var(--color-success-dark);
+}
+
+.profit-loss__net-income--negative .profit-loss__net-amount {
+  color: var(--color-danger);
+}

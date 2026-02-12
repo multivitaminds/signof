@@ -151,6 +151,9 @@ interface TaxFilingState {
   // Confirmation
   clearConfirmation: () => void
 
+  // Clear data
+  clearData: () => void
+
   // Queries
   getFilingByYear: (year: TaxYear) => TaxFiling | undefined
   isChecklistComplete: () => boolean
@@ -357,6 +360,14 @@ export const useTaxFilingStore = create<TaxFilingState>()(
 
       clearConfirmation: () =>
         set({ confirmation: null }),
+
+      clearData: () => {
+        set({
+          filings: [],
+          checklist: DEFAULT_CHECKLIST.map((item) => ({ ...item })),
+          confirmation: null,
+        })
+      },
 
       getFilingByYear: (year) =>
         get().filings.find((f) => f.taxYear === year),

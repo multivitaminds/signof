@@ -1,0 +1,409 @@
+/* ─── AccountingDashboard ──────────────────────────────────────────── */
+
+.accounting-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ─── Upgrade Banner ─────────────────────────────────────────────── */
+
+.accounting-dashboard__upgrade-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  border-radius: var(--radius-md, 8px);
+  color: #fff;
+}
+
+.accounting-dashboard__upgrade-text {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+}
+
+.accounting-dashboard__upgrade-btn {
+  flex-shrink: 0;
+  padding: var(--space-1, 0.25rem) var(--space-4, 1rem);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-sm, 6px);
+  color: #fff;
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.accounting-dashboard__upgrade-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* ─── KPI Cards ──────────────────────────────────────────────────── */
+
+.accounting-dashboard__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-4);
+}
+
+.accounting-dashboard__card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  transition: box-shadow var(--motion-fast) var(--ease-out);
+}
+
+.accounting-dashboard__card:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.accounting-dashboard__card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.accounting-dashboard__card-icon--primary {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.accounting-dashboard__card-icon--success {
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
+}
+
+.accounting-dashboard__card-icon--warning {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning-dark);
+}
+
+.accounting-dashboard__card-icon--info {
+  background-color: var(--color-info-light);
+  color: var(--color-info-dark);
+}
+
+.accounting-dashboard__card-icon--danger {
+  background-color: var(--color-danger-light, #fee2e2);
+  color: var(--color-danger, #dc2626);
+}
+
+.accounting-dashboard__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.accounting-dashboard__card-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.accounting-dashboard__card-value {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.accounting-dashboard__card-value--success {
+  color: var(--color-success-dark);
+}
+
+.accounting-dashboard__card-value--warning {
+  color: var(--color-warning-dark);
+}
+
+.accounting-dashboard__card-value--danger {
+  color: var(--color-danger, #dc2626);
+}
+
+.accounting-dashboard__card-count {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+}
+
+/* ─── Section (shared for chart, transactions, actions) ──────────── */
+
+.accounting-dashboard__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.accounting-dashboard__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.accounting-dashboard__section-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+/* ─── Cash Flow Chart ────────────────────────────────────────────── */
+
+.accounting-dashboard__chart {
+  padding: var(--space-2) 0;
+}
+
+.accounting-dashboard__chart-bars {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-end;
+  height: 160px;
+}
+
+.accounting-dashboard__chart-month {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.accounting-dashboard__chart-bar-group {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 120px;
+}
+
+.accounting-dashboard__chart-bar {
+  width: 16px;
+  border-radius: var(--radius-sm, 4px) var(--radius-sm, 4px) 0 0;
+  transition: opacity 150ms ease;
+}
+
+.accounting-dashboard__chart-bar:hover {
+  opacity: 0.8;
+}
+
+.accounting-dashboard__chart-bar--income {
+  background-color: var(--color-success, #059669);
+}
+
+.accounting-dashboard__chart-bar--expense {
+  background-color: var(--color-warning, #d97706);
+}
+
+.accounting-dashboard__chart-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.accounting-dashboard__chart-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.accounting-dashboard__legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.accounting-dashboard__legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full, 50%);
+}
+
+.accounting-dashboard__legend-dot--income {
+  background-color: var(--color-success, #059669);
+}
+
+.accounting-dashboard__legend-dot--expense {
+  background-color: var(--color-warning, #d97706);
+}
+
+/* ─── Two Column Grid ────────────────────────────────────────────── */
+
+.accounting-dashboard__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+
+/* ─── Transactions ───────────────────────────────────────────────── */
+
+.accounting-dashboard__transactions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.accounting-dashboard__txn-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  transition: background-color 150ms ease;
+}
+
+.accounting-dashboard__txn-row:hover {
+  background-color: var(--bg-secondary);
+}
+
+.accounting-dashboard__txn-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.accounting-dashboard__txn-date {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.accounting-dashboard__txn-desc {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.accounting-dashboard__txn-amount {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  flex-shrink: 0;
+}
+
+.accounting-dashboard__txn-amount--income {
+  color: var(--color-success-dark);
+}
+
+.accounting-dashboard__txn-amount--expense {
+  color: var(--color-danger, #dc2626);
+}
+
+.accounting-dashboard__empty {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-align: center;
+  padding: var(--space-4);
+}
+
+/* ─── Quick Actions ──────────────────────────────────────────────── */
+
+.accounting-dashboard__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.accounting-dashboard__action-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-4);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  text-align: left;
+  transition:
+    border-color var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out);
+}
+
+.accounting-dashboard__action-btn:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.accounting-dashboard__action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.accounting-dashboard__action-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.accounting-dashboard__action-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.accounting-dashboard__action-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.accounting-dashboard__action-arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .accounting-dashboard__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .accounting-dashboard__cards {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .accounting-dashboard__upgrade-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .accounting-dashboard__cards {
+    grid-template-columns: 1fr;
+  }
+
+  .accounting-dashboard__chart-bars {
+    gap: var(--space-2);
+  }
+
+  .accounting-dashboard__chart-bar {
+    width: 12px;
+  }
+}

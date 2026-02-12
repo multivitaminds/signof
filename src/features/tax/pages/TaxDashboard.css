@@ -6,6 +6,41 @@
   gap: var(--space-6);
 }
 
+/* ─── Upgrade Banner ─────────────────────────────────────────────── */
+
+.tax-dashboard__upgrade-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  border-radius: var(--radius-md, 8px);
+  color: #fff;
+}
+
+.tax-dashboard__upgrade-text {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+}
+
+.tax-dashboard__upgrade-btn {
+  flex-shrink: 0;
+  padding: var(--space-1, 0.25rem) var(--space-4, 1rem);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-sm, 6px);
+  color: #fff;
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.tax-dashboard__upgrade-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
 /* ─── Overview Cards ──────────────────────────────────────────────── */
 
 .tax-dashboard__cards {

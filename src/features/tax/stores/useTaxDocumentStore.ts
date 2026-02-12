@@ -124,6 +124,9 @@ interface TaxDocumentState {
   setActiveTaxYear: (year: TaxYear) => void
   setDragging: (dragging: boolean) => void
 
+  // Clear data
+  clearData: () => void
+
   // Queries
   getDocsByYear: (year: TaxYear) => TaxUploadedDoc[]
   totalCount: () => number
@@ -170,6 +173,10 @@ export const useTaxDocumentStore = create<TaxDocumentState>()(
       setActiveTaxYear: (year) => set({ activeTaxYear: year }),
 
       setDragging: (dragging) => set({ isDragging: dragging }),
+
+      clearData: () => {
+        set({ documents: [] })
+      },
 
       getDocsByYear: (year) =>
         get().documents.filter((d) => d.taxYear === year),

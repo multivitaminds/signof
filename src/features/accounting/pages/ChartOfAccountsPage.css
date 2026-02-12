@@ -1,0 +1,270 @@
+/* ─── ChartOfAccountsPage ──────────────────────────────────────────── */
+
+.chart-of-accounts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ─── Header ─────────────────────────────────────────────────────── */
+
+.chart-of-accounts__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.chart-of-accounts__title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.chart-of-accounts__header .btn-primary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ─── Filter Tabs ────────────────────────────────────────────────── */
+
+.chart-of-accounts__filters {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.chart-of-accounts__filter-tab {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition:
+    background-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out);
+}
+
+.chart-of-accounts__filter-tab:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.chart-of-accounts__filter-tab--active {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+.chart-of-accounts__filter-tab--active:hover {
+  background-color: var(--color-primary-hover);
+  color: #ffffff;
+}
+
+/* ─── Table ──────────────────────────────────────────────────────── */
+
+.chart-of-accounts__table-wrapper {
+  overflow-x: auto;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.chart-of-accounts__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.chart-of-accounts__table thead tr {
+  background-color: var(--bg-secondary);
+}
+
+.chart-of-accounts__table th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.chart-of-accounts__table td {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.chart-of-accounts__table tbody tr:hover {
+  background-color: var(--bg-secondary);
+}
+
+.chart-of-accounts__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.chart-of-accounts__code {
+  font-family: var(--font-mono, 'SF Mono', 'Fira Code', monospace);
+  font-weight: var(--font-semibold);
+  color: var(--color-primary);
+}
+
+.chart-of-accounts__balance {
+  font-family: var(--font-mono, 'SF Mono', 'Fira Code', monospace);
+  font-weight: var(--font-medium);
+  text-align: right;
+}
+
+.chart-of-accounts__table th:nth-child(5),
+.chart-of-accounts__table td:nth-child(5) {
+  text-align: right;
+}
+
+.chart-of-accounts__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.chart-of-accounts__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
+}
+
+.chart-of-accounts__action-btn:hover {
+  background-color: var(--bg-secondary);
+  color: var(--color-primary);
+}
+
+.chart-of-accounts__action-btn--danger:hover {
+  background-color: var(--color-danger-light, #fef2f2);
+  color: var(--color-danger);
+}
+
+.chart-of-accounts__empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: var(--space-8) var(--space-4) !important;
+  font-style: italic;
+}
+
+/* ─── Modal ──────────────────────────────────────────────────────── */
+
+.chart-of-accounts__close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
+}
+
+.chart-of-accounts__close-btn:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* ─── Form ───────────────────────────────────────────────────────── */
+
+.chart-of-accounts__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5) 0 0;
+}
+
+.chart-of-accounts__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.chart-of-accounts__field label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+}
+
+.chart-of-accounts__field input,
+.chart-of-accounts__field select,
+.chart-of-accounts__field textarea {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+
+.chart-of-accounts__field input:focus,
+.chart-of-accounts__field select:focus,
+.chart-of-accounts__field textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.chart-of-accounts__field textarea {
+  resize: vertical;
+}
+
+.chart-of-accounts__form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-color);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .chart-of-accounts__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chart-of-accounts__table th:nth-child(4),
+  .chart-of-accounts__table td:nth-child(4) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-of-accounts__filters {
+    gap: var(--space-1);
+  }
+
+  .chart-of-accounts__filter-tab {
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--text-xs);
+  }
+}

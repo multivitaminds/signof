@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { PlanId, BillingCycle, PaymentMethod, BillingRecord } from '../types'
+import type { PlanId, BillingCycle, PaymentMethod, BillingRecord, TaxPlanId, AccountingPlanId } from '../types'
 
 interface UsageMetric {
   used: number
@@ -19,11 +19,16 @@ interface BillingState {
   usage: BillingUsage
   paymentMethod: PaymentMethod
   billingHistory: BillingRecord[]
+  taxPlan: TaxPlanId
+  accountingPlan: AccountingPlanId
 
   setPlan: (plan: PlanId) => void
   setBillingCycle: (cycle: BillingCycle) => void
   setUsage: (usage: BillingUsage) => void
   setPaymentMethod: (method: PaymentMethod) => void
+  setTaxPlan: (plan: TaxPlanId) => void
+  setAccountingPlan: (plan: AccountingPlanId) => void
+  clearSampleData: () => void
 }
 
 export const useBillingStore = create<BillingState>()(
@@ -75,11 +80,24 @@ export const useBillingStore = create<BillingState>()(
           invoiceUrl: '#',
         },
       ],
+      taxPlan: 'tax_free',
+      accountingPlan: 'acct_free',
 
       setPlan: (plan) => set({ currentPlan: plan }),
       setBillingCycle: (cycle) => set({ billingCycle: cycle }),
       setUsage: (usage) => set({ usage }),
       setPaymentMethod: (method) => set({ paymentMethod: method }),
+      setTaxPlan: (plan) => set({ taxPlan: plan }),
+      setAccountingPlan: (plan) => set({ accountingPlan: plan }),
+      clearSampleData: () =>
+        set({
+          usage: {
+            documents: { used: 0, limit: 50 },
+            storage: { used: 0, limit: 1 },
+            members: { used: 1, limit: 3 },
+          },
+          billingHistory: [],
+        }),
     }),
     { name: 'signof-billing-storage' }
   )

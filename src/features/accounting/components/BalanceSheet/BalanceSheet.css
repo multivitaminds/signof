@@ -1,0 +1,104 @@
+/* ─── Balance Sheet ────────────────────────────────────────────────── */
+
+.balance-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.balance-sheet__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.balance-sheet__section-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.balance-sheet__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.balance-sheet__row td {
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.balance-sheet__account {
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+}
+
+.balance-sheet__amount {
+  text-align: right;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.balance-sheet__subtotal td {
+  padding: var(--space-3) 0;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  border-top: 2px solid var(--border-color);
+}
+
+.balance-sheet__empty {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ─── Balance Check ───────────────────────────────────────────────── */
+
+.balance-sheet__balance-check {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+}
+
+.balance-sheet__balance-check--balanced {
+  background-color: var(--color-success-light);
+  border-color: var(--color-success);
+}
+
+.balance-sheet__balance-check--unbalanced {
+  background-color: var(--color-danger-light);
+  border-color: var(--color-danger);
+}
+
+.balance-sheet__check-label {
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+}
+
+.balance-sheet__balance-check--balanced .balance-sheet__check-label {
+  color: var(--color-success-dark);
+}
+
+.balance-sheet__balance-check--unbalanced .balance-sheet__check-label {
+  color: var(--color-danger);
+}
+
+.balance-sheet__check-detail {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 480px) {
+  .balance-sheet__balance-check {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+}

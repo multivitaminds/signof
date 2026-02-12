@@ -60,6 +60,9 @@ interface DatabaseState {
     rowData: Array<Record<string, CellValue>>
   ) => string
 
+  // Clear data
+  clearData: () => void
+
   // Queries
   isTableNameUnique: (databaseId: string, name: string) => boolean
   getFilteredRows: (tableId: string, viewId: string, query?: string) => DbRow[]
@@ -335,6 +338,14 @@ export const useDatabaseStore = create<DatabaseState>()(
           }
         })
         return tableId
+      },
+
+      clearData: () => {
+        set({
+          databases: {},
+          tables: {},
+          automations: [],
+        })
       },
 
       isTableNameUnique: (databaseId, name) => {
