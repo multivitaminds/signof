@@ -75,3 +75,44 @@
 .code-block__line-content {
   flex: 1;
 }
+
+/* ─── Syntax Highlighting Token Colors ─────────────────────────── */
+
+.code-block__token--keyword {
+  color: #C792EA;
+  font-weight: 500;
+}
+
+.code-block__token--string {
+  color: #C3E88D;
+}
+
+.code-block__token--comment {
+  color: #637777;
+  font-style: italic;
+}
+
+.code-block__token--number {
+  color: #F78C6C;
+}
+
+.code-block__token--builtin {
+  color: #82AAFF;
+}
+
+.code-block__token--function {
+  color: #FFCB6B;
+}
+
+.code-block__token--constant {
+  color: #F78C6C;
+  font-weight: 500;
+}
+
+.code-block__token--operator {
+  color: #89DDFF;
+}
+
+.code-block__token--type {
+  color: #FFCB6B;
+}

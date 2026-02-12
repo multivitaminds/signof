@@ -44,7 +44,7 @@ describe('CliDocsPage', () => {
   it('renders the commands section with search bar', () => {
     render(<CliDocsPage />)
 
-    expect(screen.getByText('Commands')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Commands' })).toBeInTheDocument()
     expect(
       screen.getByPlaceholderText('Search commands, flags, descriptions...')
     ).toBeInTheDocument()
@@ -60,7 +60,7 @@ describe('CliDocsPage', () => {
     render(<CliDocsPage />)
 
     // These are the <h3> group titles
-    const commandGroups = screen.getByText('Commands').closest('.cli-docs-page__commands') as HTMLElement
+    const commandGroups = screen.getByRole('heading', { name: 'Commands' }).closest('.cli-docs-page__commands') as HTMLElement
     expect(within(commandGroups).getByText('Authentication')).toBeInTheDocument()
     expect(within(commandGroups).getByText('Documents')).toBeInTheDocument()
     expect(within(commandGroups).getByText('Tax Filings')).toBeInTheDocument()
@@ -102,9 +102,10 @@ describe('CliDocsPage', () => {
     // The description appears twice (short in header + full in details), so use getAllByText
     const matches = screen.getAllByText(/Initialize a new SignOf project/)
     expect(matches.length).toBeGreaterThanOrEqual(2) // header desc + full desc
-    expect(screen.getByText('Usage')).toBeInTheDocument()
-    expect(screen.getByText('Flags')).toBeInTheDocument()
-    expect(screen.getByText('Examples')).toBeInTheDocument()
+    // Use heading role to distinguish from code block tokens
+    expect(screen.getByRole('heading', { name: 'Usage' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Flags' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Examples' })).toBeInTheDocument()
   })
 
   it('collapses a command when clicked again', async () => {
@@ -118,12 +119,12 @@ describe('CliDocsPage', () => {
     })!
 
     await user.click(initBtn)
-    expect(screen.getByText('Usage')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Usage' })).toBeInTheDocument()
 
     // Now click the expanded button (it will have aria-expanded=true)
     const expandedBtn = screen.getByRole('button', { expanded: true })
     await user.click(expandedBtn)
-    expect(screen.queryByText('Usage')).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Usage' })).not.toBeInTheDocument()
   })
 
   it('filters commands based on search query', async () => {
@@ -137,7 +138,7 @@ describe('CliDocsPage', () => {
 
     // Wait for debounce
     await waitFor(() => {
-      const commandSection = screen.getByText('Commands').closest('.cli-docs-page__commands') as HTMLElement
+      const commandSection = screen.getByRole('heading', { name: 'Commands' }).closest('.cli-docs-page__commands') as HTMLElement
       expect(within(commandSection).getByText('Deployment')).toBeInTheDocument()
       expect(within(commandSection).queryByText('Authentication')).not.toBeInTheDocument()
     })
@@ -171,7 +172,7 @@ describe('CliDocsPage', () => {
     await user.click(clearBtn)
 
     // All command groups should be back
-    const commandSection = screen.getByText('Commands').closest('.cli-docs-page__commands') as HTMLElement
+    const commandSection = screen.getByRole('heading', { name: 'Commands' }).closest('.cli-docs-page__commands') as HTMLElement
     expect(within(commandSection).getByText('Authentication')).toBeInTheDocument()
     expect(within(commandSection).getByText('Deployment')).toBeInTheDocument()
   })
@@ -187,7 +188,7 @@ describe('CliDocsPage', () => {
     await user.type(searchInput, 'rollback')
 
     // Deploy category should be visible since deploy has --rollback flag
-    const commandSection = screen.getByText('Commands').closest('.cli-docs-page__commands') as HTMLElement
+    const commandSection = screen.getByRole('heading', { name: 'Commands' }).closest('.cli-docs-page__commands') as HTMLElement
     expect(within(commandSection).getByText('Deployment')).toBeInTheDocument()
   })
 
