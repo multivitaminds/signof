@@ -13,6 +13,11 @@ const makeEntry = (overrides: Partial<MemoryEntry> = {}): MemoryEntry => ({
   tokenCount: 250,
   createdAt: '2025-01-01T00:00:00.000Z',
   updatedAt: '2025-01-01T12:00:00.000Z',
+  pinned: false,
+  sourceType: null,
+  sourceRef: null,
+  lastAccessedAt: '2025-01-01T00:00:00.000Z',
+  accessCount: 0,
   ...overrides,
 })
 
@@ -20,6 +25,7 @@ describe('MemoryEntryCard', () => {
   const onEdit = vi.fn()
   const onDelete = vi.fn()
   const onToggleExpand = vi.fn()
+  const onTogglePin = vi.fn()
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -137,5 +143,116 @@ describe('MemoryEntryCard', () => {
     // The createdAt is formatted as a locale date string
     const dateStr = new Date('2025-01-01T00:00:00.000Z').toLocaleDateString()
     expect(screen.getByText(dateStr)).toBeInTheDocument()
+  })
+
+  // --- New tests for enhanced features ---
+
+  it('renders pin button when onTogglePin is provided', () => {
+    render(
+      <MemoryEntryCard
+        entry={makeEntry()}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onTogglePin={onTogglePin}
+      />
+    )
+    expect(screen.getByRole('button', { name: /pin entry/i })).toBeInTheDocument()
+  })
+
+  it('pin button shows active state when isPinned is true', () => {
+    const { container } = render(
+      <MemoryEntryCard
+        entry={makeEntry()}
+        isPinned={true}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onTogglePin={onTogglePin}
+      />
+    )
+    expect(container.querySelector('.memory-card__pin--active')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /unpin entry/i })).toBeInTheDocument()
+  })
+
+  it('clicking pin button calls onTogglePin with entry id', async () => {
+    const user = userEvent.setup()
+    render(
+      <MemoryEntryCard
+        entry={makeEntry()}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onTogglePin={onTogglePin}
+      />
+    )
+    await user.click(screen.getByRole('button', { name: /pin entry/i }))
+    expect(onTogglePin).toHaveBeenCalledWith('test-1')
+  })
+
+  it('shows category-colored left border', () => {
+    const { container } = render(
+      <MemoryEntryCard
+        entry={makeEntry({ category: 'decisions' })}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    )
+    const card = container.querySelector('.memory-card')
+    expect(card).toHaveStyle({ borderLeft: '3px solid #6366F1' })
+  })
+
+  it('shows source badge when sourceType is present', () => {
+    render(
+      <MemoryEntryCard
+        entry={makeEntry({ sourceType: 'manual' })}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    )
+    expect(screen.getByText('Manual')).toBeInTheDocument()
+  })
+
+  it('shows source badge as Auto-captured for auto source types', () => {
+    render(
+      <MemoryEntryCard
+        entry={makeEntry({ sourceType: 'auto-document' })}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    )
+    // There is an Auto-captured badge from the auto-badge and the source badge
+    const badges = screen.getAllByText('Auto-captured')
+    expect(badges.length).toBeGreaterThan(0)
+  })
+
+  it('shows source badge as Template for template source type', () => {
+    render(
+      <MemoryEntryCard
+        entry={makeEntry({ sourceType: 'template' })}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    )
+    expect(screen.getByText('Template')).toBeInTheDocument()
+  })
+
+  it('shows "Accessed N times" when accessCount > 0', () => {
+    render(
+      <MemoryEntryCard
+        entry={makeEntry({ accessCount: 5 })}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    )
+    expect(screen.getByText('Accessed 5 times')).toBeInTheDocument()
+  })
+
+  it('does not show access count when accessCount is 0', () => {
+    render(
+      <MemoryEntryCard
+        entry={makeEntry({ accessCount: 0 })}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    )
+    expect(screen.queryByText(/Accessed/)).not.toBeInTheDocument()
   })
 })

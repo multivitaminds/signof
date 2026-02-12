@@ -1,29 +1,18 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { Plus, Download, Upload, Search } from 'lucide-react'
+import { Plus, Download, Upload, Search, LayoutGrid, List } from 'lucide-react'
 import { Button, Input } from '../../../../components/ui'
+import { Badge } from '../../../../components/ui'
 import { useMemoryStore } from '../../stores/useMemoryStore'
-import { MemoryScope, MemoryCategory, MemorySortOrder } from '../../types'
+import { MemorySortOrder } from '../../types'
 import type { MemoryScope as MemoryScopeType, MemoryCategory as MemoryCategoryType, MemorySortOrder as MemorySortOrderType, MemoryEntry } from '../../types'
-import UsageMeter from '../UsageMeter/UsageMeter'
+import { CATEGORY_META } from '../../lib/memoryTemplates'
 import MemoryEntryCard from '../MemoryEntryCard/MemoryEntryCard'
 import MemoryEntryModal from '../MemoryEntryModal/MemoryEntryModal'
 import './MemoryExplorer.css'
 
-const SCOPE_OPTIONS: Array<{ value: MemoryScopeType; label: string }> = [
-  { value: MemoryScope.Workspace, label: 'Workspace' },
-  { value: MemoryScope.Personal, label: 'Personal' },
-  { value: MemoryScope.Team, label: 'Team' },
-  { value: MemoryScope.Project, label: 'Project' },
-]
-
-const CATEGORY_OPTIONS: Array<{ value: MemoryCategoryType; label: string }> = [
-  { value: MemoryCategory.Decisions, label: 'Decisions' },
-  { value: MemoryCategory.Workflows, label: 'Workflows' },
-  { value: MemoryCategory.Preferences, label: 'Preferences' },
-  { value: MemoryCategory.People, label: 'People' },
-  { value: MemoryCategory.Projects, label: 'Projects' },
-  { value: MemoryCategory.Facts, label: 'Facts' },
-]
+interface MemoryExplorerProps {
+  onShowTemplates?: () => void
+}
 
 const SORT_OPTIONS: Array<{ value: MemorySortOrderType; label: string }> = [
   { value: MemorySortOrder.Recent, label: 'Recent' },
@@ -48,7 +37,12 @@ function sortEntries(entries: MemoryEntry[], order: MemorySortOrderType): Memory
   }
 }
 
-export default function MemoryExplorer() {
+function getCategoryColor(category: MemoryCategoryType): string {
+  const meta = CATEGORY_META.find((m) => m.key === category)
+  return meta?.color ?? '#64748B'
+}
+
+export default function MemoryExplorer({ onShowTemplates }: MemoryExplorerProps) {
   const {
     entries,
     isHydrated,
@@ -57,12 +51,14 @@ export default function MemoryExplorer() {
     filterCategory,
     sortOrder,
     expandedEntryId,
+    pinnedIds,
+    viewMode,
     hydrate,
     setSearchQuery,
-    setFilterScope,
-    setFilterCategory,
     setSortOrder,
     setExpandedEntryId,
+    setViewMode,
+    togglePin,
     addEntry,
     updateEntry,
     deleteEntry,
@@ -96,8 +92,18 @@ export default function MemoryExplorer() {
     return sortEntries(result, sortOrder)
   }, [entries, searchQuery, filterScope, filterCategory, sortOrder])
 
-  const totalTokens = useMemo(
-    () => entries.reduce((sum, e) => sum + e.tokenCount, 0),
+  const pinnedEntries = useMemo(
+    () => filteredEntries.filter((e) => pinnedIds.includes(e.id)),
+    [filteredEntries, pinnedIds],
+  )
+
+  const unpinnedEntries = useMemo(
+    () => filteredEntries.filter((e) => !pinnedIds.includes(e.id)),
+    [filteredEntries, pinnedIds],
+  )
+
+  const existingTags = useMemo(
+    () => Array.from(new Set(entries.flatMap((e) => e.tags))),
     [entries],
   )
 
@@ -174,22 +180,6 @@ export default function MemoryExplorer() {
     input.click()
   }, [importEntries])
 
-  const handleScopeChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const value = e.target.value
-      setFilterScope(value === '' ? null : (value as MemoryScopeType))
-    },
-    [setFilterScope],
-  )
-
-  const handleCategoryChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const value = e.target.value
-      setFilterCategory(value === '' ? null : (value as MemoryCategoryType))
-    },
-    [setFilterCategory],
-  )
-
   const handleSortChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       setSortOrder(e.target.value as MemorySortOrderType)
@@ -207,8 +197,6 @@ export default function MemoryExplorer() {
 
   return (
     <div className="memory-explorer">
-      <UsageMeter usedTokens={totalTokens} />
-
       <div className="memory-explorer__toolbar">
         <div className="memory-explorer__search">
           <Input
@@ -218,34 +206,6 @@ export default function MemoryExplorer() {
             leftIcon={<Search size={16} />}
           />
         </div>
-
-        <select
-          className="memory-explorer__scope-filter"
-          value={filterScope ?? ''}
-          onChange={handleScopeChange}
-          aria-label="Filter by scope"
-        >
-          <option value="">All Scopes</option>
-          {SCOPE_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-
-        <select
-          className="memory-explorer__category-filter"
-          value={filterCategory ?? ''}
-          onChange={handleCategoryChange}
-          aria-label="Filter by category"
-        >
-          <option value="">All Categories</option>
-          {CATEGORY_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
 
         <select
           className="memory-explorer__sort-select"
@@ -259,6 +219,25 @@ export default function MemoryExplorer() {
             </option>
           ))}
         </select>
+
+        <div className="memory-explorer__view-toggle" role="group" aria-label="View mode">
+          <button
+            className={`memory-explorer__view-btn${viewMode === 'grid' ? ' memory-explorer__view-btn--active' : ''}`}
+            onClick={() => setViewMode('grid')}
+            aria-label="Grid view"
+            aria-pressed={viewMode === 'grid'}
+          >
+            <LayoutGrid size={16} />
+          </button>
+          <button
+            className={`memory-explorer__view-btn${viewMode === 'list' ? ' memory-explorer__view-btn--active' : ''}`}
+            onClick={() => setViewMode('list')}
+            aria-label="List view"
+            aria-pressed={viewMode === 'list'}
+          >
+            <List size={16} />
+          </button>
+        </div>
 
         <div className="memory-explorer__actions">
           <Button variant="ghost" size="sm" icon={<Download size={16} />} onClick={handleExport}>
@@ -275,24 +254,108 @@ export default function MemoryExplorer() {
 
       {filteredEntries.length === 0 ? (
         <div className="memory-explorer__empty">
-          <p>No memory entries yet. Add your first entry to start building context.</p>
-          <Button variant="primary" icon={<Plus size={16} />} onClick={handleAdd}>
-            Add Memory
+          <h3 className="memory-explorer__empty-title">Your memory is empty</h3>
+          <p className="memory-explorer__empty-subtitle">Start building your organization&apos;s knowledge base</p>
+          <Button variant="primary" icon={<Plus size={16} />} onClick={onShowTemplates ?? handleAdd}>
+            Get Started
           </Button>
         </div>
-      ) : (
-        <div className="memory-explorer__grid">
-          {filteredEntries.map((entry) => (
-            <MemoryEntryCard
-              key={entry.id}
-              entry={entry}
-              expanded={expandedEntryId === entry.id}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onToggleExpand={handleToggleExpand}
-            />
-          ))}
+      ) : viewMode === 'list' ? (
+        <div className="memory-explorer__list-container">
+          {pinnedEntries.length > 0 && (
+            <div className="memory-explorer__pinned-section">
+              <h4 className="memory-explorer__section-header">Pinned</h4>
+              <div className="memory-explorer__list">
+                {pinnedEntries.map((entry) => (
+                  <div key={entry.id} className="memory-explorer__list-row">
+                    <span className="memory-explorer__list-title">{entry.title}</span>
+                    <Badge
+                      variant="default"
+                      size="sm"
+                    >
+                      <span style={{ color: getCategoryColor(entry.category) }}>{entry.category}</span>
+                    </Badge>
+                    <span className="memory-explorer__list-tokens">{entry.tokenCount} tokens</span>
+                    <span className="memory-explorer__list-date">{new Date(entry.updatedAt).toLocaleDateString()}</span>
+                    <div className="memory-explorer__list-actions">
+                      <Button variant="ghost" size="sm" onClick={() => handleEdit(entry.id)} aria-label={`Edit ${entry.title}`}>
+                        Edit
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(entry.id)} aria-label={`Delete ${entry.title}`}>
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {pinnedEntries.length > 0 && unpinnedEntries.length > 0 && (
+            <h4 className="memory-explorer__section-header">All Entries</h4>
+          )}
+          <div className="memory-explorer__list">
+            {unpinnedEntries.map((entry) => (
+              <div key={entry.id} className="memory-explorer__list-row">
+                <span className="memory-explorer__list-title">{entry.title}</span>
+                <Badge
+                  variant="default"
+                  size="sm"
+                >
+                  <span style={{ color: getCategoryColor(entry.category) }}>{entry.category}</span>
+                </Badge>
+                <span className="memory-explorer__list-tokens">{entry.tokenCount} tokens</span>
+                <span className="memory-explorer__list-date">{new Date(entry.updatedAt).toLocaleDateString()}</span>
+                <div className="memory-explorer__list-actions">
+                  <Button variant="ghost" size="sm" onClick={() => handleEdit(entry.id)} aria-label={`Edit ${entry.title}`}>
+                    Edit
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleDelete(entry.id)} aria-label={`Delete ${entry.title}`}>
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+      ) : (
+        <>
+          {pinnedEntries.length > 0 && (
+            <div className="memory-explorer__pinned-section">
+              <h4 className="memory-explorer__section-header">Pinned</h4>
+              <div className="memory-explorer__grid">
+                {pinnedEntries.map((entry) => (
+                  <MemoryEntryCard
+                    key={entry.id}
+                    entry={entry}
+                    expanded={expandedEntryId === entry.id}
+                    isPinned={true}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onToggleExpand={handleToggleExpand}
+                    onTogglePin={togglePin}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+          {pinnedEntries.length > 0 && unpinnedEntries.length > 0 && (
+            <h4 className="memory-explorer__section-header">All Entries</h4>
+          )}
+          <div className="memory-explorer__grid">
+            {unpinnedEntries.map((entry) => (
+              <MemoryEntryCard
+                key={entry.id}
+                entry={entry}
+                expanded={expandedEntryId === entry.id}
+                isPinned={false}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onToggleExpand={handleToggleExpand}
+                onTogglePin={togglePin}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {modalOpen && (
@@ -300,6 +363,7 @@ export default function MemoryExplorer() {
           entry={editingEntry}
           onSave={handleSave}
           onCancel={handleCancel}
+          existingTags={existingTags}
         />
       )}
     </div>

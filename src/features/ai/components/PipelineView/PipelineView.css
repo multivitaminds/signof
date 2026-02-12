@@ -1,0 +1,212 @@
+.pipeline-view {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.pipeline-view__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.pipeline-view__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pipeline-view__name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.pipeline-view__desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 2px 0 0 0;
+}
+
+.pipeline-view__header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.pipeline-view__duration {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.pipeline-view__progress {
+  width: 100%;
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.pipeline-view__progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.pipeline-view__flow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  overflow-x: auto;
+  padding: var(--space-xs) 0;
+}
+
+.pipeline-view__stage-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+}
+
+.pipeline-view__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 80px;
+}
+
+.pipeline-view__stage-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  background: var(--bg-primary);
+  transition: all 0.2s;
+}
+
+.pipeline-view__stage--running .pipeline-view__stage-icon {
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.pipeline-view__stage--completed .pipeline-view__stage-icon {
+  border-color: var(--color-success);
+  background: rgba(5, 150, 105, 0.05);
+}
+
+.pipeline-view__stage--failed .pipeline-view__stage-icon {
+  border-color: var(--color-danger);
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.pipeline-view__stage--pending .pipeline-view__stage-icon {
+  border-style: dashed;
+}
+
+.pipeline-view__spin {
+  animation: pipeline-view-spin 1s linear infinite;
+}
+
+@keyframes pipeline-view-spin {
+  to { transform: rotate(360deg); }
+}
+
+.pipeline-view__stage-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.pipeline-view__stage-output {
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pipeline-view__arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  margin-top: 10px;
+}
+
+.pipeline-view__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-sm);
+}
+
+.pipeline-view__control-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pipeline-view__control-btn:hover {
+  background: var(--border-color);
+  color: var(--text-primary);
+}
+
+.pipeline-view__control-btn--primary {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.pipeline-view__control-btn--danger {
+  color: var(--color-danger);
+}
+
+.pipeline-view__control-btn--danger:hover {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: var(--color-danger);
+}
+
+@media (max-width: 640px) {
+  .pipeline-view__flow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pipeline-view__stage-wrapper {
+    flex-direction: column;
+  }
+
+  .pipeline-view__stage {
+    flex-direction: row;
+    min-width: 0;
+    gap: var(--space-sm);
+  }
+
+  .pipeline-view__arrow {
+    transform: rotate(90deg);
+    margin-top: 0;
+    align-self: center;
+  }
+}

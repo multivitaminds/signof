@@ -1,0 +1,106 @@
+/* --- Category colors ----------------------------------------------------- */
+:root {
+  --memory-decisions: #6366F1;
+  --memory-workflows: #10B981;
+  --memory-preferences: #F59E0B;
+  --memory-people: #EC4899;
+  --memory-projects: #8B5CF6;
+  --memory-facts: #0EA5E9;
+}
+
+/* --- Block --------------------------------------------------------------- */
+.memory-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xl, 2rem);
+  padding: var(--space-xl, 2rem);
+  background: var(--bg-secondary, #F8FAFC);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-lg, 0.75rem);
+}
+
+/* --- Left side ----------------------------------------------------------- */
+.memory-hero__left {
+  flex: 1;
+  min-width: 0;
+}
+
+.memory-hero__title {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--color-primary, #4F46E5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 var(--space-xs, 0.25rem);
+}
+
+.memory-hero__headline {
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary, #1E293B);
+  line-height: var(--leading-tight, 1.25);
+  margin: 0 0 var(--space-md, 1rem);
+}
+
+.memory-hero__values {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 0.5rem);
+}
+
+.memory-hero__value-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #475569);
+}
+
+.memory-hero__value-icon {
+  color: var(--color-primary, #4F46E5);
+  flex-shrink: 0;
+}
+
+/* --- Right side (ring) --------------------------------------------------- */
+.memory-hero__right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs, 0.25rem);
+  flex-shrink: 0;
+}
+
+.memory-hero__ring-bg {
+  stroke: var(--border-color, #E2E8F0);
+}
+
+.memory-hero__ring-segment {
+  transition: stroke-dashoffset 0.6s ease-out;
+}
+
+.memory-hero__ring-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+  fill: var(--text-primary, #1E293B);
+}
+
+.memory-hero__entry-count {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #94A3B8);
+}
+
+/* --- Responsive ---------------------------------------------------------- */
+@media (max-width: 640px) {
+  .memory-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .memory-hero__values {
+    align-items: center;
+  }
+}

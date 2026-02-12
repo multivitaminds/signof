@@ -39,6 +39,38 @@ export interface MemoryEntry {
   tokenCount: number
   createdAt: string
   updatedAt: string
+  pinned: boolean
+  sourceType: string | null
+  sourceRef: string | null
+  lastAccessedAt: string
+  accessCount: number
+}
+
+export interface MemoryTemplate {
+  id: string
+  title: string
+  description: string
+  category: MemoryCategory
+  scope: MemoryScope
+  placeholder: string
+  tags: string[]
+  icon: string
+}
+
+export interface CategoryMeta {
+  key: MemoryCategory
+  label: string
+  description: string
+  icon: string
+  color: string
+  examples: string[]
+}
+
+export interface MemoryInsight {
+  type: 'suggestion' | 'coverage' | 'stale'
+  title: string
+  description: string
+  action?: { label: string; templateId?: string }
 }
 
 // ─── Agent Types ─────────────────────────────────────────────────────
@@ -52,9 +84,32 @@ export const AgentType = {
   Developer: 'developer',
   Reviewer: 'reviewer',
   Coordinator: 'coordinator',
+  Sales: 'sales',
+  Marketing: 'marketing',
+  Finance: 'finance',
+  Legal: 'legal',
+  Compliance: 'compliance',
+  HR: 'hr',
+  CustomerSuccess: 'customerSuccess',
+  Translation: 'translation',
+  SEO: 'seo',
+  SocialMedia: 'socialMedia',
+  Security: 'security',
+  DevOps: 'devops',
 } as const
 
 export type AgentType = (typeof AgentType)[keyof typeof AgentType]
+
+export const AgentCategory = {
+  Core: 'core',
+  Business: 'business',
+  Creative: 'creative',
+  Technical: 'technical',
+  People: 'people',
+  Legal: 'legal',
+} as const
+
+export type AgentCategory = (typeof AgentCategory)[keyof typeof AgentCategory]
 
 export const AgentStatus = {
   Idle: 'idle',
@@ -127,6 +182,9 @@ export interface AgentTypeDefinition {
   description: string
   icon: string
   color: string
+  category: AgentCategory
+  useCases: string[]
+  capabilities: string[]
   defaultSteps: Array<{ label: string; durationMs: number }>
 }
 
@@ -161,6 +219,38 @@ export interface AgentRun {
   completedAt: string | null
   lastRunAt: string | null
   result?: string
+}
+
+// ─── Pipeline Types ──────────────────────────────────────────────────
+
+export const PipelineStatus = {
+  Draft: 'draft',
+  Running: 'running',
+  Paused: 'paused',
+  Completed: 'completed',
+  Failed: 'failed',
+} as const
+
+export type PipelineStatus = (typeof PipelineStatus)[keyof typeof PipelineStatus]
+
+export interface PipelineStage {
+  id: string
+  agentType: AgentType
+  task: string
+  status: RunStatus
+  runId: string | null
+  output: string | null
+}
+
+export interface AgentPipeline {
+  id: string
+  name: string
+  description: string
+  stages: PipelineStage[]
+  status: PipelineStatus
+  createdAt: string
+  completedAt: string | null
+  templateId: string | null
 }
 
 // ─── AI Chat Types ──────────────────────────────────────────────────

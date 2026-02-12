@@ -83,6 +83,11 @@ const makeEntry = (id: string, content = 'test content'): MemoryEntry => ({
   tokenCount: Math.ceil(content.length / 4),
   createdAt: '2025-01-01T00:00:00.000Z',
   updatedAt: '2025-01-01T00:00:00.000Z',
+  pinned: false,
+  sourceType: null,
+  sourceRef: null,
+  lastAccessedAt: '2025-01-01T00:00:00.000Z',
+  accessCount: 0,
 })
 
 describe('indexedDB wrapper', () => {

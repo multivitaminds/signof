@@ -17,6 +17,21 @@ vi.mock('../lib/indexedDB', () => {
   }
 })
 
+vi.mock('../lib/memoryTemplates', () => ({
+  MEMORY_TEMPLATES: [
+    {
+      id: 'tpl-1',
+      title: 'Test Template',
+      description: 'A test template',
+      category: 'decisions',
+      scope: 'workspace',
+      placeholder: 'Template placeholder content',
+      tags: ['template-tag'],
+      icon: 'icon',
+    },
+  ],
+}))
+
 import { useMemoryStore } from './useMemoryStore'
 import * as db from '../lib/indexedDB'
 
@@ -40,6 +55,11 @@ const makeEntry = (id: string, content = 'test content'): MemoryEntry => ({
   tokenCount: Math.ceil(content.length / 4),
   createdAt: '2025-01-01T00:00:00.000Z',
   updatedAt: '2025-01-01T00:00:00.000Z',
+  pinned: false,
+  sourceType: null,
+  sourceRef: null,
+  lastAccessedAt: '2025-01-01T00:00:00.000Z',
+  accessCount: 0,
 })
 
 describe('useMemoryStore', () => {
@@ -54,6 +74,9 @@ describe('useMemoryStore', () => {
       filterTags: [],
       sortOrder: 'recent',
       expandedEntryId: null,
+      pinnedIds: [],
+      viewMode: 'grid',
+      activeTab: 'all',
     })
     mockDB.__store.clear()
     vi.clearAllMocks()
@@ -69,6 +92,9 @@ describe('useMemoryStore', () => {
     expect(state.filterTags).toEqual([])
     expect(state.sortOrder).toBe('recent')
     expect(state.expandedEntryId).toBeNull()
+    expect(state.pinnedIds).toEqual([])
+    expect(state.viewMode).toBe('grid')
+    expect(state.activeTab).toBe('all')
   })
 
   describe('hydrate', () => {
@@ -129,6 +155,37 @@ describe('useMemoryStore', () => {
       expect(result).toBeNull()
       expect(mockDB.putEntry).not.toHaveBeenCalled()
     })
+
+    it('sets default values for new fields', async () => {
+      const result = await useMemoryStore.getState().addEntry(
+        'New Fields',
+        'content',
+        'facts',
+        [],
+        'workspace',
+      )
+      expect(result).not.toBeNull()
+      expect(result?.pinned).toBe(false)
+      expect(result?.sourceType).toBeNull()
+      expect(result?.sourceRef).toBeNull()
+      expect(result?.lastAccessedAt).toBeTruthy()
+      expect(result?.accessCount).toBe(0)
+    })
+
+    it('accepts opts parameter for pinned/sourceType/sourceRef', async () => {
+      const result = await useMemoryStore.getState().addEntry(
+        'With Opts',
+        'content',
+        'decisions',
+        [],
+        'workspace',
+        { pinned: true, sourceType: 'agent', sourceRef: 'agent-123' },
+      )
+      expect(result).not.toBeNull()
+      expect(result?.pinned).toBe(true)
+      expect(result?.sourceType).toBe('agent')
+      expect(result?.sourceRef).toBe('agent-123')
+    })
   })
 
   describe('updateEntry', () => {
@@ -180,6 +237,18 @@ describe('useMemoryStore', () => {
       expect(state.entries[0]!.id).toBe('d2')
       expect(mockDB.deleteEntry).toHaveBeenCalledWith('d1')
     })
+
+    it('removes id from pinnedIds when deleting', async () => {
+      useMemoryStore.setState({
+        entries: [makeEntry('d1'), makeEntry('d2')],
+        pinnedIds: ['d1', 'd2'],
+      })
+
+      await useMemoryStore.getState().deleteEntry('d1')
+
+      const state = useMemoryStore.getState()
+      expect(state.pinnedIds).toEqual(['d2'])
+    })
   })
 
   describe('clearAll', () => {
@@ -190,6 +259,77 @@ describe('useMemoryStore', () => {
 
       expect(useMemoryStore.getState().entries).toEqual([])
       expect(mockDB.clearEntries).toHaveBeenCalledOnce()
+    })
+
+    it('clears pinnedIds', async () => {
+      useMemoryStore.setState({
+        entries: [makeEntry('c1')],
+        pinnedIds: ['c1'],
+      })
+
+      await useMemoryStore.getState().clearAll()
+
+      expect(useMemoryStore.getState().pinnedIds).toEqual([])
+    })
+  })
+
+  describe('togglePin', () => {
+    it('adds id to pinnedIds', () => {
+      useMemoryStore.getState().togglePin('pin1')
+      expect(useMemoryStore.getState().pinnedIds).toEqual(['pin1'])
+    })
+
+    it('removes id if already pinned', () => {
+      useMemoryStore.setState({ pinnedIds: ['pin1', 'pin2'] })
+      useMemoryStore.getState().togglePin('pin1')
+      expect(useMemoryStore.getState().pinnedIds).toEqual(['pin2'])
+    })
+  })
+
+  describe('setViewMode', () => {
+    it('updates viewMode', () => {
+      useMemoryStore.getState().setViewMode('list')
+      expect(useMemoryStore.getState().viewMode).toBe('list')
+    })
+
+    it('can switch back to grid', () => {
+      useMemoryStore.getState().setViewMode('list')
+      useMemoryStore.getState().setViewMode('grid')
+      expect(useMemoryStore.getState().viewMode).toBe('grid')
+    })
+  })
+
+  describe('setActiveTab', () => {
+    it('updates activeTab', () => {
+      useMemoryStore.getState().setActiveTab('decisions')
+      expect(useMemoryStore.getState().activeTab).toBe('decisions')
+    })
+
+    it('sets filterCategory when tab is a category', () => {
+      useMemoryStore.getState().setActiveTab('workflows')
+      expect(useMemoryStore.getState().filterCategory).toBe('workflows')
+    })
+
+    it('clears filterCategory when tab is all', () => {
+      useMemoryStore.getState().setActiveTab('decisions')
+      useMemoryStore.getState().setActiveTab('all')
+      expect(useMemoryStore.getState().filterCategory).toBeNull()
+    })
+  })
+
+  describe('addFromTemplate', () => {
+    it('creates entry from template', async () => {
+      const result = await useMemoryStore.getState().addFromTemplate('tpl-1')
+      expect(result).not.toBeNull()
+      expect(result?.title).toBe('Test Template')
+      expect(result?.content).toBe('Template placeholder content')
+      expect(result?.category).toBe('decisions')
+      expect(result?.tags).toEqual(['template-tag'])
+    })
+
+    it('returns null for unknown template', async () => {
+      const result = await useMemoryStore.getState().addFromTemplate('nonexistent')
+      expect(result).toBeNull()
     })
   })
 

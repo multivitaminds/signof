@@ -1,16 +1,44 @@
 import type { MemoryEntry } from '../types'
 
 const DB_NAME = 'signof-ai-memory'
-const DB_VERSION = 1
+const DB_VERSION = 2
 const STORE_NAME = 'entries'
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION)
-    request.onupgradeneeded = () => {
+    request.onupgradeneeded = (event) => {
       const db = request.result
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME, { keyPath: 'id' })
+      }
+      // Migrate v1 → v2: add new MemoryEntry fields to existing records
+      if ((event as IDBVersionChangeEvent).oldVersion < 2) {
+        const tx = request.transaction
+        if (tx) {
+          const store = tx.objectStore(STORE_NAME)
+          const cursorReq = store.openCursor()
+          cursorReq.onsuccess = () => {
+            const cursor = cursorReq.result
+            if (cursor) {
+              const entry = cursor.value as Record<string, unknown>
+              if (!('pinned' in entry)) {
+                const updatedAt = typeof entry.updatedAt === 'string'
+                  ? entry.updatedAt
+                  : new Date().toISOString()
+                cursor.update({
+                  ...entry,
+                  pinned: false,
+                  sourceType: null,
+                  sourceRef: null,
+                  lastAccessedAt: updatedAt,
+                  accessCount: 0,
+                })
+              }
+              cursor.continue()
+            }
+          }
+        }
       }
     }
     request.onsuccess = () => resolve(request.result)

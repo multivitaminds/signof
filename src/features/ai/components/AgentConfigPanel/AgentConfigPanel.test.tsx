@@ -10,6 +10,9 @@ const mockDefinition: AgentTypeDefinition = {
   description: 'Breaks down complex tasks into actionable plans',
   icon: 'ClipboardList',
   color: '#4F46E5',
+  category: 'core',
+  useCases: ['Break a product launch into phases'],
+  capabilities: ['Task decomposition'],
   defaultSteps: [
     { label: 'Analyzing', durationMs: 1000 },
   ],

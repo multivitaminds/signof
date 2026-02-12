@@ -1,61 +1,139 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import useAIAgentStore from '../stores/useAIAgentStore'
+import usePipelineStore from '../stores/usePipelineStore'
 import { AgentType, StepStatus } from '../types'
 import AIAgentsPage from './AIAgentsPage'
 
 describe('AIAgentsPage', () => {
   beforeEach(() => {
-    useAIAgentStore.setState({ runs: [], lastRunByAgent: {} })
+    useAIAgentStore.setState({ runs: [], lastRunByAgent: {}, favorites: [] })
+    usePipelineStore.setState({ pipelines: [] })
   })
 
-  it('renders the Agent Teams title', () => {
+  it('renders the Agent Marketplace title', () => {
     render(<AIAgentsPage />)
-    expect(screen.getByText('Agent Teams')).toBeInTheDocument()
+    expect(screen.getByText('Agent Marketplace')).toBeInTheDocument()
   })
 
   it('renders the subtitle', () => {
     render(<AIAgentsPage />)
-    expect(screen.getByText('Run specialized AI agents on any task')).toBeInTheDocument()
+    expect(screen.getByText('20 specialized AI agents, pipelines, and workflow templates')).toBeInTheDocument()
   })
 
-  it('renders all 8 agent type cards', () => {
+  it('renders all 20 agent type cards', () => {
     render(<AIAgentsPage />)
-    expect(screen.getByText('Research Agent')).toBeInTheDocument()
-    expect(screen.getByText('Writing Agent')).toBeInTheDocument()
-    expect(screen.getByText('Code Agent')).toBeInTheDocument()
-    expect(screen.getByText('Design Agent')).toBeInTheDocument()
-    expect(screen.getByText('Data Agent')).toBeInTheDocument()
-    expect(screen.getByText('Planning Agent')).toBeInTheDocument()
-    expect(screen.getByText('Communication Agent')).toBeInTheDocument()
-    expect(screen.getByText('Operations Agent')).toBeInTheDocument()
-  })
-
-  it('renders agent descriptions', () => {
-    render(<AIAgentsPage />)
-    expect(screen.getByText('Gathers information, analyzes data, produces reports')).toBeInTheDocument()
-    expect(screen.getByText('Drafts documents, emails, proposals, blog posts')).toBeInTheDocument()
+    // Core agents
+    expect(screen.getByText('Planner Agent')).toBeInTheDocument()
+    expect(screen.getByText('Researcher Agent')).toBeInTheDocument()
+    expect(screen.getByText('Analyst Agent')).toBeInTheDocument()
+    expect(screen.getByText('Reviewer Agent')).toBeInTheDocument()
+    expect(screen.getByText('Coordinator Agent')).toBeInTheDocument()
+    // Creative agents
+    expect(screen.getByText('Writer Agent')).toBeInTheDocument()
+    expect(screen.getByText('Designer Agent')).toBeInTheDocument()
+    expect(screen.getByText('Translation Agent')).toBeInTheDocument()
+    expect(screen.getByText('SEO Agent')).toBeInTheDocument()
+    expect(screen.getByText('Social Media Agent')).toBeInTheDocument()
+    // Technical agents
+    expect(screen.getByText('Developer Agent')).toBeInTheDocument()
+    expect(screen.getByText('Security Agent')).toBeInTheDocument()
+    expect(screen.getByText('DevOps Agent')).toBeInTheDocument()
+    // Business agents
+    expect(screen.getByText('Sales Agent')).toBeInTheDocument()
+    expect(screen.getByText('Marketing Agent')).toBeInTheDocument()
+    expect(screen.getByText('Finance Agent')).toBeInTheDocument()
+    // Legal agents
+    expect(screen.getByText('Legal Agent')).toBeInTheDocument()
+    expect(screen.getByText('Compliance Agent')).toBeInTheDocument()
+    // People agents
+    expect(screen.getByText('HR Agent')).toBeInTheDocument()
+    expect(screen.getByText('Customer Success Agent')).toBeInTheDocument()
   })
 
   it('renders Run button for each agent', () => {
     render(<AIAgentsPage />)
     const runButtons = screen.getAllByRole('button', { name: /^Run /i })
-    expect(runButtons).toHaveLength(8)
+    expect(runButtons).toHaveLength(20)
   })
 
   it('renders task input for each agent', () => {
     render(<AIAgentsPage />)
     const inputs = screen.getAllByPlaceholderText('Describe the task...')
-    expect(inputs).toHaveLength(8)
+    expect(inputs).toHaveLength(20)
+  })
+
+  it('renders stats bar with 4 stat cards', () => {
+    render(<AIAgentsPage />)
+    expect(screen.getByText('Total Agents')).toBeInTheDocument()
+    expect(screen.getByText('Total Runs')).toBeInTheDocument()
+    expect(screen.getByText('Active Pipelines')).toBeInTheDocument()
+    expect(screen.getByText('Success Rate')).toBeInTheDocument()
+    expect(screen.getByText('20')).toBeInTheDocument()
+  })
+
+  it('renders view tabs for Agents, Pipelines, Templates', () => {
+    render(<AIAgentsPage />)
+    expect(screen.getByRole('tab', { name: /Agents/ })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: /Pipelines/ })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: /Templates/ })).toBeInTheDocument()
+  })
+
+  it('renders category filter pills', () => {
+    render(<AIAgentsPage />)
+    expect(screen.getByRole('tab', { name: /All/ })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: /Business/ })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: /Creative/ })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: /Technical/ })).toBeInTheDocument()
+  })
+
+  it('renders search input', () => {
+    render(<AIAgentsPage />)
+    expect(screen.getByLabelText('Search agents')).toBeInTheDocument()
+  })
+
+  it('filters agents by category', async () => {
+    const user = userEvent.setup()
+    render(<AIAgentsPage />)
+
+    // Click Business category
+    await user.click(screen.getByRole('tab', { name: /Business/ }))
+
+    // Should show business agents
+    expect(screen.getByText('Sales Agent')).toBeInTheDocument()
+    expect(screen.getByText('Marketing Agent')).toBeInTheDocument()
+    expect(screen.getByText('Finance Agent')).toBeInTheDocument()
+
+    // Should not show core agents
+    expect(screen.queryByText('Planner Agent')).not.toBeInTheDocument()
+  })
+
+  it('filters agents by search query', async () => {
+    const user = userEvent.setup()
+    render(<AIAgentsPage />)
+
+    await user.type(screen.getByLabelText('Search agents'), 'security')
+
+    expect(screen.getByText('Security Agent')).toBeInTheDocument()
+    expect(screen.queryByText('Planner Agent')).not.toBeInTheDocument()
+  })
+
+  it('shows empty message when no agents match search', async () => {
+    const user = userEvent.setup()
+    render(<AIAgentsPage />)
+
+    await user.type(screen.getByLabelText('Search agents'), 'xyznonexistent')
+
+    expect(screen.getByText('No agents match your search.')).toBeInTheDocument()
   })
 
   it('starts an agent run when Run button is clicked', async () => {
     const user = userEvent.setup()
     render(<AIAgentsPage />)
 
-    const researchInput = screen.getByLabelText('Task for Research Agent')
+    const researchInput = screen.getByLabelText('Task for Researcher Agent')
     await user.type(researchInput, 'Find market trends')
-    await user.click(screen.getByRole('button', { name: 'Run Research Agent' }))
+    await user.click(screen.getByRole('button', { name: 'Run Researcher Agent' }))
 
     // Active runs section should appear
     expect(screen.getByText('Active Runs')).toBeInTheDocument()
@@ -66,9 +144,9 @@ describe('AIAgentsPage', () => {
     const user = userEvent.setup()
     render(<AIAgentsPage />)
 
-    const researchInput = screen.getByLabelText('Task for Research Agent')
+    const researchInput = screen.getByLabelText('Task for Researcher Agent')
     await user.type(researchInput, 'Search for data')
-    await user.click(screen.getByRole('button', { name: 'Run Research Agent' }))
+    await user.click(screen.getByRole('button', { name: 'Run Researcher Agent' }))
 
     expect(researchInput).toHaveValue('')
   })
@@ -160,7 +238,7 @@ describe('AIAgentsPage', () => {
     expect(screen.queryByText(/Run History/)).not.toBeInTheDocument()
   })
 
-  // ─── New: Step output display ──────────────────────────────────────
+  // ─── Step output display ──────────────────────────────────────
 
   it('displays step output text when step has output', () => {
     const run = useAIAgentStore.getState().startAgent(AgentType.Researcher, 'Research task')
@@ -171,7 +249,7 @@ describe('AIAgentsPage', () => {
     expect(screen.getByText('Found 12 data sources')).toBeInTheDocument()
   })
 
-  // ─── New: View Results button ──────────────────────────────────────
+  // ─── View Results button ──────────────────────────────────────
 
   it('shows View Results button for completed runs with results', async () => {
     const user = userEvent.setup()
@@ -221,7 +299,7 @@ describe('AIAgentsPage', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  // ─── New: History table has Actions column ─────────────────────────
+  // ─── History table has Actions column ─────────────────────────
 
   it('shows Actions column in history table', async () => {
     const user = userEvent.setup()
@@ -233,5 +311,41 @@ describe('AIAgentsPage', () => {
     await user.click(screen.getByRole('button', { name: /Run History/ }))
 
     expect(screen.getByText('Actions')).toBeInTheDocument()
+  })
+
+  // ─── Tabs switching ───────────────────────────────────────────
+
+  it('switches to Templates tab and shows workflow templates', async () => {
+    const user = userEvent.setup()
+    render(<AIAgentsPage />)
+
+    await user.click(screen.getByRole('tab', { name: /Templates/ }))
+
+    expect(screen.getByText('Workflow Templates')).toBeInTheDocument()
+    expect(screen.getByText('Blog Post Pipeline')).toBeInTheDocument()
+    expect(screen.getByText('Security Audit')).toBeInTheDocument()
+  })
+
+  it('switches to Pipelines tab', async () => {
+    const user = userEvent.setup()
+    render(<AIAgentsPage />)
+
+    await user.click(screen.getByRole('tab', { name: /Pipelines/ }))
+
+    expect(screen.getByText('Pipelines')).toBeInTheDocument()
+    expect(screen.getByText('No pipelines yet. Create one or use a template to get started.')).toBeInTheDocument()
+  })
+
+  // ─── Favorites ────────────────────────────────────────────────
+
+  it('toggles favorite on agent card', async () => {
+    const user = userEvent.setup()
+    render(<AIAgentsPage />)
+
+    const favBtn = screen.getByLabelText('Favorite Planner')
+    await user.click(favBtn)
+
+    // Should now show unfavorite label
+    expect(screen.getByLabelText('Unfavorite Planner')).toBeInTheDocument()
   })
 })

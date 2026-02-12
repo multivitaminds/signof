@@ -2,6 +2,72 @@
   max-width: 560px;
 }
 
+.memory-modal__tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: var(--space-4);
+}
+
+.memory-modal__tab {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color var(--motion-fast) var(--ease-out), border-color var(--motion-fast) var(--ease-out);
+}
+
+.memory-modal__tab:hover {
+  color: var(--text-primary);
+}
+
+.memory-modal__tab--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.memory-modal__template-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.memory-modal__template-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color var(--motion-fast) var(--ease-out), box-shadow var(--motion-fast) var(--ease-out);
+}
+
+.memory-modal__template-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.memory-modal__template-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.memory-modal__template-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: var(--leading-normal);
+}
+
 .memory-modal__field {
   margin-bottom: var(--space-4);
 }
@@ -16,7 +82,7 @@
 
 .memory-modal__textarea {
   width: 100%;
-  min-height: 120px;
+  min-height: 160px;
   padding: var(--space-2) var(--space-3);
   font-family: var(--font-sans);
   font-size: var(--text-sm);
@@ -44,21 +110,36 @@
   font-variant-numeric: tabular-nums;
 }
 
-.memory-modal__category-select {
-  width: 100%;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--text-sm);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  cursor: pointer;
+.memory-modal__category-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
-.memory-modal__category-select:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+.memory-modal__category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--motion-fast) var(--ease-out);
+}
+
+.memory-modal__category-pill:hover {
+  border-color: var(--pill-color, var(--color-primary));
+  color: var(--pill-color, var(--color-primary));
+}
+
+.memory-modal__category-pill--active {
+  background: var(--pill-color, var(--color-primary));
+  border-color: var(--pill-color, var(--color-primary));
+  color: #fff;
 }
 
 .memory-modal__tag-input {
@@ -112,6 +193,38 @@
 .memory-modal__tag-remove:hover {
   color: var(--color-danger);
   background: var(--color-danger-light);
+}
+
+.memory-modal__tag-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.memory-modal__tag-suggestions-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-right: var(--space-1);
+}
+
+.memory-modal__tag-suggestion {
+  display: inline-flex;
+  padding: 2px var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  background: none;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--motion-fast) var(--ease-out);
+}
+
+.memory-modal__tag-suggestion:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: rgba(79, 70, 229, 0.05);
 }
 
 .memory-modal__scope-group {

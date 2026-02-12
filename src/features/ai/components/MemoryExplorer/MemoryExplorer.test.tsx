@@ -18,6 +18,11 @@ const makeEntry = (id: string, overrides: Partial<MemoryEntry> = {}): MemoryEntr
   tokenCount: 100,
   createdAt: '2025-01-01T00:00:00.000Z',
   updatedAt: '2025-01-01T00:00:00.000Z',
+  pinned: false,
+  sourceType: null,
+  sourceRef: null,
+  lastAccessedAt: '2025-01-01T00:00:00.000Z',
+  accessCount: 0,
   ...overrides,
 })
 
@@ -31,6 +36,9 @@ function mockStore(overrides: Partial<ReturnType<typeof useMemoryStore>> = {}) {
     filterTags: [],
     sortOrder: 'recent' as const,
     expandedEntryId: null,
+    pinnedIds: [] as string[],
+    viewMode: 'grid' as const,
+    activeTab: 'all' as const,
     hydrate: vi.fn(),
     setSearchQuery: vi.fn(),
     setFilterScope: vi.fn(),
@@ -38,10 +46,14 @@ function mockStore(overrides: Partial<ReturnType<typeof useMemoryStore>> = {}) {
     setFilterTags: vi.fn(),
     setSortOrder: vi.fn(),
     setExpandedEntryId: vi.fn(),
+    togglePin: vi.fn(),
+    setViewMode: vi.fn(),
+    setActiveTab: vi.fn(),
     addEntry: vi.fn(),
     updateEntry: vi.fn(),
     deleteEntry: vi.fn(),
     clearAll: vi.fn(),
+    addFromTemplate: vi.fn(),
     exportEntries: vi.fn(async () => []),
     importEntries: vi.fn(),
   }
@@ -54,13 +66,12 @@ describe('MemoryExplorer', () => {
     vi.clearAllMocks()
   })
 
-  it('renders empty state when no entries', () => {
+  it('renders empty state with "Your memory is empty"', () => {
     mockStore()
     render(<MemoryExplorer />)
-    expect(
-      screen.getByText(/no memory entries yet/i),
-    ).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: /add memory/i }).length).toBeGreaterThan(0)
+    expect(screen.getByText('Your memory is empty')).toBeInTheDocument()
+    expect(screen.getByText(/start building/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /get started/i })).toBeInTheDocument()
   })
 
   it('renders entry cards when entries exist', () => {
@@ -70,7 +81,7 @@ describe('MemoryExplorer', () => {
     expect(screen.getByText('Entry 2')).toBeInTheDocument()
   })
 
-  it('renders UsageMeter with total tokens', () => {
+  it('does NOT render UsageMeter', () => {
     mockStore({
       entries: [
         makeEntry('1', { tokenCount: 500 }),
@@ -78,7 +89,19 @@ describe('MemoryExplorer', () => {
       ],
     })
     render(<MemoryExplorer />)
-    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+  })
+
+  it('does NOT render scope filter dropdown', () => {
+    mockStore()
+    render(<MemoryExplorer />)
+    expect(screen.queryByRole('combobox', { name: /filter by scope/i })).not.toBeInTheDocument()
+  })
+
+  it('does NOT render category filter dropdown', () => {
+    mockStore()
+    render(<MemoryExplorer />)
+    expect(screen.queryByRole('combobox', { name: /filter by category/i })).not.toBeInTheDocument()
   })
 
   it('calls setSearchQuery when typing in search', async () => {
@@ -109,42 +132,18 @@ describe('MemoryExplorer', () => {
     mockStore()
     render(<MemoryExplorer />)
 
-    // Click the first Add Memory button (toolbar)
-    const addButtons = screen.getAllByRole('button', { name: /add memory/i })
-    await user.click(addButtons[0]!)
+    // Click Get Started button in empty state
+    await user.click(screen.getByRole('button', { name: /get started/i }))
 
     // Modal should appear
     expect(screen.getByRole('dialog')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Add Entry' })).toBeInTheDocument()
   })
 
-  it('renders scope filter dropdown', () => {
-    mockStore()
-    render(<MemoryExplorer />)
-    expect(screen.getByRole('combobox', { name: /filter by scope/i })).toBeInTheDocument()
-  })
-
-  it('renders category filter dropdown', () => {
-    mockStore()
-    render(<MemoryExplorer />)
-    expect(screen.getByRole('combobox', { name: /filter by category/i })).toBeInTheDocument()
-  })
-
   it('renders sort dropdown', () => {
     mockStore()
     render(<MemoryExplorer />)
     expect(screen.getByRole('combobox', { name: /sort entries/i })).toBeInTheDocument()
-  })
-
-  it('calls setFilterCategory when category filter changes', async () => {
-    const user = userEvent.setup()
-    const store = mockStore()
-    render(<MemoryExplorer />)
-
-    const categorySelect = screen.getByRole('combobox', { name: /filter by category/i })
-    await user.selectOptions(categorySelect, 'decisions')
-
-    expect(store.setFilterCategory).toHaveBeenCalledWith('decisions')
   })
 
   it('calls setSortOrder when sort dropdown changes', async () => {
@@ -172,5 +171,68 @@ describe('MemoryExplorer', () => {
 
     await user.click(screen.getByRole('button', { name: /delete/i }))
     expect(store.deleteEntry).toHaveBeenCalledWith('del1')
+  })
+
+  // --- New tests for enhanced features ---
+
+  it('view toggle buttons render (Grid and List)', () => {
+    mockStore()
+    render(<MemoryExplorer />)
+    expect(screen.getByRole('button', { name: /grid view/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /list view/i })).toBeInTheDocument()
+  })
+
+  it('clicking List view toggle calls setViewMode with list', async () => {
+    const user = userEvent.setup()
+    const store = mockStore()
+    render(<MemoryExplorer />)
+
+    await user.click(screen.getByRole('button', { name: /list view/i }))
+    expect(store.setViewMode).toHaveBeenCalledWith('list')
+  })
+
+  it('clicking Grid view toggle calls setViewMode with grid', async () => {
+    const user = userEvent.setup()
+    const store = mockStore()
+    render(<MemoryExplorer />)
+
+    await user.click(screen.getByRole('button', { name: /grid view/i }))
+    expect(store.setViewMode).toHaveBeenCalledWith('grid')
+  })
+
+  it('pinned section renders when entries are pinned', () => {
+    mockStore({
+      entries: [makeEntry('p1'), makeEntry('p2')],
+      pinnedIds: ['p1'],
+    })
+    render(<MemoryExplorer />)
+    expect(screen.getByText('Pinned')).toBeInTheDocument()
+    expect(screen.getByText('All Entries')).toBeInTheDocument()
+  })
+
+  it('list view renders table-like rows when viewMode is list', () => {
+    mockStore({
+      entries: [makeEntry('l1'), makeEntry('l2')],
+      viewMode: 'list',
+    })
+    const { container } = render(<MemoryExplorer />)
+    expect(container.querySelector('.memory-explorer__list')).toBeInTheDocument()
+    expect(container.querySelectorAll('.memory-explorer__list-row').length).toBe(2)
+  })
+
+  it('empty state shows Get Started button', () => {
+    mockStore()
+    render(<MemoryExplorer />)
+    expect(screen.getByRole('button', { name: /get started/i })).toBeInTheDocument()
+  })
+
+  it('empty state calls onShowTemplates when provided', async () => {
+    const user = userEvent.setup()
+    const onShowTemplates = vi.fn()
+    mockStore()
+    render(<MemoryExplorer onShowTemplates={onShowTemplates} />)
+
+    await user.click(screen.getByRole('button', { name: /get started/i }))
+    expect(onShowTemplates).toHaveBeenCalled()
   })
 })

@@ -59,8 +59,37 @@
 
 .memory-card__badges {
   display: flex;
+  align-items: center;
   gap: var(--space-1);
   flex-shrink: 0;
+}
+
+.memory-card__pin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--motion-fast) var(--ease-out), background var(--motion-fast) var(--ease-out);
+}
+
+.memory-card__pin:hover {
+  color: #F59E0B;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.memory-card__pin--active {
+  color: #F59E0B;
+}
+
+.memory-card__pin--active svg {
+  fill: #F59E0B;
 }
 
 .memory-card__expand-btn {
@@ -119,6 +148,10 @@
   display: flex;
   align-items: center;
   gap: var(--space-1);
+}
+
+.memory-card__access-count {
+  font-variant-numeric: tabular-nums;
 }
 
 .memory-card__actions {

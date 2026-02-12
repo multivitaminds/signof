@@ -25,7 +25,7 @@ export default function AILayout() {
             `ai-layout__tab${isActive ? ' ai-layout__tab--active' : ''}`
           }
         >
-          Agent Teams
+          Agent Marketplace
         </NavLink>
       </nav>
 

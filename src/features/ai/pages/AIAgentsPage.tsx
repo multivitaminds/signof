@@ -1,87 +1,68 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import {
   Search, PenTool, Code2, Palette, BarChart3,
-  ClipboardList, Mail, Settings,
+  ClipboardList, Users, CheckSquare,
   Play, Pause, Square, MessageSquare,
   ChevronDown, ChevronUp,
   CheckCircle2, Loader2, Circle, XCircle, Clock,
-  X, Eye,
+  X, Eye, Star, Zap,
+  TrendingUp, Megaphone, DollarSign, Scale, ShieldCheck,
+  UserPlus, HeartHandshake, Languages, Globe, Share2,
+  Shield, Server,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Badge } from '../../../components/ui'
 import useAIAgentStore, { getStepOutput } from '../stores/useAIAgentStore'
-import { RunStatus, StepStatus } from '../types'
+import usePipelineStore from '../stores/usePipelineStore'
+import { AGENT_DEFINITIONS } from '../lib/agentDefinitions'
+import { WORKFLOW_TEMPLATES } from '../lib/workflowTemplates'
+import { RunStatus, StepStatus, AgentCategory } from '../types'
 import type { AgentType, AgentRun, RunStep } from '../types'
+import OrchestratorInput from '../components/OrchestratorInput/OrchestratorInput'
+import PipelineBuilder from '../components/PipelineBuilder/PipelineBuilder'
+import PipelineView from '../components/PipelineView/PipelineView'
+import TemplateCard from '../components/TemplateCard/TemplateCard'
+import type { WorkflowTemplate } from '../lib/workflowTemplates'
 import './AIAgentsPage.css'
 
-// ─── Agent Type Definitions (8 agents as requested) ────────────────
+// ─── Icon Mapping ─────────────────────────────────────────────────
 
-interface AgentTypeCard {
-  type: AgentType
-  name: string
-  description: string
-  icon: LucideIcon
-  color: string
+const ICON_MAP: Record<string, LucideIcon> = {
+  Search, PenTool, Code2, Palette, BarChart3,
+  ClipboardList, Users, CheckSquare,
+  TrendingUp, Megaphone, DollarSign, Scale, ShieldCheck,
+  UserPlus, HeartHandshake, Languages, Globe, Share2,
+  Shield, Server,
 }
 
-const AGENT_TYPE_CARDS: AgentTypeCard[] = [
-  {
-    type: 'researcher' as AgentType,
-    name: 'Research Agent',
-    description: 'Gathers information, analyzes data, produces reports',
-    icon: Search,
-    color: '#0891B2',
-  },
-  {
-    type: 'writer' as AgentType,
-    name: 'Writing Agent',
-    description: 'Drafts documents, emails, proposals, blog posts',
-    icon: PenTool,
-    color: '#7C3AED',
-  },
-  {
-    type: 'developer' as AgentType,
-    name: 'Code Agent',
-    description: 'Writes code, reviews PRs, fixes bugs, runs tests',
-    icon: Code2,
-    color: '#F59E0B',
-  },
-  {
-    type: 'designer' as AgentType,
-    name: 'Design Agent',
-    description: 'Creates wireframes, suggests UI improvements, generates assets',
-    icon: Palette,
-    color: '#EC4899',
-  },
-  {
-    type: 'analyst' as AgentType,
-    name: 'Data Agent',
-    description: 'Analyzes spreadsheets, creates charts, finds patterns',
-    icon: BarChart3,
-    color: '#059669',
-  },
-  {
-    type: 'planner' as AgentType,
-    name: 'Planning Agent',
-    description: 'Breaks down projects, creates timelines, assigns tasks',
-    icon: ClipboardList,
-    color: '#4F46E5',
-  },
-  {
-    type: 'coordinator' as AgentType,
-    name: 'Communication Agent',
-    description: 'Drafts emails, schedules meetings, manages inbox',
-    icon: Mail,
-    color: '#6366F1',
-  },
-  {
-    type: 'reviewer' as AgentType,
-    name: 'Operations Agent',
-    description: 'Monitors systems, manages deployments, tracks KPIs',
-    icon: Settings,
-    color: '#DC2626',
-  },
-]
+function getIcon(iconName: string): LucideIcon {
+  return ICON_MAP[iconName] ?? Circle
+}
+
+// ─── Category Config ──────────────────────────────────────────────
+
+interface CategoryTab {
+  key: string
+  label: string
+  count: number
+}
+
+function buildCategoryTabs(): CategoryTab[] {
+  const counts: Record<string, number> = {}
+  for (const d of AGENT_DEFINITIONS) {
+    counts[d.category] = (counts[d.category] ?? 0) + 1
+  }
+  return [
+    { key: 'all', label: 'All', count: AGENT_DEFINITIONS.length },
+    { key: AgentCategory.Business, label: 'Business', count: counts[AgentCategory.Business] ?? 0 },
+    { key: AgentCategory.Creative, label: 'Creative', count: counts[AgentCategory.Creative] ?? 0 },
+    { key: AgentCategory.Technical, label: 'Technical', count: counts[AgentCategory.Technical] ?? 0 },
+    { key: AgentCategory.People, label: 'People', count: counts[AgentCategory.People] ?? 0 },
+    { key: AgentCategory.Legal, label: 'Legal', count: counts[AgentCategory.Legal] ?? 0 },
+    { key: AgentCategory.Core, label: 'Core', count: counts[AgentCategory.Core] ?? 0 },
+    { key: 'favorites', label: 'Favorites', count: 0 },
+  ]
+}
 
 // ─── Step Status Icons ────────────────────────────────────────────
 
@@ -107,7 +88,7 @@ const RUN_STATUS_VARIANT: Record<RunStatus, 'primary' | 'warning' | 'success' | 
   [RunStatus.Failed]: 'danger',
 }
 
-// ─── Helper ────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────
 
 function formatDuration(startedAt: string, completedAt: string | null): string {
   const start = new Date(startedAt).getTime()
@@ -135,17 +116,35 @@ function formatRelativeDate(dateStr: string): string {
 export default function AIAgentsPage() {
   const runs = useAIAgentStore((s) => s.runs)
   const lastRunByAgent = useAIAgentStore((s) => s.lastRunByAgent)
+  const favorites = useAIAgentStore((s) => s.favorites)
   const startAgent = useAIAgentStore((s) => s.startAgent)
   const updateRunStep = useAIAgentStore((s) => s.updateRunStep)
   const cancelRun = useAIAgentStore((s) => s.cancelRun)
   const pauseRun = useAIAgentStore((s) => s.pauseRun)
   const resumeRun = useAIAgentStore((s) => s.resumeRun)
+  const toggleFavorite = useAIAgentStore((s) => s.toggleFavorite)
+
+  const pipelines = usePipelineStore((s) => s.pipelines)
+  const pipelinePause = usePipelineStore((s) => s.pausePipeline)
+  const pipelineResume = usePipelineStore((s) => s.resumePipeline)
+  const pipelineCancel = usePipelineStore((s) => s.cancelPipeline)
+  const pipelineCreate = usePipelineStore((s) => s.createPipeline)
+  const pipelineRun = usePipelineStore((s) => s.runPipeline)
 
   const [runTaskInputs, setRunTaskInputs] = useState<Record<string, string>>({})
   const [showHistory, setShowHistory] = useState(false)
   const [chatRunId, setChatRunId] = useState<string | null>(null)
   const [viewResultRunId, setViewResultRunId] = useState<string | null>(null)
   const simulationTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
+
+  // New marketplace state
+  const [activeTab, setActiveTab] = useState<'agents' | 'pipelines' | 'templates'>('agents')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [activeCategory, setActiveCategory] = useState('all')
+  const [showPipelineBuilder, setShowPipelineBuilder] = useState(false)
+  const [builderInitialStages, setBuilderInitialStages] = useState<Array<{ agentType: AgentType; task: string }> | undefined>()
+  const [builderTemplateName, setBuilderTemplateName] = useState<string | undefined>()
+  const [builderTemplateDesc, setBuilderTemplateDesc] = useState<string | undefined>()
 
   // Clean up timers on unmount
   useEffect(() => {
@@ -156,6 +155,33 @@ export default function AIAgentsPage() {
       }
     }
   }, [])
+
+  // Category tabs with dynamic favorite count
+  const categoryTabs = useMemo(() => {
+    const tabs = buildCategoryTabs()
+    const favTab = tabs.find(t => t.key === 'favorites')
+    if (favTab) favTab.count = favorites.length
+    return tabs
+  }, [favorites])
+
+  // Filtered agents
+  const filteredAgents = useMemo(() => {
+    let agents = AGENT_DEFINITIONS
+    if (activeCategory === 'favorites') {
+      agents = agents.filter(a => favorites.includes(a.type))
+    } else if (activeCategory !== 'all') {
+      agents = agents.filter(a => a.category === activeCategory)
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      agents = agents.filter(a =>
+        a.label.toLowerCase().includes(q) ||
+        a.description.toLowerCase().includes(q) ||
+        a.useCases.some(u => u.toLowerCase().includes(q))
+      )
+    }
+    return agents
+  }, [activeCategory, searchQuery, favorites])
 
   const activeRuns = useMemo(
     () => runs.filter(r => r.status === RunStatus.Running || r.status === RunStatus.Paused),
@@ -176,13 +202,32 @@ export default function AIAgentsPage() {
     [viewResultRunId, runs],
   )
 
+  // Stats
+  const stats = useMemo(() => {
+    const totalRuns = runs.length
+    const activePipelines = pipelines.filter(p => p.status === 'running' || p.status === 'paused').length
+    const completedRunsCount = runs.filter(r => r.status === RunStatus.Completed).length
+    const successRate = totalRuns > 0 ? Math.round((completedRunsCount / totalRuns) * 100) : 100
+    return { totalAgents: AGENT_DEFINITIONS.length, totalRuns, activePipelines, successRate }
+  }, [runs, pipelines])
+
+  // Active/completed pipelines
+  const activePipelines = useMemo(
+    () => pipelines.filter(p => p.status === 'running' || p.status === 'paused'),
+    [pipelines],
+  )
+
+  const completedPipelines = useMemo(
+    () => pipelines.filter(p => p.status === 'completed' || p.status === 'failed'),
+    [pipelines],
+  )
+
   const simulateSteps = useCallback((run: AgentRun) => {
     let stepIndex = 0
 
     function processNextStep() {
       if (stepIndex >= run.steps.length) return
 
-      // Mark current step running
       updateRunStep(run.id, stepIndex, StepStatus.Running as typeof StepStatus.Running)
 
       const delay = 1000 + Math.random() * 2000
@@ -216,7 +261,6 @@ export default function AIAgentsPage() {
 
   const handlePause = useCallback((runId: string) => {
     pauseRun(runId)
-    // Clear simulation timers for this run
     for (const [key, timer] of simulationTimers.current.entries()) {
       if (key.startsWith(runId)) {
         clearTimeout(timer)
@@ -229,7 +273,6 @@ export default function AIAgentsPage() {
     resumeRun(runId)
     const run = runs.find(r => r.id === runId)
     if (run) {
-      // Find next pending step and continue
       const nextPending = run.steps.findIndex(s => s.status === StepStatus.Pending || s.status === StepStatus.Running)
       if (nextPending >= 0) {
         const resumeRun_: AgentRun = { ...run, status: RunStatus.Running as typeof RunStatus.Running }
@@ -240,7 +283,6 @@ export default function AIAgentsPage() {
 
   const handleCancel = useCallback((runId: string) => {
     cancelRun(runId)
-    // Clear all timers for this run
     for (const [key, timer] of simulationTimers.current.entries()) {
       if (key.startsWith(runId)) {
         clearTimeout(timer)
@@ -265,63 +307,252 @@ export default function AIAgentsPage() {
     setViewResultRunId(null)
   }, [])
 
+  // Orchestrator handlers
+  const handleOrchestratorSingle = useCallback((agentType: AgentType, task: string) => {
+    const run = startAgent(agentType, task)
+    simulateSteps(run)
+  }, [startAgent, simulateSteps])
+
+  const handleOrchestratorPipeline = useCallback((stages: Array<{ agentType: AgentType; task: string }>) => {
+    const pipeline = pipelineCreate('Auto Pipeline', 'Created from orchestrator', stages)
+    pipelineRun(pipeline.id)
+  }, [pipelineCreate, pipelineRun])
+
+  // Template handler
+  const handleUseTemplate = useCallback((template: WorkflowTemplate) => {
+    setBuilderInitialStages(template.stages.map(s => ({ agentType: s.agentType, task: s.defaultTask })))
+    setBuilderTemplateName(template.name)
+    setBuilderTemplateDesc(template.description)
+    setShowPipelineBuilder(true)
+  }, [])
+
+  const handleOpenPipelineBuilder = useCallback(() => {
+    setBuilderInitialStages(undefined)
+    setBuilderTemplateName(undefined)
+    setBuilderTemplateDesc(undefined)
+    setShowPipelineBuilder(true)
+  }, [])
+
+  const handleClosePipelineBuilder = useCallback(() => {
+    setShowPipelineBuilder(false)
+  }, [])
+
   return (
     <div className="ai-agents">
       <div className="ai-agents__header">
-        <h2 className="ai-agents__title">Agent Teams</h2>
+        <h2 className="ai-agents__title">Agent Marketplace</h2>
         <p className="ai-agents__subtitle">
-          Run specialized AI agents on any task
+          20 specialized AI agents, pipelines, and workflow templates
         </p>
       </div>
 
-      {/* Agent Type Cards Grid */}
-      <div className="ai-agents__grid">
-        {AGENT_TYPE_CARDS.map((agent) => {
-          const IconComp = agent.icon
-          const lastRun = lastRunByAgent[agent.type]
-          return (
-            <div key={agent.type} className="ai-agents__card" style={{ borderTopColor: agent.color }}>
-              <div className="ai-agents__card-header">
-                <div className="ai-agents__card-icon" style={{ color: agent.color }}>
-                  <IconComp size={24} />
-                </div>
-                <div className="ai-agents__card-info">
-                  <h3 className="ai-agents__card-name">{agent.name}</h3>
-                  <p className="ai-agents__card-desc">{agent.description}</p>
-                </div>
-              </div>
-              <div className="ai-agents__card-input-row">
-                <input
-                  className="ai-agents__card-task-input"
-                  type="text"
-                  placeholder="Describe the task..."
-                  value={runTaskInputs[agent.type] ?? ''}
-                  onChange={(e) => handleTaskInputChange(agent.type, e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleRun(agent.type)
-                  }}
-                  aria-label={`Task for ${agent.name}`}
-                />
-                <button
-                  className="ai-agents__run-btn"
-                  onClick={() => handleRun(agent.type)}
-                  style={{ backgroundColor: agent.color }}
-                  aria-label={`Run ${agent.name}`}
-                >
-                  <Play size={14} />
-                  Run
-                </button>
-              </div>
-              {lastRun && (
-                <span className="ai-agents__card-last-run">
-                  <Clock size={12} />
-                  Last run: {formatRelativeDate(lastRun)}
-                </span>
-              )}
-            </div>
-          )
-        })}
+      {/* Orchestrator Input */}
+      <OrchestratorInput
+        onRunSingle={handleOrchestratorSingle}
+        onRunPipeline={handleOrchestratorPipeline}
+      />
+
+      {/* Stats Bar */}
+      <div className="ai-agents__stats-bar" aria-label="Agent statistics">
+        <div className="ai-agents__stat-card">
+          <span className="ai-agents__stat-value">{stats.totalAgents}</span>
+          <span className="ai-agents__stat-label">Total Agents</span>
+        </div>
+        <div className="ai-agents__stat-card">
+          <span className="ai-agents__stat-value">{stats.totalRuns}</span>
+          <span className="ai-agents__stat-label">Total Runs</span>
+        </div>
+        <div className="ai-agents__stat-card">
+          <span className="ai-agents__stat-value">{stats.activePipelines}</span>
+          <span className="ai-agents__stat-label">Active Pipelines</span>
+        </div>
+        <div className="ai-agents__stat-card">
+          <span className="ai-agents__stat-value">{stats.successRate}%</span>
+          <span className="ai-agents__stat-label">Success Rate</span>
+        </div>
       </div>
+
+      {/* View Tabs */}
+      <div className="ai-agents__view-tabs" role="tablist" aria-label="View tabs">
+        <button
+          className={`ai-agents__view-tab${activeTab === 'agents' ? ' ai-agents__view-tab--active' : ''}`}
+          onClick={() => setActiveTab('agents')}
+          role="tab"
+          aria-selected={activeTab === 'agents'}
+        >
+          Agents ({AGENT_DEFINITIONS.length})
+        </button>
+        <button
+          className={`ai-agents__view-tab${activeTab === 'pipelines' ? ' ai-agents__view-tab--active' : ''}`}
+          onClick={() => setActiveTab('pipelines')}
+          role="tab"
+          aria-selected={activeTab === 'pipelines'}
+        >
+          Pipelines ({pipelines.length})
+        </button>
+        <button
+          className={`ai-agents__view-tab${activeTab === 'templates' ? ' ai-agents__view-tab--active' : ''}`}
+          onClick={() => setActiveTab('templates')}
+          role="tab"
+          aria-selected={activeTab === 'templates'}
+        >
+          Templates ({WORKFLOW_TEMPLATES.length})
+        </button>
+      </div>
+
+      {/* ─── AGENTS TAB ──────────────────────────────────────────── */}
+      {activeTab === 'agents' && (
+        <>
+          {/* Category Pills + Search */}
+          <div className="ai-agents__filters">
+            <div className="ai-agents__category-pills" role="tablist" aria-label="Agent categories">
+              {categoryTabs.map(tab => (
+                <button
+                  key={tab.key}
+                  className={`ai-agents__category-pill${activeCategory === tab.key ? ' ai-agents__category-pill--active' : ''}`}
+                  onClick={() => setActiveCategory(tab.key)}
+                  role="tab"
+                  aria-selected={activeCategory === tab.key}
+                >
+                  {tab.key === 'favorites' && <Star size={12} />}
+                  {tab.label} ({tab.count})
+                </button>
+              ))}
+            </div>
+            <div className="ai-agents__search-bar">
+              <Search size={16} className="ai-agents__search-icon" />
+              <input
+                className="ai-agents__search-input"
+                type="text"
+                placeholder="Search agents..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search agents"
+              />
+            </div>
+          </div>
+
+          {/* Agent Cards Grid */}
+          <div className="ai-agents__grid">
+            {filteredAgents.map((agent) => {
+              const IconComp = getIcon(agent.icon)
+              const lastRun = lastRunByAgent[agent.type]
+              const isFavorite = favorites.includes(agent.type)
+              return (
+                <div key={agent.type} className="ai-agents__card" style={{ borderTopColor: agent.color }}>
+                  <div className="ai-agents__card-header">
+                    <div className="ai-agents__card-icon" style={{ color: agent.color }}>
+                      <IconComp size={24} />
+                    </div>
+                    <div className="ai-agents__card-info">
+                      <div className="ai-agents__card-name-row">
+                        <h3 className="ai-agents__card-name">{agent.label} Agent</h3>
+                        <button
+                          className={`ai-agents__card-favorite${isFavorite ? ' ai-agents__card-favorite--active' : ''}`}
+                          onClick={() => toggleFavorite(agent.type)}
+                          aria-label={isFavorite ? `Unfavorite ${agent.label}` : `Favorite ${agent.label}`}
+                        >
+                          <Star size={14} fill={isFavorite ? 'currentColor' : 'none'} />
+                        </button>
+                      </div>
+                      <p className="ai-agents__card-desc">{agent.description}</p>
+                    </div>
+                  </div>
+                  <span className="ai-agents__card-category-badge" style={{ color: agent.color, borderColor: agent.color }}>
+                    {agent.category}
+                  </span>
+                  <div className="ai-agents__card-input-row">
+                    <input
+                      className="ai-agents__card-task-input"
+                      type="text"
+                      placeholder="Describe the task..."
+                      value={runTaskInputs[agent.type] ?? ''}
+                      onChange={(e) => handleTaskInputChange(agent.type, e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleRun(agent.type)
+                      }}
+                      aria-label={`Task for ${agent.label} Agent`}
+                    />
+                    <button
+                      className="ai-agents__run-btn"
+                      onClick={() => handleRun(agent.type)}
+                      style={{ backgroundColor: agent.color }}
+                      aria-label={`Run ${agent.label} Agent`}
+                    >
+                      <Play size={14} />
+                      Run
+                    </button>
+                  </div>
+                  {lastRun && (
+                    <span className="ai-agents__card-last-run">
+                      <Clock size={12} />
+                      Last run: {formatRelativeDate(lastRun)}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          {filteredAgents.length === 0 && (
+            <p className="ai-agents__empty">No agents match your search.</p>
+          )}
+        </>
+      )}
+
+      {/* ─── PIPELINES TAB ───────────────────────────────────────── */}
+      {activeTab === 'pipelines' && (
+        <div className="ai-agents__pipelines-section">
+          <div className="ai-agents__pipelines-header">
+            <h3 className="ai-agents__section-title">Pipelines</h3>
+            <button className="ai-agents__create-pipeline-btn" onClick={handleOpenPipelineBuilder}>
+              <Zap size={14} />
+              Create Pipeline
+            </button>
+          </div>
+
+          {activePipelines.length > 0 && (
+            <div className="ai-agents__pipeline-list">
+              <h4 className="ai-agents__pipeline-subhead">Active</h4>
+              {activePipelines.map(p => (
+                <PipelineView
+                  key={p.id}
+                  pipeline={p}
+                  onPause={() => pipelinePause(p.id)}
+                  onResume={() => pipelineResume(p.id)}
+                  onCancel={() => pipelineCancel(p.id)}
+                />
+              ))}
+            </div>
+          )}
+
+          {completedPipelines.length > 0 && (
+            <div className="ai-agents__pipeline-list">
+              <h4 className="ai-agents__pipeline-subhead">Completed</h4>
+              {completedPipelines.map(p => (
+                <PipelineView key={p.id} pipeline={p} />
+              ))}
+            </div>
+          )}
+
+          {pipelines.length === 0 && (
+            <p className="ai-agents__empty">No pipelines yet. Create one or use a template to get started.</p>
+          )}
+        </div>
+      )}
+
+      {/* ─── TEMPLATES TAB ───────────────────────────────────────── */}
+      {activeTab === 'templates' && (
+        <div className="ai-agents__templates-section">
+          <h3 className="ai-agents__section-title">Workflow Templates</h3>
+          <p className="ai-agents__templates-desc">Pre-built multi-agent pipelines for common business workflows</p>
+          <div className="ai-agents__templates-grid">
+            {WORKFLOW_TEMPLATES.map(t => (
+              <TemplateCard key={t.id} template={t} onUseTemplate={handleUseTemplate} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Active Runs Panel */}
       {activeRuns.length > 0 && (
@@ -329,7 +560,7 @@ export default function AIAgentsPage() {
           <h3 className="ai-agents__section-title">Active Runs</h3>
           <div className="ai-agents__runs-list">
             {activeRuns.map((run) => {
-              const agentDef = AGENT_TYPE_CARDS.find(a => a.type === run.agentType)
+              const agentDef = AGENT_DEFINITIONS.find(a => a.type === run.agentType)
               const completedSteps = run.steps.filter(s => s.status === StepStatus.Completed).length
               const progressPercent = run.steps.length > 0
                 ? (completedSteps / run.steps.length) * 100
@@ -339,7 +570,7 @@ export default function AIAgentsPage() {
                 <div key={run.id} className="ai-agents__run-card">
                   <div className="ai-agents__run-header">
                     <div className="ai-agents__run-info">
-                      <span className="ai-agents__run-agent">{agentDef?.name ?? run.agentType}</span>
+                      <span className="ai-agents__run-agent">{agentDef?.label ?? run.agentType} Agent</span>
                       <span className="ai-agents__run-task">{run.task}</span>
                     </div>
                     <Badge variant={RUN_STATUS_VARIANT[run.status]} size="sm" dot>
@@ -347,12 +578,10 @@ export default function AIAgentsPage() {
                     </Badge>
                   </div>
 
-                  {/* Progress Bar */}
                   <div className="ai-agents__progress-bar" role="progressbar" aria-valuenow={completedSteps} aria-valuemin={0} aria-valuemax={run.steps.length} aria-label="Run progress">
                     <div className="ai-agents__progress-fill" style={{ width: `${progressPercent}%` }} />
                   </div>
 
-                  {/* Steps with output text */}
                   <div className="ai-agents__steps" role="list" aria-label="Run steps">
                     {run.steps.map((step: RunStep) => {
                       const StepIcon = STEP_ICON[step.status]
@@ -370,7 +599,6 @@ export default function AIAgentsPage() {
                     })}
                   </div>
 
-                  {/* Run Controls */}
                   <div className="ai-agents__run-controls">
                     {run.status === RunStatus.Running && (
                       <button className="ai-agents__control-btn" onClick={() => handlePause(run.id)} aria-label="Pause run">
@@ -425,10 +653,10 @@ export default function AIAgentsPage() {
                 </thead>
                 <tbody>
                   {completedRuns.map((run) => {
-                    const agentDef = AGENT_TYPE_CARDS.find(a => a.type === run.agentType)
+                    const agentDef = AGENT_DEFINITIONS.find(a => a.type === run.agentType)
                     return (
                       <tr key={run.id}>
-                        <td>{agentDef?.name ?? run.agentType}</td>
+                        <td>{agentDef?.label ?? run.agentType} Agent</td>
                         <td className="ai-agents__history-task">{run.task}</td>
                         <td>
                           <Badge variant={RUN_STATUS_VARIANT[run.status]} size="sm">
@@ -487,6 +715,15 @@ export default function AIAgentsPage() {
           </div>
         </div>
       )}
+
+      {/* Pipeline Builder Modal */}
+      <PipelineBuilder
+        isOpen={showPipelineBuilder}
+        onClose={handleClosePipelineBuilder}
+        initialStages={builderInitialStages}
+        templateName={builderTemplateName}
+        templateDescription={builderTemplateDesc}
+      />
     </div>
   )
 }

@@ -1,0 +1,78 @@
+/* --- Block --------------------------------------------------------------- */
+.memory-category-bar {
+  display: flex;
+  gap: var(--space-sm, 0.5rem);
+  overflow-x: auto;
+  padding-bottom: var(--space-xs, 0.25rem);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* --- Card (tab) ---------------------------------------------------------- */
+.memory-category-bar__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs, 0.25rem);
+  min-width: 120px;
+  padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--card-color) 8%, transparent),
+    transparent
+  );
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-bottom: 2px solid transparent;
+  border-radius: var(--radius-md, 0.5rem);
+  cursor: pointer;
+  transition:
+    transform var(--motion-fast, 150ms) var(--ease-out, ease-out),
+    box-shadow var(--motion-fast, 150ms) var(--ease-out, ease-out),
+    border-color var(--motion-fast, 150ms) var(--ease-out, ease-out);
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.memory-category-bar__card:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+}
+
+.memory-category-bar__card:focus-visible {
+  outline: 2px solid var(--color-primary, #4F46E5);
+  outline-offset: 2px;
+}
+
+/* --- Active state -------------------------------------------------------- */
+.memory-category-bar__card--active {
+  border-bottom-color: var(--card-color);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--card-color) 12%, transparent),
+    transparent
+  );
+}
+
+/* --- Elements ------------------------------------------------------------ */
+.memory-category-bar__icon {
+  color: var(--card-color);
+}
+
+.memory-category-bar__label {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--text-primary, #1E293B);
+  white-space: nowrap;
+}
+
+.memory-category-bar__count {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-muted, #94A3B8);
+  background: var(--bg-primary, #FFFFFF);
+  border-radius: var(--radius-sm, 0.375rem);
+  padding: 0 var(--space-xs, 0.25rem);
+  min-width: 1.5rem;
+  text-align: center;
+}

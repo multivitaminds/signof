@@ -23,9 +23,9 @@ describe('AILayout', () => {
     expect(memoryTab).toHaveAttribute('href', '/ai/memory')
   })
 
-  it('renders Agent Teams tab link', () => {
+  it('renders Agent Marketplace tab link', () => {
     renderWithRouter()
-    const agentsTab = screen.getByRole('link', { name: 'Agent Teams' })
+    const agentsTab = screen.getByRole('link', { name: 'Agent Marketplace' })
     expect(agentsTab).toBeInTheDocument()
     expect(agentsTab).toHaveAttribute('href', '/ai/agents')
   })

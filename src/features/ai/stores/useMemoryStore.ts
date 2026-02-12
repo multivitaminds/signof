@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import type { MemoryEntry, MemoryScope, MemoryCategory, MemorySortOrder } from '../types'
 import { countTokens, TOKEN_BUDGET } from '../lib/tokenCount'
 import * as db from '../lib/indexedDB'
+import { MEMORY_TEMPLATES } from '../lib/memoryTemplates'
 
 interface MemoryState {
   entries: MemoryEntry[]
@@ -12,9 +13,19 @@ interface MemoryState {
   filterTags: string[]
   sortOrder: MemorySortOrder
   expandedEntryId: string | null
+  pinnedIds: string[]
+  viewMode: 'grid' | 'list'
+  activeTab: 'all' | MemoryCategory
 
   hydrate: () => Promise<void>
-  addEntry: (title: string, content: string, category: MemoryCategory, tags: string[], scope: MemoryScope) => Promise<MemoryEntry | null>
+  addEntry: (
+    title: string,
+    content: string,
+    category: MemoryCategory,
+    tags: string[],
+    scope: MemoryScope,
+    opts?: { pinned?: boolean; sourceType?: string | null; sourceRef?: string | null },
+  ) => Promise<MemoryEntry | null>
   updateEntry: (id: string, updates: Partial<Pick<MemoryEntry, 'title' | 'content' | 'category' | 'tags' | 'scope'>>) => Promise<void>
   deleteEntry: (id: string) => Promise<void>
   clearAll: () => Promise<void>
@@ -24,6 +35,10 @@ interface MemoryState {
   setFilterTags: (tags: string[]) => void
   setSortOrder: (order: MemorySortOrder) => void
   setExpandedEntryId: (id: string | null) => void
+  togglePin: (id: string) => void
+  setViewMode: (mode: 'grid' | 'list') => void
+  setActiveTab: (tab: 'all' | MemoryCategory) => void
+  addFromTemplate: (templateId: string) => Promise<MemoryEntry | null>
   exportEntries: () => Promise<MemoryEntry[]>
   importEntries: (entries: MemoryEntry[]) => Promise<void>
 }
@@ -41,6 +56,9 @@ export const useMemoryStore = create<MemoryState>((set, get) => ({
   filterTags: [],
   sortOrder: 'recent' as MemorySortOrder,
   expandedEntryId: null,
+  pinnedIds: [],
+  viewMode: 'grid',
+  activeTab: 'all',
 
   hydrate: async () => {
     if (get().isHydrated) return
@@ -48,7 +66,7 @@ export const useMemoryStore = create<MemoryState>((set, get) => ({
     set({ entries, isHydrated: true })
   },
 
-  addEntry: async (title, content, category, tags, scope) => {
+  addEntry: async (title, content, category, tags, scope, opts) => {
     const tokenCount = countTokens(content)
     const totalTokens = get().entries.reduce((sum, e) => sum + e.tokenCount, 0)
     if (totalTokens + tokenCount > TOKEN_BUDGET) return null
@@ -63,6 +81,11 @@ export const useMemoryStore = create<MemoryState>((set, get) => ({
       tokenCount,
       createdAt: now,
       updatedAt: now,
+      pinned: opts?.pinned ?? false,
+      sourceType: opts?.sourceType ?? null,
+      sourceRef: opts?.sourceRef ?? null,
+      lastAccessedAt: now,
+      accessCount: 0,
     }
     await db.putEntry(entry)
     set((state) => ({ entries: [...state.entries, entry] }))
@@ -86,12 +109,15 @@ export const useMemoryStore = create<MemoryState>((set, get) => ({
 
   deleteEntry: async (id) => {
     await db.deleteEntry(id)
-    set((state) => ({ entries: state.entries.filter((e) => e.id !== id) }))
+    set((state) => ({
+      entries: state.entries.filter((e) => e.id !== id),
+      pinnedIds: state.pinnedIds.filter((pid) => pid !== id),
+    }))
   },
 
   clearAll: async () => {
     await db.clearEntries()
-    set({ entries: [] })
+    set({ entries: [], pinnedIds: [] })
   },
 
   setSearchQuery: (query) => set({ searchQuery: query }),
@@ -100,6 +126,31 @@ export const useMemoryStore = create<MemoryState>((set, get) => ({
   setFilterTags: (tags) => set({ filterTags: tags }),
   setSortOrder: (order) => set({ sortOrder: order }),
   setExpandedEntryId: (id) => set({ expandedEntryId: id }),
+
+  togglePin: (id) => set((state) => ({
+    pinnedIds: state.pinnedIds.includes(id)
+      ? state.pinnedIds.filter((pid) => pid !== id)
+      : [...state.pinnedIds, id],
+  })),
+
+  setViewMode: (mode) => set({ viewMode: mode }),
+
+  setActiveTab: (tab) => set({
+    activeTab: tab,
+    filterCategory: tab === 'all' ? null : tab,
+  }),
+
+  addFromTemplate: async (templateId) => {
+    const template = MEMORY_TEMPLATES.find((t) => t.id === templateId)
+    if (!template) return null
+    return get().addEntry(
+      template.title,
+      template.placeholder,
+      template.category,
+      template.tags,
+      template.scope,
+    )
+  },
 
   exportEntries: async () => db.exportAllEntries(),
   importEntries: async (entries) => {
