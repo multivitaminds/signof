@@ -1,18 +1,18 @@
 import { useState, useCallback } from 'react'
 import { Plus, Search, Trash2 } from 'lucide-react'
-import usePlaygroundStore from '../../stores/usePlaygroundStore'
+import useStudioStore from '../../stores/useStudioStore'
 import { MODEL_CATALOG } from '../../lib/models'
 import './ConversationSidebar.css'
 
 function ConversationSidebar() {
-  const conversations = usePlaygroundStore((s) => s.conversations)
-  const activeConversationId = usePlaygroundStore((s) => s.activeConversationId)
-  const searchQuery = usePlaygroundStore((s) => s.searchQuery)
-  const createConversation = usePlaygroundStore((s) => s.createConversation)
-  const deleteConversation = usePlaygroundStore((s) => s.deleteConversation)
-  const setActiveConversation = usePlaygroundStore((s) => s.setActiveConversation)
-  const renameConversation = usePlaygroundStore((s) => s.renameConversation)
-  const setSearchQuery = usePlaygroundStore((s) => s.setSearchQuery)
+  const conversations = useStudioStore((s) => s.conversations)
+  const activeConversationId = useStudioStore((s) => s.activeConversationId)
+  const searchQuery = useStudioStore((s) => s.searchQuery)
+  const createConversation = useStudioStore((s) => s.createConversation)
+  const deleteConversation = useStudioStore((s) => s.deleteConversation)
+  const setActiveConversation = useStudioStore((s) => s.setActiveConversation)
+  const renameConversation = useStudioStore((s) => s.renameConversation)
+  const setSearchQuery = useStudioStore((s) => s.setSearchQuery)
 
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editTitle, setEditTitle] = useState('')

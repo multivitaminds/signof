@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from 'react'
-import type { PlaygroundMessage, ToolCall } from '../../types'
+import type { StudioMessage, ToolCall } from '../../types'
 import CodeBlock from '../../../../features/developer/components/CodeBlock/CodeBlock'
 import './ChatMessage.css'
 
 interface ChatMessageProps {
-  message: PlaygroundMessage
+  message: StudioMessage
 }
 
 interface ParsedSegment {

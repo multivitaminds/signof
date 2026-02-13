@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import ChatMessage from './ChatMessage'
-import type { PlaygroundMessage } from '../../types'
+import type { StudioMessage } from '../../types'
 import { ModelId } from '../../types'
 
 vi.mock('../../../../features/developer/components/CodeBlock/CodeBlock', () => ({
@@ -9,7 +9,7 @@ vi.mock('../../../../features/developer/components/CodeBlock/CodeBlock', () => (
   ),
 }))
 
-function createMessage(overrides: Partial<PlaygroundMessage> = {}): PlaygroundMessage {
+function createMessage(overrides: Partial<StudioMessage> = {}): StudioMessage {
   return {
     id: 'msg-1',
     role: 'user',

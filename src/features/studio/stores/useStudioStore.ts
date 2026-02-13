@@ -1,9 +1,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { ModelId, Conversation, ConversationSettings, PlaygroundMessage } from '../types'
+import type { ModelId, Conversation, ConversationSettings, StudioMessage } from '../types'
 import { DEFAULT_MODEL_ID, MODEL_CATALOG } from '../lib/models'
 import { estimateTokens } from '../lib/tokenCounter'
-import { generateResponse } from '../lib/playgroundResponder'
+import { generateResponse } from '../lib/studioResponder'
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
@@ -35,7 +35,7 @@ function createDefaultConversation(modelId: ModelId = DEFAULT_MODEL_ID): Convers
   }
 }
 
-export interface PlaygroundState {
+export interface StudioState {
   conversations: Conversation[]
   activeConversationId: string | null
   isTyping: boolean
@@ -55,7 +55,7 @@ export interface PlaygroundState {
   exportConversation: (id: string) => string
 }
 
-const usePlaygroundStore = create<PlaygroundState>()(
+const useStudioStore = create<StudioState>()(
   persist(
     (set, get) => ({
       conversations: [],
@@ -114,7 +114,7 @@ const usePlaygroundStore = create<PlaygroundState>()(
         if (!conversation) return
 
         const tokenCount = estimateTokens(content)
-        const userMessage: PlaygroundMessage = {
+        const userMessage: StudioMessage = {
           id: generateId(),
           role: 'user',
           content,
@@ -152,7 +152,7 @@ const usePlaygroundStore = create<PlaygroundState>()(
         generateResponse(content, conversation.modelId, conversation.settings.agentMode)
           .then(({ content: responseContent, toolCalls }) => {
             const responseTokenCount = estimateTokens(responseContent)
-            const assistantMessage: PlaygroundMessage = {
+            const assistantMessage: StudioMessage = {
               id: generateId(),
               role: 'assistant',
               content: responseContent,
@@ -237,7 +237,7 @@ const usePlaygroundStore = create<PlaygroundState>()(
       },
     }),
     {
-      name: 'orchestree-playground',
+      name: 'orchestree-studio',
       partialize: (state) => ({
         conversations: state.conversations,
         activeConversationId: state.activeConversationId,
@@ -246,4 +246,4 @@ const usePlaygroundStore = create<PlaygroundState>()(
   )
 )
 
-export default usePlaygroundStore
+export default useStudioStore

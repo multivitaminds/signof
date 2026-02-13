@@ -1,4 +1,4 @@
-.playground-layout {
+.studio-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
   height: 100%;
@@ -7,18 +7,18 @@
   transition: grid-template-columns 0.2s ease;
 }
 
-.playground-layout--settings-open {
+.studio-layout--settings-open {
   grid-template-columns: 280px 1fr 320px;
 }
 
-.playground-layout__sidebar {
+.studio-layout__sidebar {
   border-right: 1px solid var(--border-color);
   overflow-y: auto;
   background: var(--bg-primary);
   min-height: 0;
 }
 
-.playground-layout__main {
+.studio-layout__main {
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -26,7 +26,7 @@
   overflow: hidden;
 }
 
-.playground-layout__settings {
+.studio-layout__settings {
   border-left: 1px solid var(--border-color);
   overflow-y: auto;
   background: var(--bg-primary);
@@ -34,19 +34,19 @@
 }
 
 @media (max-width: 768px) {
-  .playground-layout {
+  .studio-layout {
     grid-template-columns: 1fr;
   }
 
-  .playground-layout--settings-open {
+  .studio-layout--settings-open {
     grid-template-columns: 1fr;
   }
 
-  .playground-layout__sidebar {
+  .studio-layout__sidebar {
     display: none;
   }
 
-  .playground-layout__settings {
+  .studio-layout__settings {
     position: fixed;
     top: 0;
     right: 0;

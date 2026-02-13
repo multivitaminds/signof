@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react'
 import { MessageSquare } from 'lucide-react'
-import type { PlaygroundMessage } from '../../types'
+import type { StudioMessage } from '../../types'
 import ChatMessage from '../ChatMessage/ChatMessage'
 import './ChatArea.css'
 
 interface ChatAreaProps {
-  messages: PlaygroundMessage[]
+  messages: StudioMessage[]
   isTyping: boolean
 }
 

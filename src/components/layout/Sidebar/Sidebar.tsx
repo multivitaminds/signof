@@ -133,7 +133,7 @@ export default function Sidebar() {
     { path: '/ai', label: 'Intelligence', icon: Wand2 },
     { path: '/tax', label: 'Tax', icon: Receipt },
     { path: '/accounting', label: 'Accounting', icon: Calculator },
-    { path: '/playground', label: 'Playground', icon: MessageSquare },
+    { path: '/studio', label: 'Studio', icon: MessageSquare },
     { path: '/developer', label: 'Developer', icon: Code2 },
   ]
 
