@@ -872,3 +872,258 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ─── Featured Agents Section Header ──────────────────── */
+
+.copilot-agents__featured-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.copilot-agents__featured-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.copilot-agents__featured-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: rgba(79, 70, 229, 0.08);
+  border: 1px solid rgba(79, 70, 229, 0.2);
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ─── Marketplace Domains ─────────────────────────────── */
+
+.copilot-agents__marketplace {
+  margin-top: var(--space-xl);
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-lg);
+}
+
+.copilot-agents__marketplace-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.copilot-agents__marketplace-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.copilot-agents__marketplace-count {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.copilot-agents__domain {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-md);
+  overflow: hidden;
+  transition: box-shadow 0.15s;
+}
+
+.copilot-agents__domain:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.copilot-agents__domain-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-md);
+  background: var(--bg-primary);
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: background 0.15s;
+}
+
+.copilot-agents__domain-toggle:hover {
+  background: var(--bg-secondary);
+}
+
+.copilot-agents__domain-chevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+}
+
+.copilot-agents__domain-chevron--expanded {
+  transform: rotate(90deg);
+}
+
+.copilot-agents__domain-emoji {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.copilot-agents__domain-info {
+  flex: 1;
+  text-align: left;
+  min-width: 0;
+}
+
+.copilot-agents__domain-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.copilot-agents__domain-desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 2px 0 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.copilot-agents__domain-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 999px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  border: 1px solid var(--border-color);
+}
+
+.copilot-agents__domain-content {
+  padding: 0 var(--space-md) var(--space-md);
+  border-top: 1px solid var(--border-color);
+}
+
+.copilot-agents__marketplace-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+}
+
+.copilot-agents__marketplace-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: border-color 0.15s;
+}
+
+.copilot-agents__marketplace-card:hover {
+  border-color: var(--color-primary);
+}
+
+.copilot-agents__marketplace-card-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.copilot-agents__marketplace-card-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.copilot-agents__marketplace-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.copilot-agents__marketplace-card-tag {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.copilot-agents__marketplace-card-price {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-left: auto;
+}
+
+/* ─── Marketplace No Results ──────────────────────────── */
+
+.copilot-agents__marketplace-empty {
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-style: italic;
+}
+
+/* ─── Dark Mode ───────────────────────────────────────── */
+
+[data-theme="dark"] .copilot-agents__marketplace-card {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"] .copilot-agents__domain-toggle:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .copilot-agents__featured-badge {
+  background: rgba(79, 70, 229, 0.15);
+  border-color: rgba(79, 70, 229, 0.3);
+}
+
+/* ─── Marketplace Responsive ──────────────────────────── */
+
+@media (max-width: 1023px) {
+  .copilot-agents__marketplace-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .copilot-agents__marketplace-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .copilot-agents__domain-desc {
+    display: none;
+  }
+
+  .copilot-agents__marketplace-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+}

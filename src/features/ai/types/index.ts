@@ -335,3 +335,24 @@ export interface CanvasViewport {
   y: number
   zoom: number
 }
+
+// ─── Marketplace Types ──────────────────────────────────────────────
+
+export interface MarketplaceAgent {
+  id: number
+  name: string
+  description: string
+  integrations: string
+  autonomy: string
+  price: string
+}
+
+export interface MarketplaceDomain {
+  id: string
+  emoji: string
+  name: string
+  description: string
+  agentCount: number
+  color: string
+  agents: MarketplaceAgent[]
+}

@@ -3,7 +3,7 @@ import {
   Search, PenTool, Code2, Palette, BarChart3,
   ClipboardList, Users, CheckSquare,
   Play, Pause, Square, MessageSquare,
-  ChevronDown, ChevronUp, Plus,
+  ChevronDown, ChevronUp, ChevronRight, Plus,
   CheckCircle2, Loader2, Circle, XCircle, Clock,
   Eye, Star, Zap,
   TrendingUp, Megaphone, DollarSign, Scale, ShieldCheck,
@@ -16,6 +16,7 @@ import useAIAgentStore, { getStepOutput } from '../stores/useAIAgentStore'
 import usePipelineStore from '../stores/usePipelineStore'
 import useCanvasStore from '../stores/useCanvasStore'
 import { AGENT_DEFINITIONS } from '../lib/agentDefinitions'
+import { MARKETPLACE_DOMAINS, TOTAL_MARKETPLACE_AGENTS } from '../data/marketplaceAgents'
 import { WORKFLOW_TEMPLATES } from '../lib/workflowTemplates'
 import { RunStatus, StepStatus, AgentCategory, NodeStatus } from '../types'
 import type { AgentType, AgentRun, RunStep } from '../types'
@@ -167,6 +168,9 @@ export default function AIAgentsPage() {
   const [builderTemplateName, setBuilderTemplateName] = useState<string | undefined>()
   const [builderTemplateDesc, setBuilderTemplateDesc] = useState<string | undefined>()
 
+  // Marketplace state
+  const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set())
+
   // Canvas state
   const [showNodePicker, setShowNodePicker] = useState(false)
   const [isExecuting, setIsExecuting] = useState(false)
@@ -213,6 +217,21 @@ export default function AIAgentsPage() {
     return agents
   }, [activeCategory, searchQuery, favorites])
 
+  // Filtered marketplace domains (by search query)
+  const filteredMarketplace = useMemo(() => {
+    if (!searchQuery.trim()) return MARKETPLACE_DOMAINS
+    const q = searchQuery.toLowerCase()
+    return MARKETPLACE_DOMAINS.map(domain => {
+      const matchingAgents = domain.agents.filter(a =>
+        a.name.toLowerCase().includes(q) ||
+        a.description.toLowerCase().includes(q) ||
+        a.integrations.toLowerCase().includes(q)
+      )
+      if (matchingAgents.length === 0 && !domain.name.toLowerCase().includes(q)) return null
+      return { ...domain, agents: matchingAgents.length > 0 ? matchingAgents : domain.agents, agentCount: matchingAgents.length > 0 ? matchingAgents.length : domain.agentCount }
+    }).filter((d): d is NonNullable<typeof d> => d !== null)
+  }, [searchQuery])
+
   const activeRuns = useMemo(
     () => runs.filter(r => r.status === RunStatus.Running || r.status === RunStatus.Paused),
     [runs],
@@ -238,7 +257,7 @@ export default function AIAgentsPage() {
     const activePipelinesCount = pipelines.filter(p => p.status === 'running' || p.status === 'paused').length
     const completedRunsCount = runs.filter(r => r.status === RunStatus.Completed).length
     const successRate = totalRuns > 0 ? Math.round((completedRunsCount / totalRuns) * 100) : 100
-    return { totalAgents: AGENT_DEFINITIONS.length, totalRuns, activePipelines: activePipelinesCount, successRate }
+    return { totalAgents: AGENT_DEFINITIONS.length + TOTAL_MARKETPLACE_AGENTS, totalRuns, activePipelines: activePipelinesCount, successRate }
   }, [runs, pipelines])
 
   // Active/completed pipelines
@@ -324,6 +343,15 @@ export default function AIAgentsPage() {
   const handleChat = useCallback((runId: string) => {
     setChatRunId(chatRunId === runId ? null : runId)
   }, [chatRunId])
+
+  const toggleDomain = useCallback((domainId: string) => {
+    setExpandedDomains(prev => {
+      const next = new Set(prev)
+      if (next.has(domainId)) next.delete(domainId)
+      else next.add(domainId)
+      return next
+    })
+  }, [])
 
   const toggleHistory = useCallback(() => {
     setShowHistory(prev => !prev)
@@ -460,7 +488,7 @@ export default function AIAgentsPage() {
       <div className="copilot-agents__header">
         <h2 className="copilot-agents__title">Agent Marketplace</h2>
         <p className="copilot-agents__subtitle">
-          20 specialized Copilot agents, pipelines, and workflow templates
+          {AGENT_DEFINITIONS.length + TOTAL_MARKETPLACE_AGENTS}+ specialized agents across {MARKETPLACE_DOMAINS.length} domains
         </p>
       </div>
 
@@ -506,7 +534,7 @@ export default function AIAgentsPage() {
           role="tab"
           aria-selected={activeTab === 'agents'}
         >
-          Agents ({AGENT_DEFINITIONS.length})
+          Agents ({AGENT_DEFINITIONS.length + TOTAL_MARKETPLACE_AGENTS})
         </button>
         <button
           className={`copilot-agents__view-tab${activeTab === 'pipelines' ? ' copilot-agents__view-tab--active' : ''}`}
@@ -604,6 +632,12 @@ export default function AIAgentsPage() {
             </div>
           </div>
 
+          {/* Featured Agents Header */}
+          <div className="copilot-agents__featured-header">
+            <h3 className="copilot-agents__featured-title">Featured Agents</h3>
+            <span className="copilot-agents__featured-badge">Runnable</span>
+          </div>
+
           {/* Agent Cards Grid */}
           <div className="copilot-agents__grid">
             {filteredAgents.map((agent) => {
@@ -666,7 +700,68 @@ export default function AIAgentsPage() {
             })}
           </div>
 
-          {filteredAgents.length === 0 && (
+          {filteredAgents.length === 0 && !searchQuery.trim() && (
+            <p className="copilot-agents__empty">No agents match your filters.</p>
+          )}
+
+          {/* Marketplace Domain Sections */}
+          {filteredMarketplace.length > 0 && (
+            <section className="copilot-agents__marketplace" aria-label="Agent Marketplace">
+              <div className="copilot-agents__marketplace-header">
+                <h3 className="copilot-agents__marketplace-title">Agent Marketplace</h3>
+                <span className="copilot-agents__marketplace-count">
+                  {TOTAL_MARKETPLACE_AGENTS} browse-only agents
+                </span>
+              </div>
+
+              {filteredMarketplace.map(domain => {
+                const isExpanded = expandedDomains.has(domain.id)
+                return (
+                  <div key={domain.id} className="copilot-agents__domain">
+                    <button
+                      className="copilot-agents__domain-toggle"
+                      onClick={() => toggleDomain(domain.id)}
+                      aria-expanded={isExpanded}
+                      aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${domain.name}`}
+                    >
+                      <ChevronRight
+                        size={16}
+                        className={`copilot-agents__domain-chevron${isExpanded ? ' copilot-agents__domain-chevron--expanded' : ''}`}
+                      />
+                      <span className="copilot-agents__domain-emoji">{domain.emoji}</span>
+                      <div className="copilot-agents__domain-info">
+                        <p className="copilot-agents__domain-name">{domain.name}</p>
+                        <p className="copilot-agents__domain-desc">{domain.description}</p>
+                      </div>
+                      <span className="copilot-agents__domain-count" style={{ color: domain.color, borderColor: domain.color }}>
+                        {domain.agentCount}
+                      </span>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="copilot-agents__domain-content">
+                        <div className="copilot-agents__marketplace-grid">
+                          {domain.agents.map(agent => (
+                            <div key={`${domain.id}-${agent.id}`} className="copilot-agents__marketplace-card">
+                              <h4 className="copilot-agents__marketplace-card-name">{agent.name}</h4>
+                              <p className="copilot-agents__marketplace-card-desc">{agent.description}</p>
+                              <div className="copilot-agents__marketplace-card-meta">
+                                <span className="copilot-agents__marketplace-card-tag">{agent.integrations}</span>
+                                <span className="copilot-agents__marketplace-card-tag">{agent.autonomy}</span>
+                                <span className="copilot-agents__marketplace-card-price">{agent.price}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </section>
+          )}
+
+          {filteredAgents.length === 0 && filteredMarketplace.length === 0 && searchQuery.trim() && (
             <p className="copilot-agents__empty">No agents match your search.</p>
           )}
         </>

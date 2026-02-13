@@ -5,6 +5,8 @@ import useAIAgentStore from '../stores/useAIAgentStore'
 import usePipelineStore from '../stores/usePipelineStore'
 import useCanvasStore from '../stores/useCanvasStore'
 import { AgentType, StepStatus } from '../types'
+import { AGENT_DEFINITIONS } from '../lib/agentDefinitions'
+import { MARKETPLACE_DOMAINS, TOTAL_MARKETPLACE_AGENTS } from '../data/marketplaceAgents'
 import AIAgentsPage from './AIAgentsPage'
 
 function renderPage() {
@@ -34,9 +36,10 @@ describe('AIAgentsPage', () => {
     expect(screen.getByText('Agent Marketplace')).toBeInTheDocument()
   })
 
-  it('renders the subtitle', () => {
+  it('renders the subtitle with total agent count', () => {
     renderPage()
-    expect(screen.getByText('20 specialized Copilot agents, pipelines, and workflow templates')).toBeInTheDocument()
+    const totalCount = AGENT_DEFINITIONS.length + TOTAL_MARKETPLACE_AGENTS
+    expect(screen.getByText(`${totalCount}+ specialized agents across ${MARKETPLACE_DOMAINS.length} domains`)).toBeInTheDocument()
   })
 
   it('renders stats bar with 4 stat cards', () => {
@@ -45,7 +48,8 @@ describe('AIAgentsPage', () => {
     expect(screen.getByText('Total Runs')).toBeInTheDocument()
     expect(screen.getByText('Active Pipelines')).toBeInTheDocument()
     expect(screen.getByText('Success Rate')).toBeInTheDocument()
-    expect(screen.getByText('20')).toBeInTheDocument()
+    const totalCount = AGENT_DEFINITIONS.length + TOTAL_MARKETPLACE_AGENTS
+    expect(screen.getByText(String(totalCount))).toBeInTheDocument()
   })
 
   it('renders view tabs including Canvas', () => {
@@ -419,5 +423,80 @@ describe('AIAgentsPage', () => {
 
     await user.click(screen.getByLabelText('Add node'))
     expect(screen.getByText('Add Node')).toBeInTheDocument()
+  })
+
+  // ─── Marketplace ─────────────────────────────────────────────
+
+  it('renders Featured Agents section header in agents tab', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(screen.getByRole('tab', { name: /Agents/ }))
+    expect(screen.getByText('Featured Agents')).toBeInTheDocument()
+    expect(screen.getByText('Runnable')).toBeInTheDocument()
+  })
+
+  it('renders marketplace domain sections in agents tab', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(screen.getByRole('tab', { name: /Agents/ }))
+
+    const marketplace = screen.getByLabelText('Agent Marketplace')
+    expect(marketplace).toBeInTheDocument()
+
+    // Check that all domain names are visible as toggle buttons
+    for (const domain of MARKETPLACE_DOMAINS) {
+      expect(screen.getByLabelText(`Expand ${domain.name}`)).toBeInTheDocument()
+    }
+  })
+
+  it('expands marketplace domain on click to show agents', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(screen.getByRole('tab', { name: /Agents/ }))
+
+    const firstDomain = MARKETPLACE_DOMAINS[0]!
+    const toggleBtn = screen.getByLabelText(`Expand ${firstDomain.name}`)
+    await user.click(toggleBtn)
+
+    // First agent in the domain should now be visible
+    expect(screen.getByText(firstDomain.agents[0]!.name)).toBeInTheDocument()
+  })
+
+  it('marketplace agents do not have Run buttons', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(screen.getByRole('tab', { name: /Agents/ }))
+
+    // Expand first domain
+    const firstDomain = MARKETPLACE_DOMAINS[0]!
+    await user.click(screen.getByLabelText(`Expand ${firstDomain.name}`))
+
+    // Run buttons should still be 20 (only featured agents)
+    const runButtons = screen.getAllByRole('button', { name: /^Run /i })
+    expect(runButtons).toHaveLength(20)
+  })
+
+  it('collapses expanded domain on second click', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(screen.getByRole('tab', { name: /Agents/ }))
+
+    const firstDomain = MARKETPLACE_DOMAINS[0]!
+    const toggleBtn = screen.getByLabelText(`Expand ${firstDomain.name}`)
+    await user.click(toggleBtn)
+    expect(screen.getByText(firstDomain.agents[0]!.name)).toBeInTheDocument()
+
+    // Click again to collapse
+    const collapseBtn = screen.getByLabelText(`Collapse ${firstDomain.name}`)
+    await user.click(collapseBtn)
+    expect(screen.queryByText(firstDomain.agents[0]!.name)).not.toBeInTheDocument()
+  })
+
+  it('shows browse-only agent count in marketplace header', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(screen.getByRole('tab', { name: /Agents/ }))
+
+    expect(screen.getByText(`${TOTAL_MARKETPLACE_AGENTS} browse-only agents`)).toBeInTheDocument()
   })
 })

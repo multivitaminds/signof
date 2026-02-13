@@ -24,7 +24,6 @@ import {
   Code2,
   MessageSquare,
   Calculator,
-  Layers,
   Star,
   ChevronDown,
 } from 'lucide-react'
@@ -136,7 +135,6 @@ export default function Sidebar() {
     { path: '/accounting', label: 'Accounting', icon: Calculator },
     { path: '/playground', label: 'Playground', icon: MessageSquare },
     { path: '/developer', label: 'Developer', icon: Code2 },
-    { path: '/platform', label: 'Platform', icon: Layers },
   ]
 
   const handleSearchClick = useCallback(() => {
