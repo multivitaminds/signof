@@ -1,103 +1,117 @@
 /* ═══════════════════════════════════════════════════════════════
-   WelcomeBanner — Greeting with time-of-day + summary stats
+   WelcomeBanner — Clean, minimal greeting
    ═══════════════════════════════════════════════════════════════ */
 
 .welcome-banner {
   display: flex;
   align-items: flex-start;
   gap: var(--space-4, 16px);
-  padding: var(--space-6, 32px) var(--space-6, 32px);
-  background: linear-gradient(135deg, #4F46E5 0%, #1A1A2E 50%, #059669 100%);
-  border-radius: var(--radius-xl, 16px);
-  position: relative;
-  overflow: hidden;
+  padding: var(--space-5, 24px) var(--space-6, 32px);
+  background: var(--bg-primary, #FFFFFF);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-lg, 12px);
   margin-bottom: var(--space-6, 32px);
-}
-
-.welcome-banner::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
 }
 
 .welcome-banner__content {
   flex: 1;
-  position: relative;
-  z-index: 1;
 }
 
 .welcome-banner__greeting {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: #FFFFFF;
-  margin: 0 0 var(--space-1, 4px);
-  letter-spacing: -0.02em;
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0 0 2px;
+  letter-spacing: -0.025em;
 }
 
 .welcome-banner__date {
-  font-size: 0.9375rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0 0 var(--space-4, 16px);
+  font-size: 0.875rem;
+  color: var(--text-muted, #9CA3AF);
+  margin: 0 0 var(--space-3, 12px);
 }
 
 .welcome-banner__summary {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4, 16px);
+  gap: var(--space-2, 8px);
 }
 
 .welcome-banner__stat {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-2, 8px);
-  font-size: 0.875rem;
+  gap: 6px;
+  font-size: 0.8125rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
-  background: rgba(255, 255, 255, 0.1);
-  padding: var(--space-1, 4px) var(--space-3, 12px);
+  color: var(--text-secondary, #6B7280);
+  background: var(--bg-secondary, #F9FAFB);
+  padding: 5px 12px;
   border-radius: var(--radius-full, 9999px);
+  border: 1px solid var(--border-color, #E5E7EB);
+}
+
+.welcome-banner__stat svg {
+  color: var(--color-primary, #4F46E5);
+  flex-shrink: 0;
 }
 
 .welcome-banner__stat--clear {
-  background: rgba(5, 150, 105, 0.2);
+  color: var(--color-success, #059669);
+}
+
+.welcome-banner__stat--clear svg {
+  color: var(--color-success, #059669);
 }
 
 .welcome-banner__dismiss {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border: none;
-  border-radius: var(--radius-md, 8px);
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-md, 6px);
+  background: transparent;
+  color: var(--text-muted, #9CA3AF);
   cursor: pointer;
   transition: all 150ms ease;
   flex-shrink: 0;
-  position: relative;
-  z-index: 1;
 }
 
 .welcome-banner__dismiss:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: #FFFFFF;
+  background: var(--bg-secondary, #F9FAFB);
+  color: var(--text-primary, #111827);
 }
 
-/* Responsive */
+/* ─── Dark mode ─────────────────────────────────────────────── */
+[data-theme="dark"] .welcome-banner {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .welcome-banner__greeting {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .welcome-banner__stat {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-color, #334155);
+  color: var(--text-secondary, #94A3B8);
+}
+
+[data-theme="dark"] .welcome-banner__dismiss:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary, #F1F5F9);
+}
+
+/* ─── Responsive ────────────────────────────────────────────── */
 @media (max-width: 600px) {
   .welcome-banner {
     padding: var(--space-4, 16px);
   }
 
   .welcome-banner__greeting {
-    font-size: 1.375rem;
+    font-size: 1.25rem;
   }
 
   .welcome-banner__summary {

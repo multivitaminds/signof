@@ -136,8 +136,7 @@ describe('Orchestree App', () => {
 
   it('renders the home page welcome banner', () => {
     renderWithRouter()
-    const greetings = screen.getAllByText(/Good (morning|afternoon|evening)/)
-    expect(greetings.length).toBeGreaterThanOrEqual(1)
+    expect(screen.getByTestId('welcome-banner')).toBeInTheDocument()
   })
 
   it('shows the command palette shortcut', () => {

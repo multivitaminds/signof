@@ -3,13 +3,7 @@ import { Link } from 'react-router-dom'
 import {
   ArrowRight,
   Activity,
-  FileSignature,
-  FolderKanban,
-  Calendar,
-  Receipt,
-  Inbox,
   Sparkles,
-  FileText,
   AlertTriangle,
   Clock,
 } from 'lucide-react'
@@ -17,7 +11,7 @@ import { useSchedulingStore } from '../features/scheduling/stores/useSchedulingS
 import { useAuthStore } from '../features/auth/stores/useAuthStore'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import { useIsMobile } from '../hooks/useMediaQuery'
-import { getModuleMetrics, getUpcomingDeadlines, getCopilotInsights } from '../lib/crossModuleService'
+import { getUpcomingDeadlines, getCopilotInsights } from '../lib/crossModuleService'
 import WelcomeBanner from '../components/WelcomeBanner/WelcomeBanner'
 import StatsOverview from '../components/StatsOverview/StatsOverview'
 import QuickActions from '../components/QuickActions/QuickActions'
@@ -25,10 +19,6 @@ import RecentItems from '../components/RecentItems/RecentItems'
 import FirstRunChecklist from '../components/FirstRunChecklist/FirstRunChecklist'
 import ActivityFeed from '../features/activity/components/ActivityFeed/ActivityFeed'
 import DashboardCharts from '../features/activity/components/DashboardCharts/DashboardCharts'
-import UpcomingDeadlines from '../components/DashboardWidgets/UpcomingDeadlines'
-import RecentActivity from '../components/DashboardWidgets/RecentActivity'
-import QuickStatsWidget from '../components/DashboardWidgets/QuickStats'
-import AIInsights from '../components/DashboardWidgets/AIInsights'
 import AIFeatureWidget from '../features/ai/components/AIFeatureWidget/AIFeatureWidget'
 import './HomePage.css'
 
@@ -70,15 +60,7 @@ export default function HomePage() {
     [bookings]
   )
 
-  const greeting = useMemo(() => {
-    const hour = new Date().getHours()
-    if (hour < 12) return 'Good morning'
-    if (hour < 18) return 'Good afternoon'
-    return 'Good evening'
-  }, [])
-
   // Cross-module data
-  const metrics = useMemo(() => getModuleMetrics(), [])
   const deadlines = useMemo(() => getUpcomingDeadlines(6), [])
   const copilotInsights = useMemo(() => getCopilotInsights(), [])
 
@@ -93,62 +75,13 @@ export default function HomePage() {
           <div className="pull-to-refresh__spinner" />
         </div>
       )}
-      {/* 0. Salutation Greeting — always visible */}
-      <h1 className="home-page__greeting">{greeting}, {firstName}</h1>
-
       {/* 1. Welcome Banner */}
       <WelcomeBanner userName={firstName} />
 
       {/* 1.5 First Run Checklist */}
       {onboardingComplete && <FirstRunChecklist />}
 
-      {/* 2. Module Health Row — cross-module metrics */}
-      <div className="home-page__module-health" aria-label="Module health overview">
-        <Link to="/documents" className="home-page__health-card">
-          <FileSignature size={18} className="home-page__health-icon" />
-          <div className="home-page__health-info">
-            <span className="home-page__health-value">{metrics.documents.pending}</span>
-            <span className="home-page__health-label">pending sigs</span>
-          </div>
-        </Link>
-        <Link to="/projects" className="home-page__health-card">
-          <FolderKanban size={18} className="home-page__health-icon" />
-          <div className="home-page__health-info">
-            <span className="home-page__health-value">{metrics.projects.open}</span>
-            <span className="home-page__health-label">open issues</span>
-          </div>
-        </Link>
-        <Link to="/calendar/bookings" className="home-page__health-card">
-          <Calendar size={18} className="home-page__health-icon" />
-          <div className="home-page__health-info">
-            <span className="home-page__health-value">{metrics.bookings.upcoming}</span>
-            <span className="home-page__health-label">upcoming</span>
-          </div>
-        </Link>
-        <Link to="/accounting/invoices" className="home-page__health-card">
-          <Receipt size={18} className="home-page__health-icon" />
-          <div className="home-page__health-info">
-            <span className="home-page__health-value">{metrics.invoices.unpaid}</span>
-            <span className="home-page__health-label">unpaid</span>
-          </div>
-        </Link>
-        <Link to="/pages" className="home-page__health-card">
-          <FileText size={18} className="home-page__health-icon" />
-          <div className="home-page__health-info">
-            <span className="home-page__health-value">{metrics.pages.total}</span>
-            <span className="home-page__health-label">pages</span>
-          </div>
-        </Link>
-        <Link to="/inbox" className="home-page__health-card">
-          <Inbox size={18} className="home-page__health-icon" />
-          <div className="home-page__health-info">
-            <span className="home-page__health-value">{metrics.inbox.unread}</span>
-            <span className="home-page__health-label">unread</span>
-          </div>
-        </Link>
-      </div>
-
-      {/* 2.5 Stats Overview */}
+      {/* 2. Stats Overview */}
       <StatsOverview />
 
       {/* 3. Quick Actions */}
@@ -207,14 +140,6 @@ export default function HomePage() {
           )}
         </div>
       )}
-
-      {/* 3.5 Cross-Module Dashboard Widgets */}
-      <div className="dashboard-widgets-grid">
-        <QuickStatsWidget />
-        <AIInsights />
-        <UpcomingDeadlines />
-        <RecentActivity />
-      </div>
 
       {/* 4. Two-column layout: RecentItems + Activity sidebar */}
       <div className="home-page__main-grid">

@@ -7,16 +7,6 @@
   margin: 0 auto;
 }
 
-/* ─── Greeting ─────────────────────────────────────────────── */
-
-.home-page__greeting {
-  font-size: var(--text-2xl, 1.5rem);
-  font-weight: var(--font-semibold, 600);
-  color: var(--text-primary, #1F2937);
-  margin: var(--space-6, 32px) 0 var(--space-4, 16px);
-  padding: 0 var(--space-1, 4px);
-}
-
 /* ─── Sections ──────────────────────────────────────────────── */
 .home-page__section {
   margin-bottom: var(--space-6, 32px);
@@ -87,57 +77,6 @@
 
 .home-page__sidebar-col > .home-page__section:last-child {
   margin-bottom: 0;
-}
-
-/* ─── Module Health Row ─────────────────────────────────────── */
-.home-page__module-health {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: var(--space-3, 12px);
-  margin-bottom: var(--space-5, 24px);
-}
-
-.home-page__health-card {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3, 12px);
-  padding: var(--space-3, 12px) var(--space-4, 16px);
-  background: var(--bg-primary);
-  border: 1px solid var(--alpha-border-subtle, rgba(0, 0, 0, 0.06));
-  border-radius: var(--radius-md, 8px);
-  text-decoration: none;
-  transition: all var(--motion-fast, 150ms) ease-out;
-  box-shadow: var(--shadow-1, 0 1px 3px rgba(0, 0, 0, 0.08));
-}
-
-.home-page__health-card:hover {
-  border-color: var(--color-primary);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-2, 0 4px 12px rgba(0, 0, 0, 0.10));
-}
-
-.home-page__health-icon {
-  color: var(--color-primary);
-  flex-shrink: 0;
-}
-
-.home-page__health-info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.home-page__health-value {
-  font-size: var(--text-lg, 1.125rem);
-  font-weight: var(--font-semibold, 600);
-  color: var(--text-primary);
-  line-height: 1.2;
-}
-
-.home-page__health-label {
-  font-size: var(--text-xs, 0.75rem);
-  color: var(--text-secondary);
-  white-space: nowrap;
 }
 
 /* ─── Cross-Module Row (Copilot + Deadlines) ───────────────── */
@@ -335,16 +274,6 @@
   color: var(--text-primary);
 }
 
-[data-theme="dark"] .home-page__health-card {
-  background: var(--bg-secondary);
-  border-color: var(--alpha-border-subtle, rgba(255, 255, 255, 0.06));
-}
-
-[data-theme="dark"] .home-page__health-card:hover {
-  border-color: var(--color-primary);
-  background: var(--bg-tertiary);
-}
-
 [data-theme="dark"] .home-page__copilot-panel,
 [data-theme="dark"] .home-page__deadlines-panel {
   background: var(--bg-secondary);
@@ -357,10 +286,6 @@
 
 /* ─── Responsive ────────────────────────────────────────────── */
 @media (max-width: 1023px) {
-  .home-page__module-health {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
   .home-page__cross-module-row {
     grid-template-columns: 1fr;
   }
@@ -373,11 +298,6 @@
 @media (max-width: 767px) {
   .home-page {
     padding: 0 var(--space-2, 8px);
-  }
-
-  .home-page__module-health {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-2, 8px);
   }
 
   .home-page__main-grid {
