@@ -1,19 +1,19 @@
 import { useState, useCallback } from 'react'
 import { Settings } from 'lucide-react'
-import useStudioStore from '../../stores/useStudioStore'
+import usePlaygroundStore from '../../stores/usePlaygroundStore'
 import { MODEL_CATALOG } from '../../lib/models'
 import ModelSelector from '../ModelSelector/ModelSelector'
 import AgentModeToggle from '../AgentModeToggle/AgentModeToggle'
 import TokenUsageBar from '../TokenUsageBar/TokenUsageBar'
-import './StudioTopBar.css'
+import './PlaygroundTopBar.css'
 
-function StudioTopBar() {
-  const conversations = useStudioStore((s) => s.conversations)
-  const activeConversationId = useStudioStore((s) => s.activeConversationId)
-  const setModel = useStudioStore((s) => s.setModel)
-  const updateSettings = useStudioStore((s) => s.updateSettings)
-  const toggleSettingsPanel = useStudioStore((s) => s.toggleSettingsPanel)
-  const renameConversation = useStudioStore((s) => s.renameConversation)
+function PlaygroundTopBar() {
+  const conversations = usePlaygroundStore((s) => s.conversations)
+  const activeConversationId = usePlaygroundStore((s) => s.activeConversationId)
+  const setModel = usePlaygroundStore((s) => s.setModel)
+  const updateSettings = usePlaygroundStore((s) => s.updateSettings)
+  const toggleSettingsPanel = usePlaygroundStore((s) => s.toggleSettingsPanel)
+  const renameConversation = usePlaygroundStore((s) => s.renameConversation)
 
   const activeConversation = conversations.find((c) => c.id === activeConversationId) ?? null
 
@@ -45,8 +45,8 @@ function StudioTopBar() {
 
   if (!activeConversation) {
     return (
-      <div className="studio-top-bar">
-        <span className="studio-top-bar__empty">No conversation selected</span>
+      <div className="playground-top-bar">
+        <span className="playground-top-bar__empty">No conversation selected</span>
       </div>
     )
   }
@@ -54,8 +54,8 @@ function StudioTopBar() {
   const model = MODEL_CATALOG[activeConversation.modelId]
 
   return (
-    <div className="studio-top-bar">
-      <div className="studio-top-bar__left">
+    <div className="playground-top-bar">
+      <div className="playground-top-bar__left">
         <ModelSelector value={activeConversation.modelId} onChange={setModel} />
         <AgentModeToggle
           enabled={activeConversation.settings.agentMode}
@@ -63,10 +63,10 @@ function StudioTopBar() {
         />
       </div>
 
-      <div className="studio-top-bar__center">
+      <div className="playground-top-bar__center">
         {isEditingTitle ? (
           <input
-            className="studio-top-bar__title-input"
+            className="playground-top-bar__title-input"
             value={titleValue}
             onChange={(e) => setTitleValue(e.target.value)}
             onBlur={handleTitleConfirm}
@@ -75,7 +75,7 @@ function StudioTopBar() {
           />
         ) : (
           <button
-            className="studio-top-bar__title"
+            className="playground-top-bar__title"
             onClick={handleTitleClick}
             type="button"
           >
@@ -84,9 +84,9 @@ function StudioTopBar() {
         )}
       </div>
 
-      <div className="studio-top-bar__right">
+      <div className="playground-top-bar__right">
         <button
-          className="studio-top-bar__settings-btn"
+          className="playground-top-bar__settings-btn"
           onClick={toggleSettingsPanel}
           type="button"
           aria-label="Toggle settings"
@@ -102,4 +102,4 @@ function StudioTopBar() {
   )
 }
 
-export default StudioTopBar
+export default PlaygroundTopBar

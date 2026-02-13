@@ -51,7 +51,7 @@ export interface ToolCall {
   durationMs: number
 }
 
-export interface StudioMessage {
+export interface PlaygroundMessage {
   id: string
   role: 'user' | 'assistant' | 'system'
   content: string
@@ -75,7 +75,7 @@ export interface Conversation {
   title: string
   modelId: ModelId
   settings: ConversationSettings
-  messages: StudioMessage[]
+  messages: PlaygroundMessage[]
   createdAt: string
   updatedAt: string
   totalTokens: number

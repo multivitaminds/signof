@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
-import StudioTopBar from './StudioTopBar'
-import useStudioStore from '../../stores/useStudioStore'
+import PlaygroundTopBar from './PlaygroundTopBar'
+import usePlaygroundStore from '../../stores/usePlaygroundStore'
 
 function resetStore() {
-  useStudioStore.setState({
+  usePlaygroundStore.setState({
     conversations: [],
     activeConversationId: null,
     isTyping: false,
@@ -12,32 +12,32 @@ function resetStore() {
   })
 }
 
-describe('StudioTopBar', () => {
+describe('PlaygroundTopBar', () => {
   beforeEach(() => {
     resetStore()
   })
 
   it('shows empty message when no conversation', () => {
-    render(<StudioTopBar />)
+    render(<PlaygroundTopBar />)
     expect(screen.getByText('No conversation selected')).toBeInTheDocument()
   })
 
   it('renders model selector and title when conversation exists', () => {
-    useStudioStore.getState().createConversation()
-    render(<StudioTopBar />)
+    usePlaygroundStore.getState().createConversation()
+    render(<PlaygroundTopBar />)
     expect(screen.getByText('Claude Sonnet')).toBeInTheDocument()
     expect(screen.getByText('New Chat')).toBeInTheDocument()
   })
 
   it('renders agent mode toggle', () => {
-    useStudioStore.getState().createConversation()
-    render(<StudioTopBar />)
+    usePlaygroundStore.getState().createConversation()
+    render(<PlaygroundTopBar />)
     expect(screen.getByText('Agent')).toBeInTheDocument()
   })
 
   it('renders settings button', () => {
-    useStudioStore.getState().createConversation()
-    render(<StudioTopBar />)
+    usePlaygroundStore.getState().createConversation()
+    render(<PlaygroundTopBar />)
     expect(screen.getByRole('button', { name: 'Toggle settings' })).toBeInTheDocument()
   })
 })

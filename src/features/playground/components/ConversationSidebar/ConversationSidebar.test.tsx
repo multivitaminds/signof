@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import ConversationSidebar from './ConversationSidebar'
-import useStudioStore from '../../stores/useStudioStore'
+import usePlaygroundStore from '../../stores/usePlaygroundStore'
 
 function resetStore() {
-  useStudioStore.setState({
+  usePlaygroundStore.setState({
     conversations: [],
     activeConversationId: null,
     isTyping: false,
@@ -24,7 +24,7 @@ describe('ConversationSidebar', () => {
   })
 
   it('renders conversation list after creating one', async () => {
-    useStudioStore.getState().createConversation()
+    usePlaygroundStore.getState().createConversation()
     render(<ConversationSidebar />)
     expect(screen.getAllByText('New Chat').length).toBeGreaterThanOrEqual(2)
   })
@@ -33,16 +33,16 @@ describe('ConversationSidebar', () => {
     const user = userEvent.setup()
     render(<ConversationSidebar />)
     await user.click(screen.getByText('New Chat'))
-    expect(useStudioStore.getState().conversations).toHaveLength(1)
+    expect(usePlaygroundStore.getState().conversations).toHaveLength(1)
   })
 
   it('filters conversations by search', () => {
-    useStudioStore.getState().createConversation()
-    useStudioStore.getState().renameConversation(
-      useStudioStore.getState().conversations[0]!.id,
+    usePlaygroundStore.getState().createConversation()
+    usePlaygroundStore.getState().renameConversation(
+      usePlaygroundStore.getState().conversations[0]!.id,
       'Test Conversation'
     )
-    useStudioStore.setState({ searchQuery: 'xyz' })
+    usePlaygroundStore.setState({ searchQuery: 'xyz' })
     render(<ConversationSidebar />)
     expect(screen.queryByText('Test Conversation')).not.toBeInTheDocument()
   })

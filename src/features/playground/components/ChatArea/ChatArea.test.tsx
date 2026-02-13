@@ -1,14 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import ChatArea from './ChatArea'
-import type { StudioMessage } from '../../types'
+import type { PlaygroundMessage } from '../../types'
 
 vi.mock('../ChatMessage/ChatMessage', () => ({
-  default: ({ message }: { message: StudioMessage }) => (
+  default: ({ message }: { message: PlaygroundMessage }) => (
     <div data-testid="chat-message">{message.content}</div>
   ),
 }))
 
-function createMessage(content: string, role: 'user' | 'assistant' = 'user'): StudioMessage {
+function createMessage(content: string, role: 'user' | 'assistant' = 'user'): PlaygroundMessage {
   return {
     id: `msg-${Math.random()}`,
     role,
