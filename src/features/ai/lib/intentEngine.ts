@@ -8,6 +8,9 @@ import { useDatabaseStore } from '../../databases/stores/useDatabaseStore'
 import { useInboxStore } from '../../inbox/stores/useInboxStore'
 import useAIAgentStore from '../stores/useAIAgentStore'
 import type { AgentType } from '../types'
+import { getUpcomingDeadlines, getRecentCrossModuleActivity } from '../../../lib/crossModuleService'
+import { useDocumentStore } from '../../../stores/useDocumentStore'
+import { DEFAULT_SCHEDULE, EventTypeCategory, LocationType } from '../../scheduling/types'
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -47,6 +50,17 @@ const WORKSPACE_PATTERNS: PatternDef[] = [
     paramNames: ['content'],
     response: (p) => `Added a note: "${p.content}".`,
   },
+  {
+    regex: /search\s+(?:my\s+)?pages/i,
+    action: 'search_pages',
+    paramNames: [],
+    response: () => {
+      const pages = useWorkspaceStore.getState().getAllPages()
+      if (pages.length === 0) return 'No pages found in your workspace.'
+      const recent = pages.slice(0, 5).map((p) => p.title).join(', ')
+      return `You have ${pages.length} page${pages.length === 1 ? '' : 's'}. Recent: ${recent}.`
+    },
+  },
 ]
 
 const PROJECTS_PATTERNS: PatternDef[] = [
@@ -68,6 +82,30 @@ const PROJECTS_PATTERNS: PatternDef[] = [
     paramNames: ['level'],
     response: (p) => `Set priority to ${p.level}.`,
   },
+  {
+    regex: /show\s+(?:my\s+)?issues/i,
+    action: 'show_issues',
+    paramNames: [],
+    response: () => {
+      const issues = Object.values(useProjectStore.getState().issues)
+      const open = issues.filter((i) => i.status !== 'done' && i.status !== 'cancelled')
+      if (issues.length === 0) return 'No issues found. Create one to get started!'
+      const latest = issues[issues.length - 1]
+      return `You have ${open.length} open issue${open.length === 1 ? '' : 's'} out of ${issues.length} total. Latest: "${latest?.title}".`
+    },
+  },
+  {
+    regex: /start\s+(?:a\s+)?sprint/i,
+    action: 'start_sprint',
+    paramNames: [],
+    response: () => 'Started a new 2-week sprint. You can manage it from the Cycles tab in Projects.',
+  },
+  {
+    regex: /set\s+(?:a\s+)?goal/i,
+    action: 'set_goal',
+    paramNames: [],
+    response: () => 'Created a new goal. Head to the Goals tab to add details and link issues.',
+  },
 ]
 
 const SCHEDULING_PATTERNS: PatternDef[] = [
@@ -82,6 +120,34 @@ const SCHEDULING_PATTERNS: PatternDef[] = [
     action: 'cancel_booking',
     paramNames: ['id'],
     response: (p) => `Cancelled booking ${p.id}.`,
+  },
+  {
+    regex: /show\s+(?:my\s+)?bookings/i,
+    action: 'show_bookings',
+    paramNames: [],
+    response: () => {
+      const bookings = useSchedulingStore.getState().getFilteredBookings('upcoming')
+      if (bookings.length === 0) return 'No upcoming bookings.'
+      const next = bookings[0]
+      return `You have ${bookings.length} upcoming booking${bookings.length === 1 ? '' : 's'}. Next: ${next?.date} at ${next?.startTime}.`
+    },
+  },
+  {
+    regex: /create\s+(?:an?\s+)?event\s*type/i,
+    action: 'create_event_type',
+    paramNames: [],
+    response: () => 'Created a new "Quick Meeting" event type (30 min). You can customize it in the Scheduling tab.',
+  },
+  {
+    regex: /check\s+(?:my\s+)?availability/i,
+    action: 'check_availability',
+    paramNames: [],
+    response: () => {
+      const connections = useSchedulingStore.getState().calendarConnections
+      const connected = connections.filter((c) => c.connected)
+      if (connected.length === 0) return 'No calendars connected. Connect one in Settings to check availability.'
+      return `You have ${connected.length} calendar${connected.length === 1 ? '' : 's'} connected (${connected.map((c) => c.name).join(', ')}). Your availability is synced.`
+    },
   },
 ]
 
@@ -104,6 +170,23 @@ const DOCUMENTS_PATTERNS: PatternDef[] = [
     paramNames: ['name'],
     response: (p) => `Added contact "${p.name}". You can add their email later.`,
   },
+  {
+    regex: /check\s+(?:my\s+)?pending(?:\s+signatures)?/i,
+    action: 'check_pending',
+    paramNames: [],
+    response: () => {
+      const docs = useDocumentStore.getState().documents.filter((d) => d.status === 'pending')
+      if (docs.length === 0) return 'No pending documents. Everything is signed!'
+      const names = docs.slice(0, 5).map((d) => d.name).join(', ')
+      return `You have ${docs.length} pending document${docs.length === 1 ? '' : 's'}: ${names}.`
+    },
+  },
+  {
+    regex: /generate\s+(?:a\s+)?document/i,
+    action: 'generate_document',
+    paramNames: [],
+    response: () => 'To generate a document, head to the Templates tab and create from a template. You can customize fields and recipients before sending.',
+  },
 ]
 
 const DATABASES_PATTERNS: PatternDef[] = [
@@ -118,6 +201,18 @@ const DATABASES_PATTERNS: PatternDef[] = [
     action: 'add_row',
     paramNames: [],
     response: () => 'Added a new row to the current table.',
+  },
+  {
+    regex: /add\s+(?:a\s+)?table/i,
+    action: 'add_table',
+    paramNames: [],
+    response: () => 'Added a new table to your database. You can rename it and add fields.',
+  },
+  {
+    regex: /create\s+(?:a\s+)?view/i,
+    action: 'create_view',
+    paramNames: [],
+    response: () => 'Created a new Grid view. You can switch view types from the view selector.',
   },
 ]
 
@@ -134,6 +229,31 @@ const INBOX_PATTERNS: PatternDef[] = [
     paramNames: [],
     response: () => 'Cleared all notifications from your inbox.',
   },
+  {
+    regex: /summarize\s+(?:my\s+)?notifications/i,
+    action: 'summarize_notifications',
+    paramNames: [],
+    response: () => {
+      const notifications = useInboxStore.getState().notifications.filter((n) => !n.archived)
+      if (notifications.length === 0) return 'Your inbox is empty. No notifications to summarize.'
+      const byCategory: Record<string, number> = {}
+      for (const n of notifications) {
+        byCategory[n.category] = (byCategory[n.category] ?? 0) + 1
+      }
+      const breakdown = Object.entries(byCategory).map(([cat, count]) => `${cat}: ${count}`).join(', ')
+      return `You have ${notifications.length} notification${notifications.length === 1 ? '' : 's'}. Breakdown: ${breakdown}.`
+    },
+  },
+  {
+    regex: /show\s+(?:my\s+)?unread/i,
+    action: 'show_unread',
+    paramNames: [],
+    response: () => {
+      const total = useInboxStore.getState().getUnreadCount()
+      if (total === 0) return 'No unread notifications. You\'re all caught up!'
+      return `You have ${total} unread notification${total === 1 ? '' : 's'}. Use "Mark all read" to clear them.`
+    },
+  },
 ]
 
 const HOME_PATTERNS: PatternDef[] = [
@@ -148,6 +268,28 @@ const HOME_PATTERNS: PatternDef[] = [
     action: 'start_agent',
     paramNames: ['type'],
     response: (p) => `Started ${p.type} agent. You can monitor its progress in the AI panel.`,
+  },
+  {
+    regex: /what'?s\s+due\s+today/i,
+    action: 'whats_due_today',
+    paramNames: [],
+    response: () => {
+      const deadlines = getUpcomingDeadlines().filter((d) => d.urgency === 'today')
+      if (deadlines.length === 0) return 'Nothing is due today. You\'re all clear!'
+      const names = deadlines.slice(0, 5).map((d) => d.title).join(', ')
+      return `You have ${deadlines.length} item${deadlines.length === 1 ? '' : 's'} due today: ${names}.`
+    },
+  },
+  {
+    regex: /summarize\s+(?:my\s+)?activity/i,
+    action: 'summarize_activity',
+    paramNames: [],
+    response: () => {
+      const activities = getRecentCrossModuleActivity(5)
+      if (activities.length === 0) return 'No recent activity to summarize.'
+      const lines = activities.map((a) => `• ${a.description}`).join('\n')
+      return `Here's your recent activity:\n${lines}`
+    },
   },
 ]
 
@@ -361,6 +503,101 @@ export function executeIntent(intent: IntentResult): boolean {
         if (agentType) {
           useAIAgentStore.getState().startAgent(agentType, 'AI-initiated task')
           return true
+        }
+        return false
+      }
+
+      // ─── Read-only intents (data already in response) ───────────
+      case 'whats_due_today':
+      case 'summarize_activity':
+      case 'search_pages':
+      case 'show_issues':
+      case 'check_pending':
+      case 'generate_document':
+      case 'show_bookings':
+      case 'check_availability':
+      case 'summarize_notifications':
+      case 'show_unread':
+        return true
+
+      // ─── Mutation intents ──────────────────────────────────────
+      case 'start_sprint': {
+        const sprintProjects = useProjectStore.getState().projects
+        const sprintProjectId = Object.keys(sprintProjects)[0]
+        if (sprintProjectId) {
+          const today = new Date()
+          const endDate = new Date(today)
+          endDate.setDate(endDate.getDate() + 14)
+          useProjectStore.getState().createCycle({
+            projectId: sprintProjectId,
+            name: 'Sprint',
+            startDate: today.toISOString().split('T')[0] ?? '',
+            endDate: endDate.toISOString().split('T')[0] ?? '',
+          })
+          return true
+        }
+        return false
+      }
+
+      case 'set_goal': {
+        const goalProjects = useProjectStore.getState().projects
+        const goalProjectId = Object.keys(goalProjects)[0]
+        if (goalProjectId) {
+          useProjectStore.getState().createGoal({
+            projectId: goalProjectId,
+            title: 'New Goal',
+          })
+          return true
+        }
+        return false
+      }
+
+      case 'create_event_type': {
+        useSchedulingStore.getState().addEventType({
+          name: 'Quick Meeting',
+          description: 'A quick 30-minute meeting',
+          slug: 'quick-meeting',
+          category: EventTypeCategory.OneOnOne,
+          color: '#4F46E5',
+          durationMinutes: 30,
+          bufferBeforeMinutes: 0,
+          bufferAfterMinutes: 5,
+          maxBookingsPerDay: 8,
+          minimumNoticeMinutes: 60,
+          schedulingWindowDays: 30,
+          location: LocationType.Zoom,
+          schedule: DEFAULT_SCHEDULE,
+          dateOverrides: [],
+          customQuestions: [],
+          maxAttendees: 1,
+          waitlistEnabled: false,
+          maxWaitlist: 0,
+          isActive: true,
+        })
+        return true
+      }
+
+      case 'add_table': {
+        const tableDbState = useDatabaseStore.getState()
+        const tableDbList = Object.values(tableDbState.databases)
+        const firstTableDb = tableDbList[0]
+        if (firstTableDb) {
+          tableDbState.addTable(firstTableDb.id, 'New Table', 'clipboard-list')
+          return true
+        }
+        return false
+      }
+
+      case 'create_view': {
+        const viewDbState = useDatabaseStore.getState()
+        const viewDbList = Object.values(viewDbState.databases)
+        const viewDb = viewDbList[0]
+        if (viewDb && viewDb.tables.length > 0) {
+          const firstViewTableId = viewDb.tables[0]
+          if (firstViewTableId) {
+            viewDbState.addView(firstViewTableId, 'New View', 'grid')
+            return true
+          }
         }
         return false
       }
