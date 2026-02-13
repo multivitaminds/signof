@@ -26,12 +26,12 @@ function addActivity(
 
 const SAMPLE_TEAM: Team = {
   id: 'team-1',
-  name: 'SignOf Workspace',
+  name: 'Orchestree Workspace',
   members: [
     {
       id: 'member-1',
       name: 'Alex Johnson',
-      email: 'alex@signof.com',
+      email: 'alex@orchestree.com',
       role: TeamRole.Owner,
       joinedAt: '2024-01-15T00:00:00Z',
       lastActiveAt: '2025-01-10T09:30:00Z',
@@ -40,7 +40,7 @@ const SAMPLE_TEAM: Team = {
     {
       id: 'member-2',
       name: 'Sarah Chen',
-      email: 'sarah@signof.com',
+      email: 'sarah@orchestree.com',
       role: TeamRole.Admin,
       joinedAt: '2024-02-20T00:00:00Z',
       lastActiveAt: '2025-01-09T14:22:00Z',
@@ -49,7 +49,7 @@ const SAMPLE_TEAM: Team = {
     {
       id: 'member-3',
       name: 'Mike Rivera',
-      email: 'mike@signof.com',
+      email: 'mike@orchestree.com',
       role: TeamRole.Member,
       joinedAt: '2024-03-10T00:00:00Z',
       lastActiveAt: '2025-01-08T11:45:00Z',
@@ -58,7 +58,7 @@ const SAMPLE_TEAM: Team = {
     {
       id: 'member-4',
       name: 'Emma Davis',
-      email: 'emma@signof.com',
+      email: 'emma@orchestree.com',
       role: TeamRole.Member,
       joinedAt: '2024-04-05T00:00:00Z',
       lastActiveAt: '2025-01-07T16:10:00Z',
@@ -308,6 +308,6 @@ export const useTeamStore = create<TeamState>()(
         }))
       },
     }),
-    { name: 'signof-team-storage' }
+    { name: 'orchestree-team-storage' }
   )
 )

@@ -86,7 +86,7 @@ function DeveloperLayout() {
         <div className="developer-layout__sidebar-footer">
           <a
             className="developer-layout__footer-link"
-            href="https://docs.signof.io"
+            href="https://docs.orchestree.io"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -94,7 +94,7 @@ function DeveloperLayout() {
           </a>
           <a
             className="developer-layout__footer-link"
-            href="https://status.signof.io"
+            href="https://status.orchestree.io"
             target="_blank"
             rel="noopener noreferrer"
           >

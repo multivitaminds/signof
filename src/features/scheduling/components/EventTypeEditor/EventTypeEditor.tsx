@@ -87,7 +87,7 @@ export default function EventTypeEditor({
   const [brandingLogo, setBrandingLogo] = useState(eventType?.brandingLogo)
   const [brandingCompanyName, setBrandingCompanyName] = useState(eventType?.brandingCompanyName)
   const [brandingAccentColor, setBrandingAccentColor] = useState(eventType?.brandingAccentColor)
-  const [brandingHideSignOf, setBrandingHideSignOf] = useState(eventType?.brandingHideSignOf)
+  const [brandingHideOrchestree, setBrandingHideOrchestree] = useState(eventType?.brandingHideOrchestree)
 
   const [waitlistEnabled, setWaitlistEnabled] = useState(
     eventType?.waitlistEnabled ?? false
@@ -169,7 +169,7 @@ export default function EventTypeEditor({
       brandingLogo,
       brandingCompanyName,
       brandingAccentColor,
-      brandingHideSignOf,
+      brandingHideOrchestree,
       waitlistEnabled,
       maxWaitlist,
       isActive: eventType?.isActive ?? true,
@@ -178,7 +178,7 @@ export default function EventTypeEditor({
     name, description, slug, category, color, durationMinutes, location,
     bufferBefore, bufferAfter, maxBookings, minimumNotice, schedulingWindow,
     schedule, questions, maxAttendees, brandingLogo, brandingCompanyName,
-    brandingAccentColor, brandingHideSignOf, waitlistEnabled, maxWaitlist, eventType, onSave,
+    brandingAccentColor, brandingHideOrchestree, waitlistEnabled, maxWaitlist, eventType, onSave,
   ])
 
   const TABS: Array<{ id: EditorTab; label: string; icon: typeof Settings }> = [
@@ -260,7 +260,7 @@ export default function EventTypeEditor({
                   URL Slug
                 </label>
                 <div className="event-type-editor__slug-preview">
-                  <span className="event-type-editor__slug-prefix">signof.com/</span>
+                  <span className="event-type-editor__slug-prefix">orchestree.com/</span>
                   <input
                     id="ete-slug"
                     type="text"
@@ -651,13 +651,13 @@ export default function EventTypeEditor({
                 brandingLogo,
                 brandingCompanyName,
                 brandingAccentColor,
-                brandingHideSignOf,
+                brandingHideOrchestree,
               }}
               onUpdate={(updates) => {
                 if ('brandingLogo' in updates) setBrandingLogo(updates.brandingLogo)
                 if ('brandingCompanyName' in updates) setBrandingCompanyName(updates.brandingCompanyName)
                 if ('brandingAccentColor' in updates) setBrandingAccentColor(updates.brandingAccentColor)
-                if ('brandingHideSignOf' in updates) setBrandingHideSignOf(updates.brandingHideSignOf)
+                if ('brandingHideOrchestree' in updates) setBrandingHideOrchestree(updates.brandingHideOrchestree)
               }}
             />
           )}

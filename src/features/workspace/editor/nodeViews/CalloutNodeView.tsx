@@ -7,7 +7,7 @@ export default function CalloutNodeView({ node }: NodeViewProps) {
   const color = (node.attrs.color as string) ?? 'default'
 
   return (
-    <NodeViewWrapper className={`tiptap-callout tiptap-callout--${color}`} data-type="signof-callout">
+    <NodeViewWrapper className={`tiptap-callout tiptap-callout--${color}`} data-type="orchestree-callout">
       <span className="tiptap-callout__icon" contentEditable={false} aria-hidden="true">
         {icon}
       </span>

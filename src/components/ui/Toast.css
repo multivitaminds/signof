@@ -142,6 +142,6 @@
 
 /* ─── Dark Mode ──────────────────────────────────────────────── */
 [data-theme="dark"] .toast {
-  background-color: var(--signof-dark);
+  background-color: var(--orchestree-dark);
   border-color: var(--border-color);
 }

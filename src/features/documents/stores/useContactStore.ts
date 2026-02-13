@@ -82,6 +82,6 @@ export const useContactStore = create<ContactState>()(
         set({ contacts: [] })
       },
     }),
-    { name: 'signof-contacts' }
+    { name: 'orchestree-contacts' }
   )
 )

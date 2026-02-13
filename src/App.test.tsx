@@ -28,7 +28,7 @@ function renderWithRouter(initialEntries = ['/']) {
   )
 }
 
-describe('SignOf App', () => {
+describe('Orchestree App', () => {
   beforeEach(() => {
     useAppStore.setState({
       sidebarExpanded: true,
@@ -39,7 +39,7 @@ describe('SignOf App', () => {
 
   it('renders the sidebar with brand', () => {
     renderWithRouter()
-    expect(screen.getByText('SignOf')).toBeInTheDocument()
+    expect(screen.getByText('Orchestree')).toBeInTheDocument()
   })
 
   it('renders the home page welcome banner', () => {

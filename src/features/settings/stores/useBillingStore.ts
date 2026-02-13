@@ -99,6 +99,6 @@ export const useBillingStore = create<BillingState>()(
           billingHistory: [],
         }),
     }),
-    { name: 'signof-billing-storage' }
+    { name: 'orchestree-billing-storage' }
   )
 )

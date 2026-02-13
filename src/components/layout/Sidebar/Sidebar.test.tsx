@@ -33,7 +33,7 @@ describe('Sidebar', () => {
 
   it('renders the brand logo', () => {
     renderSidebar()
-    expect(screen.getByText('SignOf')).toBeInTheDocument()
+    expect(screen.getByText('Orchestree')).toBeInTheDocument()
   })
 
   it('renders navigation items', () => {

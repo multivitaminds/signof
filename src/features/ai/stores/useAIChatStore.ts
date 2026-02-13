@@ -188,7 +188,7 @@ const useAIChatStore = create<AIChatState>()(
       },
     }),
     {
-      name: 'signof-ai-chat',
+      name: 'orchestree-ai-chat',
       partialize: (state) => ({
         messages: state.messages,
         contextLabel: state.contextLabel,

@@ -79,6 +79,6 @@ export const useTemplateStore = create<TemplateState>()(
         set({ templates: [] })
       },
     }),
-    { name: 'signof-templates' }
+    { name: 'orchestree-templates' }
   )
 )

@@ -2,8 +2,8 @@ import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import ToggleNodeView from '../nodeViews/ToggleNodeView'
 
-export const SignofToggle = Node.create({
-  name: 'signofToggle',
+export const OrchestreeToggle = Node.create({
+  name: 'orchestreeToggle',
   group: 'block',
   content: 'block+',
 
@@ -14,11 +14,11 @@ export const SignofToggle = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: 'div[data-type="signof-toggle"]' }]
+    return [{ tag: 'div[data-type="orchestree-toggle"]' }]
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'signof-toggle' }), 0]
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'orchestree-toggle' }), 0]
   },
 
   addNodeView() {

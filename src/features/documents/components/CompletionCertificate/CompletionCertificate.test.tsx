@@ -60,8 +60,8 @@ describe('CompletionCertificate', () => {
     render(<CompletionCertificate document={makeCompletedDoc()} onClose={vi.fn()} />)
 
     expect(screen.getByText('Certificate of Completion')).toBeInTheDocument()
-    expect(screen.getByText('SignOf')).toBeInTheDocument()
-    expect(screen.getByText('Powered by SignOf')).toBeInTheDocument()
+    expect(screen.getByText('Orchestree')).toBeInTheDocument()
+    expect(screen.getByText('Powered by Orchestree')).toBeInTheDocument()
   })
 
   it('shows document name and envelope ID', () => {
@@ -106,8 +106,8 @@ describe('CompletionCertificate', () => {
 
     const hashEl = screen.getByTestId('certificate-hash')
     expect(hashEl).toBeInTheDocument()
-    // Certificate hash follows the format SIGNOF-XXXX-XXXX-XXXX
-    expect(hashEl.textContent).toMatch(/^SIGNOF-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{1,4}$/)
+    // Certificate hash follows the format ORCHESTREE-XXXX-XXXX-XXXX
+    expect(hashEl.textContent).toMatch(/^ORCHESTREE-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{1,4}$/)
   })
 
   it('calls window.print when Download PDF is clicked', async () => {

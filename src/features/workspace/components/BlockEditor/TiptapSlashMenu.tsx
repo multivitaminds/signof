@@ -98,7 +98,7 @@ function getSlashItems(): SlashItem[] {
       icon: ChevronRight,
       command: (editor) => {
         editor.chain().focus().insertContent({
-          type: 'signofToggle',
+          type: 'orchestreeToggle',
           content: [{ type: 'paragraph' }],
         }).run()
       },
@@ -111,7 +111,7 @@ function getSlashItems(): SlashItem[] {
       icon: MessageSquare,
       command: (editor) => {
         editor.chain().focus().insertContent({
-          type: 'signofCallout',
+          type: 'orchestreeCallout',
           attrs: { icon: '💡', color: 'default' },
           content: [{ type: 'paragraph' }],
         }).run()
@@ -170,10 +170,10 @@ function getSlashItems(): SlashItem[] {
       icon: Columns,
       command: (editor) => {
         editor.chain().focus().insertContent({
-          type: 'signofColumns',
+          type: 'orchestreeColumns',
           content: [
-            { type: 'signofColumn', content: [{ type: 'paragraph' }] },
-            { type: 'signofColumn', content: [{ type: 'paragraph' }] },
+            { type: 'orchestreeColumn', content: [{ type: 'paragraph' }] },
+            { type: 'orchestreeColumn', content: [{ type: 'paragraph' }] },
           ],
         }).run()
       },
@@ -186,7 +186,7 @@ function getSlashItems(): SlashItem[] {
       icon: Globe,
       command: (editor) => {
         editor.chain().focus().insertContent({
-          type: 'signofEmbed',
+          type: 'orchestreeEmbed',
           attrs: { url: '' },
         }).run()
       },
@@ -199,7 +199,7 @@ function getSlashItems(): SlashItem[] {
       icon: Bookmark,
       command: (editor) => {
         editor.chain().focus().insertContent({
-          type: 'signofBookmark',
+          type: 'orchestreeBookmark',
           attrs: { url: '' },
         }).run()
       },
@@ -212,7 +212,7 @@ function getSlashItems(): SlashItem[] {
       icon: FileIcon,
       command: (editor) => {
         editor.chain().focus().insertContent({
-          type: 'signofFile',
+          type: 'orchestreeFile',
           attrs: { fileName: '', fileDataUrl: '' },
         }).run()
       },
@@ -225,7 +225,7 @@ function getSlashItems(): SlashItem[] {
       icon: Sigma,
       command: (editor) => {
         editor.chain().focus().insertContent({
-          type: 'signofEquation',
+          type: 'orchestreeEquation',
           attrs: { content: '' },
         }).run()
       },
@@ -237,7 +237,7 @@ function getSlashItems(): SlashItem[] {
       description: 'Auto-generated from headings',
       icon: ListTree,
       command: (editor) => {
-        editor.chain().focus().insertContent({ type: 'signofTOC' }).run()
+        editor.chain().focus().insertContent({ type: 'orchestreeTOC' }).run()
       },
       keywords: ['toc', 'table of contents', 'outline'],
     },

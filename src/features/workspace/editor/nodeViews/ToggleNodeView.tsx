@@ -11,7 +11,7 @@ export default function ToggleNodeView(_props: NodeViewProps) {
   }, [])
 
   return (
-    <NodeViewWrapper className="tiptap-toggle" data-type="signof-toggle">
+    <NodeViewWrapper className="tiptap-toggle" data-type="orchestree-toggle">
       <button
         className={`tiptap-toggle__chevron ${isOpen ? 'tiptap-toggle__chevron--open' : ''}`}
         onClick={handleToggle}

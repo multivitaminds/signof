@@ -69,7 +69,7 @@ const INITIAL_API_KEYS: ApiKey[] = [
 const INITIAL_WEBHOOKS: WebhookEndpoint[] = [
   {
     id: 'wh_1',
-    url: 'https://api.example.com/webhooks/signof',
+    url: 'https://api.example.com/webhooks/orchestree',
     description: 'Production webhook for document events',
     events: [
       WebhookEvent.DocumentCreated as typeof WebhookEvent.DocumentCreated,
@@ -277,7 +277,7 @@ const useDeveloperStore = create<DeveloperState>()(
       },
     }),
     {
-      name: 'signof-developer-storage',
+      name: 'orchestree-developer-storage',
       partialize: (state) => ({
         apiKeys: state.apiKeys,
         webhooks: state.webhooks,

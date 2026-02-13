@@ -72,6 +72,6 @@ export const useExpenseStore = create<ExpenseState>()(
 
       clearData: () => set({ expenses: [] }),
     }),
-    { name: 'signof-expense-storage' }
+    { name: 'orchestree-expense-storage' }
   )
 )

@@ -1,6 +1,6 @@
 {
-  "name": "SignOf",
-  "short_name": "SignOf",
+  "name": "Orchestree",
+  "short_name": "Orchestree",
   "description": "The Everything Platform - Workspace, Projects, Documents, Scheduling, Databases, and AI in one.",
   "start_url": "/",
   "display": "standalone",

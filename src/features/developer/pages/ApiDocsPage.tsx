@@ -7,7 +7,7 @@ import EndpointCard from '../components/EndpointCard/EndpointCard'
 import CodeBlock from '../components/CodeBlock/CodeBlock'
 import './ApiDocsPage.css'
 
-const BASE_URL = 'https://api.signof.io'
+const BASE_URL = 'https://api.orchestree.io'
 
 const ENDPOINTS: ApiEndpoint[] = [
   // ── Documents ─────────────────────────────────────────────
@@ -40,19 +40,19 @@ const ENDPOINTS: ApiEndpoint[] = [
 }`,
     curlExample: `curl -X GET "${BASE_URL}/api/v1/documents?status=pending&limit=10" \\
   -H "Authorization: Bearer sk_live_..."`,
-    jsExample: `import SignOf from '@signof/node';
+    jsExample: `import Orchestree from '@orchestree/node';
 
-const signof = new SignOf('sk_live_...');
+const orchestree = new Orchestree('sk_live_...');
 
-const documents = await signof.documents.list({
+const documents = await orchestree.documents.list({
   status: 'pending',
   limit: 10,
 });
 
 console.log(documents.data);`,
-    pythonExample: `import signof
+    pythonExample: `import orchestree
 
-client = signof.Client("sk_live_...")
+client = orchestree.Client("sk_live_...")
 
 documents = client.documents.list(
     status="pending",
@@ -102,7 +102,7 @@ print(documents.data)`,
     "file_url": "https://files.example.com/agreement.pdf",
     "signers": [{ "name": "Jane Smith", "email": "jane@example.com", "order": 1 }]
   }'`,
-    jsExample: `const doc = await signof.documents.create({
+    jsExample: `const doc = await orchestree.documents.create({
   name: 'Employment Agreement',
   file_url: 'https://files.example.com/agreement.pdf',
   signers: [
@@ -137,7 +137,7 @@ print(doc.id)`,
   "status": "completed",
   "created_at": "2025-12-20T10:00:00Z",
   "updated_at": "2025-12-21T09:15:00Z",
-  "file_url": "https://files.signof.io/doc_abc123.pdf",
+  "file_url": "https://files.orchestree.io/doc_abc123.pdf",
   "signers": [
     {
       "id": "sig_1",
@@ -156,7 +156,7 @@ print(doc.id)`,
 }`,
     curlExample: `curl -X GET "${BASE_URL}/api/v1/documents/doc_abc123" \\
   -H "Authorization: Bearer sk_live_..."`,
-    jsExample: `const doc = await signof.documents.retrieve('doc_abc123');
+    jsExample: `const doc = await orchestree.documents.retrieve('doc_abc123');
 
 console.log(doc.status); // "completed"
 console.log(doc.signers);`,
@@ -187,7 +187,7 @@ print(doc.signers)`,
   -H "Authorization: Bearer sk_live_..." \\
   -H "Content-Type: application/json" \\
   -d '{ "name": "Updated Contract Name" }'`,
-    jsExample: `const doc = await signof.documents.update('doc_abc123', {
+    jsExample: `const doc = await orchestree.documents.update('doc_abc123', {
   name: 'Updated Contract Name',
 });
 
@@ -215,7 +215,7 @@ print(doc.name)`,
 }`,
     curlExample: `curl -X DELETE "${BASE_URL}/api/v1/documents/doc_abc123" \\
   -H "Authorization: Bearer sk_live_..."`,
-    jsExample: `await signof.documents.delete('doc_abc123');`,
+    jsExample: `await orchestree.documents.delete('doc_abc123');`,
     pythonExample: `client.documents.delete("doc_abc123")`,
   },
   {
@@ -241,7 +241,7 @@ print(doc.name)`,
       "name": "John Doe",
       "email": "john@example.com",
       "status": "pending",
-      "signing_url": "https://sign.signof.io/s/abc123"
+      "signing_url": "https://sign.orchestree.io/s/abc123"
     }
   ]
 }`,
@@ -249,7 +249,7 @@ print(doc.name)`,
   -H "Authorization: Bearer sk_live_..." \\
   -H "Content-Type: application/json" \\
   -d '{ "message": "Please review and sign.", "subject": "Document Ready" }'`,
-    jsExample: `const result = await signof.documents.send('doc_abc123', {
+    jsExample: `const result = await orchestree.documents.send('doc_abc123', {
   message: 'Please review and sign.',
   subject: 'Document Ready',
 });
@@ -289,7 +289,7 @@ print(result.signers[0].signing_url)`,
   -H "Authorization: Bearer sk_live_..." \\
   -H "Content-Type: application/json" \\
   -d '{ "name": "Alice Johnson", "email": "alice@example.com", "order": 2 }'`,
-    jsExample: `const signer = await signof.documents.signers.create('doc_abc123', {
+    jsExample: `const signer = await orchestree.documents.signers.create('doc_abc123', {
   name: 'Alice Johnson',
   email: 'alice@example.com',
   order: 2,
@@ -337,7 +337,7 @@ print(signer.id)`,
 }`,
     curlExample: `curl -X GET "${BASE_URL}/api/v1/documents/doc_abc123/signers" \\
   -H "Authorization: Bearer sk_live_..."`,
-    jsExample: `const signers = await signof.documents.signers.list('doc_abc123');
+    jsExample: `const signers = await orchestree.documents.signers.list('doc_abc123');
 
 for (const signer of signers.data) {
   console.log(\`\${signer.name}: \${signer.status}\`);
@@ -370,7 +370,7 @@ for signer in signers.data:
       "start_time": "2025-12-28T14:00:00Z",
       "end_time": "2025-12-28T14:30:00Z",
       "status": "confirmed",
-      "location": "https://meet.signof.io/bk_001"
+      "location": "https://meet.orchestree.io/bk_001"
     }
   ],
   "has_more": false,
@@ -378,7 +378,7 @@ for signer in signers.data:
 }`,
     curlExample: `curl -X GET "${BASE_URL}/api/v1/bookings?status=confirmed" \\
   -H "Authorization: Bearer sk_live_..."`,
-    jsExample: `const bookings = await signof.bookings.list({
+    jsExample: `const bookings = await orchestree.bookings.list({
   status: 'confirmed',
 });
 
@@ -412,7 +412,7 @@ print(bookings.data)`,
   "start_time": "2025-12-30T10:00:00Z",
   "end_time": "2025-12-30T10:30:00Z",
   "status": "confirmed",
-  "location": "https://meet.signof.io/bk_new002",
+  "location": "https://meet.orchestree.io/bk_new002",
   "created_at": "2025-12-22T17:00:00Z"
 }`,
     curlExample: `curl -X POST "${BASE_URL}/api/v1/bookings" \\
@@ -424,7 +424,7 @@ print(bookings.data)`,
     "start_time": "2025-12-30T10:00:00Z",
     "timezone": "America/New_York"
   }'`,
-    jsExample: `const booking = await signof.bookings.create({
+    jsExample: `const booking = await orchestree.bookings.create({
   event_type: 'consultation',
   invitee: { name: 'Sarah Lee', email: 'sarah@example.com' },
   start_time: '2025-12-30T10:00:00Z',
@@ -471,7 +471,7 @@ print(booking.location)`,
 }`,
     curlExample: `curl -X GET "${BASE_URL}/api/v1/databases" \\
   -H "Authorization: Bearer sk_live_..."`,
-    jsExample: `const databases = await signof.databases.list();
+    jsExample: `const databases = await orchestree.databases.list();
 
 console.log(databases.data);`,
     pythonExample: `databases = client.databases.list()
@@ -514,7 +514,7 @@ print(databases.data)`,
       "Status": "Active"
     }
   }'`,
-    jsExample: `const record = await signof.databases.records.create('db_001', {
+    jsExample: `const record = await orchestree.databases.records.create('db_001', {
   fields: {
     Name: 'New Contact',
     Email: 'contact@example.com',
@@ -646,7 +646,7 @@ function ApiDocsPage() {
       <div className="api-docs-page__header">
         <h1 className="api-docs-page__title">API Reference</h1>
         <p className="api-docs-page__subtitle">
-          Complete reference for the SignOf REST API. All endpoints require authentication
+          Complete reference for the Orchestree REST API. All endpoints require authentication
           via Bearer token in the Authorization header.
         </p>
       </div>

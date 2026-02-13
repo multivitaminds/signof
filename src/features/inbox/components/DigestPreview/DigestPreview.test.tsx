@@ -122,8 +122,8 @@ describe('DigestPreview', () => {
 
   it('renders email header with From and Subject', () => {
     render(<DigestPreview />)
-    expect(screen.getByText(/notifications@signof\.app/)).toBeInTheDocument()
-    expect(screen.getByText(/Weekly SignOf Digest/)).toBeInTheDocument()
+    expect(screen.getByText(/notifications@orchestree\.app/)).toBeInTheDocument()
+    expect(screen.getByText(/Weekly Orchestree Digest/)).toBeInTheDocument()
   })
 
   it('renders all category sections', () => {

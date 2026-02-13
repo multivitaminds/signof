@@ -27,7 +27,7 @@ export const useAutoCaptureStore = create<AutoCaptureState>()(
       })),
     }),
     {
-      name: 'signof-auto-capture',
+      name: 'orchestree-auto-capture',
       partialize: (s) => ({ enabled: s.enabled }),
     }
   )

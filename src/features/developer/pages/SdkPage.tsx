@@ -21,21 +21,21 @@ const SDK_LANGUAGES: SdkLanguage[] = [
     name: 'JavaScript / TypeScript',
     version: '1.4.0',
     icon: 'JS',
-    installCommand: 'npm install @signof/node',
-    repoUrl: 'https://github.com/signof-io/signof-node',
-    packageUrl: 'https://npmjs.com/package/@signof/node',
-    initCode: `import SignOf from '@signof/node';
+    installCommand: 'npm install @orchestree/node',
+    repoUrl: 'https://github.com/orchestree-io/orchestree-node',
+    packageUrl: 'https://npmjs.com/package/@orchestree/node',
+    initCode: `import Orchestree from '@orchestree/node';
 
-const signof = new SignOf('sk_live_...');
+const orchestree = new Orchestree('sk_live_...');
 
 // Or with options
-const signof = new SignOf({
+const orchestree = new Orchestree({
   apiKey: 'sk_live_...',
-  baseUrl: 'https://api.signof.io', // optional
+  baseUrl: 'https://api.orchestree.io', // optional
   timeout: 30000,                    // optional, ms
 });`,
     exampleCode: `// Create and send a document
-const doc = await signof.documents.create({
+const doc = await orchestree.documents.create({
   name: 'Sales Contract',
   file_url: 'https://files.example.com/contract.pdf',
   signers: [
@@ -45,19 +45,19 @@ const doc = await signof.documents.create({
 });
 
 // Send for signing
-await signof.documents.send(doc.id, {
+await orchestree.documents.send(doc.id, {
   subject: 'Contract Ready for Review',
   message: 'Please review and sign at your earliest convenience.',
 });
 
 // List all completed documents
-const completed = await signof.documents.list({
+const completed = await orchestree.documents.list({
   status: 'completed',
   limit: 50,
 });
 
 // Set up webhooks
-const webhook = await signof.webhooks.create({
+const webhook = await orchestree.webhooks.create({
   url: 'https://api.yourapp.com/webhooks',
   events: ['document.completed', 'signer.declined'],
 });`,
@@ -67,17 +67,17 @@ const webhook = await signof.webhooks.create({
     name: 'Python',
     version: '1.2.0',
     icon: 'PY',
-    installCommand: 'pip install signof',
-    repoUrl: 'https://github.com/signof-io/signof-python',
-    packageUrl: 'https://pypi.org/project/signof/',
-    initCode: `import signof
+    installCommand: 'pip install orchestree',
+    repoUrl: 'https://github.com/orchestree-io/orchestree-python',
+    packageUrl: 'https://pypi.org/project/orchestree/',
+    initCode: `import orchestree
 
-client = signof.Client("sk_live_...")
+client = orchestree.Client("sk_live_...")
 
 # Or with options
-client = signof.Client(
+client = orchestree.Client(
     api_key="sk_live_...",
-    base_url="https://api.signof.io",  # optional
+    base_url="https://api.orchestree.io",  # optional
     timeout=30,                          # optional, seconds
 )`,
     exampleCode: `# Create and send a document
@@ -114,21 +114,21 @@ webhook = client.webhooks.create(
     name: 'Ruby',
     version: '1.1.0',
     icon: 'RB',
-    installCommand: 'gem install signof',
-    repoUrl: 'https://github.com/signof-io/signof-ruby',
-    packageUrl: 'https://rubygems.org/gems/signof',
-    initCode: `require 'signof'
+    installCommand: 'gem install orchestree',
+    repoUrl: 'https://github.com/orchestree-io/orchestree-ruby',
+    packageUrl: 'https://rubygems.org/gems/orchestree',
+    initCode: `require 'orchestree'
 
-Signof.api_key = 'sk_live_...'
+Orchestree.api_key = 'sk_live_...'
 
 # Or with a client instance
-client = Signof::Client.new(
+client = Orchestree::Client.new(
   api_key: 'sk_live_...',
-  base_url: 'https://api.signof.io', # optional
+  base_url: 'https://api.orchestree.io', # optional
   timeout: 30                         # optional, seconds
 )`,
     exampleCode: `# Create and send a document
-doc = Signof::Document.create(
+doc = Orchestree::Document.create(
   name: 'Sales Contract',
   file_url: 'https://files.example.com/contract.pdf',
   signers: [
@@ -144,13 +144,13 @@ doc.send(
 )
 
 # List all completed documents
-completed = Signof::Document.list(
+completed = Orchestree::Document.list(
   status: 'completed',
   limit: 50
 )
 
 # Set up webhooks
-webhook = Signof::Webhook.create(
+webhook = Orchestree::Webhook.create(
   url: 'https://api.yourapp.com/webhooks',
   events: ['document.completed', 'signer.declined']
 )`,
@@ -160,30 +160,30 @@ webhook = Signof::Webhook.create(
     name: 'Go',
     version: '1.0.0',
     icon: 'GO',
-    installCommand: 'go get github.com/signof-io/signof-go',
-    repoUrl: 'https://github.com/signof-io/signof-go',
-    packageUrl: 'https://pkg.go.dev/github.com/signof-io/signof-go',
+    installCommand: 'go get github.com/orchestree-io/orchestree-go',
+    repoUrl: 'https://github.com/orchestree-io/orchestree-go',
+    packageUrl: 'https://pkg.go.dev/github.com/orchestree-io/orchestree-go',
     initCode: `package main
 
 import (
-    "github.com/signof-io/signof-go"
+    "github.com/orchestree-io/orchestree-go"
 )
 
 func main() {
-    client := signof.NewClient("sk_live_...")
+    client := orchestree.NewClient("sk_live_...")
 
     // Or with options
-    client := signof.NewClient(
+    client := orchestree.NewClient(
         "sk_live_...",
-        signof.WithBaseURL("https://api.signof.io"),
-        signof.WithTimeout(30 * time.Second),
+        orchestree.WithBaseURL("https://api.orchestree.io"),
+        orchestree.WithTimeout(30 * time.Second),
     )
 }`,
     exampleCode: `// Create and send a document
-doc, err := client.Documents.Create(&signof.DocumentCreateParams{
+doc, err := client.Documents.Create(&orchestree.DocumentCreateParams{
     Name:    "Sales Contract",
     FileURL: "https://files.example.com/contract.pdf",
-    Signers: []signof.SignerParams{
+    Signers: []orchestree.SignerParams{
         {Name: "Alice Lee", Email: "alice@company.com", Order: 1},
         {Name: "Bob Chen", Email: "bob@client.com", Order: 2},
     },
@@ -193,19 +193,19 @@ if err != nil {
 }
 
 // Send for signing
-_, err = client.Documents.Send(doc.ID, &signof.DocumentSendParams{
+_, err = client.Documents.Send(doc.ID, &orchestree.DocumentSendParams{
     Subject: "Contract Ready for Review",
     Message: "Please review and sign at your earliest convenience.",
 })
 
 // List all completed documents
-completed, err := client.Documents.List(&signof.DocumentListParams{
-    Status: signof.String("completed"),
-    Limit:  signof.Int64(50),
+completed, err := client.Documents.List(&orchestree.DocumentListParams{
+    Status: orchestree.String("completed"),
+    Limit:  orchestree.Int64(50),
 })
 
 // Set up webhooks
-webhook, err := client.Webhooks.Create(&signof.WebhookCreateParams{
+webhook, err := client.Webhooks.Create(&orchestree.WebhookCreateParams{
     URL:    "https://api.yourapp.com/webhooks",
     Events: []string{"document.completed", "signer.declined"},
 })`,
@@ -217,31 +217,31 @@ webhook, err := client.Webhooks.Create(&signof.WebhookCreateParams{
     icon: 'JV',
     installCommand: `<!-- Maven -->
 <dependency>
-  <groupId>io.signof</groupId>
-  <artifactId>signof-java</artifactId>
+  <groupId>io.orchestree</groupId>
+  <artifactId>orchestree-java</artifactId>
   <version>1.0.0</version>
 </dependency>
 
 // Gradle
-implementation 'io.signof:signof-java:1.0.0'`,
-    repoUrl: 'https://github.com/signof-io/signof-java',
-    packageUrl: 'https://central.sonatype.com/artifact/io.signof/signof-java',
-    initCode: `import io.signof.SignOf;
-import io.signof.SignOfConfig;
+implementation 'io.orchestree:orchestree-java:1.0.0'`,
+    repoUrl: 'https://github.com/orchestree-io/orchestree-java',
+    packageUrl: 'https://central.sonatype.com/artifact/io.orchestree/orchestree-java',
+    initCode: `import io.orchestree.Orchestree;
+import io.orchestree.OrchestreeConfig;
 
 // Simple initialization
-SignOf signof = new SignOf("sk_live_...");
+Orchestree orchestree = new Orchestree("sk_live_...");
 
 // Or with options
-SignOfConfig config = SignOfConfig.builder()
+OrchestreeConfig config = OrchestreeConfig.builder()
     .apiKey("sk_live_...")
-    .baseUrl("https://api.signof.io")  // optional
+    .baseUrl("https://api.orchestree.io")  // optional
     .timeout(30000)                     // optional, ms
     .build();
 
-SignOf signof = new SignOf(config);`,
+Orchestree orchestree = new Orchestree(config);`,
     exampleCode: `// Create and send a document
-Document doc = signof.documents().create(
+Document doc = orchestree.documents().create(
     DocumentCreateParams.builder()
         .name("Sales Contract")
         .fileUrl("https://files.example.com/contract.pdf")
@@ -251,7 +251,7 @@ Document doc = signof.documents().create(
 );
 
 // Send for signing
-signof.documents().send(doc.getId(),
+orchestree.documents().send(doc.getId(),
     DocumentSendParams.builder()
         .subject("Contract Ready for Review")
         .message("Please review and sign at your earliest convenience.")
@@ -259,7 +259,7 @@ signof.documents().send(doc.getId(),
 );
 
 // List all completed documents
-DocumentList completed = signof.documents().list(
+DocumentList completed = orchestree.documents().list(
     DocumentListParams.builder()
         .status("completed")
         .limit(50)
@@ -267,7 +267,7 @@ DocumentList completed = signof.documents().list(
 );
 
 // Set up webhooks
-Webhook webhook = signof.webhooks().create(
+Webhook webhook = orchestree.webhooks().create(
     WebhookCreateParams.builder()
         .url("https://api.yourapp.com/webhooks")
         .addEvent("document.completed")
@@ -289,7 +289,7 @@ const GETTING_STARTED_STEPS: GettingStartedStep[] = [
   {
     number: 1,
     title: 'Create an account',
-    description: 'Sign up at signof.io and navigate to Settings > API Keys.',
+    description: 'Sign up at orchestree.io and navigate to Settings > API Keys.',
   },
   {
     number: 2,
@@ -339,27 +339,27 @@ function SdkPage() {
       case 'javascript':
         return `// Store your API key in an environment variable
 // .env
-SIGNOF_API_KEY=${prefix}_your_api_key_here
+ORCHESTREE_API_KEY=${prefix}_your_api_key_here
 
 // app.js
-import SignOf from '@signof/node';
+import Orchestree from '@orchestree/node';
 
-const signof = new SignOf(process.env.SIGNOF_API_KEY);
+const orchestree = new Orchestree(process.env.ORCHESTREE_API_KEY);
 
 // Verify authentication
-const me = await signof.account.retrieve();
+const me = await orchestree.account.retrieve();
 console.log('Authenticated as:', me.email);
 console.log('Environment: ${envLabel}');`
       case 'python':
         return `# Store your API key in an environment variable
 # .env
-SIGNOF_API_KEY=${prefix}_your_api_key_here
+ORCHESTREE_API_KEY=${prefix}_your_api_key_here
 
 # app.py
 import os
-import signof
+import orchestree
 
-client = signof.Client(os.environ["SIGNOF_API_KEY"])
+client = orchestree.Client(os.environ["ORCHESTREE_API_KEY"])
 
 # Verify authentication
 me = client.account.retrieve()
@@ -368,31 +368,31 @@ print(f"Environment: ${envLabel}")`
       case 'ruby':
         return `# Store your API key in an environment variable
 # .env
-SIGNOF_API_KEY=${prefix}_your_api_key_here
+ORCHESTREE_API_KEY=${prefix}_your_api_key_here
 
 # app.rb
-require 'signof'
+require 'orchestree'
 
-Signof.api_key = ENV['SIGNOF_API_KEY']
+Orchestree.api_key = ENV['ORCHESTREE_API_KEY']
 
 # Verify authentication
-me = Signof::Account.retrieve
+me = Orchestree::Account.retrieve
 puts "Authenticated as: #{me.email}"
 puts "Environment: ${envLabel}"`
       case 'go':
         return `// Store your API key in an environment variable
-// export SIGNOF_API_KEY=${prefix}_your_api_key_here
+// export ORCHESTREE_API_KEY=${prefix}_your_api_key_here
 
 package main
 
 import (
     "fmt"
     "os"
-    "github.com/signof-io/signof-go"
+    "github.com/orchestree-io/orchestree-go"
 )
 
 func main() {
-    client := signof.NewClient(os.Getenv("SIGNOF_API_KEY"))
+    client := orchestree.NewClient(os.Getenv("ORCHESTREE_API_KEY"))
 
     // Verify authentication
     me, err := client.Account.Retrieve()
@@ -404,17 +404,17 @@ func main() {
 }`
       case 'java':
         return `// Store your API key in an environment variable
-// export SIGNOF_API_KEY=${prefix}_your_api_key_here
+// export ORCHESTREE_API_KEY=${prefix}_your_api_key_here
 
-import io.signof.SignOf;
-import io.signof.model.Account;
+import io.orchestree.Orchestree;
+import io.orchestree.model.Account;
 
 public class App {
     public static void main(String[] args) {
-        SignOf signof = new SignOf(System.getenv("SIGNOF_API_KEY"));
+        Orchestree orchestree = new Orchestree(System.getenv("ORCHESTREE_API_KEY"));
 
         // Verify authentication
-        Account me = signof.account().retrieve();
+        Account me = orchestree.account().retrieve();
         System.out.println("Authenticated as: " + me.getEmail());
         System.out.println("Environment: ${envLabel}");
     }
@@ -429,7 +429,7 @@ public class App {
       <div className="sdk-page__header">
         <h1 className="sdk-page__title">SDKs</h1>
         <p className="sdk-page__subtitle">
-          Official client libraries for the SignOf API. Each SDK provides typed methods,
+          Official client libraries for the Orchestree API. Each SDK provides typed methods,
           automatic retries, and webhook signature verification.
         </p>
       </div>

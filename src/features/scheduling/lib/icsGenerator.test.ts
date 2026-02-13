@@ -63,7 +63,7 @@ describe('generateICS', () => {
     expect(ics).toContain('BEGIN:VCALENDAR')
     expect(ics).toContain('END:VCALENDAR')
     expect(ics).toContain('VERSION:2.0')
-    expect(ics).toContain('PRODID:-//SignOf//Scheduling//EN')
+    expect(ics).toContain('PRODID:-//Orchestree//Scheduling//EN')
     expect(ics).toContain('CALSCALE:GREGORIAN')
     expect(ics).toContain('METHOD:PUBLISH')
   })
@@ -123,7 +123,7 @@ describe('generateICS', () => {
     const eventType = makeEventType()
     const ics = generateICS(booking, eventType)
 
-    expect(ics).toContain('UID:bk-unique-123@signof.app')
+    expect(ics).toContain('UID:bk-unique-123@orchestree.app')
   })
 
   it('includes DTSTAMP', () => {

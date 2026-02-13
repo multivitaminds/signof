@@ -141,7 +141,7 @@
 }
 
 .command-palette__item--selected .command-palette__item-icon {
-  color: var(--signof-coral, #E94560);
+  color: var(--orchestree-coral, #E94560);
 }
 
 .command-palette__item-content {
@@ -218,7 +218,7 @@
 
 /* Dark mode */
 [data-theme="dark"] .command-palette {
-  background: var(--signof-dark, #1E1E36);
+  background: var(--orchestree-dark, #1E1E36);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 

@@ -63,6 +63,6 @@ export const useAccountingContactStore = create<AccountingContactState>()(
 
       clearData: () => set({ contacts: [] }),
     }),
-    { name: 'signof-accounting-contacts-storage' }
+    { name: 'orchestree-accounting-contacts-storage' }
   )
 )

@@ -1,0 +1,102 @@
+.canvas-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-sm);
+}
+
+.canvas-topbar__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.canvas-topbar__name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+
+.canvas-topbar__name:hover {
+  background: var(--bg-secondary);
+}
+
+.canvas-topbar__name-input {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  outline: none;
+  min-width: 200px;
+}
+
+.canvas-topbar__node-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-full);
+}
+
+.canvas-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.canvas-topbar__save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-xs) var(--space-md);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.canvas-topbar__save-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.canvas-topbar__execute-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-xs) var(--space-lg);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--orchestree-coral, #E94560);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.canvas-topbar__execute-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.canvas-topbar__execute-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

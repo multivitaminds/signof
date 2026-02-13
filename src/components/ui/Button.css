@@ -89,12 +89,12 @@
 }
 
 .btn--coral {
-  background-color: var(--signof-coral);
+  background-color: var(--orchestree-coral);
   color: white;
 }
 
 .btn--coral:hover:not(:disabled) {
-  background-color: var(--signof-coral-hover);
+  background-color: var(--orchestree-coral-hover);
 }
 
 /* ─── Modifiers ──────────────────────────────────────────────── */

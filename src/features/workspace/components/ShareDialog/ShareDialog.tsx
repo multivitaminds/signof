@@ -160,7 +160,7 @@ export default function ShareDialog({ isOpen, pageTitle, onClose }: ShareDialogP
             </div>
             <div className="share-dialog__user-info">
               <span className="share-dialog__user-name">You (Owner)</span>
-              <span className="share-dialog__user-email">you@signof.app</span>
+              <span className="share-dialog__user-email">you@orchestree.app</span>
             </div>
             <span className="share-dialog__user-permission-label">Owner</span>
           </div>

@@ -2,9 +2,9 @@ import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import ColumnsNodeView from '../nodeViews/ColumnsNodeView'
 
-export const SignofColumn = Node.create({
-  name: 'signofColumn',
-  group: 'signofColumnGroup',
+export const OrchestreeColumn = Node.create({
+  name: 'orchestreeColumn',
+  group: 'orchestreeColumnGroup',
   content: 'block+',
 
   addAttributes() {
@@ -14,18 +14,18 @@ export const SignofColumn = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: 'div[data-type="signof-column"]' }]
+    return [{ tag: 'div[data-type="orchestree-column"]' }]
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'signof-column' }), 0]
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'orchestree-column' }), 0]
   },
 })
 
-export const SignofColumns = Node.create({
-  name: 'signofColumns',
+export const OrchestreeColumns = Node.create({
+  name: 'orchestreeColumns',
   group: 'block',
-  content: 'signofColumn{2,}',
+  content: 'orchestreeColumn{2,}',
 
   addAttributes() {
     return {
@@ -34,11 +34,11 @@ export const SignofColumns = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: 'div[data-type="signof-columns"]' }]
+    return [{ tag: 'div[data-type="orchestree-columns"]' }]
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'signof-columns' }), 0]
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'orchestree-columns' }), 0]
   },
 
   addNodeView() {

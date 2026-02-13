@@ -877,7 +877,7 @@ export const useProjectStore = create<ProjectState>()(
       },
     }),
     {
-      name: 'signof-projects-storage',
+      name: 'orchestree-projects-storage',
       partialize: (state) => ({
         projects: state.projects,
         issues: state.issues,

@@ -334,7 +334,7 @@ function blockToTiptapNode(
     case BlockType.Toggle:
       return {
         node: {
-          type: 'signofToggle',
+          type: 'orchestreeToggle',
           attrs: {
             blockId: block.id,
           },
@@ -345,7 +345,7 @@ function blockToTiptapNode(
     case BlockType.Callout:
       return {
         node: {
-          type: 'signofCallout',
+          type: 'orchestreeCallout',
           attrs: {
             icon: block.properties.calloutIcon ?? '💡',
             color: block.properties.color ?? 'default',
@@ -361,7 +361,7 @@ function blockToTiptapNode(
     case BlockType.ColumnLayout:
       return {
         node: {
-          type: 'signofColumns',
+          type: 'orchestreeColumns',
           attrs: { blockId: block.id },
           content: columnContent(block, allBlocks),
         },
@@ -370,7 +370,7 @@ function blockToTiptapNode(
     case BlockType.Embed:
       return {
         node: {
-          type: 'signofEmbed',
+          type: 'orchestreeEmbed',
           attrs: {
             url: block.properties.embedUrl ?? '',
             blockId: block.id,
@@ -381,7 +381,7 @@ function blockToTiptapNode(
     case BlockType.Bookmark:
       return {
         node: {
-          type: 'signofBookmark',
+          type: 'orchestreeBookmark',
           attrs: {
             url: block.properties.url ?? '',
             blockId: block.id,
@@ -392,7 +392,7 @@ function blockToTiptapNode(
     case BlockType.FileAttachment:
       return {
         node: {
-          type: 'signofFile',
+          type: 'orchestreeFile',
           attrs: {
             fileName: block.properties.fileName ?? '',
             fileDataUrl: block.properties.fileDataUrl ?? '',
@@ -404,7 +404,7 @@ function blockToTiptapNode(
     case BlockType.Equation:
       return {
         node: {
-          type: 'signofEquation',
+          type: 'orchestreeEquation',
           attrs: {
             content: block.content,
             blockId: block.id,
@@ -415,7 +415,7 @@ function blockToTiptapNode(
     case BlockType.TableOfContents:
       return {
         node: {
-          type: 'signofTOC',
+          type: 'orchestreeTOC',
           attrs: { blockId: block.id },
         },
       }
@@ -523,19 +523,19 @@ function toggleContent(block: Block, allBlocks?: Record<string, Block>): JSONCon
 function columnContent(block: Block, allBlocks?: Record<string, Block>): JSONContent[] {
   if (block.children.length === 0) {
     return [
-      { type: 'signofColumn', content: [{ type: 'paragraph' }] },
-      { type: 'signofColumn', content: [{ type: 'paragraph' }] },
+      { type: 'orchestreeColumn', content: [{ type: 'paragraph' }] },
+      { type: 'orchestreeColumn', content: [{ type: 'paragraph' }] },
     ]
   }
 
   return block.children.map((childId) => {
     const child = allBlocks?.[childId]
     if (!child) {
-      return { type: 'signofColumn', content: [{ type: 'paragraph' }] }
+      return { type: 'orchestreeColumn', content: [{ type: 'paragraph' }] }
     }
     const textContent = inlineMarksToTiptapContent(child.content, child.marks)
     return {
-      type: 'signofColumn',
+      type: 'orchestreeColumn',
       attrs: { blockId: child.id },
       content: [{
         type: 'paragraph',
@@ -610,35 +610,35 @@ function tiptapNodeToBlocks(node: JSONContent): Block[] {
     case 'table':
       return [tableNodeToBlock(node)]
 
-    case 'signofToggle':
+    case 'orchestreeToggle':
       return [toggleNodeToBlock(node)]
 
-    case 'signofCallout':
+    case 'orchestreeCallout':
       return [calloutNodeToBlock(node)]
 
-    case 'signofColumns':
+    case 'orchestreeColumns':
       return [columnsNodeToBlock(node)]
 
-    case 'signofEmbed':
+    case 'orchestreeEmbed':
       return [makeBlock(BlockType.Embed, '', [], {
         embedUrl: String(node.attrs?.url ?? ''),
       }, node.attrs?.blockId as string | undefined)]
 
-    case 'signofBookmark':
+    case 'orchestreeBookmark':
       return [makeBlock(BlockType.Bookmark, '', [], {
         url: String(node.attrs?.url ?? ''),
       }, node.attrs?.blockId as string | undefined)]
 
-    case 'signofFile':
+    case 'orchestreeFile':
       return [makeBlock(BlockType.FileAttachment, '', [], {
         fileName: String(node.attrs?.fileName ?? ''),
         fileDataUrl: String(node.attrs?.fileDataUrl ?? ''),
       }, node.attrs?.blockId as string | undefined)]
 
-    case 'signofEquation':
+    case 'orchestreeEquation':
       return [makeBlock(BlockType.Equation, String(node.attrs?.content ?? ''), [], {}, node.attrs?.blockId as string | undefined)]
 
-    case 'signofTOC':
+    case 'orchestreeTOC':
       return [makeBlock(BlockType.TableOfContents, '', [], {}, node.attrs?.blockId as string | undefined)]
 
     default:
@@ -804,7 +804,7 @@ function columnsNodeToBlock(node: JSONContent): Block {
   if (node.content) {
     const childIds: string[] = []
     for (const col of node.content) {
-      if (col.type === 'signofColumn') {
+      if (col.type === 'orchestreeColumn') {
         const para = col.content?.find((c) => c.type === 'paragraph')
         const { text, marks } = para?.content
           ? tiptapContentToInlineMarks(para.content)

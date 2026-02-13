@@ -1,0 +1,52 @@
+.chat-message {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-sm);
+}
+
+.chat-message--user {
+  align-self: flex-end;
+  background: var(--color-primary);
+  color: white;
+}
+
+.chat-message--assistant {
+  align-self: flex-start;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.chat-message__content { line-height: 1.6; word-wrap: break-word; }
+.chat-message__content strong { font-weight: 600; }
+.chat-message__content em { font-style: italic; }
+.chat-message__list { margin: var(--space-xs) 0; padding-left: var(--space-lg); }
+.chat-message__list li { margin-bottom: 2px; }
+
+.chat-message__inline-code {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.chat-message--user .chat-message__inline-code { background: rgba(255, 255, 255, 0.2); }
+.chat-message .code-block { margin: var(--space-sm) 0; border-radius: var(--radius-md); overflow: hidden; }
+
+.chat-message__timestamp { font-size: 0.75rem; color: var(--text-muted); margin-top: var(--space-xs); }
+.chat-message--user .chat-message__timestamp { color: rgba(255, 255, 255, 0.7); }
+
+.chat-message__tool-calls { display: flex; flex-direction: column; gap: 4px; margin-top: var(--space-xs); padding-top: var(--space-xs); border-top: 1px solid var(--border-color); }
+.chat-message__tool-call { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.8rem; }
+.chat-message__tool-name { font-family: monospace; font-weight: 500; }
+.chat-message__tool-status { font-size: 0.7rem; padding: 1px 6px; border-radius: var(--radius-sm); text-transform: uppercase; font-weight: 600; }
+.chat-message__tool-status--completed { background: rgba(5, 150, 105, 0.1); color: var(--color-success); }
+.chat-message__tool-status--running { background: rgba(217, 119, 6, 0.1); color: var(--color-warning); }
+.chat-message__tool-status--error { background: rgba(220, 38, 38, 0.1); color: var(--color-danger); }
+
+@media (prefers-color-scheme: dark) {
+  .chat-message--assistant .chat-message__inline-code { background: rgba(255, 255, 255, 0.1); }
+}

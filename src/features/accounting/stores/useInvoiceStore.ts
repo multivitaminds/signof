@@ -167,6 +167,6 @@ export const useInvoiceStore = create<InvoiceState>()(
           nextInvoiceNumber: 1,
         }),
     }),
-    { name: 'signof-invoice-storage' }
+    { name: 'orchestree-invoice-storage' }
   )
 )

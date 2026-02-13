@@ -153,5 +153,5 @@
 
 .sidebar .page-tree-item--active {
   background: rgba(233, 69, 96, 0.15);
-  color: var(--signof-coral, #E94560);
+  color: var(--orchestree-coral, #E94560);
 }

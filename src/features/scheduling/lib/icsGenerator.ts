@@ -28,7 +28,7 @@ function toICSDateTime(date: string, time: string): string {
  * Generates a unique UID for the ICS event.
  */
 function generateUID(bookingId: string): string {
-  return `${bookingId}@signof.app`
+  return `${bookingId}@orchestree.app`
 }
 
 /**
@@ -79,7 +79,7 @@ export function generateICS(booking: Booking, eventType: EventType): string {
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//SignOf//Scheduling//EN',
+    'PRODID:-//Orchestree//Scheduling//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',

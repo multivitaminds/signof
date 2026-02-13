@@ -55,7 +55,7 @@ function generateCertificateHash(doc: Document): string {
   }
   const hex = Math.abs(hash).toString(16).padStart(8, '0').toUpperCase()
   const idClean = doc.id.replace(/[^A-Z0-9]/gi, '').toUpperCase().slice(0, 4).padEnd(4, '0')
-  return `SIGNOF-${hex.slice(0, 4)}-${hex.slice(4, 8)}-${idClean}`
+  return `ORCHESTREE-${hex.slice(0, 4)}-${hex.slice(4, 8)}-${idClean}`
 }
 
 function getAuditIcon(action: string) {
@@ -135,7 +135,7 @@ function CompletionCertificate({ document: doc, onClose }: CompletionCertificate
         <div className="completion-certificate-v2__header">
           <div className="completion-certificate-v2__logo">
             <Award size={28} />
-            <span className="completion-certificate-v2__brand">SignOf</span>
+            <span className="completion-certificate-v2__brand">Orchestree</span>
           </div>
           <h1 className="completion-certificate-v2__title">Certificate of Completion</h1>
           <p className="completion-certificate-v2__subtitle">
@@ -254,7 +254,7 @@ function CompletionCertificate({ document: doc, onClose }: CompletionCertificate
 
         {/* Footer */}
         <div className="completion-certificate-v2__footer">
-          <span className="completion-certificate-v2__powered">Powered by SignOf</span>
+          <span className="completion-certificate-v2__powered">Powered by Orchestree</span>
         </div>
 
         {/* Actions (hidden on print) */}

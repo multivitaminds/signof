@@ -1,0 +1,53 @@
+.canvas-controls {
+  position: absolute;
+  bottom: var(--space-md);
+  left: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+}
+
+.canvas-controls__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.canvas-controls__btn:hover:not(:disabled) {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.canvas-controls__btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.canvas-controls__zoom {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 40px;
+  text-align: center;
+  user-select: none;
+}
+
+.canvas-controls__divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-color);
+}

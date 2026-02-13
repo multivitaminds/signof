@@ -13,7 +13,7 @@ beforeEach(() => {
 
 describe('GoalsPanel', () => {
   it('renders with empty state', () => {
-    render(<GoalsPanel projectId="proj-signof" />)
+    render(<GoalsPanel projectId="proj-orchestree" />)
     expect(screen.getByText('Goals')).toBeInTheDocument()
     expect(screen.getByText('No goals yet. Create one to track progress.')).toBeInTheDocument()
     expect(screen.getByText('0')).toBeInTheDocument() // count badge
@@ -21,7 +21,7 @@ describe('GoalsPanel', () => {
 
   it('shows add goal form on button click', async () => {
     const user = userEvent.setup()
-    render(<GoalsPanel projectId="proj-signof" />)
+    render(<GoalsPanel projectId="proj-orchestree" />)
 
     await user.click(screen.getByLabelText('Add goal'))
     expect(screen.getByPlaceholderText('Goal title')).toBeInTheDocument()
@@ -29,7 +29,7 @@ describe('GoalsPanel', () => {
 
   it('creates a goal', async () => {
     const user = userEvent.setup()
-    render(<GoalsPanel projectId="proj-signof" />)
+    render(<GoalsPanel projectId="proj-orchestree" />)
 
     await user.click(screen.getByLabelText('Add goal'))
     await user.type(screen.getByPlaceholderText('Goal title'), 'Ship V1')
@@ -43,7 +43,7 @@ describe('GoalsPanel', () => {
 
   it('shows progress bar at 0% for goal with no issues', async () => {
     const user = userEvent.setup()
-    render(<GoalsPanel projectId="proj-signof" />)
+    render(<GoalsPanel projectId="proj-orchestree" />)
 
     await user.click(screen.getByLabelText('Add goal'))
     await user.type(screen.getByPlaceholderText('Goal title'), 'Test Goal')
@@ -56,11 +56,11 @@ describe('GoalsPanel', () => {
     const user = userEvent.setup()
     // Pre-populate a goal
     useProjectStore.getState().createGoal({
-      projectId: 'proj-signof',
+      projectId: 'proj-orchestree',
       title: 'To Delete',
     })
 
-    render(<GoalsPanel projectId="proj-signof" />)
+    render(<GoalsPanel projectId="proj-orchestree" />)
     expect(screen.getByText('To Delete')).toBeInTheDocument()
 
     await user.click(screen.getByLabelText('Delete goal'))
@@ -71,7 +71,7 @@ describe('GoalsPanel', () => {
 
   it('toggles collapse', async () => {
     const user = userEvent.setup()
-    render(<GoalsPanel projectId="proj-signof" />)
+    render(<GoalsPanel projectId="proj-orchestree" />)
 
     // Should be expanded by default
     expect(screen.getByText('No goals yet. Create one to track progress.')).toBeInTheDocument()
@@ -85,7 +85,7 @@ describe('GoalsPanel', () => {
 
   it('only shows goals for the given project', () => {
     useProjectStore.getState().createGoal({
-      projectId: 'proj-signof',
+      projectId: 'proj-orchestree',
       title: 'Correct Project Goal',
     })
     useProjectStore.getState().createGoal({
@@ -93,7 +93,7 @@ describe('GoalsPanel', () => {
       title: 'Other Project Goal',
     })
 
-    render(<GoalsPanel projectId="proj-signof" />)
+    render(<GoalsPanel projectId="proj-orchestree" />)
 
     expect(screen.getByText('Correct Project Goal')).toBeInTheDocument()
     expect(screen.queryByText('Other Project Goal')).not.toBeInTheDocument()
@@ -102,11 +102,11 @@ describe('GoalsPanel', () => {
   it('opens edit form and saves changes', async () => {
     const user = userEvent.setup()
     useProjectStore.getState().createGoal({
-      projectId: 'proj-signof',
+      projectId: 'proj-orchestree',
       title: 'Original Title',
     })
 
-    render(<GoalsPanel projectId="proj-signof" />)
+    render(<GoalsPanel projectId="proj-orchestree" />)
 
     await user.click(screen.getByLabelText('Edit goal'))
     const titleInput = screen.getByDisplayValue('Original Title')

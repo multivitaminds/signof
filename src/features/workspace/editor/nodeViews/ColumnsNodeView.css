@@ -7,7 +7,7 @@
   gap: var(--space-md, 1rem);
 }
 
-.tiptap-columns__inner > [data-type="signof-column"] {
+.tiptap-columns__inner > [data-type="orchestree-column"] {
   flex: 1;
   min-width: 0;
   padding: var(--space-xs, 0.25rem);
@@ -16,7 +16,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .tiptap-columns__inner > [data-type="signof-column"] {
+  .tiptap-columns__inner > [data-type="orchestree-column"] {
     border-color: var(--border-color, #334155);
   }
 }

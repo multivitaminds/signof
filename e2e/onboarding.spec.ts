@@ -7,7 +7,7 @@ test.describe('Onboarding Wizard', () => {
 
   test('first step (Welcome) is visible with display name input', async ({ page }) => {
     // Should show the Welcome step
-    await expect(page.locator('.onboarding__title', { hasText: 'Welcome to SignOf' })).toBeVisible()
+    await expect(page.locator('.onboarding__title', { hasText: 'Welcome to Orchestree' })).toBeVisible()
 
     // Should show "Step 1 of 8"
     await expect(page.locator('.onboarding__step-counter')).toHaveText('Step 1 of 8')
@@ -63,7 +63,7 @@ test.describe('Onboarding Wizard', () => {
 
     // Should go back to step 1
     await expect(page.locator('.onboarding__step-counter')).toHaveText('Step 1 of 8', { timeout: 3000 })
-    await expect(page.locator('.onboarding__title', { hasText: 'Welcome to SignOf' })).toBeVisible()
+    await expect(page.locator('.onboarding__title', { hasText: 'Welcome to Orchestree' })).toBeVisible()
   })
 
   test('Skip button appears on optional steps (Team Invitations and Appearance)', async ({ page }) => {

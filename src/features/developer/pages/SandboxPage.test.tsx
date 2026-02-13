@@ -17,7 +17,7 @@ vi.mock('../stores/useSandboxStore', () => ({
     JavaScript: 'javascript',
     Python: 'python',
   },
-  generateCodeExample: () => 'curl -X GET "https://api.signof.io/api/v1/documents"',
+  generateCodeExample: () => 'curl -X GET "https://api.orchestree.io/api/v1/documents"',
 }))
 
 vi.mock('../components/CodeBlock/CodeBlock', () => ({

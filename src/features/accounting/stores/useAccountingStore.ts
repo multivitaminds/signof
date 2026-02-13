@@ -224,6 +224,6 @@ export const useAccountingStore = create<AccountingState>()(
           transactions: [],
         }),
     }),
-    { name: 'signof-accounting-storage' }
+    { name: 'orchestree-accounting-storage' }
   )
 )

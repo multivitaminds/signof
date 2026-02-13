@@ -4,7 +4,7 @@ test.describe('Theme & Appearance Settings', () => {
   test.beforeEach(async ({ page }) => {
     // Clear localStorage to start with default state
     await page.goto('/')
-    await page.evaluate(() => localStorage.removeItem('signof-appearance-storage'))
+    await page.evaluate(() => localStorage.removeItem('orchestree-appearance-storage'))
   })
 
   test('switch between System, Light, and Dark themes', async ({ page }) => {
@@ -83,7 +83,7 @@ test.describe('Theme & Appearance Settings', () => {
 
     // Check localStorage
     const stored = await page.evaluate(() =>
-      localStorage.getItem('signof-appearance-storage')
+      localStorage.getItem('orchestree-appearance-storage')
     )
     expect(stored).toBeTruthy()
     const parsed = JSON.parse(stored!)

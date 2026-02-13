@@ -350,7 +350,7 @@ const useAIAgentStore = create<AIAgentState>()(
       },
     }),
     {
-      name: 'signof-ai-agent-runs',
+      name: 'orchestree-ai-agent-runs',
       partialize: (state) => ({
         runs: state.runs,
         lastRunByAgent: state.lastRunByAgent,

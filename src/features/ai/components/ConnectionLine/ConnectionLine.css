@@ -1,0 +1,25 @@
+.connection-line {
+  stroke: var(--border-color);
+  transition: stroke 0.2s ease;
+  pointer-events: none;
+}
+
+.connection-line--running {
+  stroke: var(--color-primary);
+  stroke-dasharray: 8 4;
+  animation: connection-flow 0.6s linear infinite;
+}
+
+.connection-line--completed {
+  stroke: var(--color-success);
+}
+
+.connection-line--error {
+  stroke: var(--color-danger);
+}
+
+@keyframes connection-flow {
+  to {
+    stroke-dashoffset: -12;
+  }
+}

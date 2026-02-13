@@ -452,7 +452,7 @@ export const useTaxStore = create<TaxState>()(
         get().filings.find((f) => f.taxYear === year),
     }),
     {
-      name: 'signof-tax-storage',
+      name: 'orchestree-tax-storage',
       partialize: (state) => ({
         documents: state.documents,
         filings: state.filings,

@@ -1,4 +1,4 @@
-# SignOf ✓
+# Orchestree ✓
 
 **The Everything Platform** — one app replacing Notion, Linear, Asana, DocuSign, PandaDoc, Calendly, and Airtable.
 
@@ -65,7 +65,7 @@ src/
 
 ## Roadmap
 
-SignOf will expand into 8 modules:
+Orchestree will expand into 8 modules:
 
 | Module | Status |
 |--------|--------|

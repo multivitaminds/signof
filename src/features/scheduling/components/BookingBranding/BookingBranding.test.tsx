@@ -17,7 +17,7 @@ describe('BookingBranding', () => {
     expect(screen.getByLabelText('Company Name')).toBeInTheDocument()
     expect(screen.getByRole('radiogroup', { name: 'Accent color' })).toBeInTheDocument()
     expect(screen.getByText('Upload Logo')).toBeInTheDocument()
-    expect(screen.getByText(/Hide .+Powered by SignOf.+ footer/)).toBeInTheDocument()
+    expect(screen.getByText(/Hide .+Powered by Orchestree.+ footer/)).toBeInTheDocument()
   })
 
   it('updates company name on input', async () => {
@@ -74,7 +74,7 @@ describe('BookingBranding', () => {
     const checkbox = screen.getByRole('checkbox')
     await user.click(checkbox)
 
-    expect(onUpdate).toHaveBeenCalledWith({ brandingHideSignOf: true })
+    expect(onUpdate).toHaveBeenCalledWith({ brandingHideOrchestree: true })
   })
 
   it('shows preview with branding applied', () => {
@@ -83,7 +83,7 @@ describe('BookingBranding', () => {
       <BookingBranding
         eventType={createMockEventType({
           brandingCompanyName: 'Test Corp',
-          brandingHideSignOf: false,
+          brandingHideOrchestree: false,
         })}
         onUpdate={onUpdate}
       />
@@ -92,14 +92,14 @@ describe('BookingBranding', () => {
     expect(screen.getByText('Test Corp')).toBeInTheDocument()
     expect(screen.getByText('Quick Chat')).toBeInTheDocument()
     // Footer should be visible when not hidden
-    expect(screen.getAllByText('SignOf').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Orchestree').length).toBeGreaterThan(0)
   })
 
-  it('hides footer in preview when brandingHideSignOf is true', () => {
+  it('hides footer in preview when brandingHideOrchestree is true', () => {
     const onUpdate = vi.fn()
     render(
       <BookingBranding
-        eventType={createMockEventType({ brandingHideSignOf: true })}
+        eventType={createMockEventType({ brandingHideOrchestree: true })}
         onUpdate={onUpdate}
       />
     )

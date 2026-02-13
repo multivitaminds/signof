@@ -3,9 +3,9 @@ import {
   Search, PenTool, Code2, Palette, BarChart3,
   ClipboardList, Users, CheckSquare,
   Play, Pause, Square, MessageSquare,
-  ChevronDown, ChevronUp,
+  ChevronDown, ChevronUp, Plus,
   CheckCircle2, Loader2, Circle, XCircle, Clock,
-  X, Eye, Star, Zap,
+  Eye, Star, Zap,
   TrendingUp, Megaphone, DollarSign, Scale, ShieldCheck,
   UserPlus, HeartHandshake, Languages, Globe, Share2,
   Shield, Server,
@@ -14,14 +14,22 @@ import type { LucideIcon } from 'lucide-react'
 import { Badge } from '../../../components/ui'
 import useAIAgentStore, { getStepOutput } from '../stores/useAIAgentStore'
 import usePipelineStore from '../stores/usePipelineStore'
+import useCanvasStore from '../stores/useCanvasStore'
 import { AGENT_DEFINITIONS } from '../lib/agentDefinitions'
 import { WORKFLOW_TEMPLATES } from '../lib/workflowTemplates'
-import { RunStatus, StepStatus, AgentCategory } from '../types'
+import { RunStatus, StepStatus, AgentCategory, NodeStatus } from '../types'
 import type { AgentType, AgentRun, RunStep } from '../types'
 import OrchestratorInput from '../components/OrchestratorInput/OrchestratorInput'
 import PipelineBuilder from '../components/PipelineBuilder/PipelineBuilder'
 import PipelineView from '../components/PipelineView/PipelineView'
 import TemplateCard from '../components/TemplateCard/TemplateCard'
+import RunResultsModal from '../components/RunResultsModal/RunResultsModal'
+import WorkflowCanvas from '../components/WorkflowCanvas/WorkflowCanvas'
+import CanvasControls from '../components/CanvasControls/CanvasControls'
+import CanvasTopBar from '../components/CanvasTopBar/CanvasTopBar'
+import NodePicker from '../components/NodePicker/NodePicker'
+import NodeConfigPanel from '../components/NodeConfigPanel/NodeConfigPanel'
+import ExecutionOverlay from '../components/ExecutionOverlay/ExecutionOverlay'
 import type { WorkflowTemplate } from '../lib/workflowTemplates'
 import './AIAgentsPage.css'
 
@@ -131,20 +139,42 @@ export default function AIAgentsPage() {
   const pipelineCreate = usePipelineStore((s) => s.createPipeline)
   const pipelineRun = usePipelineStore((s) => s.runPipeline)
 
+  // Canvas store
+  const canvasNodes = useCanvasStore((s) => s.nodes)
+  const selectedNodeId = useCanvasStore((s) => s.selectedNodeId)
+  const addNode = useCanvasStore((s) => s.addNode)
+  const removeNode = useCanvasStore((s) => s.removeNode)
+  const selectNode = useCanvasStore((s) => s.selectNode)
+  const toPipelineStages = useCanvasStore((s) => s.toPipelineStages)
+  const resetExecution = useCanvasStore((s) => s.resetExecution)
+  const loadFromTemplate = useCanvasStore((s) => s.loadFromTemplate)
+  const updateNodeStatus = useCanvasStore((s) => s.updateNodeStatus)
+  const updateConnectionStatus = useCanvasStore((s) => s.updateConnectionStatus)
+  const canvasConnections = useCanvasStore((s) => s.connections)
+
   const [runTaskInputs, setRunTaskInputs] = useState<Record<string, string>>({})
   const [showHistory, setShowHistory] = useState(false)
   const [chatRunId, setChatRunId] = useState<string | null>(null)
   const [viewResultRunId, setViewResultRunId] = useState<string | null>(null)
   const simulationTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
 
-  // New marketplace state
-  const [activeTab, setActiveTab] = useState<'agents' | 'pipelines' | 'templates'>('agents')
+  // View state
+  const [activeTab, setActiveTab] = useState<'canvas' | 'agents' | 'pipelines' | 'templates'>('canvas')
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState('all')
   const [showPipelineBuilder, setShowPipelineBuilder] = useState(false)
   const [builderInitialStages, setBuilderInitialStages] = useState<Array<{ agentType: AgentType; task: string }> | undefined>()
   const [builderTemplateName, setBuilderTemplateName] = useState<string | undefined>()
   const [builderTemplateDesc, setBuilderTemplateDesc] = useState<string | undefined>()
+
+  // Canvas state
+  const [showNodePicker, setShowNodePicker] = useState(false)
+  const [isExecuting, setIsExecuting] = useState(false)
+
+  const selectedNode = useMemo(
+    () => selectedNodeId ? canvasNodes.find(n => n.id === selectedNodeId) ?? null : null,
+    [selectedNodeId, canvasNodes],
+  )
 
   // Clean up timers on unmount
   useEffect(() => {
@@ -205,10 +235,10 @@ export default function AIAgentsPage() {
   // Stats
   const stats = useMemo(() => {
     const totalRuns = runs.length
-    const activePipelines = pipelines.filter(p => p.status === 'running' || p.status === 'paused').length
+    const activePipelinesCount = pipelines.filter(p => p.status === 'running' || p.status === 'paused').length
     const completedRunsCount = runs.filter(r => r.status === RunStatus.Completed).length
     const successRate = totalRuns > 0 ? Math.round((completedRunsCount / totalRuns) * 100) : 100
-    return { totalAgents: AGENT_DEFINITIONS.length, totalRuns, activePipelines, successRate }
+    return { totalAgents: AGENT_DEFINITIONS.length, totalRuns, activePipelines: activePipelinesCount, successRate }
   }, [runs, pipelines])
 
   // Active/completed pipelines
@@ -320,11 +350,15 @@ export default function AIAgentsPage() {
 
   // Template handler
   const handleUseTemplate = useCallback((template: WorkflowTemplate) => {
-    setBuilderInitialStages(template.stages.map(s => ({ agentType: s.agentType, task: s.defaultTask })))
-    setBuilderTemplateName(template.name)
-    setBuilderTemplateDesc(template.description)
-    setShowPipelineBuilder(true)
-  }, [])
+    if (activeTab === 'canvas') {
+      loadFromTemplate(template)
+    } else {
+      setBuilderInitialStages(template.stages.map(s => ({ agentType: s.agentType, task: s.defaultTask })))
+      setBuilderTemplateName(template.name)
+      setBuilderTemplateDesc(template.description)
+      setShowPipelineBuilder(true)
+    }
+  }, [activeTab, loadFromTemplate])
 
   const handleOpenPipelineBuilder = useCallback(() => {
     setBuilderInitialStages(undefined)
@@ -336,6 +370,90 @@ export default function AIAgentsPage() {
   const handleClosePipelineBuilder = useCallback(() => {
     setShowPipelineBuilder(false)
   }, [])
+
+  // ─── Canvas Handlers ──────────────────────────────────────────────
+
+  const handleAddNode = useCallback((agentType: AgentType) => {
+    const offsetX = 100 + canvasNodes.length * 250
+    addNode(agentType, offsetX, 200)
+  }, [canvasNodes.length, addNode])
+
+  const handleRemoveNode = useCallback((nodeId: string) => {
+    removeNode(nodeId)
+  }, [removeNode])
+
+  const handleTestStep = useCallback((nodeId: string) => {
+    const node = canvasNodes.find(n => n.id === nodeId)
+    if (!node) return
+    updateNodeStatus(nodeId, NodeStatus.Running)
+    const timerId = setTimeout(() => {
+      updateNodeStatus(nodeId, NodeStatus.Completed, `${node.agentType} completed successfully`)
+      simulationTimers.current.delete(`test-${nodeId}`)
+    }, 2000)
+    simulationTimers.current.set(`test-${nodeId}`, timerId)
+  }, [canvasNodes, updateNodeStatus])
+
+  const handleCloseConfig = useCallback(() => {
+    selectNode(null)
+  }, [selectNode])
+
+  const handleExecuteWorkflow = useCallback(() => {
+    const stages = toPipelineStages()
+    if (stages.length === 0) return
+
+    setIsExecuting(true)
+    let stepIdx = 0
+
+    function runNextNode() {
+      if (stepIdx >= canvasNodes.length) {
+        setIsExecuting(false)
+        return
+      }
+
+      const node = canvasNodes[stepIdx]
+      if (!node) {
+        setIsExecuting(false)
+        return
+      }
+      updateNodeStatus(node.id, NodeStatus.Running)
+
+      // Update connection to this node as running
+      const incomingConn = canvasConnections.find(c => c.targetNodeId === node.id)
+      if (incomingConn) updateConnectionStatus(incomingConn.id, NodeStatus.Running)
+
+      const timerId = setTimeout(() => {
+        updateNodeStatus(node.id, NodeStatus.Completed, `Output from ${node.agentType}`)
+        if (incomingConn) updateConnectionStatus(incomingConn.id, NodeStatus.Completed)
+
+        // Update outgoing connection
+        const outgoingConn = canvasConnections.find(c => c.sourceNodeId === node.id)
+        if (outgoingConn) updateConnectionStatus(outgoingConn.id, NodeStatus.Running)
+
+        stepIdx++
+        simulationTimers.current.delete(`exec-${node.id}`)
+        runNextNode()
+      }, 1500 + Math.random() * 1000)
+
+      simulationTimers.current.set(`exec-${node.id}`, timerId)
+    }
+
+    runNextNode()
+  }, [canvasNodes, canvasConnections, toPipelineStages, updateNodeStatus, updateConnectionStatus])
+
+  const handleSaveWorkflow = useCallback(() => {
+    const stages = toPipelineStages()
+    if (stages.length > 0) {
+      pipelineCreate(
+        useCanvasStore.getState().workflowName,
+        'Created from canvas',
+        stages
+      )
+    }
+  }, [toPipelineStages, pipelineCreate])
+
+  const handleClearExecution = useCallback(() => {
+    resetExecution()
+  }, [resetExecution])
 
   return (
     <div className="ai-agents">
@@ -375,6 +493,14 @@ export default function AIAgentsPage() {
       {/* View Tabs */}
       <div className="ai-agents__view-tabs" role="tablist" aria-label="View tabs">
         <button
+          className={`ai-agents__view-tab${activeTab === 'canvas' ? ' ai-agents__view-tab--active' : ''}`}
+          onClick={() => setActiveTab('canvas')}
+          role="tab"
+          aria-selected={activeTab === 'canvas'}
+        >
+          Canvas
+        </button>
+        <button
           className={`ai-agents__view-tab${activeTab === 'agents' ? ' ai-agents__view-tab--active' : ''}`}
           onClick={() => setActiveTab('agents')}
           role="tab"
@@ -399,6 +525,52 @@ export default function AIAgentsPage() {
           Templates ({WORKFLOW_TEMPLATES.length})
         </button>
       </div>
+
+      {/* ─── CANVAS TAB ──────────────────────────────────────────── */}
+      {activeTab === 'canvas' && (
+        <div className="ai-agents__canvas-wrapper">
+          <CanvasTopBar
+            onExecute={handleExecuteWorkflow}
+            onSave={handleSaveWorkflow}
+            isExecuting={isExecuting}
+          />
+          <div className="ai-agents__canvas-area">
+            <WorkflowCanvas />
+            <CanvasControls />
+
+            {!showNodePicker && !selectedNode && (
+              <button
+                className="ai-agents__add-node-btn"
+                onClick={() => setShowNodePicker(true)}
+                aria-label="Add node"
+              >
+                <Plus size={14} />
+                Add Node
+              </button>
+            )}
+
+            <NodePicker
+              isOpen={showNodePicker}
+              onClose={() => setShowNodePicker(false)}
+              onAddNode={handleAddNode}
+            />
+
+            {selectedNode && (
+              <NodeConfigPanel
+                node={selectedNode}
+                onClose={handleCloseConfig}
+                onTestStep={handleTestStep}
+                onRemove={handleRemoveNode}
+              />
+            )}
+
+            <ExecutionOverlay
+              nodes={canvasNodes}
+              onClear={handleClearExecution}
+            />
+          </div>
+        </div>
+      )}
 
       {/* ─── AGENTS TAB ──────────────────────────────────────────── */}
       {activeTab === 'agents' && (
@@ -689,31 +861,7 @@ export default function AIAgentsPage() {
 
       {/* View Results Modal */}
       {viewingRun && (
-        <div className="ai-agents__result-overlay" onClick={handleCloseResults} role="dialog" aria-label="Run results" aria-modal="true">
-          <div className="ai-agents__result-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="ai-agents__result-header">
-              <div>
-                <h3 className="ai-agents__result-title">Run Results</h3>
-                <span className="ai-agents__result-task">{viewingRun.task}</span>
-              </div>
-              <button
-                className="ai-agents__result-close"
-                onClick={handleCloseResults}
-                aria-label="Close results"
-              >
-                <X size={18} />
-              </button>
-            </div>
-            <div className="ai-agents__result-body">
-              <pre className="ai-agents__result-content">{viewingRun.result}</pre>
-            </div>
-            <div className="ai-agents__result-footer">
-              <span className="ai-agents__result-meta">
-                Completed {viewingRun.completedAt ? new Date(viewingRun.completedAt).toLocaleString() : ''} | Duration: {formatDuration(viewingRun.startedAt, viewingRun.completedAt)}
-              </span>
-            </div>
-          </div>
-        </div>
+        <RunResultsModal run={viewingRun} onClose={handleCloseResults} />
       )}
 
       {/* Pipeline Builder Modal */}

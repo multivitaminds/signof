@@ -82,6 +82,8 @@ const AccountingPricingPage = lazy(() => import('./features/accounting/pages/Acc
 const DocumentAnalyticsPage = lazy(() => import('./features/documents/components/DocumentAnalytics/DocumentAnalytics'))
 const DocumentBuilderPage = lazy(() => import('./features/documents/pages/DocumentBuilderPage'))
 
+const PlaygroundLayout = lazy(() => import('./features/playground/pages/PlaygroundLayout'))
+
 const DeveloperLayout = lazy(() => import('./features/developer/pages/DeveloperLayout'))
 const ApiDocsPage = lazy(() => import('./features/developer/pages/ApiDocsPage'))
 const CliDocsPage = lazy(() => import('./features/developer/pages/CliDocsPage'))
@@ -241,6 +243,13 @@ createRoot(root).render(
             <Route path="payroll" element={<Suspense fallback={TableFallback}><PayrollPage /></Suspense>} />
             <Route path="pricing" element={<Suspense fallback={CardFallback}><AccountingPricingPage /></Suspense>} />
           </Route>
+
+          {/* Playground (OpenClaw) */}
+          <Route path="playground" element={
+            <ModuleErrorBoundary moduleName="Playground">
+              <Suspense fallback={EditorFallback}><PlaygroundLayout /></Suspense>
+            </ModuleErrorBoundary>
+          } />
 
           {/* Developer Platform */}
           <Route path="developer" element={

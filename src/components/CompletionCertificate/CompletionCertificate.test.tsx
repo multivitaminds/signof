@@ -57,10 +57,10 @@ describe('CompletionCertificate', () => {
     expect(screen.getByText('Certificate of Completion')).toBeInTheDocument()
   })
 
-  it('shows SignOf brand text', () => {
+  it('shows Orchestree brand text', () => {
     render(<CompletionCertificate document={makeCompletedDoc()} onClose={vi.fn()} />)
 
-    expect(screen.getByText('SignOf')).toBeInTheDocument()
+    expect(screen.getByText('Orchestree')).toBeInTheDocument()
   })
 
   it('shows document name', () => {

@@ -1,33 +1,36 @@
 :root {
   /* ═══════════════════════════════════════════════════════════
-     SignOf Design System Tokens
+     Orchestree Design System Tokens
      Based on 680 flows · 1,147 screens · 75 Mobbin patterns
      ═══════════════════════════════════════════════════════════ */
 
-  /* ─── SignOf Brand Colors (SignOf brand) ────────────── */
-  --signof-navy: #1A1A2E;
-  --signof-coral: #E94560;
-  --signof-coral-hover: #D63B53;
-  --signof-blue: #0F3460;
-  --signof-dark: #1A1A2E;
+  /* ─── Orchestree Brand Colors ──────────────────────────── */
+  --orchestree-navy: #1A1A2E;
+  --orchestree-coral: #FF4D35;
+  --orchestree-coral-hover: #E6442F;
+  --orchestree-blue: #3B82F6;
+  --orchestree-dark: #050508;
+  --orchestree-accent: #7C5CFC;
+  --orchestree-green: #06D6A0;
+  --orchestree-gold: #FBBF24;
 
-  /* ─── Primary Colors (Primary Indigo) ────────────────────── */
-  --color-primary: #4F46E5;
-  --color-primary-hover: #4338CA;
-  --color-primary-light: #EEF2FF;
-  --color-primary-dark: #3730A3;
+  /* ─── Primary Colors (Orchestree Purple) ─────────────────── */
+  --color-primary: #7C5CFC;
+  --color-primary-hover: #6A4CE0;
+  --color-primary-light: #EDE9FF;
+  --color-primary-dark: #5A3FD6;
 
   /* ─── Semantic Colors ──────────────────────────────────── */
-  --color-success: #059669;
+  --color-success: #06D6A0;
   --color-success-light: #D1FAE5;
-  --color-success-dark: #059669;
-  --color-warning: #D97706;
+  --color-success-dark: #05B588;
+  --color-warning: #FBBF24;
   --color-warning-light: #FEF3C7;
-  --color-warning-dark: #D97706;
-  --color-danger: #DC2626;
-  --color-danger-light: #FEE2E2;
-  --color-danger-dark: #DC2626;
-  --color-info: #3B82F6;        /* Was #74B9FF — now 3.1:1 on white (meets AA large/UI) */
+  --color-warning-dark: #D9A620;
+  --color-danger: #FF4D35;
+  --color-danger-light: #FFE5E2;
+  --color-danger-dark: #E6442F;
+  --color-info: #3B82F6;
   --color-info-light: #DBEAFE;
   --color-info-dark: #2563EB;
 
@@ -156,19 +159,23 @@
   --sidebar-width: 240px;
   --sidebar-width-collapsed: 64px;
   --content-max-width: 1200px;
+
+  /* ─── Canvas Tokens ───────────────────────────────────── */
+  --canvas-dot-color: rgba(0, 0, 0, 0.08);
+  --canvas-bg: var(--bg-secondary);
 }
 
 /* ─── Dark Mode ────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg-primary: #0F0F1A;
-  --bg-secondary: #1A1A2E;
-  --bg-tertiary: #2D2D44;
-  --text-primary: #F1F5F9;
-  --text-secondary: #94A3B8;
-  --text-muted: #7E8FA3;          /* Was #64748B — now 4.6:1 on #0F0F1A, 4.0:1 on #1A1A2E (AA) */
-  --text-placeholder: #6B7C90;    /* For ::placeholder — meets 3:1 on dark backgrounds */
-  --text-disabled: #6B7C90;       /* For disabled states — meets 3:1 for UI components */
-  --border-color: #334155;
+  --bg-primary: #050508;
+  --bg-secondary: #0a0a14;
+  --bg-tertiary: #141422;
+  --text-primary: #E8E8F2;
+  --text-secondary: #8A8AA5;
+  --text-muted: #5A5A72;
+  --text-placeholder: #5A5A72;
+  --text-disabled: #5A5A72;
+  --border-color: #1E1E35;
   --color-primary-light: #2D2A6E;
   --color-success-light: #064e3b;
   --color-warning-light: #78350f;
@@ -177,6 +184,7 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  --canvas-dot-color: rgba(255, 255, 255, 0.06);
 }
 
 /* ─── Reset ────────────────────────────────────────────────── */

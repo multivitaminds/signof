@@ -2,8 +2,8 @@ import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import TOCNodeView from '../nodeViews/TOCNodeView'
 
-export const SignofTOC = Node.create({
-  name: 'signofTOC',
+export const OrchestreeTOC = Node.create({
+  name: 'orchestreeTOC',
   group: 'block',
   atom: true,
 
@@ -14,11 +14,11 @@ export const SignofTOC = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: 'div[data-type="signof-toc"]' }]
+    return [{ tag: 'div[data-type="orchestree-toc"]' }]
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'signof-toc' })]
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'orchestree-toc' })]
   },
 
   addNodeView() {

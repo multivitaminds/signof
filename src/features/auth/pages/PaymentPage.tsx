@@ -110,7 +110,7 @@ export default function PaymentPage() {
         </button>
 
         <div className="payment-page__logo">
-          <span className="payment-page__logo-text">SignOf</span>
+          <span className="payment-page__logo-text">Orchestree</span>
         </div>
         <h1 className="payment-page__title">Payment Details</h1>
         <p className="payment-page__subtitle">

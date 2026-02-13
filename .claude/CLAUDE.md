@@ -1,6 +1,6 @@
-# SignOf — The Everything Platform
+# Orchestree — The Everything Platform
 
-SignOf is a unified work platform replacing 7 tools (Notion + Linear + Asana + DocuSign + PandaDoc + Calendly + Airtable) with one product. Currently a working document signing app with upload, signature capture, and envelope management. The roadmap expands into workspace/knowledge management, project tracking, scheduling, relational databases, and AI agent teams.
+Orchestree is a unified work platform replacing 7 tools (Notion + Linear + Asana + DocuSign + PandaDoc + Calendly + Airtable) with one product. Currently a working document signing app with upload, signature capture, and envelope management. The roadmap expands into workspace/knowledge management, project tracking, scheduling, relational databases, and AI agent teams.
 
 UI/UX sourced from 680 analyzed flows across those 7 platforms — see `docs/DESIGN_SPEC.md` for full catalog.
 
@@ -32,7 +32,7 @@ TypeScript strict mode is on: `noUnusedLocals`, `noUnusedParameters`, `noFallthr
 ## Current File Structure
 
 ```
-signof/
+orchestree/
 ├── index.html
 ├── package.json
 ├── vite.config.ts
@@ -89,7 +89,7 @@ Status enums use the `const object + type extraction` pattern (not TS `enum`). K
 ## Existing Components — What Each Does
 
 ### Header (`components/Header/`)
-- Sticky top bar, `#1A1A2E` background (SignOf navy)
+- Sticky top bar, `#1A1A2E` background (Orchestree navy)
 - Logo with gradient text, tagline "Digital Signatures, Simplified"
 - Optional document count badge (pill shape)
 - Props: `{ documentCount?: number }`
@@ -168,7 +168,7 @@ Font:     --font-sans ('Inter', system-ui)
 
 ## The 8 Modules (Roadmap)
 
-The current app covers Module 03 partially (document upload, signature capture, envelope status). The full SignOf vision has 8 modules:
+The current app covers Module 03 partially (document upload, signature capture, envelope status). The full Orchestree vision has 8 modules:
 
 | # | Module | Status | What to Build Next |
 |---|--------|--------|-------------------|
@@ -208,10 +208,10 @@ Draft → Sent → Delivered → Viewed → Signed → Completed. Guided "Next f
 ### Smart Booking — from Calendly
 Date → time → details → confirm. Timezone auto-detect. **Build with Module 04 (Scheduling).**
 
-### Agent Teams — SignOf Original
+### Agent Teams — Orchestree Original
 Autonomous AI agents spanning all modules. Progress panel with step-by-step status, pause/edit/chat. **Build with Module 08 (AI).**
 
-### 1M Context Memory — SignOf Original
+### 1M Context Memory — Orchestree Original
 Persistent 1,000,000-token organizational memory. Stores workflows, preferences, decisions. Workspace-scoped, encrypted, GDPR compliant. **Build with Module 08 (AI).**
 
 ## Build Order (What to Do Next)

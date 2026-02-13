@@ -288,7 +288,7 @@ export default function OnboardingPage() {
               </div>
             </div>
             <h1 className="onboarding__title">
-              Welcome to SignOf{data.displayName ? `, ${data.displayName.split(' ')[0]}` : ''}
+              Welcome to Orchestree{data.displayName ? `, ${data.displayName.split(' ')[0]}` : ''}
             </h1>
             <p className="onboarding__subtitle">
               The everything platform for your team. Let&apos;s set up your workspace in under a minute.
@@ -340,7 +340,7 @@ export default function OnboardingPage() {
                 Workspace URL
               </label>
               <div className="onboarding__slug-row">
-                <span className="onboarding__slug-prefix">signof.com/</span>
+                <span className="onboarding__slug-prefix">orchestree.com/</span>
                 <input
                   id="workspace-slug"
                   className="onboarding__input onboarding__input--slug"
@@ -373,7 +373,7 @@ export default function OnboardingPage() {
                 <span className="onboarding__preview-icon">{data.workspaceIcon}</span>
                 <div className="onboarding__preview-info">
                   <span className="onboarding__preview-name">{data.workspaceName}</span>
-                  <span className="onboarding__preview-url">signof.com/{data.workspaceSlug}</span>
+                  <span className="onboarding__preview-url">orchestree.com/{data.workspaceSlug}</span>
                 </div>
               </div>
             )}
@@ -486,7 +486,7 @@ export default function OnboardingPage() {
             <div className="onboarding__illustration">
               <Layers size={48} className="onboarding__step-icon" />
             </div>
-            <h1 className="onboarding__title">What will you use SignOf for?</h1>
+            <h1 className="onboarding__title">What will you use Orchestree for?</h1>
             <p className="onboarding__subtitle">
               Select all that apply. You can change this later.
             </p>

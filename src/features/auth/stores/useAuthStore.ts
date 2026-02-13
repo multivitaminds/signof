@@ -86,6 +86,6 @@ export const useAuthStore = create<AuthState>()(
         })
       },
     }),
-    { name: 'signof-auth-storage' }
+    { name: 'orchestree-auth-storage' }
   )
 )

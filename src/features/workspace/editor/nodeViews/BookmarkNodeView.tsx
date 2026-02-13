@@ -19,7 +19,7 @@ export default function BookmarkNodeView({ node, updateAttributes }: NodeViewPro
 
   if (!url) {
     return (
-      <NodeViewWrapper className="tiptap-bookmark" data-type="signof-bookmark" contentEditable={false}>
+      <NodeViewWrapper className="tiptap-bookmark" data-type="orchestree-bookmark" contentEditable={false}>
         <form className="tiptap-bookmark__form" onSubmit={handleSubmit}>
           <input
             className="tiptap-bookmark__input"
@@ -37,7 +37,7 @@ export default function BookmarkNodeView({ node, updateAttributes }: NodeViewPro
   }
 
   return (
-    <NodeViewWrapper className="tiptap-bookmark" data-type="signof-bookmark" contentEditable={false}>
+    <NodeViewWrapper className="tiptap-bookmark" data-type="orchestree-bookmark" contentEditable={false}>
       <a
         className="tiptap-bookmark__link"
         href={url}

@@ -13,7 +13,7 @@
   height: 96px;
   border-radius: var(--radius-xl, 16px);
   background: linear-gradient(135deg, rgba(233, 69, 96, 0.1), rgba(79, 70, 229, 0.1));
-  color: var(--signof-coral, #E94560);
+  color: var(--orchestree-coral, #E94560);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,7 +39,7 @@
   display: inline-flex;
   align-items: center;
   padding: var(--space-2, 8px) var(--space-4, 16px);
-  background: linear-gradient(135deg, var(--signof-coral, #E94560), #4F46E5);
+  background: linear-gradient(135deg, var(--orchestree-coral, #E94560), #4F46E5);
   color: white;
   font-size: 0.875rem;
   font-weight: 600;

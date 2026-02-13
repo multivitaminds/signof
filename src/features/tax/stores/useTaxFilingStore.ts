@@ -678,7 +678,7 @@ export const useTaxFilingStore = create<TaxFilingState>()(
         get().checklist.every((item) => item.completed),
     }),
     {
-      name: 'signof-tax-filing-storage',
+      name: 'orchestree-tax-filing-storage',
       partialize: (state) => ({
         filings: state.filings,
         checklist: state.checklist,

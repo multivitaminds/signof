@@ -93,8 +93,8 @@ describe('TiptapMentionMenu', () => {
   it('shows member emails', () => {
     openMenu()
 
-    expect(screen.getByText('alex@signof.com')).toBeInTheDocument()
-    expect(screen.getByText('sarah@signof.com')).toBeInTheDocument()
+    expect(screen.getByText('alex@orchestree.com')).toBeInTheDocument()
+    expect(screen.getByText('sarah@orchestree.com')).toBeInTheDocument()
   })
 
   it('shows initials as avatar', () => {

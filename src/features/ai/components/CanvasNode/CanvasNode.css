@@ -1,0 +1,140 @@
+.canvas-node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  user-select: none;
+  cursor: grab;
+  z-index: 1;
+}
+
+.canvas-node:active {
+  cursor: grabbing;
+}
+
+.canvas-node__body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  min-width: 160px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.canvas-node--selected .canvas-node__body {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.canvas-node--running .canvas-node__body {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+  animation: canvas-node-pulse 2s ease-in-out infinite;
+}
+
+.canvas-node--completed .canvas-node__body {
+  border-color: var(--color-success);
+}
+
+.canvas-node--error .canvas-node__body {
+  border-color: var(--color-danger);
+}
+
+@keyframes canvas-node-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12); }
+  50% { box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.06); }
+}
+
+.canvas-node__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.canvas-node__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.canvas-node__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.canvas-node__task {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.canvas-node__status {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.canvas-node__status--idle {
+  color: var(--text-muted);
+}
+
+.canvas-node__status--running {
+  color: var(--color-primary);
+  animation: canvas-node-spin 1s linear infinite;
+}
+
+.canvas-node__status--completed {
+  color: var(--color-success);
+}
+
+.canvas-node__status--error {
+  color: var(--color-danger);
+}
+
+@keyframes canvas-node-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Ports ────────────────────────────────────────── */
+
+.canvas-node__port {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  cursor: crosshair;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+  z-index: 2;
+}
+
+.canvas-node__port:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: scale(1.3);
+}
+
+.canvas-node__port--input {
+  margin-right: -6px;
+}
+
+.canvas-node__port--output {
+  margin-left: -6px;
+}

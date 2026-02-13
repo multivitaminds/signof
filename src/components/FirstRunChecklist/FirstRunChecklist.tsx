@@ -19,8 +19,8 @@ import { useSchedulingStore } from '../../features/scheduling/stores/useScheduli
 import { useDatabaseStore } from '../../features/databases/stores/useDatabaseStore'
 import './FirstRunChecklist.css'
 
-const STORAGE_KEY = 'signof-first-run-checklist-dismissed'
-const CMD_K_USED_KEY = 'signof-cmd-k-used'
+const STORAGE_KEY = 'orchestree-first-run-checklist-dismissed'
+const CMD_K_USED_KEY = 'orchestree-cmd-k-used'
 
 interface ChecklistItem {
   id: string

@@ -21,9 +21,9 @@ const INSTALL_METHODS: {
   command: string
   note: string
 }[] = [
-  { id: InstallMethod.Npm, label: 'npm', command: 'npm install -g @signof/cli', note: 'Requires Node.js 18 or later.' },
-  { id: InstallMethod.Homebrew, label: 'Homebrew', command: 'brew tap signof-io/tap && brew install signof', note: 'macOS and Linux. Auto-updates with brew upgrade.' },
-  { id: InstallMethod.Pip, label: 'pip', command: 'pip install signof-cli', note: 'Requires Python 3.9 or later.' },
+  { id: InstallMethod.Npm, label: 'npm', command: 'npm install -g @orchestree/cli', note: 'Requires Node.js 18 or later.' },
+  { id: InstallMethod.Homebrew, label: 'Homebrew', command: 'brew tap orchestree-io/tap && brew install orchestree', note: 'macOS and Linux. Auto-updates with brew upgrade.' },
+  { id: InstallMethod.Pip, label: 'pip', command: 'pip install orchestree-cli', note: 'Requires Python 3.9 or later.' },
 ]
 
 // ─── Command Categories ─────────────────────────────────────────────────
@@ -60,82 +60,82 @@ const CLI_COMMANDS: CategorizedCommand[] = [
   {
     name: 'login',
     category: CommandCategory.Auth,
-    description: 'Authenticate with your SignOf account. Opens a browser window for OAuth or accepts an API key directly.',
-    usage: 'signof login [--key <api-key>]',
+    description: 'Authenticate with your Orchestree account. Opens a browser window for OAuth or accepts an API key directly.',
+    usage: 'orchestree login [--key <api-key>]',
     flags: [
       { name: '--key', alias: '-k', description: 'Authenticate with an API key instead of browser OAuth', required: false },
       { name: '--env', alias: '-e', description: 'Environment to authenticate against (live, test)', required: false },
     ],
     examples: [
-      'signof login',
-      'signof login --key sk_live_abc123...',
-      'signof login --env test',
+      'orchestree login',
+      'orchestree login --key sk_live_abc123...',
+      'orchestree login --env test',
     ],
   },
   {
     name: 'logout',
     category: CommandCategory.Auth,
     description: 'Remove stored credentials and clear the current session.',
-    usage: 'signof logout',
+    usage: 'orchestree logout',
     flags: [
       { name: '--all', alias: '-a', description: 'Remove all stored credentials across environments', required: false },
     ],
     examples: [
-      'signof logout',
-      'signof logout --all',
+      'orchestree logout',
+      'orchestree logout --all',
     ],
   },
   {
     name: 'documents list',
     category: CommandCategory.Documents,
     description: 'List documents in your workspace. Supports filtering by status and pagination.',
-    usage: 'signof documents list [flags]',
+    usage: 'orchestree documents list [flags]',
     flags: [
       { name: '--status', alias: '-s', description: 'Filter by status (draft, pending, completed, voided)', required: false },
       { name: '--limit', alias: '-l', description: 'Number of results to return (default: 25)', required: false },
       { name: '--format', alias: '-f', description: 'Output format: table, json, csv (default: table)', required: false },
     ],
     examples: [
-      'signof documents list',
-      'signof documents list --status pending --limit 10',
-      'signof documents list --format json',
+      'orchestree documents list',
+      'orchestree documents list --status pending --limit 10',
+      'orchestree documents list --format json',
     ],
   },
   {
     name: 'documents create',
     category: CommandCategory.Documents,
     description: 'Create a new document from a local file or URL.',
-    usage: 'signof documents create <file> [flags]',
+    usage: 'orchestree documents create <file> [flags]',
     flags: [
       { name: '--name', alias: '-n', description: 'Document name (defaults to filename)', required: false },
       { name: '--signer', alias: '-s', description: 'Add a signer (format: "Name <email>"). Can be repeated.', required: false },
       { name: '--send', alias: null, description: 'Send immediately after creation', required: false },
     ],
     examples: [
-      'signof documents create ./contract.pdf',
-      'signof documents create ./nda.pdf --name "NDA Agreement" --signer "John <john@example.com>"',
-      'signof documents create ./offer.pdf --signer "Alice <alice@co.com>" --signer "Bob <bob@co.com>" --send',
+      'orchestree documents create ./contract.pdf',
+      'orchestree documents create ./nda.pdf --name "NDA Agreement" --signer "John <john@example.com>"',
+      'orchestree documents create ./offer.pdf --signer "Alice <alice@co.com>" --signer "Bob <bob@co.com>" --send',
     ],
   },
   {
     name: 'documents send',
     category: CommandCategory.Documents,
     description: 'Send a draft document for signing. Notifies all signers via email.',
-    usage: 'signof documents send <document-id> [flags]',
+    usage: 'orchestree documents send <document-id> [flags]',
     flags: [
       { name: '--message', alias: '-m', description: 'Custom message to include in the signing email', required: false },
       { name: '--subject', alias: '-s', description: 'Custom email subject line', required: false },
     ],
     examples: [
-      'signof documents send doc_abc123',
-      'signof documents send doc_abc123 --message "Please review and sign by Friday."',
+      'orchestree documents send doc_abc123',
+      'orchestree documents send doc_abc123 --message "Please review and sign by Friday."',
     ],
   },
   {
     name: 'filings list',
     category: CommandCategory.Filings,
     description: 'List all tax filings. Filter by year, type, or status.',
-    usage: 'signof filings list [flags]',
+    usage: 'orchestree filings list [flags]',
     flags: [
       { name: '--year', alias: '-y', description: 'Tax year to filter by', required: false },
       { name: '--type', alias: '-t', description: 'Form type (1099-NEC, W-9, etc.)', required: false },
@@ -143,58 +143,58 @@ const CLI_COMMANDS: CategorizedCommand[] = [
       { name: '--format', alias: '-f', description: 'Output format: table, json, csv (default: table)', required: false },
     ],
     examples: [
-      'signof filings list',
-      'signof filings list --year 2025 --type 1099-NEC',
-      'signof filings list --status submitted --format json',
+      'orchestree filings list',
+      'orchestree filings list --year 2025 --type 1099-NEC',
+      'orchestree filings list --status submitted --format json',
     ],
   },
   {
     name: 'filings submit',
     category: CommandCategory.Filings,
     description: 'Submit a draft filing to the IRS. Validates all required fields before submission.',
-    usage: 'signof filings submit <filing-id> [flags]',
+    usage: 'orchestree filings submit <filing-id> [flags]',
     flags: [
       { name: '--dry-run', alias: null, description: 'Validate without actually submitting', required: false },
       { name: '--confirm', alias: '-y', description: 'Skip confirmation prompt', required: false },
     ],
     examples: [
-      'signof filings submit fil_001',
-      'signof filings submit fil_001 --dry-run',
-      'signof filings submit fil_001 --confirm',
+      'orchestree filings submit fil_001',
+      'orchestree filings submit fil_001 --dry-run',
+      'orchestree filings submit fil_001 --confirm',
     ],
   },
   {
     name: 'webhooks list',
     category: CommandCategory.Webhooks,
     description: 'List all configured webhooks with their status and subscribed events.',
-    usage: 'signof webhooks list [flags]',
+    usage: 'orchestree webhooks list [flags]',
     flags: [
       { name: '--format', alias: '-f', description: 'Output format: table, json (default: table)', required: false },
     ],
     examples: [
-      'signof webhooks list',
-      'signof webhooks list --format json',
+      'orchestree webhooks list',
+      'orchestree webhooks list --format json',
     ],
   },
   {
     name: 'webhooks create',
     category: CommandCategory.Webhooks,
     description: 'Create a new webhook endpoint.',
-    usage: 'signof webhooks create <url> [flags]',
+    usage: 'orchestree webhooks create <url> [flags]',
     flags: [
       { name: '--event', alias: '-e', description: 'Event to subscribe to. Can be repeated. Defaults to all events.', required: false },
       { name: '--secret', alias: '-s', description: 'Custom signing secret (auto-generated if omitted)', required: false },
     ],
     examples: [
-      'signof webhooks create https://api.example.com/hooks',
-      'signof webhooks create https://api.example.com/hooks --event document.created --event document.completed',
+      'orchestree webhooks create https://api.example.com/hooks',
+      'orchestree webhooks create https://api.example.com/hooks --event document.created --event document.completed',
     ],
   },
   {
     name: 'deploy',
     category: CommandCategory.Deploy,
-    description: 'Deploy your SignOf project to production. Pushes configuration, templates, and webhook endpoints to the live environment.',
-    usage: 'signof deploy [flags]',
+    description: 'Deploy your Orchestree project to production. Pushes configuration, templates, and webhook endpoints to the live environment.',
+    usage: 'orchestree deploy [flags]',
     flags: [
       { name: '--env', alias: '-e', description: 'Target environment: live, staging (default: live)', required: false },
       { name: '--dry-run', alias: null, description: 'Preview changes without deploying', required: false },
@@ -203,61 +203,61 @@ const CLI_COMMANDS: CategorizedCommand[] = [
       { name: '--rollback', alias: null, description: 'Roll back to the previous deployment', required: false },
     ],
     examples: [
-      'signof deploy',
-      'signof deploy --env staging --dry-run',
-      'signof deploy --force --message "Release v2.1.0"',
-      'signof deploy --rollback',
+      'orchestree deploy',
+      'orchestree deploy --env staging --dry-run',
+      'orchestree deploy --force --message "Release v2.1.0"',
+      'orchestree deploy --rollback',
     ],
   },
   {
     name: 'deploy status',
     category: CommandCategory.Deploy,
     description: 'Show the current deployment status and recent deployment history.',
-    usage: 'signof deploy status [flags]',
+    usage: 'orchestree deploy status [flags]',
     flags: [
       { name: '--env', alias: '-e', description: 'Environment to check (default: live)', required: false },
       { name: '--format', alias: '-f', description: 'Output format: table, json (default: table)', required: false },
     ],
     examples: [
-      'signof deploy status',
-      'signof deploy status --env staging --format json',
+      'orchestree deploy status',
+      'orchestree deploy status --env staging --format json',
     ],
   },
   {
     name: 'config set',
     category: CommandCategory.Config,
-    description: 'Set a CLI configuration value. Stored in ~/.signof/config.json.',
-    usage: 'signof config set <key> <value>',
+    description: 'Set a CLI configuration value. Stored in ~/.orchestree/config.json.',
+    usage: 'orchestree config set <key> <value>',
     flags: [],
     examples: [
-      'signof config set default_env test',
-      'signof config set output_format json',
-      'signof config set editor vim',
+      'orchestree config set default_env test',
+      'orchestree config set output_format json',
+      'orchestree config set editor vim',
     ],
   },
   {
     name: 'config get',
     category: CommandCategory.Config,
     description: 'Read a CLI configuration value.',
-    usage: 'signof config get <key>',
+    usage: 'orchestree config get <key>',
     flags: [],
     examples: [
-      'signof config get default_env',
-      'signof config get output_format',
+      'orchestree config get default_env',
+      'orchestree config get output_format',
     ],
   },
   {
     name: 'init',
     category: CommandCategory.Project,
-    description: 'Initialize a new SignOf project in the current directory. Creates a signof.config.json file.',
-    usage: 'signof init [flags]',
+    description: 'Initialize a new Orchestree project in the current directory. Creates a orchestree.config.json file.',
+    usage: 'orchestree init [flags]',
     flags: [
       { name: '--template', alias: '-t', description: 'Project template (default, react, node, python)', required: false },
       { name: '--name', alias: '-n', description: 'Project name', required: false },
     ],
     examples: [
-      'signof init',
-      'signof init --template react --name "My App"',
+      'orchestree init',
+      'orchestree init --template react --name "My App"',
     ],
   },
 ]
@@ -328,7 +328,7 @@ function CliDocsPage() {
       <div className="cli-docs-page__header">
         <h1 className="cli-docs-page__title">CLI Reference</h1>
         <p className="cli-docs-page__subtitle">
-          The SignOf CLI lets you manage documents, filings, webhooks, deployments, and more from your terminal.
+          The Orchestree CLI lets you manage documents, filings, webhooks, deployments, and more from your terminal.
         </p>
       </div>
 
@@ -349,7 +349,7 @@ function CliDocsPage() {
         </div>
         <CodeBlock code={activeInstall.command} language="bash" />
         <p className="cli-docs-page__install-note">
-          {activeInstall.note} After installing, run <code>signof login</code> to authenticate.
+          {activeInstall.note} After installing, run <code>orchestree login</code> to authenticate.
         </p>
       </div>
 
@@ -357,14 +357,14 @@ function CliDocsPage() {
       <div className="cli-docs-page__verify">
         <h2 className="cli-docs-page__section-title">Verify Installation</h2>
         <CodeBlock
-          code={`$ signof --version
-@signof/cli v1.0.0
+          code={`$ orchestree --version
+@orchestree/cli v1.0.0
 
-$ signof --help
-Usage: signof <command> [options]
+$ orchestree --help
+Usage: orchestree <command> [options]
 
 Commands:
-  login          Authenticate with SignOf
+  login          Authenticate with Orchestree
   logout         Clear stored credentials
   documents      Manage documents
   filings        Manage tax filings
@@ -442,7 +442,7 @@ Commands:
                         >
                           <div className="cli-docs-page__command-left">
                             {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                            <code className="cli-docs-page__command-name">signof {cmd.name}</code>
+                            <code className="cli-docs-page__command-name">orchestree {cmd.name}</code>
                           </div>
                           <span className="cli-docs-page__command-desc">{cmd.description.split('.')[0]}</span>
                         </button>

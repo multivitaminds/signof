@@ -1,0 +1,105 @@
+.conversation-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--space-sm);
+}
+
+.conversation-sidebar__new-btn {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.conversation-sidebar__new-btn:hover { background: #4338CA; }
+
+.conversation-sidebar__search { position: relative; margin-top: var(--space-sm); }
+
+.conversation-sidebar__search-input {
+  width: 100%;
+  padding: var(--space-xs) var(--space-md) var(--space-xs) 36px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+
+.conversation-sidebar__search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.conversation-sidebar__list {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.conversation-sidebar__item {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  position: relative;
+}
+
+.conversation-sidebar__item:hover { background: var(--bg-secondary); }
+.conversation-sidebar__item--active { background: rgba(79, 70, 229, 0.1); }
+
+.conversation-sidebar__item-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conversation-sidebar__item-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.conversation-sidebar__rename-input {
+  width: 100%;
+  padding: 2px 4px;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+.conversation-sidebar__delete-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.conversation-sidebar__item:hover .conversation-sidebar__delete-btn { opacity: 1; }
+.conversation-sidebar__delete-btn:hover { color: var(--color-danger); }

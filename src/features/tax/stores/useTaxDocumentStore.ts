@@ -208,7 +208,7 @@ export const useTaxDocumentStore = create<TaxDocumentState>()(
       },
     }),
     {
-      name: 'signof-tax-document-storage',
+      name: 'orchestree-tax-document-storage',
       partialize: (state) => ({
         documents: state.documents,
         activeTaxYear: state.activeTaxYear,

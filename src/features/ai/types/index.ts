@@ -253,6 +253,38 @@ export interface AgentPipeline {
   templateId: string | null
 }
 
+// ─── Structured Run Result Types ─────────────────────────────────────
+
+export interface RunResultMetric {
+  label: string
+  value: string
+  trend?: 'up' | 'down' | 'neutral'
+  color?: string
+}
+
+export interface RunResultAction {
+  label: string
+  description: string
+  link: string
+  priority: 'high' | 'medium' | 'low'
+  icon: string
+}
+
+export interface RunResultSuggestion {
+  title: string
+  description: string
+  link: string
+  buttonLabel: string
+  icon: string
+}
+
+export interface StructuredRunResult {
+  summary: string
+  metrics: RunResultMetric[]
+  actions: RunResultAction[]
+  suggestions: RunResultSuggestion[]
+}
+
 // ─── AI Chat Types ──────────────────────────────────────────────────
 
 export interface AIChatMessage {
@@ -260,4 +292,46 @@ export interface AIChatMessage {
   role: 'user' | 'assistant'
   content: string
   timestamp: string
+}
+
+// ─── Canvas Types (Workflow Editor) ─────────────────────────────────
+
+export const CanvasMode = {
+  Select: 'select',
+  Connect: 'connect',
+  Pan: 'pan',
+} as const
+
+export type CanvasMode = (typeof CanvasMode)[keyof typeof CanvasMode]
+
+export const NodeStatus = {
+  Idle: 'idle',
+  Running: 'running',
+  Completed: 'completed',
+  Error: 'error',
+} as const
+
+export type NodeStatus = (typeof NodeStatus)[keyof typeof NodeStatus]
+
+export interface CanvasNode {
+  id: string
+  agentType: AgentType
+  task: string
+  x: number
+  y: number
+  status: NodeStatus
+  output: string | null
+}
+
+export interface CanvasConnection {
+  id: string
+  sourceNodeId: string
+  targetNodeId: string
+  status: NodeStatus
+}
+
+export interface CanvasViewport {
+  x: number
+  y: number
+  zoom: number
 }

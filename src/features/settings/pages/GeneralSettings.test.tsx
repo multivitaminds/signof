@@ -39,7 +39,7 @@ describe('GeneralSettings', () => {
     render(<GeneralSettings />)
     expect(screen.getByText('Workspace URL')).toBeInTheDocument()
     expect(screen.getByDisplayValue('test-workspace')).toBeInTheDocument()
-    expect(screen.getByText('signof.com/')).toBeInTheDocument()
+    expect(screen.getByText('orchestree.com/')).toBeInTheDocument()
   })
 
   it('renders language, date format, and timezone selects', () => {

@@ -2,8 +2,8 @@ import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import BookmarkNodeView from '../nodeViews/BookmarkNodeView'
 
-export const SignofBookmark = Node.create({
-  name: 'signofBookmark',
+export const OrchestreeBookmark = Node.create({
+  name: 'orchestreeBookmark',
   group: 'block',
   atom: true,
 
@@ -15,11 +15,11 @@ export const SignofBookmark = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: 'div[data-type="signof-bookmark"]' }]
+    return [{ tag: 'div[data-type="orchestree-bookmark"]' }]
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'signof-bookmark' })]
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'orchestree-bookmark' })]
   },
 
   addNodeView() {

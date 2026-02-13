@@ -40,7 +40,7 @@ const CompletionCertificate: React.FC<CompletionCertificateProps> = ({
     <div className="completion-certificate">
       <div className="completion-certificate__border">
         <div className="completion-certificate__header">
-          <p className="completion-certificate__brand">SignOf</p>
+          <p className="completion-certificate__brand">Orchestree</p>
           <h1 className="completion-certificate__title">Certificate of Completion</h1>
         </div>
 

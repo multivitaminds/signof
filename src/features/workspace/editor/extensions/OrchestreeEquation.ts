@@ -2,8 +2,8 @@ import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import EquationNodeView from '../nodeViews/EquationNodeView'
 
-export const SignofEquation = Node.create({
-  name: 'signofEquation',
+export const OrchestreeEquation = Node.create({
+  name: 'orchestreeEquation',
   group: 'block',
   atom: true,
 
@@ -15,11 +15,11 @@ export const SignofEquation = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: 'div[data-type="signof-equation"]' }]
+    return [{ tag: 'div[data-type="orchestree-equation"]' }]
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'signof-equation' })]
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'orchestree-equation' })]
   },
 
   addNodeView() {

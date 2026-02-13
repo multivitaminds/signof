@@ -1,0 +1,30 @@
+.token-usage-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 160px;
+}
+
+.token-usage-bar__track {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-secondary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.token-usage-bar__fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.token-usage-bar__fill--low { background: var(--color-success); }
+.token-usage-bar__fill--medium { background: var(--color-warning); }
+.token-usage-bar__fill--high { background: var(--color-danger); }
+
+.token-usage-bar__label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}

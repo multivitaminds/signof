@@ -1,0 +1,56 @@
+.workflow-canvas {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background:
+    radial-gradient(circle, var(--canvas-dot-color, rgba(0, 0, 0, 0.08)) 1px, transparent 1px);
+  background-size: 20px 20px;
+  cursor: default;
+  min-height: 500px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.workflow-canvas--connecting {
+  cursor: crosshair;
+}
+
+.workflow-canvas__content {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.workflow-canvas__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Empty State ──────────────────────────────────── */
+
+.workflow-canvas__empty {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.workflow-canvas__empty-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.workflow-canvas__empty-desc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 0;
+}

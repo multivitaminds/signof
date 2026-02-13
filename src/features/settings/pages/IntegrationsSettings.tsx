@@ -30,7 +30,7 @@ export default function IntegrationsSettings() {
   return (
     <div className="integrations-settings">
       <h1 className="integrations-settings__title">Integrations</h1>
-      <p className="integrations-settings__subtitle">Connect your favorite tools to SignOf</p>
+      <p className="integrations-settings__subtitle">Connect your favorite tools to Orchestree</p>
 
       <div className="integrations-settings__grid">
         {integrations.map((integration) => (

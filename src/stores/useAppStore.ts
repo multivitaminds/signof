@@ -121,7 +121,7 @@ export const useAppStore = create<AppState>()(
         set((state) => ({ shortcutHelpOpen: !state.shortcutHelpOpen })),
     }),
     {
-      name: 'signof-app-storage',
+      name: 'orchestree-app-storage',
       partialize: (state) => ({
         sidebarExpanded: state.sidebarExpanded,
         sidebarWidth: state.sidebarWidth,

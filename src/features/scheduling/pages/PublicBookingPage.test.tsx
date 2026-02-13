@@ -74,10 +74,10 @@ describe('PublicBookingPage', () => {
     expect(screen.getByLabelText('Previous month')).toBeInTheDocument()
   })
 
-  it('shows powered by SignOf footer', () => {
+  it('shows powered by Orchestree footer', () => {
     renderWithRouter('quick-chat')
     expect(screen.getByText('Powered by')).toBeInTheDocument()
-    expect(screen.getByText('SignOf')).toBeInTheDocument()
+    expect(screen.getByText('Orchestree')).toBeInTheDocument()
   })
 
   // ─── Availability engine integration ──────────────────────

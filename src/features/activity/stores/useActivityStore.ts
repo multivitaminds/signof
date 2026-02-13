@@ -332,7 +332,7 @@ export const useActivityStore = create<ActivityState>()(
       },
     }),
     {
-      name: 'signof-activity-storage',
+      name: 'orchestree-activity-storage',
       partialize: (state) => ({
         activities: state.activities,
       }),

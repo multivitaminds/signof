@@ -22,6 +22,7 @@ import {
   Table,
   Receipt,
   Code2,
+  MessageSquare,
   Calculator,
   Star,
   ChevronDown,
@@ -132,6 +133,7 @@ export default function Sidebar() {
     { path: '/ai', label: 'Intelligence', icon: Wand2 },
     { path: '/tax', label: 'Tax', icon: Receipt },
     { path: '/accounting', label: 'Accounting', icon: Calculator },
+    { path: '/playground', label: 'Playground', icon: MessageSquare },
     { path: '/developer', label: 'Developer', icon: Code2 },
   ]
 
@@ -231,7 +233,7 @@ export default function Sidebar() {
       <div className="sidebar__header">
         {sidebarExpanded ? (
           <div className="sidebar__brand">
-            <span className="sidebar__logo">SignOf</span>
+            <span className="sidebar__logo">Orchestree</span>
             <span className="sidebar__logo-check">&#10003;</span>
           </div>
         ) : (

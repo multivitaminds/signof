@@ -204,6 +204,6 @@ export const usePayrollStore = create<PayrollState>()(
           payStubs: [],
         }),
     }),
-    { name: 'signof-payroll-storage' }
+    { name: 'orchestree-payroll-storage' }
   )
 )

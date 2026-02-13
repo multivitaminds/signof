@@ -287,7 +287,7 @@ export const useTaxFormStore = create<TaxFormState>()(
       },
     }),
     {
-      name: 'signof-tax-form-storage',
+      name: 'orchestree-tax-form-storage',
       partialize: (state) => ({
         entries: state.entries,
       }),

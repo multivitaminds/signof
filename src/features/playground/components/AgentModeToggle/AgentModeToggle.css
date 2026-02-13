@@ -1,0 +1,16 @@
+.agent-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.agent-mode-toggle--enabled { background: var(--color-success); color: white; }
+.agent-mode-toggle--disabled { background: var(--bg-secondary); color: var(--text-muted); border: 1px solid var(--border-color); }
+.agent-mode-toggle:hover { opacity: 0.9; }

@@ -33,7 +33,7 @@ export default function FileNodeView({ node, updateAttributes }: NodeViewProps) 
 
   if (!fileName) {
     return (
-      <NodeViewWrapper className="tiptap-file" data-type="signof-file" contentEditable={false}>
+      <NodeViewWrapper className="tiptap-file" data-type="orchestree-file" contentEditable={false}>
         <div className="tiptap-file__placeholder" onClick={handleClick} role="button" tabIndex={0}>
           <span className="tiptap-file__icon">📎</span>
           <span>Click to upload a file</span>
@@ -49,7 +49,7 @@ export default function FileNodeView({ node, updateAttributes }: NodeViewProps) 
   }
 
   return (
-    <NodeViewWrapper className="tiptap-file" data-type="signof-file" contentEditable={false}>
+    <NodeViewWrapper className="tiptap-file" data-type="orchestree-file" contentEditable={false}>
       <div className="tiptap-file__info">
         <span className="tiptap-file__icon">📎</span>
         <span className="tiptap-file__name">{fileName}</span>

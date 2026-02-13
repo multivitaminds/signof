@@ -44,7 +44,7 @@ describe('ApiDocsPage', () => {
 
   it('renders the base URL', () => {
     render(<ApiDocsPage />)
-    expect(screen.getByText('https://api.signof.io')).toBeInTheDocument()
+    expect(screen.getByText('https://api.orchestree.io')).toBeInTheDocument()
   })
 
   it('renders category filter buttons', () => {

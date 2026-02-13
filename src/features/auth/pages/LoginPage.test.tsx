@@ -29,9 +29,9 @@ describe('LoginPage', () => {
     vi.clearAllMocks()
   })
 
-  it('renders the SignOf branding and welcome text', () => {
+  it('renders the Orchestree branding and welcome text', () => {
     renderLoginPage()
-    expect(screen.getByText('SignOf')).toBeInTheDocument()
+    expect(screen.getByText('Orchestree')).toBeInTheDocument()
     expect(screen.getByText('Welcome back')).toBeInTheDocument()
     expect(screen.getByText('Sign in to your workspace')).toBeInTheDocument()
   })

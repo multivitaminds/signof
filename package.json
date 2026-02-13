@@ -1,9 +1,9 @@
 {
-  "name": "signof",
+  "name": "orchestree",
   "private": true,
   "version": "0.1.0",
-  "description": "SignOf — The Everything Platform. Unified workspace, projects, documents, e-signatures, scheduling, databases, and AI.",
-  "author": "SignOf",
+  "description": "Orchestree — The Everything Platform. Unified workspace, projects, documents, e-signatures, scheduling, databases, and AI.",
+  "author": "Orchestree",
   "license": "UNLICENSED",
   "type": "module",
   "scripts": {

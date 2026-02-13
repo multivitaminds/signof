@@ -668,10 +668,10 @@ export default function PublicBookingPage() {
         </div>
 
         {/* Footer */}
-        {!eventType.brandingHideSignOf && (
+        {!eventType.brandingHideOrchestree && (
           <div className="public-booking__footer">
             <span>Powered by</span>
-            <strong>SignOf</strong>
+            <strong>Orchestree</strong>
           </div>
         )}
       </div>

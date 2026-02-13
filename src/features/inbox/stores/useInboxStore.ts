@@ -156,7 +156,7 @@ const SAMPLE_NOTIFICATIONS: Notification[] = [
     id: 'notif-10',
     type: NotificationType.System,
     category: NotificationCategory.System,
-    title: 'Welcome to SignOf!',
+    title: 'Welcome to Orchestree!',
     message: 'Get started by creating your first document or exploring the workspace',
     read: true,
     archived: false,
@@ -337,7 +337,7 @@ export const useInboxStore = create<InboxState>()(
       },
     }),
     {
-      name: 'signof-inbox-storage',
+      name: 'orchestree-inbox-storage',
       partialize: (state) => ({
         notifications: state.notifications,
         simulatorEnabled: state.simulatorEnabled,

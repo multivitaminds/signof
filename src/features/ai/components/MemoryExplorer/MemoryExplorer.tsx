@@ -161,7 +161,7 @@ export default function MemoryExplorer({ onShowTemplates }: MemoryExplorerProps)
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'signof-memory-export.json'
+    a.download = 'orchestree-memory-export.json'
     a.click()
     URL.revokeObjectURL(url)
   }, [exportEntries])
