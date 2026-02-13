@@ -30,11 +30,11 @@ export const FEATURE_CONTEXTS: Record<FeatureKey, FeatureContext> = {
     placeholder: 'Ask about your dashboard...',
     quickActions: [
       { label: 'Show my stats', prompt: 'Show my stats' },
-      { label: 'Start AI agent', prompt: 'Start agent researcher' },
+      { label: 'Start Copilot agent', prompt: 'Start agent researcher' },
       { label: "What's due today?", prompt: "What's due today?" },
       { label: 'Summarize activity', prompt: 'Summarize activity' },
     ],
-    greeting: 'Welcome! I can help you navigate your dashboard, show stats, or start an AI agent. What would you like to do?',
+    greeting: 'Welcome! I can help you navigate your dashboard, show stats, or start a Copilot agent. What would you like to do?',
   },
   workspace: {
     key: 'workspace',

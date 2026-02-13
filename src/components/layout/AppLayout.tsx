@@ -26,7 +26,7 @@ const ROUTE_LABELS: Record<string, string> = {
   '/calendar': 'Calendar',
   '/data': 'Databases',
   '/inbox': 'Inbox',
-  '/ai': 'AI',
+  '/copilot': 'Copilot',
   '/tax': 'Tax',
   '/developer': 'Developer',
   '/settings': 'Settings',
@@ -77,7 +77,7 @@ export default function AppLayout() {
     { key: 'g', chord: 'g+s', handler: () => navigate('/calendar') },
     { key: 'g', chord: 'g+i', handler: () => navigate('/inbox') },
     { key: 'g', chord: 'g+c', handler: () => navigate('/data') },
-    { key: 'g', chord: 'g+b', handler: () => navigate('/ai') },
+    { key: 'g', chord: 'g+b', handler: () => navigate('/copilot') },
     { key: 'g', chord: 'g+t', handler: () => navigate('/tax') },
     { key: 'g', chord: 'g+x', handler: () => navigate('/developer') },
   ])

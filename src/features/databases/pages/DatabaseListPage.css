@@ -12,7 +12,7 @@
 /* ─── Welcome Hero Section ────────────────────────────────── */
 
 .db-list-page__hero {
-  background: linear-gradient(135deg, #4F46E5 0%, #1A1A2E 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-gray-800) 100%);
   border-radius: var(--radius-xl, 16px);
   padding: var(--space-8, 3rem) var(--space-6, 2rem);
   margin-bottom: var(--space-6, 2rem);
@@ -84,7 +84,7 @@
 
 .db-list-page__hero-btn--primary {
   background: #ffffff;
-  color: #4F46E5;
+  color: var(--color-primary);
 }
 
 .db-list-page__hero-btn--primary:hover {
@@ -145,7 +145,7 @@
 
 .db-list-page__search-input:focus {
   outline: none;
-  border-color: #4F46E5;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
 }
 
@@ -199,7 +199,7 @@
 }
 
 .db-list-page__card:hover {
-  border-color: #4F46E5;
+  border-color: var(--color-primary);
   box-shadow: 0 8px 24px rgba(79, 70, 229, 0.12);
   transform: translateY(-2px);
 }
@@ -269,11 +269,11 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #4F46E5;
+  background: var(--color-primary);
 }
 
 .db-list-page__badge-dot--rows {
-  background: #059669;
+  background: var(--color-success);
 }
 
 .db-list-page__card-footer {
@@ -395,7 +395,7 @@
 }
 
 .db-list-page__template-card:hover {
-  border-color: #4F46E5;
+  border-color: var(--color-primary);
   box-shadow: 0 8px 24px rgba(79, 70, 229, 0.12);
   transform: translateY(-2px);
 }
@@ -476,7 +476,7 @@
   height: 80px;
   border-radius: var(--radius-xl, 16px);
   background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%);
-  color: #4F46E5;
+  color: var(--color-primary);
   margin-bottom: var(--space-5, 1.5rem);
 }
 
@@ -484,7 +484,7 @@
   font-size: var(--text-xl, 1.25rem);
   font-weight: 700;
   margin: 0 0 var(--space-2, 0.5rem);
-  background: linear-gradient(135deg, #4F46E5, #059669);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-success));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -505,11 +505,11 @@
   padding: 0.625rem 1.5rem;
   font-size: var(--text-sm, 0.875rem);
   font-weight: 600;
-  background: #4F46E5;
+  background: var(--color-primary);
 }
 
 .db-list-page__empty .btn-primary:hover {
-  background: #4338CA;
+  background: var(--color-primary-hover);
 }
 
 /* ─── No Search Results ───────────────────────────────────── */
@@ -548,7 +548,7 @@
 }
 
 [data-theme="dark"] .db-list-page__search-input:focus {
-  border-color: #4F46E5;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
@@ -558,7 +558,7 @@
 }
 
 [data-theme="dark"] .db-list-page__card:hover {
-  border-color: #4F46E5;
+  border-color: var(--color-primary);
   box-shadow: 0 8px 24px rgba(79, 70, 229, 0.15);
 }
 
@@ -599,7 +599,7 @@
 }
 
 [data-theme="dark"] .db-list-page__template-card:hover {
-  border-color: #4F46E5;
+  border-color: var(--color-primary);
   box-shadow: 0 8px 24px rgba(79, 70, 229, 0.15);
 }
 
@@ -629,7 +629,7 @@
 }
 
 [data-theme="dark"] .db-list-page__empty h2 {
-  background: linear-gradient(135deg, #6366F1, #059669);
+  background: linear-gradient(135deg, #6366F1, var(--color-success));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -641,7 +641,7 @@
 
 /* ─── Responsive ──────────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .db-list-page {
     padding: var(--space-4, 1rem);
   }

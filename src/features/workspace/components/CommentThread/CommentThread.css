@@ -285,36 +285,6 @@
 
 /* ─── Dark Mode ────────────────────────────────────────────────────── */
 
-@media (prefers-color-scheme: dark) {
-  .comment-thread {
-    background: var(--bg-secondary, #1A1A2E);
-    border-color: var(--border-color, #334155);
-  }
-
-  .comment-thread__close:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .comment-thread__action-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .comment-thread__action-btn--danger:hover {
-    background: rgba(220, 38, 38, 0.15);
-  }
-
-  .comment-thread__input {
-    background: var(--bg-primary, #0F0F1A);
-    border-color: var(--border-color, #334155);
-    color: var(--text-primary, #F1F5F9);
-  }
-
-  .comment-thread__resolved-badge {
-    background: rgba(5, 150, 105, 0.15);
-    color: #34D399;
-  }
-}
-
 [data-theme="dark"] .comment-thread {
   background: var(--bg-secondary, #1A1A2E);
   border-color: var(--border-color, #334155);

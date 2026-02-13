@@ -60,7 +60,7 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .ai-memory-page {
     padding: var(--space-md);
     gap: var(--space-lg);

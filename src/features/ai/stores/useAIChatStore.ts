@@ -33,7 +33,7 @@ const SLASH_COMMAND_RESPONSES: Record<string, (args: string, context: string) =>
     '- Timeline is on track for the current milestone',
   '/translate': (args, context) => {
     const lang = args.trim() || 'Spanish'
-    return `Translation to ${lang} for your ${context} content:\n\n[Translated content would appear here. The AI would process the selected text and provide a ${lang} translation.]`
+    return `Translation to ${lang} for your ${context} content:\n\n[Translated content would appear here. Copilot would process the selected text and provide a ${lang} translation.]`
   },
   '/simplify': (_args, context) =>
     `Here is a simplified version of your ${context} content:\n\n` +

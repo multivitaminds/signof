@@ -134,12 +134,12 @@ describe('QuickStats', () => {
 describe('AIInsights', () => {
   it('renders the widget with title', () => {
     render(<AIInsights />)
-    expect(screen.getByText('AI Insights')).toBeInTheDocument()
+    expect(screen.getByText('Copilot Insights')).toBeInTheDocument()
   })
 
   it('renders the widget with aria-label', () => {
     render(<AIInsights />)
-    expect(screen.getByLabelText('AI insights')).toBeInTheDocument()
+    expect(screen.getByLabelText('Copilot insights')).toBeInTheDocument()
   })
 
   it('shows overdue issues insight', () => {

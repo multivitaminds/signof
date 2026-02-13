@@ -245,9 +245,9 @@ export default function CommandPalette() {
       },
       {
         id: 'nav-ai',
-        label: 'Go to AI',
+        label: 'Go to Copilot',
         icon: Brain,
-        action: () => navigateAndTrack('/ai', 'AI'),
+        action: () => navigateAndTrack('/copilot', 'Copilot'),
         category: 'navigation',
         shortcut: 'G B',
       },

@@ -85,7 +85,7 @@ describe('AIFeatureChatModal', () => {
     render(
       <AIFeatureChatModal featureKey="workspace" isOpen={true} onClose={onClose} />
     )
-    await user.click(screen.getByLabelText('Close AI chat'))
+    await user.click(screen.getByLabelText('Close Copilot chat'))
     expect(onClose).toHaveBeenCalled()
   })
 

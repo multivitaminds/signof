@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { useDocumentStore } from '../../../stores/useDocumentStore'
 import { DocumentStatus, STATUS_LABELS } from '../../../types'
 import type { Document } from '../../../types'
@@ -119,43 +120,44 @@ export default function DocumentsHubPage() {
   return (
     <div className="docs-hub">
       {/* Header */}
-      <div className="docs-hub__header">
-        <div className="docs-hub__header-left">
-          <h1 className="docs-hub__title">Documents</h1>
-        </div>
-        <div className="docs-hub__header-right">
-          <div className="docs-hub__view-toggle" role="group" aria-label="View mode">
-            <button
-              className={`docs-hub__view-btn${viewMode === 'grid' ? ' docs-hub__view-btn--active' : ''}`}
-              onClick={() => setViewMode('grid')}
-              aria-label="Grid view"
-              aria-pressed={viewMode === 'grid'}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
-                <rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
-                <rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
-                <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
-              </svg>
-            </button>
-            <button
-              className={`docs-hub__view-btn${viewMode === 'list' ? ' docs-hub__view-btn--active' : ''}`}
-              onClick={() => setViewMode('list')}
-              aria-label="List view"
-              aria-pressed={viewMode === 'list'}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <line x1="1" y1="3" x2="15" y2="3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <line x1="1" y1="8" x2="15" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                <line x1="1" y1="13" x2="15" y2="13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </button>
+      <ModuleHeader
+        title="Documents"
+        subtitle="Upload, sign, and manage documents"
+        actions={
+          <div className="docs-hub__header-right">
+            <div className="docs-hub__view-toggle" role="group" aria-label="View mode">
+              <button
+                className={`docs-hub__view-btn${viewMode === 'grid' ? ' docs-hub__view-btn--active' : ''}`}
+                onClick={() => setViewMode('grid')}
+                aria-label="Grid view"
+                aria-pressed={viewMode === 'grid'}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                  <rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                  <rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                  <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+              </button>
+              <button
+                className={`docs-hub__view-btn${viewMode === 'list' ? ' docs-hub__view-btn--active' : ''}`}
+                onClick={() => setViewMode('list')}
+                aria-label="List view"
+                aria-pressed={viewMode === 'list'}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <line x1="1" y1="3" x2="15" y2="3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  <line x1="1" y1="8" x2="15" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  <line x1="1" y1="13" x2="15" y2="13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+            <Link to="/documents/builder" className="btn-primary docs-hub__new-btn">
+              New Document
+            </Link>
           </div>
-          <Link to="/documents/builder" className="btn-primary docs-hub__new-btn">
-            New Document
-          </Link>
-        </div>
-      </div>
+        }
+      />
 
       {/* Stats */}
       <div className="docs-hub__stats">

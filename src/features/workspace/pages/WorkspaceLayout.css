@@ -98,22 +98,6 @@
   color: var(--color-primary, #818CF8);
 }
 
-@media (prefers-color-scheme: dark) {
-  .workspace-layout__section {
-    border-bottom-color: var(--border-color, #334155);
-  }
-
-  .workspace-layout__section-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-primary, #F1F5F9);
-  }
-
-  .workspace-layout__section-item--active {
-    background: rgba(79, 70, 229, 0.15);
-    color: var(--color-primary, #818CF8);
-  }
-}
-
 /* Responsive */
 @media (max-width: 768px) {
   .workspace-layout {

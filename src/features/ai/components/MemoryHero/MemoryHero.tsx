@@ -12,7 +12,7 @@ interface MemoryHeroProps {
 
 const VALUE_PROPS = [
   { Icon: Brain, text: 'Stores decisions, workflows, and team knowledge' },
-  { Icon: Zap, text: 'AI agents read memory to give contextual answers' },
+  { Icon: Zap, text: 'Copilot agents read memory to give contextual answers' },
   { Icon: Shield, text: '1M tokens of persistent, encrypted context' },
 ] as const
 

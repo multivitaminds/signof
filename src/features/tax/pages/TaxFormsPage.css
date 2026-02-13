@@ -420,7 +420,7 @@
 
 /* ─── Responsive ──────────────────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .tax-forms__grid {
     grid-template-columns: 1fr;
   }

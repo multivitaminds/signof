@@ -20,6 +20,11 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toHaveClass('btn--danger')
   })
 
+  it('applies outline variant class', () => {
+    render(<Button variant="outline">Outline</Button>)
+    expect(screen.getByRole('button')).toHaveClass('btn--outline')
+  })
+
   it('applies custom size class', () => {
     render(<Button size="lg">Large</Button>)
     expect(screen.getByRole('button')).toHaveClass('btn--lg')

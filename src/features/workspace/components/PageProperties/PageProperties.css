@@ -125,18 +125,16 @@
   color: var(--text-secondary, #6B7280);
 }
 
-@media (prefers-color-scheme: dark) {
-  .page-properties__input:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
+[data-theme="dark"] .page-properties__input:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
 
-  .page-properties__input:focus {
-    background: var(--bg-secondary, #1A1A2E);
-  }
+[data-theme="dark"] .page-properties__input:focus {
+  background: var(--bg-secondary, #1A1A2E);
+}
 
-  .page-properties__select {
-    background: var(--bg-secondary, #1A1A2E);
-    border-color: var(--border-color, #334155);
-    color: var(--text-primary, #F1F5F9);
-  }
+[data-theme="dark"] .page-properties__select {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+  color: var(--text-primary, #F1F5F9);
 }

@@ -584,7 +584,7 @@
   color: var(--text-secondary);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .issue-detail {
     width: 100vw;
   }

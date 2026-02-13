@@ -14,7 +14,7 @@ const ROUTE_LABELS: Record<string, string> = {
   calendar: 'Calendar',
   data: 'Databases',
   inbox: 'Inbox',
-  ai: 'Intelligence',
+  copilot: 'Copilot',
   settings: 'Settings',
   memory: 'Memory',
   agents: 'Agent Teams',

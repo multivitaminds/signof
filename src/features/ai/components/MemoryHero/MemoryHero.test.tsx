@@ -36,7 +36,7 @@ describe('MemoryHero', () => {
       screen.getByText('Stores decisions, workflows, and team knowledge')
     ).toBeInTheDocument()
     expect(
-      screen.getByText('AI agents read memory to give contextual answers')
+      screen.getByText('Copilot agents read memory to give contextual answers')
     ).toBeInTheDocument()
     expect(
       screen.getByText('1M tokens of persistent, encrypted context')

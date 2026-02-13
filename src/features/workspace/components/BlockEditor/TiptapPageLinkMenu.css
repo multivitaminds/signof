@@ -82,14 +82,12 @@
 
 /* ─── Dark Mode ───────────────────────────────────────────────── */
 
-@media (prefers-color-scheme: dark) {
-  .tiptap-page-link-menu {
-    background: var(--bg-secondary, #1a1a2e);
-    border-color: var(--border-color, #334155);
-  }
+[data-theme="dark"] .tiptap-page-link-menu {
+  background: var(--bg-secondary, #1a1a2e);
+  border-color: var(--border-color, #334155);
+}
 
-  .tiptap-page-link-menu__item:hover,
-  .tiptap-page-link-menu__item--selected {
-    background: rgba(255, 255, 255, 0.08);
-  }
+[data-theme="dark"] .tiptap-page-link-menu__item:hover,
+[data-theme="dark"] .tiptap-page-link-menu__item--selected {
+  background: rgba(255, 255, 255, 0.08);
 }

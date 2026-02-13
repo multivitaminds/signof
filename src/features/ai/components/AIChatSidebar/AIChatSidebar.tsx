@@ -108,11 +108,11 @@ export default function AIChatSidebar() {
   if (!isOpen) return null
 
   return (
-    <div className="ai-chat-sidebar" role="complementary" aria-label="AI Chat">
+    <div className="ai-chat-sidebar" role="complementary" aria-label="Copilot Chat">
       <div className="ai-chat-sidebar__header">
         <div className="ai-chat-sidebar__header-left">
           <Wand2 size={18} className="ai-chat-sidebar__header-icon" />
-          <span className="ai-chat-sidebar__header-title">AI Assistant</span>
+          <span className="ai-chat-sidebar__header-title">Copilot</span>
         </div>
         <div className="ai-chat-sidebar__header-actions">
           <button
@@ -126,7 +126,7 @@ export default function AIChatSidebar() {
           <button
             className="ai-chat-sidebar__header-btn"
             onClick={handleClose}
-            aria-label="Close AI chat"
+            aria-label="Close Copilot chat"
           >
             <X size={18} />
           </button>
@@ -172,7 +172,7 @@ export default function AIChatSidebar() {
         ))}
         {/* Typing Indicator */}
         {isTyping && (
-          <div className="ai-chat-sidebar__typing" aria-label="AI is typing">
+          <div className="ai-chat-sidebar__typing" aria-label="Copilot is typing">
             <span className="ai-chat-sidebar__typing-dot" />
             <span className="ai-chat-sidebar__typing-dot" />
             <span className="ai-chat-sidebar__typing-dot" />
@@ -217,7 +217,7 @@ export default function AIChatSidebar() {
             ref={inputRef}
             className="ai-chat-sidebar__input"
             type="text"
-            placeholder="Ask AI anything... (/ for commands)"
+            placeholder="Ask Copilot anything... (/ for commands)"
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}

@@ -81,8 +81,3 @@
   border-color: var(--bg-secondary, #1A1A2E);
 }
 
-@media (prefers-color-scheme: dark) {
-  .presence-avatars__avatar {
-    border-color: var(--bg-secondary, #1A1A2E);
-  }
-}

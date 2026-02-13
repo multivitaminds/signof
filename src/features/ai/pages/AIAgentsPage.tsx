@@ -82,10 +82,10 @@ const STEP_ICON: Record<StepStatus, LucideIcon> = {
 }
 
 const STEP_CLASS: Record<StepStatus, string> = {
-  [StepStatus.Pending]: 'ai-agents__step-icon--pending',
-  [StepStatus.Running]: 'ai-agents__step-icon--running',
-  [StepStatus.Completed]: 'ai-agents__step-icon--completed',
-  [StepStatus.Error]: 'ai-agents__step-icon--error',
+  [StepStatus.Pending]: 'copilot-agents__step-icon--pending',
+  [StepStatus.Running]: 'copilot-agents__step-icon--running',
+  [StepStatus.Completed]: 'copilot-agents__step-icon--completed',
+  [StepStatus.Error]: 'copilot-agents__step-icon--error',
 }
 
 const RUN_STATUS_VARIANT: Record<RunStatus, 'primary' | 'warning' | 'success' | 'danger' | 'default'> = {
@@ -456,11 +456,11 @@ export default function AIAgentsPage() {
   }, [resetExecution])
 
   return (
-    <div className="ai-agents">
-      <div className="ai-agents__header">
-        <h2 className="ai-agents__title">Agent Marketplace</h2>
-        <p className="ai-agents__subtitle">
-          20 specialized AI agents, pipelines, and workflow templates
+    <div className="copilot-agents">
+      <div className="copilot-agents__header">
+        <h2 className="copilot-agents__title">Agent Marketplace</h2>
+        <p className="copilot-agents__subtitle">
+          20 specialized Copilot agents, pipelines, and workflow templates
         </p>
       </div>
 
@@ -471,29 +471,29 @@ export default function AIAgentsPage() {
       />
 
       {/* Stats Bar */}
-      <div className="ai-agents__stats-bar" aria-label="Agent statistics">
-        <div className="ai-agents__stat-card">
-          <span className="ai-agents__stat-value">{stats.totalAgents}</span>
-          <span className="ai-agents__stat-label">Total Agents</span>
+      <div className="copilot-agents__stats-bar" aria-label="Agent statistics">
+        <div className="copilot-agents__stat-card">
+          <span className="copilot-agents__stat-value">{stats.totalAgents}</span>
+          <span className="copilot-agents__stat-label">Total Agents</span>
         </div>
-        <div className="ai-agents__stat-card">
-          <span className="ai-agents__stat-value">{stats.totalRuns}</span>
-          <span className="ai-agents__stat-label">Total Runs</span>
+        <div className="copilot-agents__stat-card">
+          <span className="copilot-agents__stat-value">{stats.totalRuns}</span>
+          <span className="copilot-agents__stat-label">Total Runs</span>
         </div>
-        <div className="ai-agents__stat-card">
-          <span className="ai-agents__stat-value">{stats.activePipelines}</span>
-          <span className="ai-agents__stat-label">Active Pipelines</span>
+        <div className="copilot-agents__stat-card">
+          <span className="copilot-agents__stat-value">{stats.activePipelines}</span>
+          <span className="copilot-agents__stat-label">Active Pipelines</span>
         </div>
-        <div className="ai-agents__stat-card">
-          <span className="ai-agents__stat-value">{stats.successRate}%</span>
-          <span className="ai-agents__stat-label">Success Rate</span>
+        <div className="copilot-agents__stat-card">
+          <span className="copilot-agents__stat-value">{stats.successRate}%</span>
+          <span className="copilot-agents__stat-label">Success Rate</span>
         </div>
       </div>
 
       {/* View Tabs */}
-      <div className="ai-agents__view-tabs" role="tablist" aria-label="View tabs">
+      <div className="copilot-agents__view-tabs" role="tablist" aria-label="View tabs">
         <button
-          className={`ai-agents__view-tab${activeTab === 'canvas' ? ' ai-agents__view-tab--active' : ''}`}
+          className={`copilot-agents__view-tab${activeTab === 'canvas' ? ' copilot-agents__view-tab--active' : ''}`}
           onClick={() => setActiveTab('canvas')}
           role="tab"
           aria-selected={activeTab === 'canvas'}
@@ -501,7 +501,7 @@ export default function AIAgentsPage() {
           Canvas
         </button>
         <button
-          className={`ai-agents__view-tab${activeTab === 'agents' ? ' ai-agents__view-tab--active' : ''}`}
+          className={`copilot-agents__view-tab${activeTab === 'agents' ? ' copilot-agents__view-tab--active' : ''}`}
           onClick={() => setActiveTab('agents')}
           role="tab"
           aria-selected={activeTab === 'agents'}
@@ -509,7 +509,7 @@ export default function AIAgentsPage() {
           Agents ({AGENT_DEFINITIONS.length})
         </button>
         <button
-          className={`ai-agents__view-tab${activeTab === 'pipelines' ? ' ai-agents__view-tab--active' : ''}`}
+          className={`copilot-agents__view-tab${activeTab === 'pipelines' ? ' copilot-agents__view-tab--active' : ''}`}
           onClick={() => setActiveTab('pipelines')}
           role="tab"
           aria-selected={activeTab === 'pipelines'}
@@ -517,7 +517,7 @@ export default function AIAgentsPage() {
           Pipelines ({pipelines.length})
         </button>
         <button
-          className={`ai-agents__view-tab${activeTab === 'templates' ? ' ai-agents__view-tab--active' : ''}`}
+          className={`copilot-agents__view-tab${activeTab === 'templates' ? ' copilot-agents__view-tab--active' : ''}`}
           onClick={() => setActiveTab('templates')}
           role="tab"
           aria-selected={activeTab === 'templates'}
@@ -528,19 +528,19 @@ export default function AIAgentsPage() {
 
       {/* ─── CANVAS TAB ──────────────────────────────────────────── */}
       {activeTab === 'canvas' && (
-        <div className="ai-agents__canvas-wrapper">
+        <div className="copilot-agents__canvas-wrapper">
           <CanvasTopBar
             onExecute={handleExecuteWorkflow}
             onSave={handleSaveWorkflow}
             isExecuting={isExecuting}
           />
-          <div className="ai-agents__canvas-area">
+          <div className="copilot-agents__canvas-area">
             <WorkflowCanvas />
             <CanvasControls />
 
             {!showNodePicker && !selectedNode && (
               <button
-                className="ai-agents__add-node-btn"
+                className="copilot-agents__add-node-btn"
                 onClick={() => setShowNodePicker(true)}
                 aria-label="Add node"
               >
@@ -576,12 +576,12 @@ export default function AIAgentsPage() {
       {activeTab === 'agents' && (
         <>
           {/* Category Pills + Search */}
-          <div className="ai-agents__filters">
-            <div className="ai-agents__category-pills" role="tablist" aria-label="Agent categories">
+          <div className="copilot-agents__filters">
+            <div className="copilot-agents__category-pills" role="tablist" aria-label="Agent categories">
               {categoryTabs.map(tab => (
                 <button
                   key={tab.key}
-                  className={`ai-agents__category-pill${activeCategory === tab.key ? ' ai-agents__category-pill--active' : ''}`}
+                  className={`copilot-agents__category-pill${activeCategory === tab.key ? ' copilot-agents__category-pill--active' : ''}`}
                   onClick={() => setActiveCategory(tab.key)}
                   role="tab"
                   aria-selected={activeCategory === tab.key}
@@ -591,10 +591,10 @@ export default function AIAgentsPage() {
                 </button>
               ))}
             </div>
-            <div className="ai-agents__search-bar">
-              <Search size={16} className="ai-agents__search-icon" />
+            <div className="copilot-agents__search-bar">
+              <Search size={16} className="copilot-agents__search-icon" />
               <input
-                className="ai-agents__search-input"
+                className="copilot-agents__search-input"
                 type="text"
                 placeholder="Search agents..."
                 value={searchQuery}
@@ -605,37 +605,37 @@ export default function AIAgentsPage() {
           </div>
 
           {/* Agent Cards Grid */}
-          <div className="ai-agents__grid">
+          <div className="copilot-agents__grid">
             {filteredAgents.map((agent) => {
               const IconComp = getIcon(agent.icon)
               const lastRun = lastRunByAgent[agent.type]
               const isFavorite = favorites.includes(agent.type)
               return (
-                <div key={agent.type} className="ai-agents__card" style={{ borderTopColor: agent.color }}>
-                  <div className="ai-agents__card-header">
-                    <div className="ai-agents__card-icon" style={{ color: agent.color }}>
+                <div key={agent.type} className="copilot-agents__card" style={{ borderTopColor: agent.color }}>
+                  <div className="copilot-agents__card-header">
+                    <div className="copilot-agents__card-icon" style={{ color: agent.color }}>
                       <IconComp size={24} />
                     </div>
-                    <div className="ai-agents__card-info">
-                      <div className="ai-agents__card-name-row">
-                        <h3 className="ai-agents__card-name">{agent.label} Agent</h3>
+                    <div className="copilot-agents__card-info">
+                      <div className="copilot-agents__card-name-row">
+                        <h3 className="copilot-agents__card-name">{agent.label} Agent</h3>
                         <button
-                          className={`ai-agents__card-favorite${isFavorite ? ' ai-agents__card-favorite--active' : ''}`}
+                          className={`copilot-agents__card-favorite${isFavorite ? ' copilot-agents__card-favorite--active' : ''}`}
                           onClick={() => toggleFavorite(agent.type)}
                           aria-label={isFavorite ? `Unfavorite ${agent.label}` : `Favorite ${agent.label}`}
                         >
                           <Star size={14} fill={isFavorite ? 'currentColor' : 'none'} />
                         </button>
                       </div>
-                      <p className="ai-agents__card-desc">{agent.description}</p>
+                      <p className="copilot-agents__card-desc">{agent.description}</p>
                     </div>
                   </div>
-                  <span className="ai-agents__card-category-badge" style={{ color: agent.color, borderColor: agent.color }}>
+                  <span className="copilot-agents__card-category-badge" style={{ color: agent.color, borderColor: agent.color }}>
                     {agent.category}
                   </span>
-                  <div className="ai-agents__card-input-row">
+                  <div className="copilot-agents__card-input-row">
                     <input
-                      className="ai-agents__card-task-input"
+                      className="copilot-agents__card-task-input"
                       type="text"
                       placeholder="Describe the task..."
                       value={runTaskInputs[agent.type] ?? ''}
@@ -646,7 +646,7 @@ export default function AIAgentsPage() {
                       aria-label={`Task for ${agent.label} Agent`}
                     />
                     <button
-                      className="ai-agents__run-btn"
+                      className="copilot-agents__run-btn"
                       onClick={() => handleRun(agent.type)}
                       style={{ backgroundColor: agent.color }}
                       aria-label={`Run ${agent.label} Agent`}
@@ -656,7 +656,7 @@ export default function AIAgentsPage() {
                     </button>
                   </div>
                   {lastRun && (
-                    <span className="ai-agents__card-last-run">
+                    <span className="copilot-agents__card-last-run">
                       <Clock size={12} />
                       Last run: {formatRelativeDate(lastRun)}
                     </span>
@@ -667,25 +667,25 @@ export default function AIAgentsPage() {
           </div>
 
           {filteredAgents.length === 0 && (
-            <p className="ai-agents__empty">No agents match your search.</p>
+            <p className="copilot-agents__empty">No agents match your search.</p>
           )}
         </>
       )}
 
       {/* ─── PIPELINES TAB ───────────────────────────────────────── */}
       {activeTab === 'pipelines' && (
-        <div className="ai-agents__pipelines-section">
-          <div className="ai-agents__pipelines-header">
-            <h3 className="ai-agents__section-title">Pipelines</h3>
-            <button className="ai-agents__create-pipeline-btn" onClick={handleOpenPipelineBuilder}>
+        <div className="copilot-agents__pipelines-section">
+          <div className="copilot-agents__pipelines-header">
+            <h3 className="copilot-agents__section-title">Pipelines</h3>
+            <button className="copilot-agents__create-pipeline-btn" onClick={handleOpenPipelineBuilder}>
               <Zap size={14} />
               Create Pipeline
             </button>
           </div>
 
           {activePipelines.length > 0 && (
-            <div className="ai-agents__pipeline-list">
-              <h4 className="ai-agents__pipeline-subhead">Active</h4>
+            <div className="copilot-agents__pipeline-list">
+              <h4 className="copilot-agents__pipeline-subhead">Active</h4>
               {activePipelines.map(p => (
                 <PipelineView
                   key={p.id}
@@ -699,8 +699,8 @@ export default function AIAgentsPage() {
           )}
 
           {completedPipelines.length > 0 && (
-            <div className="ai-agents__pipeline-list">
-              <h4 className="ai-agents__pipeline-subhead">Completed</h4>
+            <div className="copilot-agents__pipeline-list">
+              <h4 className="copilot-agents__pipeline-subhead">Completed</h4>
               {completedPipelines.map(p => (
                 <PipelineView key={p.id} pipeline={p} />
               ))}
@@ -708,17 +708,17 @@ export default function AIAgentsPage() {
           )}
 
           {pipelines.length === 0 && (
-            <p className="ai-agents__empty">No pipelines yet. Create one or use a template to get started.</p>
+            <p className="copilot-agents__empty">No pipelines yet. Create one or use a template to get started.</p>
           )}
         </div>
       )}
 
       {/* ─── TEMPLATES TAB ───────────────────────────────────────── */}
       {activeTab === 'templates' && (
-        <div className="ai-agents__templates-section">
-          <h3 className="ai-agents__section-title">Workflow Templates</h3>
-          <p className="ai-agents__templates-desc">Pre-built multi-agent pipelines for common business workflows</p>
-          <div className="ai-agents__templates-grid">
+        <div className="copilot-agents__templates-section">
+          <h3 className="copilot-agents__section-title">Workflow Templates</h3>
+          <p className="copilot-agents__templates-desc">Pre-built multi-agent pipelines for common business workflows</p>
+          <div className="copilot-agents__templates-grid">
             {WORKFLOW_TEMPLATES.map(t => (
               <TemplateCard key={t.id} template={t} onUseTemplate={handleUseTemplate} />
             ))}
@@ -728,9 +728,9 @@ export default function AIAgentsPage() {
 
       {/* Active Runs Panel */}
       {activeRuns.length > 0 && (
-        <section className="ai-agents__active-runs" aria-label="Active agent runs">
-          <h3 className="ai-agents__section-title">Active Runs</h3>
-          <div className="ai-agents__runs-list">
+        <section className="copilot-agents__active-runs" aria-label="Active agent runs">
+          <h3 className="copilot-agents__section-title">Active Runs</h3>
+          <div className="copilot-agents__runs-list">
             {activeRuns.map((run) => {
               const agentDef = AGENT_DEFINITIONS.find(a => a.type === run.agentType)
               const completedSteps = run.steps.filter(s => s.status === StepStatus.Completed).length
@@ -739,31 +739,31 @@ export default function AIAgentsPage() {
                 : 0
 
               return (
-                <div key={run.id} className="ai-agents__run-card">
-                  <div className="ai-agents__run-header">
-                    <div className="ai-agents__run-info">
-                      <span className="ai-agents__run-agent">{agentDef?.label ?? run.agentType} Agent</span>
-                      <span className="ai-agents__run-task">{run.task}</span>
+                <div key={run.id} className="copilot-agents__run-card">
+                  <div className="copilot-agents__run-header">
+                    <div className="copilot-agents__run-info">
+                      <span className="copilot-agents__run-agent">{agentDef?.label ?? run.agentType} Agent</span>
+                      <span className="copilot-agents__run-task">{run.task}</span>
                     </div>
                     <Badge variant={RUN_STATUS_VARIANT[run.status]} size="sm" dot>
                       {run.status}
                     </Badge>
                   </div>
 
-                  <div className="ai-agents__progress-bar" role="progressbar" aria-valuenow={completedSteps} aria-valuemin={0} aria-valuemax={run.steps.length} aria-label="Run progress">
-                    <div className="ai-agents__progress-fill" style={{ width: `${progressPercent}%` }} />
+                  <div className="copilot-agents__progress-bar" role="progressbar" aria-valuenow={completedSteps} aria-valuemin={0} aria-valuemax={run.steps.length} aria-label="Run progress">
+                    <div className="copilot-agents__progress-fill" style={{ width: `${progressPercent}%` }} />
                   </div>
 
-                  <div className="ai-agents__steps" role="list" aria-label="Run steps">
+                  <div className="copilot-agents__steps" role="list" aria-label="Run steps">
                     {run.steps.map((step: RunStep) => {
                       const StepIcon = STEP_ICON[step.status]
                       return (
-                        <div key={step.id} className={`ai-agents__step ai-agents__step--${step.status}`} role="listitem">
-                          <StepIcon size={16} className={`ai-agents__step-icon ${STEP_CLASS[step.status]}`} />
-                          <div className="ai-agents__step-content">
-                            <span className="ai-agents__step-label">{step.label}</span>
+                        <div key={step.id} className={`copilot-agents__step copilot-agents__step--${step.status}`} role="listitem">
+                          <StepIcon size={16} className={`copilot-agents__step-icon ${STEP_CLASS[step.status]}`} />
+                          <div className="copilot-agents__step-content">
+                            <span className="copilot-agents__step-label">{step.label}</span>
                             {step.output && (
-                              <span className="ai-agents__step-output">{step.output}</span>
+                              <span className="copilot-agents__step-output">{step.output}</span>
                             )}
                           </div>
                         </div>
@@ -771,28 +771,28 @@ export default function AIAgentsPage() {
                     })}
                   </div>
 
-                  <div className="ai-agents__run-controls">
+                  <div className="copilot-agents__run-controls">
                     {run.status === RunStatus.Running && (
-                      <button className="ai-agents__control-btn" onClick={() => handlePause(run.id)} aria-label="Pause run">
+                      <button className="copilot-agents__control-btn" onClick={() => handlePause(run.id)} aria-label="Pause run">
                         <Pause size={14} /> Pause
                       </button>
                     )}
                     {run.status === RunStatus.Paused && (
-                      <button className="ai-agents__control-btn ai-agents__control-btn--primary" onClick={() => handleResume(run.id)} aria-label="Resume run">
+                      <button className="copilot-agents__control-btn copilot-agents__control-btn--primary" onClick={() => handleResume(run.id)} aria-label="Resume run">
                         <Play size={14} /> Resume
                       </button>
                     )}
-                    <button className="ai-agents__control-btn ai-agents__control-btn--danger" onClick={() => handleCancel(run.id)} aria-label="Cancel run">
+                    <button className="copilot-agents__control-btn copilot-agents__control-btn--danger" onClick={() => handleCancel(run.id)} aria-label="Cancel run">
                       <Square size={14} /> Cancel
                     </button>
-                    <button className="ai-agents__control-btn" onClick={() => handleChat(run.id)} aria-label="Chat with agent">
+                    <button className="copilot-agents__control-btn" onClick={() => handleChat(run.id)} aria-label="Chat with agent">
                       <MessageSquare size={14} /> Chat
                     </button>
                   </div>
 
                   {chatRunId === run.id && (
-                    <div className="ai-agents__chat-placeholder">
-                      <p className="ai-agents__chat-note">Chat with this agent during its run. The agent is currently working on: {run.task}</p>
+                    <div className="copilot-agents__chat-placeholder">
+                      <p className="copilot-agents__chat-note">Chat with this agent during its run. The agent is currently working on: {run.task}</p>
                     </div>
                   )}
                 </div>
@@ -804,15 +804,15 @@ export default function AIAgentsPage() {
 
       {/* Run History */}
       {completedRuns.length > 0 && (
-        <section className="ai-agents__history" aria-label="Agent run history">
-          <button className="ai-agents__history-toggle" onClick={toggleHistory} aria-expanded={showHistory}>
-            <h3 className="ai-agents__section-title">Run History ({completedRuns.length})</h3>
+        <section className="copilot-agents__history" aria-label="Agent run history">
+          <button className="copilot-agents__history-toggle" onClick={toggleHistory} aria-expanded={showHistory}>
+            <h3 className="copilot-agents__section-title">Run History ({completedRuns.length})</h3>
             {showHistory ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
 
           {showHistory && (
-            <div className="ai-agents__history-table-wrap">
-              <table className="ai-agents__history-table" role="table">
+            <div className="copilot-agents__history-table-wrap">
+              <table className="copilot-agents__history-table" role="table">
                 <thead>
                   <tr>
                     <th>Agent</th>
@@ -829,7 +829,7 @@ export default function AIAgentsPage() {
                     return (
                       <tr key={run.id}>
                         <td>{agentDef?.label ?? run.agentType} Agent</td>
-                        <td className="ai-agents__history-task">{run.task}</td>
+                        <td className="copilot-agents__history-task">{run.task}</td>
                         <td>
                           <Badge variant={RUN_STATUS_VARIANT[run.status]} size="sm">
                             {run.status}
@@ -840,7 +840,7 @@ export default function AIAgentsPage() {
                         <td>
                           {run.status === RunStatus.Completed && run.result && (
                             <button
-                              className="ai-agents__view-results-btn"
+                              className="copilot-agents__view-results-btn"
                               onClick={() => handleViewResults(run.id)}
                               aria-label={`View results for ${run.task}`}
                             >

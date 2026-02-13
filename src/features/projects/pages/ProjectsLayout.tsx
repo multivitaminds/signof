@@ -1,15 +1,12 @@
 import { Outlet } from 'react-router-dom'
-import { FolderKanban } from 'lucide-react'
+import ModuleHeader from '../../../components/ui/ModuleHeader'
 import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
 import './ProjectsLayout.css'
 
 export default function ProjectsLayout() {
   return (
     <div className="projects-layout">
-      <div className="projects-layout__header">
-        <FolderKanban size={24} className="projects-layout__icon" />
-        <h1 className="projects-layout__title">Projects</h1>
-      </div>
+      <ModuleHeader title="Projects" subtitle="Track issues, sprints, and milestones" />
 
       <div className="projects-layout__content">
         <Outlet />

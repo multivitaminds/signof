@@ -181,7 +181,7 @@ export default function AIWritingAssistant({
       className="ai-writing-assistant"
       style={{ top: position.top, left: position.left }}
       role="toolbar"
-      aria-label="AI Writing Assistant"
+      aria-label="Copilot Writing Assistant"
     >
       {/* Toolbar buttons */}
       {!suggestion && !isProcessing && (

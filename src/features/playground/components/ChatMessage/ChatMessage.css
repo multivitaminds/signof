@@ -47,6 +47,4 @@
 .chat-message__tool-status--running { background: rgba(217, 119, 6, 0.1); color: var(--color-warning); }
 .chat-message__tool-status--error { background: rgba(220, 38, 38, 0.1); color: var(--color-danger); }
 
-@media (prefers-color-scheme: dark) {
-  .chat-message--assistant .chat-message__inline-code { background: rgba(255, 255, 255, 0.1); }
-}
+[data-theme="dark"] .chat-message--assistant .chat-message__inline-code { background: rgba(255, 255, 255, 0.1); }

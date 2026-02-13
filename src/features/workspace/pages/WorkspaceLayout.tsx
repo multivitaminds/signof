@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import { Star, Clock } from 'lucide-react'
+import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { useWorkspaceStore } from '../stores/useWorkspaceStore'
 import PageTree from '../components/PageTree/PageTree'
 import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
@@ -54,6 +55,7 @@ export default function WorkspaceLayout() {
   return (
     <div className="workspace-layout">
       <aside className="workspace-layout__sidebar">
+        <ModuleHeader title="Pages" subtitle="Wiki, docs, and knowledge base" />
         {/* Favorites section */}
         {favoritePages.length > 0 && (
           <div className="workspace-layout__section">

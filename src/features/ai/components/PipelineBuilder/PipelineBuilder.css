@@ -317,7 +317,7 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .pipeline-builder__modal {
     width: 95%;
     max-height: 90vh;

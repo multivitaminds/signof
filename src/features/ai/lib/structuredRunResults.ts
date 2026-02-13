@@ -12,10 +12,10 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
     actions: [
       { label: 'Review research in workspace', description: 'Open workspace pages to review collected findings', link: '/pages', priority: 'high', icon: 'FileText' },
       { label: 'Explore raw data sources', description: 'View databases where data was collected', link: '/data', priority: 'medium', icon: 'Database' },
-      { label: 'Save findings to memory', description: 'Store key insights in AI memory for future reference', link: '/ai/memory', priority: 'medium', icon: 'Brain' },
+      { label: 'Save findings to memory', description: 'Store key insights in Copilot memory for future reference', link: '/copilot/memory', priority: 'medium', icon: 'Brain' },
     ],
     suggestions: [
-      { title: 'Automate Recurring Research', description: 'Set up a pipeline to run this research weekly', link: '/ai/agents', buttonLabel: 'Create Pipeline', icon: 'Zap' },
+      { title: 'Automate Recurring Research', description: 'Set up a pipeline to run this research weekly', link: '/copilot/agents', buttonLabel: 'Create Pipeline', icon: 'Zap' },
       { title: 'Build a Dashboard', description: 'Visualize these findings in a database view', link: '/data', buttonLabel: 'Create Database', icon: 'BarChart3' },
       { title: 'Share with Team', description: 'Create a workspace page with the research summary', link: '/pages/new', buttonLabel: 'Create Page', icon: 'Share2' },
     ],
@@ -35,7 +35,7 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
       { label: 'Send for signing', description: 'Route the document for digital signatures', link: '/documents', priority: 'low', icon: 'PenTool' },
     ],
     suggestions: [
-      { title: 'Run a Review', description: 'Have the Reviewer Agent check quality and compliance', link: '/ai/agents', buttonLabel: 'Start Review', icon: 'CheckSquare' },
+      { title: 'Run a Review', description: 'Have the Reviewer Agent check quality and compliance', link: '/copilot/agents', buttonLabel: 'Start Review', icon: 'CheckSquare' },
       { title: 'Track Document Analytics', description: 'Monitor views, signatures, and engagement', link: '/documents/analytics', buttonLabel: 'View Analytics', icon: 'BarChart3' },
       { title: 'Add to Project', description: 'Attach this document to an active project', link: '/projects', buttonLabel: 'Open Projects', icon: 'FolderOpen' },
     ],
@@ -55,7 +55,7 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
       { label: 'Link to project', description: 'Track this implementation in your project board', link: '/projects', priority: 'medium', icon: 'ClipboardList' },
     ],
     suggestions: [
-      { title: 'Run Security Scan', description: 'Have the Security Agent audit the new code', link: '/ai/agents', buttonLabel: 'Start Scan', icon: 'Shield' },
+      { title: 'Run Security Scan', description: 'Have the Security Agent audit the new code', link: '/copilot/agents', buttonLabel: 'Start Scan', icon: 'Shield' },
       { title: 'Set Up CI/CD', description: 'Configure deployment pipeline for this feature', link: '/developer/webhooks', buttonLabel: 'Configure', icon: 'Server' },
       { title: 'Test in Sandbox', description: 'Try the new API endpoints in the developer sandbox', link: '/developer/sandbox', buttonLabel: 'Open Sandbox', icon: 'Code2' },
     ],
@@ -75,8 +75,8 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
       { label: 'Attach to project', description: 'Link design deliverables to the project', link: '/projects', priority: 'medium', icon: 'FolderOpen' },
     ],
     suggestions: [
-      { title: 'Hand Off to Developer', description: 'Have the Developer Agent implement the designs', link: '/ai/agents', buttonLabel: 'Start Build', icon: 'Code2' },
-      { title: 'Store Brand Guidelines', description: 'Save design tokens in AI memory for consistency', link: '/ai/memory', buttonLabel: 'Save to Memory', icon: 'Brain' },
+      { title: 'Hand Off to Developer', description: 'Have the Developer Agent implement the designs', link: '/copilot/agents', buttonLabel: 'Start Build', icon: 'Code2' },
+      { title: 'Store Brand Guidelines', description: 'Save design tokens in Copilot memory for consistency', link: '/copilot/memory', buttonLabel: 'Save to Memory', icon: 'Brain' },
       { title: 'Schedule Review Meeting', description: 'Book a design review with stakeholders', link: '/calendar/events', buttonLabel: 'Schedule', icon: 'Calendar' },
     ],
   },
@@ -96,7 +96,7 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
     ],
     suggestions: [
       { title: 'Build a Dashboard', description: 'Create a live database view to monitor these metrics', link: '/data', buttonLabel: 'Create Database', icon: 'BarChart3' },
-      { title: 'Schedule Weekly Report', description: 'Automate this analysis to run every Monday', link: '/ai/agents', buttonLabel: 'Create Pipeline', icon: 'Zap' },
+      { title: 'Schedule Weekly Report', description: 'Automate this analysis to run every Monday', link: '/copilot/agents', buttonLabel: 'Create Pipeline', icon: 'Zap' },
       { title: 'Share Insights', description: 'Create a page summarizing key findings for the team', link: '/pages/new', buttonLabel: 'Create Page', icon: 'Share2' },
     ],
   },
@@ -152,10 +152,10 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
     actions: [
       { label: 'View documents', description: 'Open the reviewed documents for corrections', link: '/documents', priority: 'high', icon: 'FileText' },
       { label: 'Check project tasks', description: 'Update project tasks with review feedback', link: '/projects', priority: 'medium', icon: 'ClipboardList' },
-      { label: 'Save review standards', description: 'Store review criteria in AI memory', link: '/ai/memory', priority: 'low', icon: 'Brain' },
+      { label: 'Save review standards', description: 'Store review criteria in Copilot memory', link: '/copilot/memory', priority: 'low', icon: 'Brain' },
     ],
     suggestions: [
-      { title: 'Run Security Audit', description: 'Follow up with a security-focused review', link: '/ai/agents', buttonLabel: 'Start Audit', icon: 'Shield' },
+      { title: 'Run Security Audit', description: 'Follow up with a security-focused review', link: '/copilot/agents', buttonLabel: 'Start Audit', icon: 'Shield' },
       { title: 'Track in Analytics', description: 'Monitor quality metrics over time', link: '/documents/analytics', buttonLabel: 'View Trends', icon: 'TrendingUp' },
       { title: 'Create Checklist', description: 'Build a reusable review checklist page', link: '/pages/new', buttonLabel: 'Create Page', icon: 'CheckSquare' },
     ],
@@ -175,7 +175,7 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
       { label: 'Schedule demos', description: 'Book demo meetings with hot leads', link: '/calendar/events', priority: 'medium', icon: 'Calendar' },
     ],
     suggestions: [
-      { title: 'Set Up Outreach Sequence', description: 'Create an automated email pipeline for warm leads', link: '/ai/agents', buttonLabel: 'Create Pipeline', icon: 'Zap' },
+      { title: 'Set Up Outreach Sequence', description: 'Create an automated email pipeline for warm leads', link: '/copilot/agents', buttonLabel: 'Create Pipeline', icon: 'Zap' },
       { title: 'Track Revenue', description: 'View revenue dashboards in accounting', link: '/accounting/dashboard', buttonLabel: 'View Dashboard', icon: 'BarChart3' },
       { title: 'Create Proposal Template', description: 'Build a reusable proposal in the document builder', link: '/documents/builder', buttonLabel: 'Build Template', icon: 'FileText' },
     ],
@@ -195,8 +195,8 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
       { label: 'Manage contacts', description: 'Update audience segments and contacts', link: '/accounting/contacts', priority: 'medium', icon: 'Users' },
     ],
     suggestions: [
-      { title: 'Run SEO Optimization', description: 'Have the SEO Agent optimize landing pages', link: '/ai/agents', buttonLabel: 'Start SEO', icon: 'Globe' },
-      { title: 'Schedule Social Posts', description: 'Plan social media posts with the Social Media Agent', link: '/ai/agents', buttonLabel: 'Start Social', icon: 'Share2' },
+      { title: 'Run SEO Optimization', description: 'Have the SEO Agent optimize landing pages', link: '/copilot/agents', buttonLabel: 'Start SEO', icon: 'Globe' },
+      { title: 'Schedule Social Posts', description: 'Plan social media posts with the Social Media Agent', link: '/copilot/agents', buttonLabel: 'Start Social', icon: 'Share2' },
       { title: 'Track Expenses', description: 'Log campaign spend in accounting', link: '/accounting/expenses', buttonLabel: 'Add Expenses', icon: 'DollarSign' },
     ],
   },
@@ -232,10 +232,10 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
     actions: [
       { label: 'Open document builder', description: 'Edit and redline the contract', link: '/documents/builder', priority: 'high', icon: 'FileText' },
       { label: 'View all documents', description: 'Access the full document library', link: '/documents', priority: 'medium', icon: 'FolderOpen' },
-      { label: 'Save legal standards', description: 'Store review criteria for future contracts', link: '/ai/memory', priority: 'low', icon: 'Brain' },
+      { label: 'Save legal standards', description: 'Store review criteria for future contracts', link: '/copilot/memory', priority: 'low', icon: 'Brain' },
     ],
     suggestions: [
-      { title: 'Run Compliance Check', description: 'Have the Compliance Agent verify regulatory adherence', link: '/ai/agents', buttonLabel: 'Start Check', icon: 'ShieldCheck' },
+      { title: 'Run Compliance Check', description: 'Have the Compliance Agent verify regulatory adherence', link: '/copilot/agents', buttonLabel: 'Start Check', icon: 'ShieldCheck' },
       { title: 'Send for Signing', description: 'Route the finalized contract for digital signatures', link: '/documents', buttonLabel: 'Send Document', icon: 'PenTool' },
       { title: 'Schedule Negotiation', description: 'Book a call to discuss high-risk clauses', link: '/calendar/events', buttonLabel: 'Schedule Call', icon: 'Calendar' },
     ],
@@ -255,7 +255,7 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
       { label: 'Check integrations', description: 'Verify third-party integration compliance', link: '/settings/integrations', priority: 'medium', icon: 'Globe' },
     ],
     suggestions: [
-      { title: 'Run Security Scan', description: 'Follow up with a full security assessment', link: '/ai/agents', buttonLabel: 'Start Scan', icon: 'Shield' },
+      { title: 'Run Security Scan', description: 'Follow up with a full security assessment', link: '/copilot/agents', buttonLabel: 'Start Scan', icon: 'Shield' },
       { title: 'Create Audit Trail', description: 'Set up document tracking and audit logs', link: '/documents/analytics', buttonLabel: 'View Analytics', icon: 'BarChart3' },
       { title: 'Schedule Review', description: 'Book a compliance review meeting', link: '/calendar/events', buttonLabel: 'Schedule', icon: 'Calendar' },
     ],
@@ -277,7 +277,7 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
     suggestions: [
       { title: 'Track Payroll', description: 'Set up payroll for the new hire', link: '/accounting/payroll', buttonLabel: 'Open Payroll', icon: 'DollarSign' },
       { title: 'Create Checklist DB', description: 'Build an onboarding checklist database', link: '/data', buttonLabel: 'Create Database', icon: 'Database' },
-      { title: 'Store HR Policies', description: 'Save hiring standards in AI memory', link: '/ai/memory', buttonLabel: 'Save to Memory', icon: 'Brain' },
+      { title: 'Store HR Policies', description: 'Save hiring standards in Copilot memory', link: '/copilot/memory', buttonLabel: 'Save to Memory', icon: 'Brain' },
     ],
   },
 
@@ -312,10 +312,10 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
     actions: [
       { label: 'Review in documents', description: 'Open translated documents for final review', link: '/documents', priority: 'high', icon: 'FileText' },
       { label: 'Edit in workspace', description: 'Fine-tune translations in workspace pages', link: '/pages', priority: 'medium', icon: 'BookOpen' },
-      { label: 'Save glossary', description: 'Store translation glossary in AI memory', link: '/ai/memory', priority: 'low', icon: 'Brain' },
+      { label: 'Save glossary', description: 'Store translation glossary in Copilot memory', link: '/copilot/memory', priority: 'low', icon: 'Brain' },
     ],
     suggestions: [
-      { title: 'Run Quality Review', description: 'Have the Reviewer Agent check the translation', link: '/ai/agents', buttonLabel: 'Start Review', icon: 'CheckSquare' },
+      { title: 'Run Quality Review', description: 'Have the Reviewer Agent check the translation', link: '/copilot/agents', buttonLabel: 'Start Review', icon: 'CheckSquare' },
       { title: 'Build Glossary Database', description: 'Create a searchable terminology database', link: '/data', buttonLabel: 'Create Database', icon: 'Database' },
       { title: 'Send for Signing', description: 'Route translated contracts for signatures', link: '/documents', buttonLabel: 'Send Document', icon: 'PenTool' },
     ],
@@ -332,10 +332,10 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
     actions: [
       { label: 'Edit optimized pages', description: 'Update workspace pages with SEO improvements', link: '/pages', priority: 'high', icon: 'FileText' },
       { label: 'Track analytics', description: 'Monitor document and page engagement', link: '/documents/analytics', priority: 'high', icon: 'BarChart3' },
-      { label: 'Save keyword data', description: 'Store keyword research in AI memory', link: '/ai/memory', priority: 'medium', icon: 'Brain' },
+      { label: 'Save keyword data', description: 'Store keyword research in Copilot memory', link: '/copilot/memory', priority: 'medium', icon: 'Brain' },
     ],
     suggestions: [
-      { title: 'Create Content Pipeline', description: 'Automate content creation for gap keywords', link: '/ai/agents', buttonLabel: 'Create Pipeline', icon: 'Zap' },
+      { title: 'Create Content Pipeline', description: 'Automate content creation for gap keywords', link: '/copilot/agents', buttonLabel: 'Create Pipeline', icon: 'Zap' },
       { title: 'Build Keyword Tracker', description: 'Create a database to track keyword rankings', link: '/data', buttonLabel: 'Create Database', icon: 'Database' },
       { title: 'Plan Content Calendar', description: 'Schedule content publication in the calendar', link: '/calendar/events', buttonLabel: 'Create Events', icon: 'Calendar' },
     ],
@@ -355,9 +355,9 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
       { label: 'Track performance', description: 'Monitor engagement in analytics', link: '/calendar/analytics', priority: 'medium', icon: 'BarChart3' },
     ],
     suggestions: [
-      { title: 'Run SEO Check', description: 'Optimize social content for search visibility', link: '/ai/agents', buttonLabel: 'Start SEO', icon: 'Globe' },
+      { title: 'Run SEO Check', description: 'Optimize social content for search visibility', link: '/copilot/agents', buttonLabel: 'Start SEO', icon: 'Globe' },
       { title: 'Build Analytics DB', description: 'Track post performance in a database', link: '/data', buttonLabel: 'Create Database', icon: 'Database' },
-      { title: 'Create Brand Guide', description: 'Save brand voice and style to AI memory', link: '/ai/memory', buttonLabel: 'Save to Memory', icon: 'Brain' },
+      { title: 'Create Brand Guide', description: 'Save brand voice and style to Copilot memory', link: '/copilot/memory', buttonLabel: 'Save to Memory', icon: 'Brain' },
     ],
   },
 
@@ -375,7 +375,7 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
       { label: 'Update access controls', description: 'Review team member permissions', link: '/settings/members', priority: 'medium', icon: 'Users' },
     ],
     suggestions: [
-      { title: 'Run Compliance Audit', description: 'Follow up with a compliance check (GDPR, SOC2)', link: '/ai/agents', buttonLabel: 'Start Audit', icon: 'ShieldCheck' },
+      { title: 'Run Compliance Audit', description: 'Follow up with a compliance check (GDPR, SOC2)', link: '/copilot/agents', buttonLabel: 'Start Audit', icon: 'ShieldCheck' },
       { title: 'Configure Notifications', description: 'Set up alerts for security events', link: '/settings/notifications', buttonLabel: 'Configure', icon: 'Bell' },
       { title: 'Document Findings', description: 'Create a security report in workspace', link: '/pages/new', buttonLabel: 'Create Report', icon: 'FileText' },
     ],
@@ -395,7 +395,7 @@ const STRUCTURED_RESULTS: Record<string, StructuredRunResult> = {
       { label: 'Manage SDK integrations', description: 'Review SDK configurations', link: '/developer/sdks', priority: 'medium', icon: 'Code2' },
     ],
     suggestions: [
-      { title: 'Run Security Scan', description: 'Audit infrastructure for vulnerabilities', link: '/ai/agents', buttonLabel: 'Start Scan', icon: 'Shield' },
+      { title: 'Run Security Scan', description: 'Audit infrastructure for vulnerabilities', link: '/copilot/agents', buttonLabel: 'Start Scan', icon: 'Shield' },
       { title: 'Create Runbooks', description: 'Document incident response procedures', link: '/pages/new', buttonLabel: 'Create Page', icon: 'FileText' },
       { title: 'Set Up Sandbox', description: 'Test deployments in the developer sandbox', link: '/developer/sandbox', buttonLabel: 'Open Sandbox', icon: 'Code2' },
     ],

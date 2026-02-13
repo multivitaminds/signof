@@ -948,7 +948,7 @@
 
 /* ─── Responsive ──────────────────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .tax-filing__form-grid {
     grid-template-columns: 1fr;
   }

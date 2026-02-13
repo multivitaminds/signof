@@ -1,4 +1,4 @@
-import { render, screen, within, waitFor } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import KeyboardShortcutHelp from './KeyboardShortcutHelp'
 import { useAppStore } from '../../stores/useAppStore'
@@ -93,16 +93,19 @@ describe('KeyboardShortcutHelp', () => {
   })
 
   it('shows empty state when search has no results', async () => {
-    const user = userEvent.setup()
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     useAppStore.setState({ shortcutHelpOpen: true })
     render(<KeyboardShortcutHelp />)
+
+    // Advance past the 100ms setTimeout that resets search on open
+    vi.advanceTimersByTime(150)
 
     const searchInput = screen.getByLabelText('Search keyboard shortcuts')
     await user.type(searchInput, 'xyznonexistent')
 
-    await waitFor(() => {
-      expect(screen.getByText(/No shortcuts match/)).toBeInTheDocument()
-    })
+    expect(screen.getByText(/No shortcuts match/)).toBeInTheDocument()
+    vi.useRealTimers()
   })
 
   it('clears search when clear button is clicked', async () => {

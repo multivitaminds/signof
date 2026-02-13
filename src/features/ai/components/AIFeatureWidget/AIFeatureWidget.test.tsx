@@ -35,34 +35,34 @@ describe('AIFeatureWidget', () => {
 
   it('renders the floating button', () => {
     render(<AIFeatureWidget featureKey="home" />)
-    expect(screen.getByRole('button', { name: /ask ai about home/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /ask copilot about home/i })).toBeInTheDocument()
   })
 
   it('renders the wand icon in the button', () => {
     render(<AIFeatureWidget featureKey="workspace" />)
-    expect(screen.getByRole('button', { name: /ask ai about workspace/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /ask copilot about workspace/i })).toBeInTheDocument()
   })
 
   it('shows tooltip text for the feature', () => {
     render(<AIFeatureWidget featureKey="projects" />)
-    expect(screen.getByText('Ask AI about Projects')).toBeInTheDocument()
+    expect(screen.getByText('Ask Copilot about Projects')).toBeInTheDocument()
   })
 
   it('calls openChat when clicked', async () => {
     const user = userEvent.setup()
     render(<AIFeatureWidget featureKey="documents" />)
-    await user.click(screen.getByRole('button', { name: /ask ai about documents/i }))
+    await user.click(screen.getByRole('button', { name: /ask copilot about documents/i }))
     expect(mockOpenChat).toHaveBeenCalledWith('documents')
   })
 
   it('renders correctly for different feature keys', () => {
     const { rerender } = render(<AIFeatureWidget featureKey="scheduling" />)
-    expect(screen.getByText('Ask AI about Scheduling')).toBeInTheDocument()
+    expect(screen.getByText('Ask Copilot about Scheduling')).toBeInTheDocument()
 
     rerender(<AIFeatureWidget featureKey="databases" />)
-    expect(screen.getByText('Ask AI about Databases')).toBeInTheDocument()
+    expect(screen.getByText('Ask Copilot about Databases')).toBeInTheDocument()
 
     rerender(<AIFeatureWidget featureKey="inbox" />)
-    expect(screen.getByText('Ask AI about Inbox')).toBeInTheDocument()
+    expect(screen.getByText('Ask Copilot about Inbox')).toBeInTheDocument()
   })
 })

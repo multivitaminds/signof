@@ -7,6 +7,7 @@ import {
   PlayCircle,
   Key,
 } from 'lucide-react'
+import ModuleHeader from '../../../components/ui/ModuleHeader'
 import './DeveloperLayout.css'
 
 type DeveloperTab =
@@ -61,10 +62,7 @@ function DeveloperLayout() {
   return (
     <div className="developer-layout">
       <aside className="developer-layout__sidebar">
-        <div className="developer-layout__sidebar-header">
-          <h2 className="developer-layout__title">Developer</h2>
-          <span className="developer-layout__version">v1.0</span>
-        </div>
+        <ModuleHeader title="Developer" subtitle="API docs, webhooks, and SDKs" />
 
         <nav className="developer-layout__nav">
           {NAV_ITEMS.map(item => (

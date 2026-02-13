@@ -46,12 +46,11 @@
   color: var(--text-primary, #1e293b);
 }
 
-@media (prefers-color-scheme: dark) {
-  .tiptap-equation__editor {
-    border-color: var(--border-color, #334155);
-  }
-  .tiptap-equation__input {
-    background: var(--bg-primary, #0f0f1a);
-    border-color: var(--border-color, #334155);
-  }
+[data-theme="dark"] .tiptap-equation__editor {
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .tiptap-equation__input {
+  background: var(--bg-primary, #0f0f1a);
+  border-color: var(--border-color, #334155);
 }

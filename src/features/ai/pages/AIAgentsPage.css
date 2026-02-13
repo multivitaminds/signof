@@ -1,22 +1,22 @@
-.ai-agents {
+.copilot-agents {
   height: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: var(--space-lg) var(--space-xl);
 }
 
-.ai-agents__header {
+.copilot-agents__header {
   margin-bottom: var(--space-lg);
 }
 
-.ai-agents__title {
+.copilot-agents__title {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 var(--space-xs) 0;
 }
 
-.ai-agents__subtitle {
+.copilot-agents__subtitle {
   font-size: 0.875rem;
   color: var(--text-secondary);
   margin: 0;
@@ -24,14 +24,14 @@
 
 /* ─── Stats Bar ────────────────────────────────────────── */
 
-.ai-agents__stats-bar {
+.copilot-agents__stats-bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-md);
   margin-bottom: var(--space-lg);
 }
 
-.ai-agents__stat-card {
+.copilot-agents__stat-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -42,13 +42,13 @@
   border-radius: var(--radius-lg);
 }
 
-.ai-agents__stat-value {
+.copilot-agents__stat-value {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-primary);
 }
 
-.ai-agents__stat-label {
+.copilot-agents__stat-label {
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--text-muted);
@@ -58,14 +58,14 @@
 
 /* ─── View Tabs ────────────────────────────────────────── */
 
-.ai-agents__view-tabs {
+.copilot-agents__view-tabs {
   display: flex;
   gap: var(--space-xs);
   margin-bottom: var(--space-md);
   border-bottom: 1px solid var(--border-color);
 }
 
-.ai-agents__view-tab {
+.copilot-agents__view-tab {
   padding: var(--space-sm) var(--space-md);
   font-size: 0.875rem;
   font-weight: 500;
@@ -78,18 +78,18 @@
   margin-bottom: -1px;
 }
 
-.ai-agents__view-tab:hover {
+.copilot-agents__view-tab:hover {
   color: var(--text-primary);
 }
 
-.ai-agents__view-tab--active {
+.copilot-agents__view-tab--active {
   color: var(--color-primary);
   border-bottom-color: var(--color-primary);
 }
 
 /* ─── Filters (Category Pills + Search) ────────────────── */
 
-.ai-agents__filters {
+.copilot-agents__filters {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -98,13 +98,13 @@
   flex-wrap: wrap;
 }
 
-.ai-agents__category-pills {
+.copilot-agents__category-pills {
   display: flex;
   gap: var(--space-xs);
   flex-wrap: wrap;
 }
 
-.ai-agents__category-pill {
+.copilot-agents__category-pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -120,18 +120,18 @@
   white-space: nowrap;
 }
 
-.ai-agents__category-pill:hover {
+.copilot-agents__category-pill:hover {
   color: var(--text-primary);
   border-color: var(--color-primary);
 }
 
-.ai-agents__category-pill--active {
+.copilot-agents__category-pill--active {
   color: #fff;
   background: var(--color-primary);
   border-color: var(--color-primary);
 }
 
-.ai-agents__search-bar {
+.copilot-agents__search-bar {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
@@ -142,12 +142,12 @@
   min-width: 200px;
 }
 
-.ai-agents__search-icon {
+.copilot-agents__search-icon {
   color: var(--text-muted);
   flex-shrink: 0;
 }
 
-.ai-agents__search-input {
+.copilot-agents__search-input {
   flex: 1;
   padding: 2px 0;
   font-size: 0.8125rem;
@@ -157,13 +157,13 @@
   outline: none;
 }
 
-.ai-agents__search-input::placeholder {
+.copilot-agents__search-input::placeholder {
   color: var(--text-muted);
 }
 
 /* ─── Empty State ──────────────────────────────────────── */
 
-.ai-agents__empty {
+.copilot-agents__empty {
   text-align: center;
   padding: var(--space-xl);
   color: var(--text-muted);
@@ -172,14 +172,14 @@
 
 /* ─── Agent Cards Grid ─────────────────────────────────── */
 
-.ai-agents__grid {
+.copilot-agents__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--space-md);
   margin-bottom: var(--space-xl);
 }
 
-.ai-agents__card {
+.copilot-agents__card {
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-top: 3px solid var(--color-primary);
@@ -191,17 +191,17 @@
   transition: box-shadow 0.15s ease;
 }
 
-.ai-agents__card:hover {
+.copilot-agents__card:hover {
   box-shadow: var(--shadow-md);
 }
 
-.ai-agents__card-header {
+.copilot-agents__card-header {
   display: flex;
   gap: var(--space-sm);
   align-items: flex-start;
 }
 
-.ai-agents__card-icon {
+.copilot-agents__card-icon {
   flex-shrink: 0;
   width: 40px;
   height: 40px;
@@ -212,26 +212,26 @@
   border-radius: var(--radius-md);
 }
 
-.ai-agents__card-info {
+.copilot-agents__card-info {
   flex: 1;
   min-width: 0;
 }
 
-.ai-agents__card-name-row {
+.copilot-agents__card-name-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-xs);
 }
 
-.ai-agents__card-name {
+.copilot-agents__card-name {
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0 0 2px 0;
 }
 
-.ai-agents__card-favorite {
+.copilot-agents__card-favorite {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -246,22 +246,22 @@
   flex-shrink: 0;
 }
 
-.ai-agents__card-favorite:hover {
-  color: #F59E0B;
+.copilot-agents__card-favorite:hover {
+  color: var(--color-warning);
 }
 
-.ai-agents__card-favorite--active {
-  color: #F59E0B;
+.copilot-agents__card-favorite--active {
+  color: var(--color-warning);
 }
 
-.ai-agents__card-desc {
+.copilot-agents__card-desc {
   font-size: 0.8125rem;
   color: var(--text-secondary);
   margin: 0;
   line-height: 1.4;
 }
 
-.ai-agents__card-category-badge {
+.copilot-agents__card-category-badge {
   display: inline-block;
   width: fit-content;
   font-size: 0.6875rem;
@@ -273,13 +273,13 @@
   border-radius: 999px;
 }
 
-.ai-agents__card-input-row {
+.copilot-agents__card-input-row {
   display: flex;
   gap: var(--space-xs);
   margin-top: var(--space-xs);
 }
 
-.ai-agents__card-task-input {
+.copilot-agents__card-task-input {
   flex: 1;
   padding: var(--space-xs) var(--space-sm);
   font-size: 0.8125rem;
@@ -289,13 +289,13 @@
   color: var(--text-primary);
 }
 
-.ai-agents__card-task-input:focus {
+.copilot-agents__card-task-input:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
 }
 
-.ai-agents__run-btn {
+.copilot-agents__run-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -310,11 +310,11 @@
   transition: opacity 0.15s;
 }
 
-.ai-agents__run-btn:hover {
+.copilot-agents__run-btn:hover {
   opacity: 0.9;
 }
 
-.ai-agents__card-last-run {
+.copilot-agents__card-last-run {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -324,18 +324,18 @@
 
 /* ─── Pipelines Section ────────────────────────────────── */
 
-.ai-agents__pipelines-section {
+.copilot-agents__pipelines-section {
   padding-top: var(--space-sm);
 }
 
-.ai-agents__pipelines-header {
+.copilot-agents__pipelines-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-md);
 }
 
-.ai-agents__create-pipeline-btn {
+.copilot-agents__create-pipeline-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -350,18 +350,18 @@
   transition: opacity 0.15s;
 }
 
-.ai-agents__create-pipeline-btn:hover {
+.copilot-agents__create-pipeline-btn:hover {
   opacity: 0.9;
 }
 
-.ai-agents__pipeline-list {
+.copilot-agents__pipeline-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
   margin-bottom: var(--space-lg);
 }
 
-.ai-agents__pipeline-subhead {
+.copilot-agents__pipeline-subhead {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -372,17 +372,17 @@
 
 /* ─── Templates Section ────────────────────────────────── */
 
-.ai-agents__templates-section {
+.copilot-agents__templates-section {
   padding-top: var(--space-sm);
 }
 
-.ai-agents__templates-desc {
+.copilot-agents__templates-desc {
   font-size: 0.875rem;
   color: var(--text-secondary);
   margin: var(--space-xs) 0 var(--space-lg) 0;
 }
 
-.ai-agents__templates-grid {
+.copilot-agents__templates-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--space-md);
@@ -390,7 +390,7 @@
 
 /* ─── Section Titles ────────────────────────────────────── */
 
-.ai-agents__section-title {
+.copilot-agents__section-title {
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -399,18 +399,18 @@
 
 /* ─── Active Runs ───────────────────────────────────────── */
 
-.ai-agents__active-runs {
+.copilot-agents__active-runs {
   margin-bottom: var(--space-xl);
 }
 
-.ai-agents__runs-list {
+.copilot-agents__runs-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
   margin-top: var(--space-md);
 }
 
-.ai-agents__run-card {
+.copilot-agents__run-card {
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
@@ -420,33 +420,33 @@
   gap: var(--space-sm);
 }
 
-.ai-agents__run-header {
+.copilot-agents__run-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-sm);
 }
 
-.ai-agents__run-info {
+.copilot-agents__run-info {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.ai-agents__run-agent {
+.copilot-agents__run-agent {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.ai-agents__run-task {
+.copilot-agents__run-task {
   font-size: 0.8125rem;
   color: var(--text-secondary);
 }
 
 /* Progress Bar */
 
-.ai-agents__progress-bar {
+.copilot-agents__progress-bar {
   width: 100%;
   height: 4px;
   background: var(--border-color);
@@ -454,7 +454,7 @@
   overflow: hidden;
 }
 
-.ai-agents__progress-fill {
+.copilot-agents__progress-fill {
   height: 100%;
   background: var(--color-primary);
   border-radius: 2px;
@@ -463,13 +463,13 @@
 
 /* Steps */
 
-.ai-agents__steps {
+.copilot-agents__steps {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
 }
 
-.ai-agents__step {
+.copilot-agents__step {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
@@ -477,53 +477,53 @@
   color: var(--text-secondary);
 }
 
-.ai-agents__step--completed {
+.copilot-agents__step--completed {
   color: var(--color-success);
 }
 
-.ai-agents__step--running {
+.copilot-agents__step--running {
   color: var(--color-primary);
 }
 
-.ai-agents__step--error {
+.copilot-agents__step--error {
   color: var(--color-danger);
 }
 
-.ai-agents__step-icon--pending {
+.copilot-agents__step-icon--pending {
   color: var(--text-muted);
 }
 
-.ai-agents__step-icon--running {
+.copilot-agents__step-icon--running {
   color: var(--color-primary);
-  animation: ai-agents-spin 1s linear infinite;
+  animation: copilot-agents-spin 1s linear infinite;
 }
 
-.ai-agents__step-icon--completed {
+.copilot-agents__step-icon--completed {
   color: var(--color-success);
 }
 
-.ai-agents__step-icon--error {
+.copilot-agents__step-icon--error {
   color: var(--color-danger);
 }
 
-@keyframes ai-agents-spin {
+@keyframes copilot-agents-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-.ai-agents__step-content {
+.copilot-agents__step-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.ai-agents__step-label {
+.copilot-agents__step-label {
   flex: 1;
 }
 
-.ai-agents__step-output {
+.copilot-agents__step-output {
   font-size: 0.75rem;
   color: var(--text-muted);
   font-style: italic;
@@ -531,7 +531,7 @@
 
 /* Run Controls */
 
-.ai-agents__run-controls {
+.copilot-agents__run-controls {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
@@ -539,7 +539,7 @@
   padding-top: var(--space-sm);
 }
 
-.ai-agents__control-btn {
+.copilot-agents__control-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -554,35 +554,35 @@
   transition: all 0.15s;
 }
 
-.ai-agents__control-btn:hover {
+.copilot-agents__control-btn:hover {
   background: var(--border-color);
   color: var(--text-primary);
 }
 
-.ai-agents__control-btn--primary {
+.copilot-agents__control-btn--primary {
   color: var(--color-primary);
   border-color: var(--color-primary);
 }
 
-.ai-agents__control-btn--danger {
+.copilot-agents__control-btn--danger {
   color: var(--color-danger);
 }
 
-.ai-agents__control-btn--danger:hover {
+.copilot-agents__control-btn--danger:hover {
   background: rgba(220, 38, 38, 0.1);
   border-color: var(--color-danger);
 }
 
 /* Chat Placeholder */
 
-.ai-agents__chat-placeholder {
+.copilot-agents__chat-placeholder {
   padding: var(--space-sm);
   background: var(--bg-secondary);
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
 }
 
-.ai-agents__chat-note {
+.copilot-agents__chat-note {
   font-size: 0.8125rem;
   color: var(--text-secondary);
   margin: 0;
@@ -590,12 +590,12 @@
 
 /* ─── Run History ───────────────────────────────────────── */
 
-.ai-agents__history {
+.copilot-agents__history {
   border-top: 1px solid var(--border-color);
   padding-top: var(--space-md);
 }
 
-.ai-agents__history-toggle {
+.copilot-agents__history-toggle {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
@@ -607,22 +607,22 @@
   color: var(--text-secondary);
 }
 
-.ai-agents__history-toggle:hover {
+.copilot-agents__history-toggle:hover {
   color: var(--text-primary);
 }
 
-.ai-agents__history-table-wrap {
+.copilot-agents__history-table-wrap {
   margin-top: var(--space-md);
   overflow-x: auto;
 }
 
-.ai-agents__history-table {
+.copilot-agents__history-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.8125rem;
 }
 
-.ai-agents__history-table th {
+.copilot-agents__history-table th {
   text-align: left;
   padding: var(--space-xs) var(--space-sm);
   font-weight: 600;
@@ -631,13 +631,13 @@
   white-space: nowrap;
 }
 
-.ai-agents__history-table td {
+.copilot-agents__history-table td {
   padding: var(--space-xs) var(--space-sm);
   color: var(--text-primary);
   border-bottom: 1px solid var(--border-color);
 }
 
-.ai-agents__history-task {
+.copilot-agents__history-task {
   max-width: 300px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -646,7 +646,7 @@
 
 /* ─── View Results Button ──────────────────────────────── */
 
-.ai-agents__view-results-btn {
+.copilot-agents__view-results-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -662,14 +662,14 @@
   transition: all 0.15s;
 }
 
-.ai-agents__view-results-btn:hover {
+.copilot-agents__view-results-btn:hover {
   background: rgba(79, 70, 229, 0.15);
   border-color: var(--color-primary);
 }
 
 /* ─── Results Modal ────────────────────────────────────── */
 
-.ai-agents__result-overlay {
+.copilot-agents__result-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
@@ -677,10 +677,10 @@
   align-items: center;
   justify-content: center;
   z-index: 200;
-  animation: ai-agents-fade-in 0.15s ease-out;
+  animation: copilot-agents-fade-in 0.15s ease-out;
 }
 
-@keyframes ai-agents-fade-in {
+@keyframes copilot-agents-fade-in {
   from {
     opacity: 0;
   }
@@ -689,7 +689,7 @@
   }
 }
 
-.ai-agents__result-modal {
+.copilot-agents__result-modal {
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
@@ -701,7 +701,7 @@
   flex-direction: column;
 }
 
-.ai-agents__result-header {
+.copilot-agents__result-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -709,19 +709,19 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-.ai-agents__result-title {
+.copilot-agents__result-title {
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
 }
 
-.ai-agents__result-task {
+.copilot-agents__result-task {
   font-size: 0.8125rem;
   color: var(--text-secondary);
 }
 
-.ai-agents__result-close {
+.copilot-agents__result-close {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -735,18 +735,18 @@
   transition: all 0.15s;
 }
 
-.ai-agents__result-close:hover {
+.copilot-agents__result-close:hover {
   background: var(--bg-secondary);
   color: var(--text-primary);
 }
 
-.ai-agents__result-body {
+.copilot-agents__result-body {
   flex: 1;
   overflow-y: auto;
   padding: var(--space-md);
 }
 
-.ai-agents__result-content {
+.copilot-agents__result-content {
   font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
   font-size: 0.875rem;
   line-height: 1.6;
@@ -756,19 +756,19 @@
   margin: 0;
 }
 
-.ai-agents__result-footer {
+.copilot-agents__result-footer {
   padding: var(--space-sm) var(--space-md);
   border-top: 1px solid var(--border-color);
 }
 
-.ai-agents__result-meta {
+.copilot-agents__result-meta {
   font-size: 0.75rem;
   color: var(--text-muted);
 }
 
 /* ─── Canvas View ──────────────────────────────────────── */
 
-.ai-agents__canvas-wrapper {
+.copilot-agents__canvas-wrapper {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -776,13 +776,13 @@
   min-height: 600px;
 }
 
-.ai-agents__canvas-area {
+.copilot-agents__canvas-area {
   position: relative;
   flex: 1;
   display: flex;
 }
 
-.ai-agents__add-node-btn {
+.copilot-agents__add-node-btn {
   position: absolute;
   top: var(--space-md);
   right: var(--space-md);
@@ -801,74 +801,74 @@
   transition: opacity 0.15s;
 }
 
-.ai-agents__add-node-btn:hover {
+.copilot-agents__add-node-btn:hover {
   opacity: 0.9;
 }
 
 /* ─── Responsive ───────────────────────────────────────── */
 
 @media (max-width: 1024px) {
-  .ai-agents__grid {
+  .copilot-agents__grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   }
 
-  .ai-agents__templates-grid {
+  .copilot-agents__templates-grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
-  .ai-agents {
+  .copilot-agents {
     padding: var(--space-md);
   }
 
-  .ai-agents__stats-bar {
+  .copilot-agents__stats-bar {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .ai-agents__filters {
+  .copilot-agents__filters {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .ai-agents__category-pills {
+  .copilot-agents__category-pills {
     overflow-x: auto;
     flex-wrap: nowrap;
     padding-bottom: var(--space-xs);
   }
 
-  .ai-agents__search-bar {
+  .copilot-agents__search-bar {
     min-width: unset;
   }
 
-  .ai-agents__grid {
+  .copilot-agents__grid {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
 
-  .ai-agents__templates-grid {
+  .copilot-agents__templates-grid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 640px) {
-  .ai-agents__stats-bar {
+@media (max-width: 767px) {
+  .copilot-agents__stats-bar {
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-sm);
   }
 
-  .ai-agents__stat-card {
+  .copilot-agents__stat-card {
     padding: var(--space-sm);
   }
 
-  .ai-agents__stat-value {
+  .copilot-agents__stat-value {
     font-size: 1.25rem;
   }
 
-  .ai-agents__view-tabs {
+  .copilot-agents__view-tabs {
     overflow-x: auto;
   }
 
-  .ai-agents__grid {
+  .copilot-agents__grid {
     grid-template-columns: 1fr;
   }
 }

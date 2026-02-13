@@ -119,7 +119,7 @@ export default function AIFeatureChatModal({ featureKey, isOpen, onClose }: AIFe
           <button
             className="ai-feature-chat__close"
             onClick={onClose}
-            aria-label="Close AI chat"
+            aria-label="Close Copilot chat"
           >
             <X size={16} />
           </button>
@@ -155,7 +155,7 @@ export default function AIFeatureChatModal({ featureKey, isOpen, onClose }: AIFe
             </div>
           ))}
           {isTyping && (
-            <div className="ai-feature-chat__typing" aria-label="AI is typing">
+            <div className="ai-feature-chat__typing" aria-label="Copilot is typing">
               <span className="ai-feature-chat__typing-dot" />
               <span className="ai-feature-chat__typing-dot" />
               <span className="ai-feature-chat__typing-dot" />

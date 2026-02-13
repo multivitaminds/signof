@@ -49,15 +49,15 @@
   font-size: 0.875rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  .tiptap-bookmark__form {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: var(--border-color, #334155);
-  }
-  .tiptap-bookmark__link {
-    border-color: var(--border-color, #334155);
-  }
-  .tiptap-bookmark__link:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
+[data-theme="dark"] .tiptap-bookmark__form {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .tiptap-bookmark__link {
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .tiptap-bookmark__link:hover {
+  background: rgba(255, 255, 255, 0.05);
 }

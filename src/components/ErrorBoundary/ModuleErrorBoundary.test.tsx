@@ -86,7 +86,7 @@ describe('ModuleErrorBoundary', () => {
     })
 
     render(
-      <ModuleErrorBoundary moduleName="AI">
+      <ModuleErrorBoundary moduleName="Copilot">
         <ThrowingComponent shouldThrow={true} />
       </ModuleErrorBoundary>
     )

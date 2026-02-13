@@ -407,7 +407,7 @@
   color: #FDE68A;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .document-comparison__panels {
     grid-template-columns: 1fr;
   }

@@ -51,10 +51,8 @@
   text-decoration: underline;
 }
 
-@media (prefers-color-scheme: dark) {
-  .tiptap-file__placeholder:hover,
-  .tiptap-file__info {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--border-color, #334155);
-  }
+[data-theme="dark"] .tiptap-file__placeholder:hover,
+[data-theme="dark"] .tiptap-file__info {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-color, #334155);
 }

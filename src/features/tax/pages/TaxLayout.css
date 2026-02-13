@@ -118,7 +118,7 @@
 
 /* ─── Responsive ──────────────────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .tax-layout__header {
     padding: var(--space-4);
   }

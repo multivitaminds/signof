@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1A1A2E 0%, #0F3460 40%, #4F46E5 100%);
+  background: linear-gradient(135deg, var(--color-gray-800) 0%, #0F3460 40%, var(--color-primary) 100%);
   padding: var(--space-4, 1rem);
   position: relative;
   overflow: hidden;
@@ -83,7 +83,7 @@
 .payment-page__logo-text {
   font-size: var(--text-2xl, 1.5rem);
   font-weight: 800;
-  background: linear-gradient(135deg, #4F46E5, #059669);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-success));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

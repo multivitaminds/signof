@@ -255,57 +255,6 @@
 
 /* ─── Dark Mode ────────────────────────────────────────────────────── */
 
-@media (prefers-color-scheme: dark) {
-  .version-history {
-    background: var(--bg-secondary, #1A1A2E);
-    border-color: var(--border-color, #334155);
-  }
-
-  .version-history__item:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .version-history__item--current {
-    border-left-color: var(--color-success, #059669);
-  }
-
-  .version-history__badge {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--text-secondary, #94A3B8);
-  }
-
-  .version-history__badge--current {
-    background: rgba(5, 150, 105, 0.15);
-    color: #34D399;
-  }
-
-  .version-history__save-btn {
-    border-color: var(--border-color, #334155);
-    color: var(--text-secondary, #94A3B8);
-  }
-
-  .version-history__save-btn:hover {
-    background: var(--color-primary, #4F46E5);
-    color: white;
-    border-color: var(--color-primary, #4F46E5);
-  }
-
-  .version-history__close:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .version-history__restore-btn {
-    border-color: var(--border-color, #334155);
-    color: var(--text-secondary, #94A3B8);
-  }
-
-  .version-history__delete-btn:hover {
-    background: rgba(220, 38, 38, 0.15);
-  }
-}
-
-/* ─── [data-theme="dark"] Support ──────────────────────────────────── */
-
 [data-theme="dark"] .version-history {
   background: var(--bg-secondary, #1A1A2E);
   border-color: var(--border-color, #334155);

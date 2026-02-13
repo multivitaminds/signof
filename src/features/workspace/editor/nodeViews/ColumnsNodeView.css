@@ -15,8 +15,6 @@
   border-radius: var(--radius-sm, 0.25rem);
 }
 
-@media (prefers-color-scheme: dark) {
-  .tiptap-columns__inner > [data-type="orchestree-column"] {
-    border-color: var(--border-color, #334155);
-  }
+[data-theme="dark"] .tiptap-columns__inner > [data-type="orchestree-column"] {
+  border-color: var(--border-color, #334155);
 }

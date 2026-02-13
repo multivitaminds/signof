@@ -94,7 +94,7 @@
 }
 
 /* --- Responsive ---------------------------------------------------------- */
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .memory-hero {
     flex-direction: column;
     text-align: center;

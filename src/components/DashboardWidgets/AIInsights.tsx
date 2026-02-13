@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Wand2, AlertTriangle, TrendingUp, Clock, CheckCircle2 } from 'lucide-react'
+import { Sparkles, AlertTriangle, TrendingUp, Clock, CheckCircle2 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useDocumentStore } from '../../stores/useDocumentStore'
 import './DashboardWidgets.css'
@@ -84,10 +84,10 @@ export default function AIInsights() {
   }, [documents])
 
   return (
-    <div className="dashboard-widget dashboard-widget--ai" aria-label="AI insights">
+    <div className="dashboard-widget dashboard-widget--ai" aria-label="Copilot insights">
       <div className="dashboard-widget__header">
-        <Wand2 size={16} className="dashboard-widget__header-icon dashboard-widget__header-icon--ai" />
-        <h3 className="dashboard-widget__title">AI Insights</h3>
+        <Sparkles size={16} className="dashboard-widget__header-icon dashboard-widget__header-icon--ai" />
+        <h3 className="dashboard-widget__title">Copilot Insights</h3>
       </div>
       {insights.length === 0 ? (
         <p className="dashboard-widget__empty">No insights at this time</p>

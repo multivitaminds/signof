@@ -340,7 +340,7 @@
 
 /* ─── Responsive ───────────────────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .search-overlay {
     padding-top: var(--space-md, 1rem);
   }

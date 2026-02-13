@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { LayoutDashboard, FileText, FolderOpen, Send, ChevronDown, CreditCard } from 'lucide-react'
+import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { useTaxStore } from '../stores/useTaxStore'
 import { TAX_YEARS } from '../types'
 import type { TaxYear } from '../types'
@@ -19,9 +20,9 @@ function TaxLayout() {
 
   return (
     <div className="tax-layout">
+      <ModuleHeader title="Tax" subtitle="E-file tax forms and track submissions" />
       <header className="tax-layout__header">
         <div className="tax-layout__header-left">
-          <h1 className="tax-layout__title">Tax E-Filing</h1>
           <div className="tax-layout__year-select">
             <select
               value={activeTaxYear}

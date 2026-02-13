@@ -12,6 +12,7 @@ import {
 import { useInboxStore } from '../stores/useInboxStore'
 import { NotificationType, NotificationCategory, TYPE_TO_CATEGORY } from '../types'
 import type { Notification, NotificationCategory as NotifCategoryType } from '../types'
+import ModuleHeader from '../../../components/ui/ModuleHeader'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
 import './InboxPage.css'
@@ -411,30 +412,27 @@ export default function InboxPage() {
         </div>
       )}
       {/* Header */}
-      <div className="inbox-page__header">
-        <div>
-          <h1 className="inbox-page__title">
-            Inbox
-            {unreadCount > 0 && <span className="inbox-page__badge">{unreadCount}</span>}
-          </h1>
-          <p className="inbox-page__subtitle">Your notifications and updates</p>
-        </div>
-        <div className="inbox-page__header-actions">
-          <button
-            className="inbox-page__compose-btn"
-            onClick={() => setShowCompose((v) => !v)}
-            aria-label="New notification"
-          >
-            {showCompose ? <X size={16} /> : <Plus size={16} />}
-            <span>{showCompose ? 'Cancel' : 'New Notification'}</span>
-          </button>
-          {unreadCount > 0 && (
-            <button className="btn-secondary" onClick={markAllAsRead}>
-              <CheckCheck size={14} /> Mark all as read
+      <ModuleHeader
+        title="Inbox"
+        subtitle="Notifications and updates"
+        actions={
+          <div className="inbox-page__header-actions">
+            <button
+              className="inbox-page__compose-btn"
+              onClick={() => setShowCompose((v) => !v)}
+              aria-label="New notification"
+            >
+              {showCompose ? <X size={16} /> : <Plus size={16} />}
+              <span>{showCompose ? 'Cancel' : 'New Notification'}</span>
             </button>
-          )}
-        </div>
-      </div>
+            {unreadCount > 0 && (
+              <button className="btn-secondary" onClick={markAllAsRead}>
+                <CheckCheck size={14} /> Mark all as read
+              </button>
+            )}
+          </div>
+        }
+      />
 
       {/* Compose form */}
       {showCompose && (

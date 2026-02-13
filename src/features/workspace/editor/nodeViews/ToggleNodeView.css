@@ -43,8 +43,6 @@
   display: block;
 }
 
-@media (prefers-color-scheme: dark) {
-  .tiptap-toggle__chevron:hover {
-    background: rgba(255, 255, 255, 0.08);
-  }
+[data-theme="dark"] .tiptap-toggle__chevron:hover {
+  background: rgba(255, 255, 255, 0.08);
 }

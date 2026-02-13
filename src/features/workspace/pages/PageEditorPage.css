@@ -237,33 +237,6 @@
 
 /* ─── Dark Mode ───────────────────────────────────────────────────── */
 
-@media (prefers-color-scheme: dark) {
-  .page-editor__export-menu {
-    background: var(--bg-secondary, #1A1A2E);
-    border-color: var(--border-color, #334155);
-  }
-
-  .page-editor__export-option {
-    color: var(--text-primary, #F1F5F9);
-  }
-
-  .page-editor__export-option:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .page-editor__toolbar-btn--active {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .page-editor__backlink {
-    background: rgba(79, 70, 229, 0.1);
-  }
-
-  .page-editor__backlink:hover {
-    background: rgba(79, 70, 229, 0.2);
-  }
-}
-
 [data-theme="dark"] .page-editor__export-menu {
   background: var(--bg-secondary, #1A1A2E);
   border-color: var(--border-color, #334155);

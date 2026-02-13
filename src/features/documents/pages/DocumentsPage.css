@@ -595,7 +595,7 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .docs-hub {
     padding: var(--space-4, 1rem) var(--space-3, 0.75rem);
     gap: var(--space-4, 1rem);

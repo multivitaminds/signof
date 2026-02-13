@@ -326,7 +326,7 @@
 
 /* ─── Responsive ───────────────────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .bulk-send-modal__recipient-row {
     flex-wrap: wrap;
   }

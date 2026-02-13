@@ -3,11 +3,21 @@ import { Link } from 'react-router-dom'
 import {
   ArrowRight,
   Activity,
+  FileSignature,
+  FolderKanban,
+  Calendar,
+  Receipt,
+  Inbox,
+  Sparkles,
+  FileText,
+  AlertTriangle,
+  Clock,
 } from 'lucide-react'
 import { useSchedulingStore } from '../features/scheduling/stores/useSchedulingStore'
 import { useAuthStore } from '../features/auth/stores/useAuthStore'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import { useIsMobile } from '../hooks/useMediaQuery'
+import { getModuleMetrics, getUpcomingDeadlines, getCopilotInsights } from '../lib/crossModuleService'
 import WelcomeBanner from '../components/WelcomeBanner/WelcomeBanner'
 import StatsOverview from '../components/StatsOverview/StatsOverview'
 import QuickActions from '../components/QuickActions/QuickActions'
@@ -67,6 +77,11 @@ export default function HomePage() {
     return 'Good evening'
   }, [])
 
+  // Cross-module data
+  const metrics = useMemo(() => getModuleMetrics(), [])
+  const deadlines = useMemo(() => getUpcomingDeadlines(6), [])
+  const copilotInsights = useMemo(() => getCopilotInsights(), [])
+
   return (
     <div className="home-page" ref={pullRef}>
       {/* Pull-to-refresh indicator (mobile only) */}
@@ -87,11 +102,111 @@ export default function HomePage() {
       {/* 1.5 First Run Checklist */}
       {onboardingComplete && <FirstRunChecklist />}
 
-      {/* 2. Stats Overview */}
+      {/* 2. Module Health Row — cross-module metrics */}
+      <div className="home-page__module-health" aria-label="Module health overview">
+        <Link to="/documents" className="home-page__health-card">
+          <FileSignature size={18} className="home-page__health-icon" />
+          <div className="home-page__health-info">
+            <span className="home-page__health-value">{metrics.documents.pending}</span>
+            <span className="home-page__health-label">pending sigs</span>
+          </div>
+        </Link>
+        <Link to="/projects" className="home-page__health-card">
+          <FolderKanban size={18} className="home-page__health-icon" />
+          <div className="home-page__health-info">
+            <span className="home-page__health-value">{metrics.projects.open}</span>
+            <span className="home-page__health-label">open issues</span>
+          </div>
+        </Link>
+        <Link to="/calendar/bookings" className="home-page__health-card">
+          <Calendar size={18} className="home-page__health-icon" />
+          <div className="home-page__health-info">
+            <span className="home-page__health-value">{metrics.bookings.upcoming}</span>
+            <span className="home-page__health-label">upcoming</span>
+          </div>
+        </Link>
+        <Link to="/accounting/invoices" className="home-page__health-card">
+          <Receipt size={18} className="home-page__health-icon" />
+          <div className="home-page__health-info">
+            <span className="home-page__health-value">{metrics.invoices.unpaid}</span>
+            <span className="home-page__health-label">unpaid</span>
+          </div>
+        </Link>
+        <Link to="/pages" className="home-page__health-card">
+          <FileText size={18} className="home-page__health-icon" />
+          <div className="home-page__health-info">
+            <span className="home-page__health-value">{metrics.pages.total}</span>
+            <span className="home-page__health-label">pages</span>
+          </div>
+        </Link>
+        <Link to="/inbox" className="home-page__health-card">
+          <Inbox size={18} className="home-page__health-icon" />
+          <div className="home-page__health-info">
+            <span className="home-page__health-value">{metrics.inbox.unread}</span>
+            <span className="home-page__health-label">unread</span>
+          </div>
+        </Link>
+      </div>
+
+      {/* 2.5 Stats Overview */}
       <StatsOverview />
 
       {/* 3. Quick Actions */}
       <QuickActions />
+
+      {/* 3.25 Copilot Insights + Upcoming Timeline */}
+      {(copilotInsights.length > 0 || deadlines.length > 0) && (
+        <div className="home-page__cross-module-row">
+          {copilotInsights.length > 0 && (
+            <section className="home-page__copilot-panel" aria-label="Copilot insights">
+              <div className="home-page__section-header">
+                <h2 className="home-page__section-title">
+                  <Sparkles size={16} className="home-page__section-icon home-page__section-icon--copilot" />
+                  Copilot Insights
+                </h2>
+              </div>
+              <ul className="home-page__insight-list">
+                {copilotInsights.map((insight) => (
+                  <li key={insight.id} className="home-page__insight-item">
+                    <Link to={insight.path} className={`home-page__insight-link home-page__insight-link--${insight.severity}`}>
+                      {insight.severity === 'warning' ? (
+                        <AlertTriangle size={14} className="home-page__insight-icon" />
+                      ) : (
+                        <Sparkles size={14} className="home-page__insight-icon" />
+                      )}
+                      <span className="home-page__insight-text">{insight.message}</span>
+                      <span className="home-page__insight-module">{insight.module}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {deadlines.length > 0 && (
+            <section className="home-page__deadlines-panel" aria-label="Upcoming deadlines">
+              <div className="home-page__section-header">
+                <h2 className="home-page__section-title">
+                  <Clock size={16} className="home-page__section-icon" />
+                  Upcoming
+                </h2>
+              </div>
+              <ul className="home-page__deadline-list">
+                {deadlines.map((item) => (
+                  <li key={item.id} className="home-page__deadline-item">
+                    <Link to={item.path} className={`home-page__deadline-link home-page__deadline-link--${item.urgency}`}>
+                      <span className={`home-page__deadline-dot home-page__deadline-dot--${item.urgency}`} />
+                      <span className="home-page__deadline-title">{item.title}</span>
+                      <span className="home-page__deadline-date">
+                        {new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </div>
+      )}
 
       {/* 3.5 Cross-Module Dashboard Widgets */}
       <div className="dashboard-widgets-grid">

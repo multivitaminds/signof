@@ -2,6 +2,63 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import HomePage from './HomePage'
 
+// Mock cross-module service
+vi.mock('../lib/crossModuleService', () => ({
+  getModuleMetrics: () => ({
+    documents: { pending: 0, total: 0 },
+    projects: { open: 0, total: 0 },
+    bookings: { upcoming: 0, total: 0 },
+    invoices: { unpaid: 0, total: 0 },
+    pages: { total: 0 },
+    inbox: { unread: 0 },
+  }),
+  getUpcomingDeadlines: () => [],
+  getCopilotInsights: () => [],
+}))
+
+// Mock auth store
+vi.mock('../features/auth/stores/useAuthStore', () => ({
+  useAuthStore: (selector: (s: Record<string, unknown>) => unknown) =>
+    selector({ user: { name: 'Sam Lightson' }, onboardingComplete: true }),
+}))
+
+// Mock pull-to-refresh hook
+vi.mock('../hooks/usePullToRefresh', () => ({
+  usePullToRefresh: () => ({ isRefreshing: false, pullDistance: 0, ref: { current: null } }),
+}))
+
+// Mock useIsMobile hook
+vi.mock('../hooks/useMediaQuery', () => ({
+  useIsMobile: () => false,
+}))
+
+// Mock FirstRunChecklist
+vi.mock('../components/FirstRunChecklist/FirstRunChecklist', () => ({
+  default: () => null,
+}))
+
+// Mock DashboardWidgets
+vi.mock('../components/DashboardWidgets/UpcomingDeadlines', () => ({
+  default: () => <div data-testid="upcoming-deadlines">Upcoming Deadlines</div>,
+}))
+
+vi.mock('../components/DashboardWidgets/RecentActivity', () => ({
+  default: () => <div data-testid="recent-activity">Recent Activity</div>,
+}))
+
+vi.mock('../components/DashboardWidgets/QuickStats', () => ({
+  default: () => <div data-testid="quick-stats">Quick Stats</div>,
+}))
+
+vi.mock('../components/DashboardWidgets/AIInsights', () => ({
+  default: () => <div data-testid="ai-insights">Copilot Insights</div>,
+}))
+
+// Mock AIFeatureWidget
+vi.mock('../features/ai/components/AIFeatureWidget/AIFeatureWidget', () => ({
+  default: () => null,
+}))
+
 // Mock the scheduling store
 vi.mock('../features/scheduling/stores/useSchedulingStore', () => ({
   useSchedulingStore: (selector: (s: Record<string, unknown>) => unknown) =>

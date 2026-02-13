@@ -20,15 +20,15 @@ function renderLayout(initialPath = '/calendar/events') {
 }
 
 describe('SchedulingLayout', () => {
-  it('renders the Scheduling title', () => {
+  it('renders the Calendar title', () => {
     renderLayout()
-    expect(screen.getByText('Scheduling')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Calendar' })).toBeInTheDocument()
   })
 
   it('renders all navigation tabs', () => {
     renderLayout()
     expect(screen.getByText('Event Types')).toBeInTheDocument()
-    expect(screen.getByText('Calendar')).toBeInTheDocument()
+    expect(screen.getAllByText('Calendar').length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText('Bookings')).toBeInTheDocument()
     expect(screen.getByText('Calendar Sync')).toBeInTheDocument()
     expect(screen.getByText('Analytics')).toBeInTheDocument()

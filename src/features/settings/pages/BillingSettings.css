@@ -5,23 +5,23 @@
 /* ─── Custom Properties ─────────────────────────────────────────── */
 
 .billing {
-  --billing-primary: #4F46E5;
-  --billing-primary-hover: #4338CA;
-  --billing-primary-light: #E8E6FF;
-  --billing-dark: #1A1A2E;
-  --billing-success: #059669;
-  --billing-success-light: #E6FAF5;
-  --billing-warning: #D97706;
+  --billing-primary: var(--color-primary);
+  --billing-primary-hover: var(--color-primary-hover);
+  --billing-primary-light: var(--color-primary-light);
+  --billing-dark: var(--color-gray-800);
+  --billing-success: var(--color-success);
+  --billing-success-light: var(--color-success-light);
+  --billing-warning: var(--color-warning-dark);
   --billing-warning-light: #FFF8EC;
-  --billing-danger: #DC2626;
-  --billing-danger-light: #FFF0F0;
-  --billing-bg: #FFFFFF;
+  --billing-danger: var(--color-danger);
+  --billing-danger-light: var(--color-danger-light);
+  --billing-bg: var(--bg-primary);
   --billing-bg-secondary: #F8FAFC;
-  --billing-bg-tertiary: #E5E7EB;
-  --billing-text-primary: #1A1A2E;
-  --billing-text-secondary: #64748B;
-  --billing-text-muted: #94A3B8;
-  --billing-border: #E2E8F0;
+  --billing-bg-tertiary: var(--color-gray-200);
+  --billing-text-primary: var(--text-primary);
+  --billing-text-secondary: var(--text-secondary);
+  --billing-text-muted: var(--text-muted);
+  --billing-border: var(--border-color);
   --billing-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   --billing-card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
   --billing-radius: 12px;
@@ -312,7 +312,7 @@
 .billing__plan--popular {
   border-color: var(--billing-primary);
   background: linear-gradient(var(--billing-bg), var(--billing-bg)) padding-box,
-    linear-gradient(135deg, var(--billing-primary), #059669) border-box;
+    linear-gradient(135deg, var(--billing-primary), var(--billing-success)) border-box;
   border: 2px solid transparent;
 }
 
@@ -327,7 +327,7 @@
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, var(--billing-primary), #4F46E5);
+  background: linear-gradient(135deg, var(--billing-primary), var(--color-primary));
   color: #FFFFFF;
   padding: 0.3125rem 1rem;
   border-radius: 20px;

@@ -12,6 +12,7 @@ import {
   CreditCard,
   ChevronDown,
 } from 'lucide-react'
+import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { useAccountingStore } from '../stores/useAccountingStore'
 import { FISCAL_YEARS } from '../types'
 import type { FiscalYear } from '../types'
@@ -30,9 +31,9 @@ function AccountingLayout() {
 
   return (
     <div className="accounting-layout">
+      <ModuleHeader title="Accounting" subtitle="Invoices, expenses, and financial reports" />
       <header className="accounting-layout__header">
         <div className="accounting-layout__header-left">
-          <h1 className="accounting-layout__title">Accounting</h1>
           <div className="accounting-layout__year-select">
             <select
               value={activeFiscalYear}

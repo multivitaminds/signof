@@ -216,7 +216,7 @@
 
 /* ─── Responsive ─────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .audit-trail-panel {
     max-height: 70vh;
   }

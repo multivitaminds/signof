@@ -374,7 +374,7 @@
 
 /* ─── Responsive ──────────────────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .sdk-page__cards {
     grid-template-columns: 1fr 1fr;
   }

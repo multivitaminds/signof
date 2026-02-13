@@ -29,7 +29,7 @@ export default function TeamGrid({ teams, onSelectTeam, onNewTeam }: TeamGridPro
         <Users size={48} className="team-grid__empty-icon" />
         <h3 className="team-grid__empty-title">No agent teams yet</h3>
         <p className="team-grid__empty-text">
-          Create your first team of AI agents to get started.
+          Create your first team of Copilot agents to get started.
         </p>
         <button className="btn-primary" onClick={handleNewTeam}>
           Create Your First Team

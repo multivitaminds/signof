@@ -100,9 +100,7 @@
   font-size: var(--text-sm, 0.875rem);
 }
 
-@media (prefers-color-scheme: dark) {
-  .trash-page__item {
-    background: var(--bg-secondary, #1A1A2E);
-    border-color: var(--border-color, #334155);
-  }
+[data-theme="dark"] .trash-page__item {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
 }

@@ -49,12 +49,11 @@
 .tiptap-toc__item--level-2 { padding-left: 24px; }
 .tiptap-toc__item--level-3 { padding-left: 40px; font-size: 0.8125rem; }
 
-@media (prefers-color-scheme: dark) {
-  .tiptap-toc {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: var(--border-color, #334155);
-  }
-  .tiptap-toc__item:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
+[data-theme="dark"] .tiptap-toc {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .tiptap-toc__item:hover {
+  background: rgba(255, 255, 255, 0.05);
 }

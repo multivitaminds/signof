@@ -55,7 +55,7 @@ export default function MobileNav() {
     { id: 'databases', label: 'Databases', icon: Database, path: '/data' },
     { id: 'inbox', label: 'Inbox', icon: Inbox, path: '/inbox', badge: unreadCount || undefined },
     { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
-    { id: 'ai', label: 'AI', icon: Brain, path: '/ai' },
+    { id: 'ai', label: 'Copilot', icon: Brain, path: '/copilot' },
     { id: 'tax', label: 'Tax', icon: Receipt, path: '/tax' },
     { id: 'developer', label: 'Developer', icon: Code2, path: '/developer' },
   ], [unreadCount])

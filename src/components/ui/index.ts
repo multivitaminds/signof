@@ -14,3 +14,7 @@ export type { AvatarSize, AvatarStatus } from './Avatar'
 export { default as Toast, ToastContainer } from './Toast'
 export type { ToastVariant, ToastData } from './Toast'
 export { useToast } from './useToast'
+
+export { default as Card } from './Card'
+
+export { default as ModuleHeader } from './ModuleHeader'

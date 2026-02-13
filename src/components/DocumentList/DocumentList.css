@@ -176,36 +176,34 @@
   color: #6B7280;
 }
 
-@media (prefers-color-scheme: dark) {
-  .status-sent {
-    background: rgba(59, 130, 246, 0.2);
-    color: #93C5FD;
-  }
+[data-theme="dark"] .status-sent {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93C5FD;
+}
 
-  .status-delivered {
-    background: rgba(14, 116, 144, 0.2);
-    color: #67E8F9;
-  }
+[data-theme="dark"] .status-delivered {
+  background: rgba(14, 116, 144, 0.2);
+  color: #67E8F9;
+}
 
-  .status-viewed {
-    background: rgba(124, 58, 237, 0.2);
-    color: #C4B5FD;
-  }
+[data-theme="dark"] .status-viewed {
+  background: rgba(124, 58, 237, 0.2);
+  color: #C4B5FD;
+}
 
-  .status-signed {
-    background: rgba(5, 150, 105, 0.2);
-    color: #6EE7B7;
-  }
+[data-theme="dark"] .status-signed {
+  background: rgba(5, 150, 105, 0.2);
+  color: #6EE7B7;
+}
 
-  .status-declined {
-    background: rgba(220, 38, 38, 0.2);
-    color: #FCA5A5;
-  }
+[data-theme="dark"] .status-declined {
+  background: rgba(220, 38, 38, 0.2);
+  color: #FCA5A5;
+}
 
-  .status-voided {
-    background: rgba(107, 114, 128, 0.2);
-    color: #9CA3AF;
-  }
+[data-theme="dark"] .status-voided {
+  background: rgba(107, 114, 128, 0.2);
+  color: #9CA3AF;
 }
 
 /* ─── Empty State ──────────────────────────────────────────── */
@@ -223,7 +221,7 @@
   text-align: center;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .document-list {
     grid-template-columns: 1fr;
   }

@@ -28,14 +28,14 @@ export default function AIFeatureWidget({ featureKey }: AIFeatureWidgetProps) {
       <button
         className="ai-feature-widget__btn"
         onClick={handleOpen}
-        aria-label={`Ask AI about ${context.label}`}
-        title={`Ask AI about ${context.label}`}
+        aria-label={`Ask Copilot about ${context.label}`}
+        title={`Ask Copilot about ${context.label}`}
         type="button"
       >
         <Wand2 size={22} />
       </button>
       <div className="ai-feature-widget__tooltip">
-        Ask AI about {context.label}
+        Ask Copilot about {context.label}
       </div>
       <AIFeatureChatModal
         featureKey={featureKey}

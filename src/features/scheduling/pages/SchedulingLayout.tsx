@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useLocation, Navigate } from 'react-router-dom'
 import { CalendarDays, Clock, List, Link2, BarChart3, UserX } from 'lucide-react'
+import ModuleHeader from '../../../components/ui/ModuleHeader'
 import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
 import './SchedulingLayout.css'
 
@@ -21,8 +22,8 @@ export default function SchedulingLayout() {
 
   return (
     <div className="scheduling-layout">
+      <ModuleHeader title="Calendar" subtitle="Schedule meetings and manage bookings" />
       <div className="scheduling-layout__header">
-        <h1 className="scheduling-layout__title">Scheduling</h1>
         <nav className="scheduling-layout__tabs">
           {TABS.map(({ path, label, icon: Icon }) => (
             <NavLink

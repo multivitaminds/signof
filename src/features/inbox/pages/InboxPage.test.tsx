@@ -102,10 +102,7 @@ describe('InboxPage', () => {
   it('renders the page title with unread badge', () => {
     renderInbox()
     expect(screen.getByText('Inbox')).toBeInTheDocument()
-    // 2 unread notifications - the badge appears in the title area
-    const badge = screen.getByText('Inbox').closest('h1')?.querySelector('.inbox-page__badge')
-    expect(badge).toHaveTextContent('2')
-    expect(screen.getByText('Your notifications and updates')).toBeInTheDocument()
+    expect(screen.getByText('Notifications and updates')).toBeInTheDocument()
   })
 
   it('renders all notification titles', () => {

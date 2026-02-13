@@ -24,7 +24,7 @@ describe('Workspace Route Render', () => {
         <WorkspaceLayout />
       </BrowserRouter>
     )
-    expect(screen.getByText('Pages')).toBeInTheDocument()
+    expect(screen.getAllByText('Pages').length).toBeGreaterThanOrEqual(1)
   })
 
   it('renders sample pages in WorkspaceAllPages', () => {

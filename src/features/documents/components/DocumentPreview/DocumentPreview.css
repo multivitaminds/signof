@@ -336,7 +336,7 @@
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .doc-preview__toolbar-left {
     display: none;
   }

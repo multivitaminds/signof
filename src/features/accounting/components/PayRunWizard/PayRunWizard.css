@@ -339,7 +339,7 @@
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .pay-run-wizard {
     max-width: 100%;
     margin: var(--space-4);

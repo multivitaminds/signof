@@ -279,39 +279,6 @@
 
 /* ─── Dark Mode ────────────────────────────────────────────────────── */
 
-@media (prefers-color-scheme: dark) {
-  .comments-sidebar {
-    background: var(--bg-secondary, #1A1A2E);
-    border-color: var(--border-color, #334155);
-  }
-
-  .comments-sidebar__item:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .comments-sidebar__close:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .comments-sidebar__filter:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .comments-sidebar__block-preview {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .comments-sidebar__resolve-btn {
-    background: var(--bg-secondary, #1A1A2E);
-    border-color: var(--border-color, #334155);
-  }
-
-  .comments-sidebar__count {
-    background: #FBBF24;
-    color: #1A1A2E;
-  }
-}
-
 [data-theme="dark"] .comments-sidebar {
   background: var(--bg-secondary, #1A1A2E);
   border-color: var(--border-color, #334155);

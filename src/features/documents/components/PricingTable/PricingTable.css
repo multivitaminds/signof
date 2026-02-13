@@ -294,7 +294,7 @@
 
 /* ─── Responsive ───────────────────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .pricing-table__header {
     padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
   }

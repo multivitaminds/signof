@@ -163,6 +163,27 @@
   /* ─── Canvas Tokens ───────────────────────────────────── */
   --canvas-dot-color: rgba(0, 0, 0, 0.08);
   --canvas-bg: var(--bg-secondary);
+
+  /* ─── Premium Surface Colors ─────────────────────────────── */
+  --bg-elevated: #FFFFFF;
+  --bg-sunken: #F1F3F5;
+  --bg-hover: rgba(124, 92, 252, 0.04);
+  --bg-active: rgba(124, 92, 252, 0.08);
+
+  /* ─── Alpha Channel Tokens ──────────────────────────────── */
+  --alpha-hover: rgba(124, 92, 252, 0.06);
+  --alpha-active: rgba(124, 92, 252, 0.10);
+  --alpha-focus: rgba(124, 92, 252, 0.16);
+  --alpha-border-subtle: rgba(0, 0, 0, 0.06);
+
+  /* ─── Premium Gradient Tokens ───────────────────────────── */
+  --gradient-primary: linear-gradient(135deg, #7C5CFC 0%, #6366F1 100%);
+  --gradient-accent: linear-gradient(135deg, #06D6A0 0%, #059669 100%);
+  --gradient-hero: linear-gradient(135deg, #1A1A2E 0%, #2D1B69 50%, #1A1A2E 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+
+  /* ─── Focus Ring ────────────────────────────────────────── */
+  --focus-ring: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--color-primary);
 }
 
 /* ─── Dark Mode ────────────────────────────────────────── */
@@ -185,6 +206,14 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
   --canvas-dot-color: rgba(255, 255, 255, 0.06);
+  --bg-elevated: #0F0F1E;
+  --bg-sunken: #050508;
+  --bg-hover: rgba(124, 92, 252, 0.08);
+  --bg-active: rgba(124, 92, 252, 0.14);
+  --alpha-hover: rgba(124, 92, 252, 0.10);
+  --alpha-active: rgba(124, 92, 252, 0.16);
+  --alpha-focus: rgba(124, 92, 252, 0.24);
+  --alpha-border-subtle: rgba(255, 255, 255, 0.06);
 }
 
 /* ─── Reset ────────────────────────────────────────────────── */
@@ -241,7 +270,7 @@ button {
 }
 
 .btn-primary:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 
 .btn-primary:disabled {
@@ -265,7 +294,7 @@ button {
 }
 
 .btn-danger:hover {
-  background-color: #c0392b;
+  background-color: var(--color-danger-dark);
 }
 
 .btn-ghost {
@@ -304,7 +333,7 @@ input:disabled, select:disabled, textarea:disabled {
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px var(--alpha-focus);
 }
 
 /* ─── Modal System ─────────────────────────────────────────── */
@@ -316,7 +345,7 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: var(--z-modal-backdrop);
   padding: var(--space-md);
   animation: fadeIn 150ms ease;
 }
@@ -369,6 +398,35 @@ input:focus, select:focus, textarea:focus {
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
+}
+
+/* ─── Micro-Interaction Utilities ──────────────────────────── */
+
+/* Badge pulse for attention-grabbing notifications */
+.badge--pulse {
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Skeleton shimmer — consistent across all skeleton components */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary) 25%,
+    var(--bg-secondary) 50%,
+    var(--bg-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* ─── Reduced Motion ───────────────────────────────────────── */

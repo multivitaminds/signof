@@ -89,6 +89,174 @@
   margin-bottom: 0;
 }
 
+/* ─── Module Health Row ─────────────────────────────────────── */
+.home-page__module-health {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-3, 12px);
+  margin-bottom: var(--space-5, 24px);
+}
+
+.home-page__health-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+  background: var(--bg-primary);
+  border: 1px solid var(--alpha-border-subtle, rgba(0, 0, 0, 0.06));
+  border-radius: var(--radius-md, 8px);
+  text-decoration: none;
+  transition: all var(--motion-fast, 150ms) ease-out;
+  box-shadow: var(--shadow-1, 0 1px 3px rgba(0, 0, 0, 0.08));
+}
+
+.home-page__health-card:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-2, 0 4px 12px rgba(0, 0, 0, 0.10));
+}
+
+.home-page__health-icon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.home-page__health-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.home-page__health-value {
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.home-page__health-label {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ─── Cross-Module Row (Copilot + Deadlines) ───────────────── */
+.home-page__cross-module-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5, 24px);
+  margin-bottom: var(--space-5, 24px);
+}
+
+.home-page__copilot-panel,
+.home-page__deadlines-panel {
+  background: var(--bg-primary);
+  border: 1px solid var(--alpha-border-subtle, rgba(0, 0, 0, 0.06));
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-4, 16px);
+  box-shadow: var(--shadow-1, 0 1px 3px rgba(0, 0, 0, 0.08));
+}
+
+.home-page__section-icon--copilot {
+  color: var(--color-primary);
+}
+
+.home-page__insight-list,
+.home-page__deadline-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 4px);
+}
+
+.home-page__insight-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  border-radius: var(--radius-md, 8px);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: background var(--motion-fast, 150ms) ease;
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.home-page__insight-link:hover {
+  background: var(--bg-hover, rgba(124, 92, 252, 0.04));
+}
+
+.home-page__insight-link--warning .home-page__insight-icon {
+  color: var(--color-warning);
+}
+
+.home-page__insight-link--info .home-page__insight-icon {
+  color: var(--color-primary);
+}
+
+.home-page__insight-link--success .home-page__insight-icon {
+  color: var(--color-success);
+}
+
+.home-page__insight-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.home-page__insight-module {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.home-page__deadline-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  border-radius: var(--radius-md, 8px);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: background var(--motion-fast, 150ms) ease;
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.home-page__deadline-link:hover {
+  background: var(--bg-hover, rgba(124, 92, 252, 0.04));
+}
+
+.home-page__deadline-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.home-page__deadline-dot--overdue {
+  background-color: var(--color-danger);
+}
+
+.home-page__deadline-dot--today {
+  background-color: var(--color-warning);
+}
+
+.home-page__deadline-dot--upcoming {
+  background-color: var(--color-success);
+}
+
+.home-page__deadline-title {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-page__deadline-date {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
 /* ─── Bookings list ─────────────────────────────────────────── */
 .home-page__bookings-list {
   display: flex;
@@ -164,11 +332,39 @@
 }
 
 [data-theme="dark"] .home-page__booking-name {
-  color: var(--text-primary, #F1F5F9);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .home-page__health-card {
+  background: var(--bg-secondary);
+  border-color: var(--alpha-border-subtle, rgba(255, 255, 255, 0.06));
+}
+
+[data-theme="dark"] .home-page__health-card:hover {
+  border-color: var(--color-primary);
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .home-page__copilot-panel,
+[data-theme="dark"] .home-page__deadlines-panel {
+  background: var(--bg-secondary);
+  border-color: var(--alpha-border-subtle, rgba(255, 255, 255, 0.06));
+}
+
+[data-theme="dark"] .home-page__see-all {
+  color: var(--color-primary);
 }
 
 /* ─── Responsive ────────────────────────────────────────────── */
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
+  .home-page__module-health {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .home-page__cross-module-row {
+    grid-template-columns: 1fr;
+  }
+
   .home-page__main-grid {
     grid-template-columns: 1fr;
   }
@@ -177,6 +373,11 @@
 @media (max-width: 767px) {
   .home-page {
     padding: 0 var(--space-2, 8px);
+  }
+
+  .home-page__module-health {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2, 8px);
   }
 
   .home-page__main-grid {

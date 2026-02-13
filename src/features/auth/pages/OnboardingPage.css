@@ -1289,7 +1289,7 @@
 
 /* ─── Responsive ─── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .onboarding {
     padding: var(--space-3, 0.75rem);
   }

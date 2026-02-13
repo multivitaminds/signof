@@ -36,7 +36,7 @@ describe('AIAgentsPage', () => {
 
   it('renders the subtitle', () => {
     renderPage()
-    expect(screen.getByText('20 specialized AI agents, pipelines, and workflow templates')).toBeInTheDocument()
+    expect(screen.getByText('20 specialized Copilot agents, pipelines, and workflow templates')).toBeInTheDocument()
   })
 
   it('renders stats bar with 4 stat cards', () => {

@@ -247,7 +247,7 @@
   border-top: 1px solid var(--border-color);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .new-project__template-card {
     flex-direction: column;
   }

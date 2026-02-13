@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useLocation, Navigate } from 'react-router-dom'
 import { Settings, Users, Bell, Palette, Plug, CreditCard } from 'lucide-react'
+import ModuleHeader from '../../../components/ui/ModuleHeader'
 import './SettingsLayout.css'
 
 const SETTINGS_NAV = [
@@ -20,8 +21,8 @@ export default function SettingsLayout() {
 
   return (
     <div className="settings-layout">
+      <ModuleHeader title="Settings" subtitle="Workspace preferences and team management" />
       <nav className="settings-layout__nav">
-        <h2 className="settings-layout__nav-title">Settings</h2>
         {SETTINGS_NAV.map(({ path, label, icon: Icon }) => (
           <NavLink
             key={path}

@@ -119,7 +119,7 @@
   gap: var(--space-3, 0.75rem);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .booking-analytics__charts {
     grid-template-columns: 1fr;
   }

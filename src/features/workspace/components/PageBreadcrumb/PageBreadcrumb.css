@@ -91,13 +91,3 @@
   color: var(--text-primary, #F1F5F9);
 }
 
-@media (prefers-color-scheme: dark) {
-  .page-breadcrumb__link:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-primary, #F1F5F9);
-  }
-
-  .page-breadcrumb__current {
-    color: var(--text-primary, #F1F5F9);
-  }
-}

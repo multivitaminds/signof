@@ -148,7 +148,7 @@
 
 /* ─── Responsive ─────────────────────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .taxbandit-settings__actions {
     flex-direction: column;
     align-items: flex-start;

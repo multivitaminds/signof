@@ -252,7 +252,7 @@
 
 /* ─── Responsive ─── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .first-run-checklist__item-desc {
     display: none;
   }

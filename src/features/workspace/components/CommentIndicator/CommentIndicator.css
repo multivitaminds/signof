@@ -56,32 +56,6 @@
 
 /* ─── Dark Mode ────────────────────────────────────────────────────── */
 
-@media (prefers-color-scheme: dark) {
-  .comment-indicator {
-    color: #FBBF24;
-  }
-
-  .comment-indicator:hover {
-    background: rgba(251, 191, 36, 0.1);
-  }
-
-  .comment-indicator--resolved {
-    color: #34D399;
-  }
-
-  .comment-indicator--resolved:hover {
-    background: rgba(52, 211, 153, 0.1);
-  }
-
-  .comment-indicator__dot {
-    background: #FBBF24;
-  }
-
-  .comment-indicator__dot--resolved {
-    background: #34D399;
-  }
-}
-
 [data-theme="dark"] .comment-indicator {
   color: #FBBF24;
 }

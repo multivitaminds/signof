@@ -22,12 +22,12 @@ describe('AIChatSidebar', () => {
 
   it('renders the sidebar when isOpen is true', () => {
     render(<AIChatSidebar />)
-    expect(screen.getByRole('complementary', { name: /ai chat/i })).toBeInTheDocument()
+    expect(screen.getByRole('complementary', { name: /copilot chat/i })).toBeInTheDocument()
   })
 
-  it('renders the AI Assistant title', () => {
+  it('renders the Copilot title', () => {
     render(<AIChatSidebar />)
-    expect(screen.getByText('AI Assistant')).toBeInTheDocument()
+    expect(screen.getByText('Copilot')).toBeInTheDocument()
   })
 
   it('shows the context label', () => {
@@ -69,7 +69,7 @@ describe('AIChatSidebar', () => {
 
   it('has a message input field with slash command hint', () => {
     render(<AIChatSidebar />)
-    expect(screen.getByPlaceholderText(/Ask AI anything/)).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/Ask Copilot anything/)).toBeInTheDocument()
   })
 
   it('has a send button', () => {
@@ -86,7 +86,7 @@ describe('AIChatSidebar', () => {
     const user = userEvent.setup()
     render(<AIChatSidebar />)
 
-    await user.type(screen.getByPlaceholderText(/Ask AI anything/), 'Hello')
+    await user.type(screen.getByPlaceholderText(/Ask Copilot anything/), 'Hello')
     expect(screen.getByRole('button', { name: /send message/i })).not.toBeDisabled()
   })
 
@@ -94,7 +94,7 @@ describe('AIChatSidebar', () => {
     const user = userEvent.setup()
     render(<AIChatSidebar />)
 
-    const input = screen.getByPlaceholderText(/Ask AI anything/)
+    const input = screen.getByPlaceholderText(/Ask Copilot anything/)
     await user.type(input, 'Test message')
     await user.click(screen.getByRole('button', { name: /send message/i }))
 
@@ -108,7 +108,7 @@ describe('AIChatSidebar', () => {
     const user = userEvent.setup()
     render(<AIChatSidebar />)
 
-    const input = screen.getByPlaceholderText(/Ask AI anything/)
+    const input = screen.getByPlaceholderText(/Ask Copilot anything/)
     await user.type(input, 'Enter test{Enter}')
 
     expect(screen.getByText('Enter test')).toBeInTheDocument()
@@ -149,14 +149,14 @@ describe('AIChatSidebar', () => {
 
   it('has a close button', () => {
     render(<AIChatSidebar />)
-    expect(screen.getByRole('button', { name: /close ai chat/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /close copilot chat/i })).toBeInTheDocument()
   })
 
   it('closes sidebar when close button is clicked', async () => {
     const user = userEvent.setup()
     render(<AIChatSidebar />)
 
-    await user.click(screen.getByRole('button', { name: /close ai chat/i }))
+    await user.click(screen.getByRole('button', { name: /close copilot chat/i }))
 
     // isOpen should now be false, so sidebar won't render
     expect(useAIChatStore.getState().isOpen).toBe(false)
@@ -199,13 +199,13 @@ describe('AIChatSidebar', () => {
   it('shows typing indicator when isTyping is true', () => {
     useAIChatStore.setState({ isTyping: true })
     render(<AIChatSidebar />)
-    expect(screen.getByLabelText('AI is typing')).toBeInTheDocument()
+    expect(screen.getByLabelText('Copilot is typing')).toBeInTheDocument()
   })
 
   it('does not show typing indicator when isTyping is false', () => {
     useAIChatStore.setState({ isTyping: false })
     render(<AIChatSidebar />)
-    expect(screen.queryByLabelText('AI is typing')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Copilot is typing')).not.toBeInTheDocument()
   })
 
   // ─── Slash command tests ───────────────────────────────────────────
@@ -214,7 +214,7 @@ describe('AIChatSidebar', () => {
     const user = userEvent.setup()
     render(<AIChatSidebar />)
 
-    const input = screen.getByPlaceholderText(/Ask AI anything/)
+    const input = screen.getByPlaceholderText(/Ask Copilot anything/)
     await user.type(input, '/')
 
     expect(screen.getByRole('listbox', { name: /slash commands/i })).toBeInTheDocument()
@@ -224,7 +224,7 @@ describe('AIChatSidebar', () => {
     const user = userEvent.setup()
     render(<AIChatSidebar />)
 
-    const input = screen.getByPlaceholderText(/Ask AI anything/)
+    const input = screen.getByPlaceholderText(/Ask Copilot anything/)
     await user.type(input, '/')
 
     expect(screen.getByText('/summarize')).toBeInTheDocument()
@@ -236,7 +236,7 @@ describe('AIChatSidebar', () => {
     const user = userEvent.setup()
     render(<AIChatSidebar />)
 
-    const input = screen.getByPlaceholderText(/Ask AI anything/)
+    const input = screen.getByPlaceholderText(/Ask Copilot anything/)
     await user.type(input, '/su')
 
     expect(screen.getByText('/summarize')).toBeInTheDocument()
@@ -247,7 +247,7 @@ describe('AIChatSidebar', () => {
     const user = userEvent.setup()
     render(<AIChatSidebar />)
 
-    const input = screen.getByPlaceholderText(/Ask AI anything/)
+    const input = screen.getByPlaceholderText(/Ask Copilot anything/)
     await user.type(input, '/')
     await user.click(screen.getByText('/summarize'))
 

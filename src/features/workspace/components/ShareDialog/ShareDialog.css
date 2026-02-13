@@ -380,22 +380,3 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
-@media (prefers-color-scheme: dark) {
-  .share-dialog {
-    background: var(--bg-secondary, #1A1A2E);
-    border-color: var(--border-color, #334155);
-  }
-
-  .share-dialog__input,
-  .share-dialog__permission-select,
-  .share-dialog__user-permission {
-    background: var(--bg-primary, #0F0F1A);
-    border-color: var(--border-color, #334155);
-    color: var(--text-primary, #F1F5F9);
-  }
-
-  .share-dialog__copy-btn {
-    color: var(--text-primary, #F1F5F9);
-    border-color: var(--border-color, #334155);
-  }
-}

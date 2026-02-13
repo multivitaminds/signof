@@ -33,13 +33,12 @@
   border-radius: var(--radius-md, 0.5rem);
 }
 
-@media (prefers-color-scheme: dark) {
-  .tiptap-embed__form {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: var(--border-color, #334155);
-  }
-  .tiptap-embed__input {
-    background: var(--bg-primary, #0f0f1a);
-    border-color: var(--border-color, #334155);
-  }
+[data-theme="dark"] .tiptap-embed__form {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .tiptap-embed__input {
+  background: var(--bg-primary, #0f0f1a);
+  border-color: var(--border-color, #334155);
 }

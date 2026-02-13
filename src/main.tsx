@@ -201,13 +201,13 @@ createRoot(root).render(
             </ModuleErrorBoundary>
           } />
 
-          {/* AI */}
-          <Route path="ai" element={
-            <ModuleErrorBoundary moduleName="AI">
+          {/* Copilot */}
+          <Route path="copilot" element={
+            <ModuleErrorBoundary moduleName="Copilot">
               <Suspense fallback={CardFallback}><AILayout /></Suspense>
             </ModuleErrorBoundary>
           }>
-            <Route index element={<Navigate to="/ai/memory" replace />} />
+            <Route index element={<Navigate to="/copilot/memory" replace />} />
             <Route path="memory" element={<Suspense fallback={TableFallback}><AIMemoryPage /></Suspense>} />
             <Route path="agents" element={<Suspense fallback={CardFallback}><AIAgentsPage /></Suspense>} />
           </Route>

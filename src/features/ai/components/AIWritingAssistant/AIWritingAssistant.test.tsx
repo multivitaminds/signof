@@ -16,7 +16,7 @@ describe('AIWritingAssistant', () => {
 
   it('renders the toolbar with all action buttons', () => {
     render(<AIWritingAssistant {...defaultProps} />)
-    expect(screen.getByRole('toolbar', { name: /ai writing assistant/i })).toBeInTheDocument()
+    expect(screen.getByRole('toolbar', { name: /copilot writing assistant/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /improve writing/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /fix grammar/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /make shorter/i })).toBeInTheDocument()

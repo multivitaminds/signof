@@ -179,25 +179,6 @@
 
 /* ─── Dark Mode ────────────────────────────────────────────────────── */
 
-@media (prefers-color-scheme: dark) {
-  .snapshot-preview__back:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .snapshot-preview__restore-btn {
-    border-color: var(--color-primary, #4F46E5);
-    color: var(--color-primary, #818CF8);
-  }
-
-  .snapshot-preview__block--callout {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .snapshot-preview__block--code {
-    background: rgba(255, 255, 255, 0.05);
-  }
-}
-
 [data-theme="dark"] .snapshot-preview__back:hover {
   background: rgba(255, 255, 255, 0.05);
 }

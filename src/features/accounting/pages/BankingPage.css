@@ -358,18 +358,16 @@
 
 /* ─── Dark Mode Badge Overrides ──────────────────────────────────── */
 
-@media (prefers-color-scheme: dark) {
-  .banking__type-badge--expense {
-    background-color: rgba(220, 38, 38, 0.15);
-  }
+[data-theme="dark"] .banking__type-badge--expense {
+  background-color: rgba(220, 38, 38, 0.15);
+}
 
-  .banking__type-badge--journal {
-    background-color: rgba(124, 58, 237, 0.15);
-  }
+[data-theme="dark"] .banking__type-badge--journal {
+  background-color: rgba(124, 58, 237, 0.15);
+}
 
-  .banking__action-btn--danger:hover {
-    background-color: rgba(220, 38, 38, 0.15);
-  }
+[data-theme="dark"] .banking__action-btn--danger:hover {
+  background-color: rgba(220, 38, 38, 0.15);
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────── */

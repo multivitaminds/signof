@@ -41,7 +41,7 @@ describe('Sidebar', () => {
     expect(screen.getByText('Home')).toBeInTheDocument()
     expect(screen.getByText('Documents')).toBeInTheDocument()
     expect(screen.getByText('Projects')).toBeInTheDocument()
-    expect(screen.getByText('Intelligence')).toBeInTheDocument()
+    expect(screen.getByText('Copilot')).toBeInTheDocument()
   })
 
   it('renders the Workspace section label when expanded', () => {

@@ -132,7 +132,7 @@
 
 /* ─── Responsive ──────────────────────────────────────────────────── */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .filing-wizard__step-label {
     display: none;
   }

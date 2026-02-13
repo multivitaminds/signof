@@ -101,18 +101,16 @@
 
 /* ─── Dark Mode ───────────────────────────────────────────────── */
 
-@media (prefers-color-scheme: dark) {
-  .tiptap-mention-menu {
-    background: var(--bg-secondary, #1a1a2e);
-    border-color: var(--border-color, #334155);
-  }
+[data-theme="dark"] .tiptap-mention-menu {
+  background: var(--bg-secondary, #1a1a2e);
+  border-color: var(--border-color, #334155);
+}
 
-  .tiptap-mention-menu__item:hover,
-  .tiptap-mention-menu__item--selected {
-    background: rgba(255, 255, 255, 0.08);
-  }
+[data-theme="dark"] .tiptap-mention-menu__item:hover,
+[data-theme="dark"] .tiptap-mention-menu__item--selected {
+  background: rgba(255, 255, 255, 0.08);
+}
 
-  .tiptap-editor__prose .mention {
-    background: rgba(79, 70, 229, 0.25);
-  }
+[data-theme="dark"] .tiptap-editor__prose .mention {
+  background: rgba(79, 70, 229, 0.25);
 }
