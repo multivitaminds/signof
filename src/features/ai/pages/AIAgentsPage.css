@@ -1079,6 +1079,46 @@
   margin-left: auto;
 }
 
+.copilot-agents__marketplace-card {
+  cursor: pointer;
+}
+
+.copilot-agents__marketplace-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.copilot-agents__marketplace-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.copilot-agents__marketplace-card-run {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin-top: auto;
+  align-self: flex-start;
+  transition: opacity 0.15s;
+}
+
+.copilot-agents__marketplace-card-run:hover {
+  opacity: 0.85;
+}
+
 /* ─── Marketplace No Results ──────────────────────────── */
 
 .copilot-agents__marketplace-empty {
@@ -1093,6 +1133,10 @@
 
 [data-theme="dark"] .copilot-agents__marketplace-card {
   background: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"] .copilot-agents__marketplace-card-run {
+  opacity: 0.9;
 }
 
 [data-theme="dark"] .copilot-agents__domain-toggle:hover {

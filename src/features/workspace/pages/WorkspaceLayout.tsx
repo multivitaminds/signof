@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import { Star, Clock } from 'lucide-react'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
+import { DemoVideoSection } from '../../../components/ui/DemoVideo'
 import { useWorkspaceStore } from '../stores/useWorkspaceStore'
 import PageTree from '../components/PageTree/PageTree'
 import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
@@ -56,6 +57,13 @@ export default function WorkspaceLayout() {
     <div className="workspace-layout">
       <aside className="workspace-layout__sidebar">
         <ModuleHeader title="Pages" subtitle="Wiki, docs, and knowledge base" />
+
+        <DemoVideoSection videos={[
+          { title: 'Creating Your First Page', description: 'Set up pages with the block editor and templates.', duration: '2:30' },
+          { title: 'Using Slash Commands', description: 'Quick access to blocks, embeds, and formatting.', duration: '3:15' },
+          { title: 'Collaborating in Real-Time', description: 'Share pages and collaborate with your team.', duration: '4:00' },
+        ]} />
+
         {/* Favorites section */}
         {favoritePages.length > 0 && (
           <div className="workspace-layout__section">

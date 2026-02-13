@@ -18,3 +18,6 @@ export { useToast } from './useToast'
 export { default as Card } from './Card'
 
 export { default as ModuleHeader } from './ModuleHeader'
+
+export { default as DemoVideo, DemoVideoSection } from './DemoVideo'
+export type { DemoVideoData } from './DemoVideo'

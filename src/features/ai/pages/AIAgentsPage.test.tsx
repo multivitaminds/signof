@@ -462,18 +462,30 @@ describe('AIAgentsPage', () => {
     expect(screen.getByText(firstDomain.agents[0]!.name)).toBeInTheDocument()
   })
 
-  it('marketplace agents do not have Run buttons', async () => {
+  it('marketplace agents have Run buttons', async () => {
     const user = userEvent.setup()
     renderPage()
     await user.click(screen.getByRole('tab', { name: /Agents/ }))
 
-    // Expand first domain
     const firstDomain = MARKETPLACE_DOMAINS[0]!
     await user.click(screen.getByLabelText(`Expand ${firstDomain.name}`))
 
-    // Run buttons should still be 20 (only featured agents)
+    // Run buttons should be 20 (featured) + first domain agents
     const runButtons = screen.getAllByRole('button', { name: /^Run /i })
-    expect(runButtons).toHaveLength(20)
+    expect(runButtons).toHaveLength(20 + firstDomain.agents.length)
+  })
+
+  it('marketplace Run buttons are labeled with agent names', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(screen.getByRole('tab', { name: /Agents/ }))
+
+    const firstDomain = MARKETPLACE_DOMAINS[0]!
+    await user.click(screen.getByLabelText(`Expand ${firstDomain.name}`))
+
+    // Each marketplace agent should have a "Run <agent name>" button
+    const firstAgent = firstDomain.agents[0]!
+    expect(screen.getByRole('button', { name: `Run ${firstAgent.name}` })).toBeInTheDocument()
   })
 
   it('collapses expanded domain on second click', async () => {

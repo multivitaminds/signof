@@ -9,6 +9,7 @@ import {
   TrendingUp, Megaphone, DollarSign, Scale, ShieldCheck,
   UserPlus, HeartHandshake, Languages, Globe, Share2,
   Shield, Server,
+  BookOpen, Home, Heart,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Badge } from '../../../components/ui'
@@ -18,8 +19,8 @@ import useCanvasStore from '../stores/useCanvasStore'
 import { AGENT_DEFINITIONS } from '../lib/agentDefinitions'
 import { MARKETPLACE_DOMAINS, TOTAL_MARKETPLACE_AGENTS } from '../data/marketplaceAgents'
 import { WORKFLOW_TEMPLATES } from '../lib/workflowTemplates'
-import { RunStatus, StepStatus, AgentCategory, NodeStatus } from '../types'
-import type { AgentType, AgentRun, RunStep } from '../types'
+import { RunStatus, StepStatus, AgentCategory, NodeStatus, AgentType } from '../types'
+import type { AgentRun, RunStep } from '../types'
 import OrchestratorInput from '../components/OrchestratorInput/OrchestratorInput'
 import PipelineBuilder from '../components/PipelineBuilder/PipelineBuilder'
 import PipelineView from '../components/PipelineView/PipelineView'
@@ -42,6 +43,38 @@ const ICON_MAP: Record<string, LucideIcon> = {
   TrendingUp, Megaphone, DollarSign, Scale, ShieldCheck,
   UserPlus, HeartHandshake, Languages, Globe, Share2,
   Shield, Server,
+}
+
+const DOMAIN_ICON: Record<string, LucideIcon> = {
+  work: ClipboardList,
+  finance: DollarSign,
+  health: Heart,
+  learning: BookOpen,
+  relationships: Users,
+  home: Home,
+  creativity: Palette,
+  business: TrendingUp,
+  travel: Globe,
+  legal: Scale,
+  parenting: UserPlus,
+  wellness: HeartHandshake,
+  developer: Code2,
+}
+
+const DOMAIN_AGENT_TYPE: Record<string, AgentType> = {
+  work: AgentType.Planner,
+  finance: AgentType.Finance,
+  health: AgentType.Researcher,
+  learning: AgentType.Researcher,
+  relationships: AgentType.Coordinator,
+  home: AgentType.Planner,
+  creativity: AgentType.Designer,
+  business: AgentType.Sales,
+  travel: AgentType.Planner,
+  legal: AgentType.Legal,
+  parenting: AgentType.Planner,
+  wellness: AgentType.Researcher,
+  developer: AgentType.Developer,
 }
 
 function getIcon(iconName: string): LucideIcon {
@@ -303,6 +336,12 @@ export default function AIAgentsPage() {
     setRunTaskInputs(prev => ({ ...prev, [agentType]: '' }))
     simulateSteps(run)
   }, [runTaskInputs, startAgent, simulateSteps])
+
+  const handleMarketplaceRun = useCallback((domainId: string, agentName: string) => {
+    const agentType = DOMAIN_AGENT_TYPE[domainId] ?? AgentType.Planner
+    const run = startAgent(agentType, `${agentName}: Running marketplace agent simulation`)
+    simulateSteps(run)
+  }, [startAgent, simulateSteps])
 
   const handleTaskInputChange = useCallback((agentType: AgentType, value: string) => {
     setRunTaskInputs(prev => ({ ...prev, [agentType]: value }))
@@ -742,14 +781,35 @@ export default function AIAgentsPage() {
                       <div className="copilot-agents__domain-content">
                         <div className="copilot-agents__marketplace-grid">
                           {domain.agents.map(agent => (
-                            <div key={`${domain.id}-${agent.id}`} className="copilot-agents__marketplace-card">
-                              <h4 className="copilot-agents__marketplace-card-name">{agent.name}</h4>
+                            <div
+                              key={`${domain.id}-${agent.id}`}
+                              className="copilot-agents__marketplace-card"
+                              onClick={() => handleMarketplaceRun(domain.id, agent.name)}
+                              role="button"
+                              tabIndex={0}
+                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleMarketplaceRun(domain.id, agent.name) } }}
+                            >
+                              <div className="copilot-agents__marketplace-card-header">
+                                <span className="copilot-agents__marketplace-card-icon" style={{ backgroundColor: `${domain.color}18`, color: domain.color }}>
+                                  {(() => { const DomainIcon = DOMAIN_ICON[domain.id] ?? Circle; return <DomainIcon size={14} /> })()}
+                                </span>
+                                <h4 className="copilot-agents__marketplace-card-name">{agent.name}</h4>
+                              </div>
                               <p className="copilot-agents__marketplace-card-desc">{agent.description}</p>
                               <div className="copilot-agents__marketplace-card-meta">
                                 <span className="copilot-agents__marketplace-card-tag">{agent.integrations}</span>
                                 <span className="copilot-agents__marketplace-card-tag">{agent.autonomy}</span>
                                 <span className="copilot-agents__marketplace-card-price">{agent.price}</span>
                               </div>
+                              <button
+                                className="copilot-agents__marketplace-card-run"
+                                onClick={(e) => { e.stopPropagation(); handleMarketplaceRun(domain.id, agent.name) }}
+                                aria-label={`Run ${agent.name}`}
+                                style={{ backgroundColor: domain.color }}
+                              >
+                                <Play size={12} fill="currentColor" />
+                                Run
+                              </button>
                             </div>
                           ))}
                         </div>
