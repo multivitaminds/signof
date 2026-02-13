@@ -84,6 +84,8 @@ const DocumentBuilderPage = lazy(() => import('./features/documents/pages/Docume
 
 const PlaygroundLayout = lazy(() => import('./features/playground/pages/PlaygroundLayout'))
 
+const PlatformLayout = lazy(() => import('./features/platform/pages/PlatformLayout'))
+
 const DeveloperLayout = lazy(() => import('./features/developer/pages/DeveloperLayout'))
 const ApiDocsPage = lazy(() => import('./features/developer/pages/ApiDocsPage'))
 const CliDocsPage = lazy(() => import('./features/developer/pages/CliDocsPage'))
@@ -265,6 +267,13 @@ createRoot(root).render(
             <Route path="sandbox" element={<Suspense fallback={EditorFallback}><SandboxPage /></Suspense>} />
             <Route path="keys" element={<Suspense fallback={TableFallback}><ApiKeysPage /></Suspense>} />
           </Route>
+
+          {/* Platform (Business Plan) */}
+          <Route path="platform" element={
+            <ModuleErrorBoundary moduleName="Platform">
+              <Suspense fallback={CardFallback}><PlatformLayout /></Suspense>
+            </ModuleErrorBoundary>
+          } />
 
           {/* Settings */}
           <Route path="settings" element={
