@@ -9,9 +9,14 @@ import { useDocumentStore } from '../stores/useDocumentStore'
 import { useProjectStore } from '../features/projects/stores/useProjectStore'
 import { useSchedulingStore } from '../features/scheduling/stores/useSchedulingStore'
 import { useInvoiceStore } from '../features/accounting/stores/useInvoiceStore'
+import { useExpenseStore } from '../features/accounting/stores/useExpenseStore'
 import { useWorkspaceStore } from '../features/workspace/stores/useWorkspaceStore'
 import { useInboxStore } from '../features/inbox/stores/useInboxStore'
 import { useActivityStore } from '../features/activity/stores/useActivityStore'
+import useAIAgentStore from '../features/ai/stores/useAIAgentStore'
+import { useDatabaseStore } from '../features/databases/stores/useDatabaseStore'
+import { useTaxStore } from '../features/tax/stores/useTaxStore'
+import { RunStatus } from '../features/ai/types'
 import { ACTIVE_STATUSES } from '../types'
 
 // ─── Types ──────────────────────────────────────────────────────
@@ -23,13 +28,16 @@ export interface ModuleMetrics {
   invoices: { unpaid: number; total: number }
   pages: { total: number }
   inbox: { unread: number }
+  databases: { total: number; totalRecords: number }
+  aiAgents: { running: number; completed: number; total: number }
+  tax: { pendingFilings: number; upcomingDeadlines: number }
 }
 
 export interface DeadlineItem {
   id: string
   title: string
   date: string
-  module: 'documents' | 'projects' | 'scheduling' | 'accounting'
+  module: 'documents' | 'projects' | 'scheduling' | 'accounting' | 'tax' | 'databases'
   path: string
   urgency: 'overdue' | 'today' | 'upcoming'
 }
@@ -76,6 +84,26 @@ export function getModuleMetrics(): ModuleMetrics {
 
   const activePages = pages.filter((p) => !p.trashedAt).length
 
+  // Database metrics
+  const dbState = useDatabaseStore.getState()
+  const allDatabases = Object.values(dbState.databases)
+  let totalRecords = 0
+  for (const table of Object.values(dbState.tables)) {
+    totalRecords += table.rows.length
+  }
+
+  // AI agent metrics
+  const aiRuns = useAIAgentStore.getState().runs
+  const runningAgents = aiRuns.filter((r) => r.status === RunStatus.Running).length
+  const completedAgents = aiRuns.filter((r) => r.status === RunStatus.Completed).length
+
+  // Tax metrics
+  const taxState = useTaxStore.getState()
+  const pendingFilings = taxState.filings.filter(
+    (f) => f.state !== 'filed' && f.state !== 'accepted' && f.state !== 'rejected'
+  ).length
+  const upcomingTaxDeadlines = taxState.deadlines.filter((d) => !d.completed).length
+
   return {
     documents: { pending: pendingDocs, total: documents.length },
     projects: { open: openIssues, total: projects.length },
@@ -83,6 +111,9 @@ export function getModuleMetrics(): ModuleMetrics {
     invoices: { unpaid: unpaidInvoices, total: invoices.length },
     pages: { total: activePages },
     inbox: { unread: unreadNotifications },
+    databases: { total: allDatabases.length, totalRecords },
+    aiAgents: { running: runningAgents, completed: completedAgents, total: aiRuns.length },
+    tax: { pendingFilings, upcomingDeadlines: upcomingTaxDeadlines },
   }
 }
 
@@ -156,6 +187,22 @@ export function getUpcomingDeadlines(limit = 10): DeadlineItem[] {
     }
   }
 
+  // Tax deadlines
+  const taxDeadlines = useTaxStore.getState().deadlines
+  for (const deadline of taxDeadlines) {
+    if (!deadline.completed) {
+      const dateStr = deadline.date
+      items.push({
+        id: `tax-${deadline.id}`,
+        title: deadline.title,
+        date: dateStr,
+        module: 'tax',
+        path: '/tax',
+        urgency: dateStr < todayStr ? 'overdue' : dateStr === todayStr ? 'today' : 'upcoming',
+      })
+    }
+  }
+
   // Sort: overdue first, then today, then upcoming by date
   const urgencyOrder = { overdue: 0, today: 1, upcoming: 2 }
   items.sort((a, b) => {
@@ -218,6 +265,68 @@ export function getCopilotInsights(): CrossModuleInsight[] {
       module: 'Inbox',
       path: '/inbox',
       severity: metrics.inbox.unread > 5 ? 'warning' : 'info',
+    })
+  }
+
+  if (metrics.aiAgents.running > 0) {
+    insights.push({
+      id: 'running-agents',
+      message: `${metrics.aiAgents.running} agent run${metrics.aiAgents.running > 1 ? 's' : ''} currently in progress`,
+      module: 'Copilot',
+      path: '/copilot',
+      severity: 'info',
+    })
+  }
+
+  if (metrics.aiAgents.completed > 0) {
+    insights.push({
+      id: 'completed-agents',
+      message: `${metrics.aiAgents.completed} agent run${metrics.aiAgents.completed > 1 ? 's' : ''} completed`,
+      module: 'Copilot',
+      path: '/copilot',
+      severity: 'success',
+    })
+  }
+
+  if (metrics.databases.total > 0) {
+    insights.push({
+      id: 'database-records',
+      message: `${metrics.databases.total} database${metrics.databases.total > 1 ? 's' : ''} with ${metrics.databases.totalRecords.toLocaleString()} total records`,
+      module: 'Databases',
+      path: '/databases',
+      severity: 'info',
+    })
+  }
+
+  if (metrics.tax.pendingFilings > 0) {
+    insights.push({
+      id: 'pending-filings',
+      message: `${metrics.tax.pendingFilings} pending tax filing${metrics.tax.pendingFilings > 1 ? 's' : ''}`,
+      module: 'Tax',
+      path: '/tax',
+      severity: 'warning',
+    })
+  }
+
+  if (metrics.tax.upcomingDeadlines > 0) {
+    insights.push({
+      id: 'tax-deadlines',
+      message: `${metrics.tax.upcomingDeadlines} upcoming tax deadline${metrics.tax.upcomingDeadlines > 1 ? 's' : ''}`,
+      module: 'Tax',
+      path: '/tax',
+      severity: metrics.tax.upcomingDeadlines > 2 ? 'warning' : 'info',
+    })
+  }
+
+  const expenses = useExpenseStore.getState().expenses
+  if (expenses.length > 0) {
+    const total = expenses.reduce((sum, e) => sum + e.amount, 0)
+    insights.push({
+      id: 'expense-total',
+      message: `$${total.toLocaleString()} in tracked expenses across ${expenses.length} entries`,
+      module: 'Accounting',
+      path: '/accounting',
+      severity: 'info',
     })
   }
 

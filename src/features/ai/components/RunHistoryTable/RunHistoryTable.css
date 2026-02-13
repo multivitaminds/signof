@@ -1,0 +1,78 @@
+/* ─── Run History ───────────────────────────────────────── */
+
+.copilot-agents__history {
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-md);
+}
+
+.copilot-agents__history-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-xs) 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.copilot-agents__history-toggle:hover {
+  color: var(--text-primary);
+}
+
+.copilot-agents__history-table-wrap {
+  margin-top: var(--space-md);
+  overflow-x: auto;
+}
+
+.copilot-agents__history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.copilot-agents__history-table th {
+  text-align: left;
+  padding: var(--space-xs) var(--space-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.copilot-agents__history-table td {
+  padding: var(--space-xs) var(--space-sm);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.copilot-agents__history-task {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── View Results Button ──────────────────────────────── */
+
+.copilot-agents__view-results-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  background: rgba(79, 70, 229, 0.08);
+  border: 1px solid rgba(79, 70, 229, 0.2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.copilot-agents__view-results-btn:hover {
+  background: rgba(79, 70, 229, 0.15);
+  border-color: var(--color-primary);
+}

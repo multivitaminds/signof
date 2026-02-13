@@ -69,7 +69,7 @@ describe('DatabaseListPage', () => {
 
   it('renders the page title', () => {
     renderDatabaseList()
-    expect(screen.getByText('Your Databases')).toBeInTheDocument()
+    expect(screen.getByText('Databases')).toBeInTheDocument()
   })
 
   it('renders the database count', () => {

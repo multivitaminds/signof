@@ -8,9 +8,12 @@ import {
   Database,
   X,
   FileSignature,
+  Receipt,
+  Bot,
 } from 'lucide-react'
 import { useGlobalSearch } from '../../hooks/useGlobalSearch'
 import { SearchResultType, type SearchResult } from '../../types'
+import { getIconComponent, isEmojiIcon } from '../../../../lib/iconMap'
 import './SearchOverlay.css'
 
 interface SearchOverlayProps {
@@ -24,6 +27,9 @@ const TYPE_LABELS: Record<SearchResultType, string> = {
   [SearchResultType.Document]: 'Documents',
   [SearchResultType.Booking]: 'Bookings',
   [SearchResultType.Database]: 'Databases',
+  [SearchResultType.TaxDocument]: 'Tax Documents',
+  [SearchResultType.Invoice]: 'Invoices',
+  [SearchResultType.AgentRun]: 'Agent Runs',
 }
 
 const TYPE_ICONS: Record<SearchResultType, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -32,13 +38,11 @@ const TYPE_ICONS: Record<SearchResultType, React.ComponentType<{ size?: number; 
   [SearchResultType.Document]: FileSignature,
   [SearchResultType.Booking]: Calendar,
   [SearchResultType.Database]: Database,
+  [SearchResultType.TaxDocument]: Receipt,
+  [SearchResultType.Invoice]: Receipt,
+  [SearchResultType.AgentRun]: Bot,
 }
 
-function isEmojiIcon(icon: string): boolean {
-  // Simple heuristic: emoji characters are typically > 1 byte in UTF-16
-  // or are in common emoji ranges
-  return icon.length <= 4 && !/^[a-zA-Z0-9_-]+$/.test(icon)
-}
 
 export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   const navigate = useNavigate()
@@ -252,9 +256,10 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                           >
                             {showEmoji ? (
                               result.icon
-                            ) : (
-                              <TypeIcon size={16} />
-                            )}
+                            ) : (() => {
+                              const IC = getIconComponent(result.icon)
+                              return IC ? <IC size={16} /> : <TypeIcon size={16} />
+                            })()}
                           </div>
                           <div className="search-overlay__item-content">
                             <span className="search-overlay__item-title">

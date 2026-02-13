@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useBillingStore } from '../stores/useBillingStore'
 import { PLANS, PLAN_ORDER, type PricingPlan } from '../lib/planData'
+import { MODULE_ADD_ONS } from '../lib/addOnData'
 import type { PlanId, BillingCycle } from '../types'
 import './BillingSettings.css'
 
@@ -16,6 +17,9 @@ export default function BillingSettings() {
   const storeBillingCycle = useBillingStore((s) => s.setBillingCycle)
   const setUsage = useBillingStore((s) => s.setUsage)
   const setPaymentMethod = useBillingStore((s) => s.setPaymentMethod)
+  const activeAddOns = useBillingStore((s) => s.activeAddOns)
+  const activateAddOn = useBillingStore((s) => s.activateAddOn)
+  const deactivateAddOn = useBillingStore((s) => s.deactivateAddOn)
 
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<PlanId | null>(null)
@@ -309,6 +313,62 @@ export default function BillingSettings() {
             </div>
           )
         })}
+      </div>
+
+      {/* Add-ons Section */}
+      <div className="billing__section">
+        <h2 className="billing__section-title">Add-ons</h2>
+        <p className="billing__section-subtitle">
+          Extend your plan with powerful module add-ons.
+        </p>
+        <div className="billing__addons-grid">
+          {MODULE_ADD_ONS.map((addOn) => {
+            const isIncluded = addOn.includedInPlans.includes(currentPlan)
+            const isActive = activeAddOns.includes(addOn.id)
+            return (
+              <div
+                key={addOn.id}
+                className={`billing__addon-card ${isIncluded ? 'billing__addon-card--included' : ''} ${isActive ? 'billing__addon-card--active' : ''}`}
+              >
+                <div className="billing__addon-header">
+                  <h3 className="billing__addon-name">{addOn.name}</h3>
+                  {isIncluded && (
+                    <span className="billing__addon-included-badge">Included</span>
+                  )}
+                  {!isIncluded && isActive && (
+                    <span className="billing__addon-active-badge">Active</span>
+                  )}
+                </div>
+                <p className="billing__addon-description">{addOn.description}</p>
+                <div className="billing__addon-footer">
+                  {!isIncluded && (
+                    <div className="billing__addon-price">
+                      <span className="billing__addon-amount">${addOn.monthlyPrice}</span>
+                      <span className="billing__addon-unit">/mo{addOn.perUnit ? ` ${addOn.perUnit}` : ''}</span>
+                    </div>
+                  )}
+                  {isIncluded ? (
+                    <span className="billing__addon-included-text">Included in your {currentPlanData.name} plan</span>
+                  ) : isActive ? (
+                    <button
+                      className="billing__addon-btn billing__addon-btn--deactivate"
+                      onClick={() => deactivateAddOn(addOn.id)}
+                    >
+                      Deactivate
+                    </button>
+                  ) : (
+                    <button
+                      className="billing__addon-btn billing__addon-btn--activate"
+                      onClick={() => activateAddOn(addOn.id)}
+                    >
+                      Activate
+                    </button>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       {/* Usage Section */}

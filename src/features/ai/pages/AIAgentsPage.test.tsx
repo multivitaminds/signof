@@ -194,7 +194,8 @@ describe('AIAgentsPage', () => {
     await user.click(screen.getByRole('tab', { name: /Agents/ }))
     await user.type(screen.getByLabelText('Search agents'), 'xyznonexistent')
 
-    expect(screen.getByText('No agents match your search.')).toBeInTheDocument()
+    expect(screen.getByText('No agents found')).toBeInTheDocument()
+    expect(screen.getByText('Try a different search term or browse all categories.')).toBeInTheDocument()
   })
 
   it('starts an agent run when Run button is clicked', async () => {
@@ -398,7 +399,8 @@ describe('AIAgentsPage', () => {
     await user.click(screen.getByRole('tab', { name: /Pipelines/ }))
 
     expect(screen.getByText('Pipelines')).toBeInTheDocument()
-    expect(screen.getByText('No pipelines yet. Create one or use a template to get started.')).toBeInTheDocument()
+    expect(screen.getByText('No pipelines yet')).toBeInTheDocument()
+    expect(screen.getByText('Create a pipeline or use a template to get started.')).toBeInTheDocument()
   })
 
   // ─── Favorites ────────────────────────────────────────────────

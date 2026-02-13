@@ -6,6 +6,8 @@ const mockSetPlan = vi.fn()
 const mockSetBillingCycle = vi.fn()
 const mockSetUsage = vi.fn()
 const mockSetPaymentMethod = vi.fn()
+const mockActivateAddOn = vi.fn()
+const mockDeactivateAddOn = vi.fn()
 
 vi.mock('../stores/useBillingStore', () => ({
   useBillingStore: (selector: (s: Record<string, unknown>) => unknown) =>
@@ -26,10 +28,13 @@ vi.mock('../stores/useBillingStore', () => ({
         { id: 'inv-001', date: '2026-02-01', description: 'Starter Plan - February 2026', amount: '$0.00', status: 'paid', invoiceUrl: '#' },
         { id: 'inv-002', date: '2026-01-01', description: 'Starter Plan - January 2026', amount: '$0.00', status: 'paid', invoiceUrl: '#' },
       ],
+      activeAddOns: [],
       setPlan: mockSetPlan,
       setBillingCycle: mockSetBillingCycle,
       setUsage: mockSetUsage,
       setPaymentMethod: mockSetPaymentMethod,
+      activateAddOn: mockActivateAddOn,
+      deactivateAddOn: mockDeactivateAddOn,
     }),
 }))
 
@@ -154,5 +159,35 @@ describe('BillingSettings', () => {
     render(<BillingSettings />)
     const paidBadges = screen.getAllByText('Paid')
     expect(paidBadges.length).toBe(2)
+  })
+
+  it('renders the add-ons section', () => {
+    render(<BillingSettings />)
+    expect(screen.getByText('Add-ons')).toBeInTheDocument()
+    expect(screen.getByText('Tax Filing')).toBeInTheDocument()
+    expect(screen.getByText('Advanced Accounting')).toBeInTheDocument()
+    expect(screen.getByText('AI Copilot Pro')).toBeInTheDocument()
+  })
+
+  it('renders activate buttons for add-ons on starter plan', () => {
+    render(<BillingSettings />)
+    const activateButtons = screen.getAllByText('Activate')
+    expect(activateButtons.length).toBe(3)
+  })
+
+  it('calls activateAddOn when Activate button is clicked', async () => {
+    const user = userEvent.setup()
+    render(<BillingSettings />)
+    const activateButtons = screen.getAllByText('Activate')
+    await user.click(activateButtons[0]!)
+    expect(mockActivateAddOn).toHaveBeenCalledWith('tax-filing')
+  })
+
+  it('renders module feature categories in plan cards', () => {
+    render(<BillingSettings />)
+    const docsFeatures = screen.getAllByText('Documents & Signatures')
+    expect(docsFeatures.length).toBeGreaterThanOrEqual(2)
+    const workspaceFeatures = screen.getAllByText('Workspace & Pages')
+    expect(workspaceFeatures.length).toBeGreaterThanOrEqual(2)
   })
 })

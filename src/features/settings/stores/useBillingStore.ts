@@ -21,13 +21,18 @@ interface BillingState {
   billingHistory: BillingRecord[]
   taxPlan: TaxPlanId
   accountingPlan: AccountingPlanId
+  activeAddOns: string[]
 
   setPlan: (plan: PlanId) => void
   setBillingCycle: (cycle: BillingCycle) => void
   setUsage: (usage: BillingUsage) => void
   setPaymentMethod: (method: PaymentMethod) => void
+  /** @deprecated Use activeAddOns + activateAddOn/deactivateAddOn instead */
   setTaxPlan: (plan: TaxPlanId) => void
+  /** @deprecated Use activeAddOns + activateAddOn/deactivateAddOn instead */
   setAccountingPlan: (plan: AccountingPlanId) => void
+  activateAddOn: (addOnId: string) => void
+  deactivateAddOn: (addOnId: string) => void
   clearSampleData: () => void
 }
 
@@ -82,6 +87,7 @@ export const useBillingStore = create<BillingState>()(
       ],
       taxPlan: 'tax_free',
       accountingPlan: 'acct_free',
+      activeAddOns: [],
 
       setPlan: (plan) => set({ currentPlan: plan }),
       setBillingCycle: (cycle) => set({ billingCycle: cycle }),
@@ -89,6 +95,16 @@ export const useBillingStore = create<BillingState>()(
       setPaymentMethod: (method) => set({ paymentMethod: method }),
       setTaxPlan: (plan) => set({ taxPlan: plan }),
       setAccountingPlan: (plan) => set({ accountingPlan: plan }),
+      activateAddOn: (addOnId) =>
+        set((state) => ({
+          activeAddOns: state.activeAddOns.includes(addOnId)
+            ? state.activeAddOns
+            : [...state.activeAddOns, addOnId],
+        })),
+      deactivateAddOn: (addOnId) =>
+        set((state) => ({
+          activeAddOns: state.activeAddOns.filter((id) => id !== addOnId),
+        })),
       clearSampleData: () =>
         set({
           usage: {
@@ -97,6 +113,7 @@ export const useBillingStore = create<BillingState>()(
             members: { used: 1, limit: 3 },
           },
           billingHistory: [],
+          activeAddOns: [],
         }),
     }),
     { name: 'orchestree-billing-storage' }

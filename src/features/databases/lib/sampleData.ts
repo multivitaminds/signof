@@ -142,7 +142,7 @@ const galleryView: DbView = {
 export const sampleTable: DbTable = {
   id: 'tbl-roadmap',
   name: 'Roadmap',
-  icon: '🗺️',
+  icon: 'map',
   fields,
   rows,
   views: [gridView, kanbanView, calendarView, galleryView],
@@ -151,7 +151,7 @@ export const sampleTable: DbTable = {
 export const sampleDatabase: Database = {
   id: 'db-product',
   name: 'Product Roadmap',
-  icon: '🚀',
+  icon: 'rocket',
   description: 'Track features, bugs, and milestones',
   tables: ['tbl-roadmap'],
   createdAt: now,

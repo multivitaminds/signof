@@ -104,7 +104,7 @@
   font-size: 1rem;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
   .project-detail__sidebar {
     display: none;
   }

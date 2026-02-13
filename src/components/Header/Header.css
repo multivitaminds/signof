@@ -65,7 +65,7 @@
   color: #a0a0c0;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   .header-content {
     padding: 12px 16px;
   }

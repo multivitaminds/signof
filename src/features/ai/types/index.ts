@@ -349,7 +349,6 @@ export interface MarketplaceAgent {
 
 export interface MarketplaceDomain {
   id: string
-  emoji: string
   name: string
   description: string
   agentCount: number

@@ -81,7 +81,7 @@
   transform: translateY(0);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .dashboard {
     padding: 20px 16px;
   }

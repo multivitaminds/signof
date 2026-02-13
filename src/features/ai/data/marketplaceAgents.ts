@@ -3,7 +3,6 @@ import type { MarketplaceDomain } from '../types'
 export const MARKETPLACE_DOMAINS: MarketplaceDomain[] = [
   {
     id: 'work',
-    emoji: '\u{1F4BC}',
     name: 'Work & Productivity',
     description: 'Automate every recurring work task from inbox management to project execution.',
     agentCount: 40,
@@ -53,7 +52,6 @@ export const MARKETPLACE_DOMAINS: MarketplaceDomain[] = [
   },
   {
     id: 'finance',
-    emoji: '\u{1F4B0}',
     name: 'Finance & Money',
     description: 'Agents that monitor, optimize, and protect your money 24/7.',
     agentCount: 40,
@@ -103,7 +101,6 @@ export const MARKETPLACE_DOMAINS: MarketplaceDomain[] = [
   },
   {
     id: 'health',
-    emoji: '\u{1F3C3}',
     name: 'Health & Fitness',
     description: 'Agents connected to wearables that monitor, coach, and optimize your physical wellbeing.',
     agentCount: 40,
@@ -153,7 +150,6 @@ export const MARKETPLACE_DOMAINS: MarketplaceDomain[] = [
   },
   {
     id: 'learning',
-    emoji: '\u{1F4DA}',
     name: 'Learning & Education',
     description: 'Personal tutors, research assistants, skill trackers for every learning goal.',
     agentCount: 40,
@@ -203,7 +199,6 @@ export const MARKETPLACE_DOMAINS: MarketplaceDomain[] = [
   },
   {
     id: 'relationships',
-    emoji: '\u2764\uFE0F',
     name: 'Relationships & Social',
     description: 'Never forget a birthday, miss a follow-up, or let a relationship go cold.',
     agentCount: 30,
@@ -243,7 +238,6 @@ export const MARKETPLACE_DOMAINS: MarketplaceDomain[] = [
   },
   {
     id: 'home',
-    emoji: '\u{1F3E0}',
     name: 'Home & Household',
     description: 'Your home runs itself. Grocery, maintenance, smart home, utilities, coordination.',
     agentCount: 35,
@@ -288,7 +282,6 @@ export const MARKETPLACE_DOMAINS: MarketplaceDomain[] = [
   },
   {
     id: 'creativity',
-    emoji: '\u{1F3A8}',
     name: 'Creativity & Content',
     description: 'Full creative studio in agents. Write, design, edit, schedule, analyze for every platform.',
     agentCount: 35,
@@ -333,7 +326,6 @@ export const MARKETPLACE_DOMAINS: MarketplaceDomain[] = [
   },
   {
     id: 'business',
-    emoji: '\u{1F4C8}',
     name: 'Business & Sales',
     description: 'Full revenue operations on autopilot. Lead gen to close to retention.',
     agentCount: 35,
@@ -378,7 +370,6 @@ export const MARKETPLACE_DOMAINS: MarketplaceDomain[] = [
   },
   {
     id: 'travel',
-    emoji: '\u2708\uFE0F',
     name: 'Travel & Logistics',
     description: 'Plan, optimize, and manage every aspect of travel.',
     agentCount: 30,
@@ -418,7 +409,6 @@ export const MARKETPLACE_DOMAINS: MarketplaceDomain[] = [
   },
   {
     id: 'legal',
-    emoji: '\u2696\uFE0F',
     name: 'Legal & Admin',
     description: 'Contracts, compliance, deadlines, paperwork. Critical stuff that costs when neglected.',
     agentCount: 30,
@@ -458,7 +448,6 @@ export const MARKETPLACE_DOMAINS: MarketplaceDomain[] = [
   },
   {
     id: 'parenting',
-    emoji: '\u{1F468}\u200D\u{1F469}\u200D\u{1F467}\u200D\u{1F466}',
     name: 'Parenting & Family',
     description: 'School logistics, activity management, family coordination, college planning.',
     agentCount: 30,
@@ -498,7 +487,6 @@ export const MARKETPLACE_DOMAINS: MarketplaceDomain[] = [
   },
   {
     id: 'wellness',
-    emoji: '\u{1F9D8}',
     name: 'Mental Wellness & Growth',
     description: 'Journaling, mood tracking, gratitude, goal setting, and personal development.',
     agentCount: 30,
@@ -538,7 +526,6 @@ export const MARKETPLACE_DOMAINS: MarketplaceDomain[] = [
   },
   {
     id: 'developer',
-    emoji: '\u{1F4BB}',
     name: 'Developer & Engineering',
     description: 'Full engineering operations: code review, CI/CD, monitoring, incident management.',
     agentCount: 45,

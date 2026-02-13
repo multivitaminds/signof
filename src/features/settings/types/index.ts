@@ -166,6 +166,15 @@ export const AccountingPlanId = {
 
 export type AccountingPlanId = (typeof AccountingPlanId)[keyof typeof AccountingPlanId]
 
+export interface ModuleAddOn {
+  id: string
+  name: string
+  description: string
+  monthlyPrice: number
+  perUnit?: string
+  includedInPlans: PlanId[]
+}
+
 export interface PaymentMethod {
   brand: string
   last4: string

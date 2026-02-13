@@ -1,0 +1,184 @@
+/* ─── Agent Cards Grid ─────────────────────────────────── */
+
+.copilot-agents__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.copilot-agents__card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-top: 3px solid var(--agent-color, var(--color-primary));
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  transition: box-shadow 0.15s ease;
+}
+
+.copilot-agents__card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.copilot-agents__card-header {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+}
+
+.copilot-agents__card-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  color: var(--agent-color, var(--color-primary));
+}
+
+.copilot-agents__card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.copilot-agents__card-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+.copilot-agents__card-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 2px 0;
+}
+
+.copilot-agents__card-favorite {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+
+.copilot-agents__card-favorite:hover {
+  color: var(--color-warning);
+}
+
+.copilot-agents__card-favorite--active {
+  color: var(--color-warning);
+}
+
+.copilot-agents__card-desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.copilot-agents__card-category-badge {
+  display: inline-block;
+  width: fit-content;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border: 1px solid var(--agent-color, var(--color-primary));
+  border-radius: 999px;
+  color: var(--agent-color, var(--color-primary));
+}
+
+.copilot-agents__card-input-row {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.copilot-agents__card-task-input {
+  flex: 1;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.8125rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.copilot-agents__card-task-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+.copilot-agents__run-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: var(--agent-color, var(--color-primary));
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.copilot-agents__run-btn:hover {
+  opacity: 0.9;
+}
+
+.copilot-agents__card-last-run {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ─── Dark Mode ───────────────────────────────────────── */
+
+[data-theme="dark"] .copilot-agents__card {
+  border-top-color: color-mix(in srgb, var(--agent-color, var(--color-primary)) 80%, white 20%);
+}
+
+[data-theme="dark"] .copilot-agents__card-icon {
+  color: color-mix(in srgb, var(--agent-color, var(--color-primary)) 85%, white 15%);
+}
+
+/* ─── Responsive ───────────────────────────────────────── */
+
+@media (max-width: 1023px) {
+  .copilot-agents__grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .copilot-agents__grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .copilot-agents__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -50,7 +50,7 @@
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
   .ai-memory-page__content {
     grid-template-columns: 1fr;
   }

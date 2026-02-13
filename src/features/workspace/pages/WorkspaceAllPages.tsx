@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, FileText } from 'lucide-react'
 import { useWorkspaceStore } from '../stores/useWorkspaceStore'
+import { getIconComponent, isEmojiIcon } from '../../../lib/iconMap'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import './WorkspaceAllPages.css'
 
@@ -52,7 +53,13 @@ export default function WorkspaceAllPages() {
               onClick={() => handlePageClick(page.id)}
             >
               <span className="all-pages__card-icon">
-                {page.icon || <FileText size={20} />}
+                {page.icon
+                  ? (() => {
+                      if (isEmojiIcon(page.icon)) return page.icon
+                      const IC = getIconComponent(page.icon)
+                      return IC ? <IC size={20} /> : page.icon
+                    })()
+                  : <FileText size={20} />}
               </span>
               <span className="all-pages__card-title">
                 {page.title || 'Untitled'}

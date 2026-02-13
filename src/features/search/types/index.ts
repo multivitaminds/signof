@@ -6,6 +6,9 @@ export const SearchResultType = {
   Document: 'document',
   Booking: 'booking',
   Database: 'database',
+  TaxDocument: 'tax_document',
+  Invoice: 'invoice',
+  AgentRun: 'agent_run',
 } as const
 
 export type SearchResultType = (typeof SearchResultType)[keyof typeof SearchResultType]

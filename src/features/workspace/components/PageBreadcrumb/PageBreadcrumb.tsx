@@ -2,6 +2,7 @@ import { useMemo, useCallback } from 'react'
 import { ChevronRight, Home } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useWorkspaceStore } from '../../stores/useWorkspaceStore'
+import { getIconComponent, isEmojiIcon } from '../../../../lib/iconMap'
 import './PageBreadcrumb.css'
 
 interface PageBreadcrumbProps {
@@ -50,7 +51,11 @@ export default function PageBreadcrumb({ pageId }: PageBreadcrumbProps) {
               <ChevronRight size={12} className="page-breadcrumb__separator" aria-hidden="true" />
               {isLast ? (
                 <span className="page-breadcrumb__current" aria-current="page">
-                  {crumb.icon && <span className="page-breadcrumb__icon">{crumb.icon}</span>}
+                  {crumb.icon && <span className="page-breadcrumb__icon">{(() => {
+                    if (isEmojiIcon(crumb.icon)) return crumb.icon
+                    const IC = getIconComponent(crumb.icon)
+                    return IC ? <IC size={14} /> : crumb.icon
+                  })()}</span>}
                   <span className="page-breadcrumb__text page-breadcrumb__text--current">
                     {crumb.title || 'Untitled'}
                   </span>
@@ -60,7 +65,11 @@ export default function PageBreadcrumb({ pageId }: PageBreadcrumbProps) {
                   className="page-breadcrumb__link"
                   onClick={() => handleNavigate(crumb.id)}
                 >
-                  {crumb.icon && <span className="page-breadcrumb__icon">{crumb.icon}</span>}
+                  {crumb.icon && <span className="page-breadcrumb__icon">{(() => {
+                    if (isEmojiIcon(crumb.icon)) return crumb.icon
+                    const IC = getIconComponent(crumb.icon)
+                    return IC ? <IC size={14} /> : crumb.icon
+                  })()}</span>}
                   <span className="page-breadcrumb__text">
                     {crumb.title || 'Untitled'}
                   </span>

@@ -150,7 +150,7 @@
   overflow-y: auto;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .developer-layout {
     flex-direction: column;
   }

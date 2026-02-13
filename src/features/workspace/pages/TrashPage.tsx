@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
-import { Trash2, RotateCcw } from 'lucide-react'
+import { Trash2, RotateCcw, FileText } from 'lucide-react'
 import { useWorkspaceStore } from '../stores/useWorkspaceStore'
+import { getIconComponent, isEmojiIcon } from '../../../lib/iconMap'
 import './TrashPage.css'
 
 export default function TrashPage() {
@@ -46,7 +47,15 @@ export default function TrashPage() {
           {trashedPages.map((page) => (
             <div key={page.id} className="trash-page__item">
               <div className="trash-page__item-info">
-                <span className="trash-page__item-icon">{page.icon || '📄'}</span>
+                <span className="trash-page__item-icon">
+                  {page.icon
+                    ? (() => {
+                        if (isEmojiIcon(page.icon)) return page.icon
+                        const IC = getIconComponent(page.icon)
+                        return IC ? <IC size={16} /> : page.icon
+                      })()
+                    : <FileText size={16} />}
+                </span>
                 <span className="trash-page__item-title">{page.title}</span>
                 <span className="trash-page__item-date">
                   Deleted {page.trashedAt ? new Date(page.trashedAt).toLocaleDateString() : ''}

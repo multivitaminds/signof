@@ -1,9 +1,10 @@
 import { useCallback, useMemo } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
-import { Star, Clock } from 'lucide-react'
+import { Star, Clock, FileText } from 'lucide-react'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { DemoVideoSection } from '../../../components/ui/DemoVideo'
 import { useWorkspaceStore } from '../stores/useWorkspaceStore'
+import { getIconComponent, isEmojiIcon } from '../../../lib/iconMap'
 import PageTree from '../components/PageTree/PageTree'
 import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
 import './WorkspaceLayout.css'
@@ -53,6 +54,13 @@ export default function WorkspaceLayout() {
     [toggleFavorite]
   )
 
+  const renderPageIcon = useCallback((icon: string | undefined) => {
+    if (!icon) return <FileText size={14} />
+    if (isEmojiIcon(icon)) return icon
+    const IC = getIconComponent(icon)
+    return IC ? <IC size={14} /> : icon
+  }, [])
+
   return (
     <div className="workspace-layout">
       <aside className="workspace-layout__sidebar">
@@ -78,7 +86,7 @@ export default function WorkspaceLayout() {
                   className={`workspace-layout__section-item ${pageId === page.id ? 'workspace-layout__section-item--active' : ''}`}
                   onClick={() => handleSelectPage(page.id)}
                 >
-                  <span className="workspace-layout__section-icon">{page.icon || '📄'}</span>
+                  <span className="workspace-layout__section-icon">{renderPageIcon(page.icon)}</span>
                   <span className="workspace-layout__section-title">{page.title || 'Untitled'}</span>
                 </button>
               ))}
@@ -100,7 +108,7 @@ export default function WorkspaceLayout() {
                   className={`workspace-layout__section-item ${pageId === page.id ? 'workspace-layout__section-item--active' : ''}`}
                   onClick={() => handleSelectPage(page.id)}
                 >
-                  <span className="workspace-layout__section-icon">{page.icon || '📄'}</span>
+                  <span className="workspace-layout__section-icon">{renderPageIcon(page.icon)}</span>
                   <span className="workspace-layout__section-title">{page.title || 'Untitled'}</span>
                 </button>
               ))}

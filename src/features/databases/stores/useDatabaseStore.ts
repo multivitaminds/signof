@@ -86,7 +86,7 @@ export const useDatabaseStore = create<DatabaseState>()(
           id: rid(), name: 'Grid view', type: ViewType.Grid, tableId,
           filters: [], sorts: [], hiddenFields: [], fieldOrder: [defaultField.id],
         }
-        const table: DbTable = { id: tableId, name: 'Table 1', icon: '📋', fields: [defaultField], rows: [], views: [defaultView] }
+        const table: DbTable = { id: tableId, name: 'Table 1', icon: 'clipboard-list', fields: [defaultField], rows: [], views: [defaultView] }
         const db: Database = { id, name, icon, description, tables: [tableId], createdAt: now(), updatedAt: now() }
 
         set((s) => ({

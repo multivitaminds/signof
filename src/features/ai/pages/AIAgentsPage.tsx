@@ -1,26 +1,16 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import {
-  Search, PenTool, Code2, Palette, BarChart3,
-  ClipboardList, Users, CheckSquare,
-  Play, Pause, Square, MessageSquare,
-  ChevronDown, ChevronUp, ChevronRight, Plus,
-  CheckCircle2, Loader2, Circle, XCircle, Clock,
-  Eye, Star, Zap,
-  TrendingUp, Megaphone, DollarSign, Scale, ShieldCheck,
-  UserPlus, HeartHandshake, Languages, Globe, Share2,
-  Shield, Server,
-  BookOpen, Home, Heart,
+  Plus, Zap, Search, Users,
 } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
-import { Badge } from '../../../components/ui'
 import useAIAgentStore, { getStepOutput } from '../stores/useAIAgentStore'
 import usePipelineStore from '../stores/usePipelineStore'
 import useCanvasStore from '../stores/useCanvasStore'
 import { AGENT_DEFINITIONS } from '../lib/agentDefinitions'
 import { MARKETPLACE_DOMAINS, TOTAL_MARKETPLACE_AGENTS } from '../data/marketplaceAgents'
 import { WORKFLOW_TEMPLATES } from '../lib/workflowTemplates'
-import { RunStatus, StepStatus, AgentCategory, NodeStatus, AgentType } from '../types'
-import type { AgentRun, RunStep } from '../types'
+import { buildCategoryTabs, DOMAIN_AGENT_TYPE } from '../lib/agentIcons'
+import { RunStatus, StepStatus, NodeStatus, AgentType } from '../types'
+import type { AgentRun } from '../types'
 import OrchestratorInput from '../components/OrchestratorInput/OrchestratorInput'
 import PipelineBuilder from '../components/PipelineBuilder/PipelineBuilder'
 import PipelineView from '../components/PipelineView/PipelineView'
@@ -32,128 +22,15 @@ import CanvasTopBar from '../components/CanvasTopBar/CanvasTopBar'
 import NodePicker from '../components/NodePicker/NodePicker'
 import NodeConfigPanel from '../components/NodeConfigPanel/NodeConfigPanel'
 import ExecutionOverlay from '../components/ExecutionOverlay/ExecutionOverlay'
+import AgentStatsBar from '../components/AgentStatsBar/AgentStatsBar'
+import AgentCategoryFilter from '../components/AgentCategoryFilter/AgentCategoryFilter'
+import AgentCardGrid from '../components/AgentCardGrid/AgentCardGrid'
+import MarketplaceSection from '../components/MarketplaceSection/MarketplaceSection'
+import ActiveRunsPanel from '../components/ActiveRunsPanel/ActiveRunsPanel'
+import RunHistoryTable from '../components/RunHistoryTable/RunHistoryTable'
+import EmptyState from '../../../components/EmptyState/EmptyState'
 import type { WorkflowTemplate } from '../lib/workflowTemplates'
 import './AIAgentsPage.css'
-
-// ─── Icon Mapping ─────────────────────────────────────────────────
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Search, PenTool, Code2, Palette, BarChart3,
-  ClipboardList, Users, CheckSquare,
-  TrendingUp, Megaphone, DollarSign, Scale, ShieldCheck,
-  UserPlus, HeartHandshake, Languages, Globe, Share2,
-  Shield, Server,
-}
-
-const DOMAIN_ICON: Record<string, LucideIcon> = {
-  work: ClipboardList,
-  finance: DollarSign,
-  health: Heart,
-  learning: BookOpen,
-  relationships: Users,
-  home: Home,
-  creativity: Palette,
-  business: TrendingUp,
-  travel: Globe,
-  legal: Scale,
-  parenting: UserPlus,
-  wellness: HeartHandshake,
-  developer: Code2,
-}
-
-const DOMAIN_AGENT_TYPE: Record<string, AgentType> = {
-  work: AgentType.Planner,
-  finance: AgentType.Finance,
-  health: AgentType.Researcher,
-  learning: AgentType.Researcher,
-  relationships: AgentType.Coordinator,
-  home: AgentType.Planner,
-  creativity: AgentType.Designer,
-  business: AgentType.Sales,
-  travel: AgentType.Planner,
-  legal: AgentType.Legal,
-  parenting: AgentType.Planner,
-  wellness: AgentType.Researcher,
-  developer: AgentType.Developer,
-}
-
-function getIcon(iconName: string): LucideIcon {
-  return ICON_MAP[iconName] ?? Circle
-}
-
-// ─── Category Config ──────────────────────────────────────────────
-
-interface CategoryTab {
-  key: string
-  label: string
-  count: number
-}
-
-function buildCategoryTabs(): CategoryTab[] {
-  const counts: Record<string, number> = {}
-  for (const d of AGENT_DEFINITIONS) {
-    counts[d.category] = (counts[d.category] ?? 0) + 1
-  }
-  return [
-    { key: 'all', label: 'All', count: AGENT_DEFINITIONS.length },
-    { key: AgentCategory.Business, label: 'Business', count: counts[AgentCategory.Business] ?? 0 },
-    { key: AgentCategory.Creative, label: 'Creative', count: counts[AgentCategory.Creative] ?? 0 },
-    { key: AgentCategory.Technical, label: 'Technical', count: counts[AgentCategory.Technical] ?? 0 },
-    { key: AgentCategory.People, label: 'People', count: counts[AgentCategory.People] ?? 0 },
-    { key: AgentCategory.Legal, label: 'Legal', count: counts[AgentCategory.Legal] ?? 0 },
-    { key: AgentCategory.Core, label: 'Core', count: counts[AgentCategory.Core] ?? 0 },
-    { key: 'favorites', label: 'Favorites', count: 0 },
-  ]
-}
-
-// ─── Step Status Icons ────────────────────────────────────────────
-
-const STEP_ICON: Record<StepStatus, LucideIcon> = {
-  [StepStatus.Pending]: Circle,
-  [StepStatus.Running]: Loader2,
-  [StepStatus.Completed]: CheckCircle2,
-  [StepStatus.Error]: XCircle,
-}
-
-const STEP_CLASS: Record<StepStatus, string> = {
-  [StepStatus.Pending]: 'copilot-agents__step-icon--pending',
-  [StepStatus.Running]: 'copilot-agents__step-icon--running',
-  [StepStatus.Completed]: 'copilot-agents__step-icon--completed',
-  [StepStatus.Error]: 'copilot-agents__step-icon--error',
-}
-
-const RUN_STATUS_VARIANT: Record<RunStatus, 'primary' | 'warning' | 'success' | 'danger' | 'default'> = {
-  [RunStatus.Running]: 'primary',
-  [RunStatus.Paused]: 'warning',
-  [RunStatus.Completed]: 'success',
-  [RunStatus.Cancelled]: 'default',
-  [RunStatus.Failed]: 'danger',
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────
-
-function formatDuration(startedAt: string, completedAt: string | null): string {
-  const start = new Date(startedAt).getTime()
-  const end = completedAt ? new Date(completedAt).getTime() : Date.now()
-  const diffMs = end - start
-  const seconds = Math.floor(diffMs / 1000)
-  const minutes = Math.floor(seconds / 60)
-  if (minutes > 0) return `${minutes}m ${seconds % 60}s`
-  return `${seconds}s`
-}
-
-function formatRelativeDate(dateStr: string): string {
-  const now = Date.now()
-  const then = new Date(dateStr).getTime()
-  const diffMs = now - then
-  const hours = Math.floor(diffMs / 3600000)
-  const days = Math.floor(hours / 24)
-  if (days > 0) return `${days}d ago`
-  if (hours > 0) return `${hours}h ago`
-  return 'just now'
-}
-
-// ─── Component ─────────────────────────────────────────────────────
 
 export default function AIAgentsPage() {
   const runs = useAIAgentStore((s) => s.runs)
@@ -484,7 +361,6 @@ export default function AIAgentsPage() {
       }
       updateNodeStatus(node.id, NodeStatus.Running)
 
-      // Update connection to this node as running
       const incomingConn = canvasConnections.find(c => c.targetNodeId === node.id)
       if (incomingConn) updateConnectionStatus(incomingConn.id, NodeStatus.Running)
 
@@ -492,7 +368,6 @@ export default function AIAgentsPage() {
         updateNodeStatus(node.id, NodeStatus.Completed, `Output from ${node.agentType}`)
         if (incomingConn) updateConnectionStatus(incomingConn.id, NodeStatus.Completed)
 
-        // Update outgoing connection
         const outgoingConn = canvasConnections.find(c => c.sourceNodeId === node.id)
         if (outgoingConn) updateConnectionStatus(outgoingConn.id, NodeStatus.Running)
 
@@ -531,31 +406,17 @@ export default function AIAgentsPage() {
         </p>
       </div>
 
-      {/* Orchestrator Input */}
       <OrchestratorInput
         onRunSingle={handleOrchestratorSingle}
         onRunPipeline={handleOrchestratorPipeline}
       />
 
-      {/* Stats Bar */}
-      <div className="copilot-agents__stats-bar" aria-label="Agent statistics">
-        <div className="copilot-agents__stat-card">
-          <span className="copilot-agents__stat-value">{stats.totalAgents}</span>
-          <span className="copilot-agents__stat-label">Total Agents</span>
-        </div>
-        <div className="copilot-agents__stat-card">
-          <span className="copilot-agents__stat-value">{stats.totalRuns}</span>
-          <span className="copilot-agents__stat-label">Total Runs</span>
-        </div>
-        <div className="copilot-agents__stat-card">
-          <span className="copilot-agents__stat-value">{stats.activePipelines}</span>
-          <span className="copilot-agents__stat-label">Active Pipelines</span>
-        </div>
-        <div className="copilot-agents__stat-card">
-          <span className="copilot-agents__stat-value">{stats.successRate}%</span>
-          <span className="copilot-agents__stat-label">Success Rate</span>
-        </div>
-      </div>
+      <AgentStatsBar
+        totalAgents={stats.totalAgents}
+        totalRuns={stats.totalRuns}
+        activePipelines={stats.activePipelines}
+        successRate={stats.successRate}
+      />
 
       {/* View Tabs */}
       <div className="copilot-agents__view-tabs" role="tablist" aria-label="View tabs">
@@ -593,7 +454,7 @@ export default function AIAgentsPage() {
         </button>
       </div>
 
-      {/* ─── CANVAS TAB ──────────────────────────────────────────── */}
+      {/* Canvas Tab */}
       {activeTab === 'canvas' && (
         <div className="copilot-agents__canvas-wrapper">
           <CanvasTopBar
@@ -639,195 +500,58 @@ export default function AIAgentsPage() {
         </div>
       )}
 
-      {/* ─── AGENTS TAB ──────────────────────────────────────────── */}
+      {/* Agents Tab */}
       {activeTab === 'agents' && (
         <>
-          {/* Category Pills + Search */}
-          <div className="copilot-agents__filters">
-            <div className="copilot-agents__category-pills" role="tablist" aria-label="Agent categories">
-              {categoryTabs.map(tab => (
-                <button
-                  key={tab.key}
-                  className={`copilot-agents__category-pill${activeCategory === tab.key ? ' copilot-agents__category-pill--active' : ''}`}
-                  onClick={() => setActiveCategory(tab.key)}
-                  role="tab"
-                  aria-selected={activeCategory === tab.key}
-                >
-                  {tab.key === 'favorites' && <Star size={12} />}
-                  {tab.label} ({tab.count})
-                </button>
-              ))}
-            </div>
-            <div className="copilot-agents__search-bar">
-              <Search size={16} className="copilot-agents__search-icon" />
-              <input
-                className="copilot-agents__search-input"
-                type="text"
-                placeholder="Search agents..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label="Search agents"
-              />
-            </div>
-          </div>
+          <AgentCategoryFilter
+            categories={categoryTabs}
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
 
-          {/* Featured Agents Header */}
           <div className="copilot-agents__featured-header">
             <h3 className="copilot-agents__featured-title">Featured Agents</h3>
             <span className="copilot-agents__featured-badge">Runnable</span>
           </div>
 
-          {/* Agent Cards Grid */}
-          <div className="copilot-agents__grid">
-            {filteredAgents.map((agent) => {
-              const IconComp = getIcon(agent.icon)
-              const lastRun = lastRunByAgent[agent.type]
-              const isFavorite = favorites.includes(agent.type)
-              return (
-                <div key={agent.type} className="copilot-agents__card" style={{ borderTopColor: agent.color }}>
-                  <div className="copilot-agents__card-header">
-                    <div className="copilot-agents__card-icon" style={{ color: agent.color }}>
-                      <IconComp size={24} />
-                    </div>
-                    <div className="copilot-agents__card-info">
-                      <div className="copilot-agents__card-name-row">
-                        <h3 className="copilot-agents__card-name">{agent.label} Agent</h3>
-                        <button
-                          className={`copilot-agents__card-favorite${isFavorite ? ' copilot-agents__card-favorite--active' : ''}`}
-                          onClick={() => toggleFavorite(agent.type)}
-                          aria-label={isFavorite ? `Unfavorite ${agent.label}` : `Favorite ${agent.label}`}
-                        >
-                          <Star size={14} fill={isFavorite ? 'currentColor' : 'none'} />
-                        </button>
-                      </div>
-                      <p className="copilot-agents__card-desc">{agent.description}</p>
-                    </div>
-                  </div>
-                  <span className="copilot-agents__card-category-badge" style={{ color: agent.color, borderColor: agent.color }}>
-                    {agent.category}
-                  </span>
-                  <div className="copilot-agents__card-input-row">
-                    <input
-                      className="copilot-agents__card-task-input"
-                      type="text"
-                      placeholder="Describe the task..."
-                      value={runTaskInputs[agent.type] ?? ''}
-                      onChange={(e) => handleTaskInputChange(agent.type, e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleRun(agent.type)
-                      }}
-                      aria-label={`Task for ${agent.label} Agent`}
-                    />
-                    <button
-                      className="copilot-agents__run-btn"
-                      onClick={() => handleRun(agent.type)}
-                      style={{ backgroundColor: agent.color }}
-                      aria-label={`Run ${agent.label} Agent`}
-                    >
-                      <Play size={14} />
-                      Run
-                    </button>
-                  </div>
-                  {lastRun && (
-                    <span className="copilot-agents__card-last-run">
-                      <Clock size={12} />
-                      Last run: {formatRelativeDate(lastRun)}
-                    </span>
-                  )}
-                </div>
-              )
-            })}
-          </div>
+          <AgentCardGrid
+            agents={filteredAgents}
+            favorites={favorites as AgentType[]}
+            lastRunByAgent={lastRunByAgent}
+            runTaskInputs={runTaskInputs}
+            onTaskInputChange={handleTaskInputChange}
+            onRun={handleRun}
+            onToggleFavorite={toggleFavorite}
+          />
 
           {filteredAgents.length === 0 && !searchQuery.trim() && (
-            <p className="copilot-agents__empty">No agents match your filters.</p>
+            <EmptyState
+              icon={<Users size={32} />}
+              title="No agents match your filters"
+              description="Try selecting a different category or check back later."
+            />
           )}
 
-          {/* Marketplace Domain Sections */}
-          {filteredMarketplace.length > 0 && (
-            <section className="copilot-agents__marketplace" aria-label="Agent Marketplace">
-              <div className="copilot-agents__marketplace-header">
-                <h3 className="copilot-agents__marketplace-title">Agent Marketplace</h3>
-                <span className="copilot-agents__marketplace-count">
-                  {TOTAL_MARKETPLACE_AGENTS} browse-only agents
-                </span>
-              </div>
-
-              {filteredMarketplace.map(domain => {
-                const isExpanded = expandedDomains.has(domain.id)
-                return (
-                  <div key={domain.id} className="copilot-agents__domain">
-                    <button
-                      className="copilot-agents__domain-toggle"
-                      onClick={() => toggleDomain(domain.id)}
-                      aria-expanded={isExpanded}
-                      aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${domain.name}`}
-                    >
-                      <ChevronRight
-                        size={16}
-                        className={`copilot-agents__domain-chevron${isExpanded ? ' copilot-agents__domain-chevron--expanded' : ''}`}
-                      />
-                      <span className="copilot-agents__domain-emoji">{domain.emoji}</span>
-                      <div className="copilot-agents__domain-info">
-                        <p className="copilot-agents__domain-name">{domain.name}</p>
-                        <p className="copilot-agents__domain-desc">{domain.description}</p>
-                      </div>
-                      <span className="copilot-agents__domain-count" style={{ color: domain.color, borderColor: domain.color }}>
-                        {domain.agentCount}
-                      </span>
-                    </button>
-
-                    {isExpanded && (
-                      <div className="copilot-agents__domain-content">
-                        <div className="copilot-agents__marketplace-grid">
-                          {domain.agents.map(agent => (
-                            <div
-                              key={`${domain.id}-${agent.id}`}
-                              className="copilot-agents__marketplace-card"
-                              onClick={() => handleMarketplaceRun(domain.id, agent.name)}
-                              role="button"
-                              tabIndex={0}
-                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleMarketplaceRun(domain.id, agent.name) } }}
-                            >
-                              <div className="copilot-agents__marketplace-card-header">
-                                <span className="copilot-agents__marketplace-card-icon" style={{ backgroundColor: `${domain.color}18`, color: domain.color }}>
-                                  {(() => { const DomainIcon = DOMAIN_ICON[domain.id] ?? Circle; return <DomainIcon size={14} /> })()}
-                                </span>
-                                <h4 className="copilot-agents__marketplace-card-name">{agent.name}</h4>
-                              </div>
-                              <p className="copilot-agents__marketplace-card-desc">{agent.description}</p>
-                              <div className="copilot-agents__marketplace-card-meta">
-                                <span className="copilot-agents__marketplace-card-tag">{agent.integrations}</span>
-                                <span className="copilot-agents__marketplace-card-tag">{agent.autonomy}</span>
-                                <span className="copilot-agents__marketplace-card-price">{agent.price}</span>
-                              </div>
-                              <button
-                                className="copilot-agents__marketplace-card-run"
-                                onClick={(e) => { e.stopPropagation(); handleMarketplaceRun(domain.id, agent.name) }}
-                                aria-label={`Run ${agent.name}`}
-                                style={{ backgroundColor: domain.color }}
-                              >
-                                <Play size={12} fill="currentColor" />
-                                Run
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </section>
-          )}
+          <MarketplaceSection
+            domains={filteredMarketplace}
+            expandedDomains={expandedDomains}
+            onToggleDomain={toggleDomain}
+            onMarketplaceRun={handleMarketplaceRun}
+          />
 
           {filteredAgents.length === 0 && filteredMarketplace.length === 0 && searchQuery.trim() && (
-            <p className="copilot-agents__empty">No agents match your search.</p>
+            <EmptyState
+              icon={<Search size={32} />}
+              title="No agents found"
+              description="Try a different search term or browse all categories."
+            />
           )}
         </>
       )}
 
-      {/* ─── PIPELINES TAB ───────────────────────────────────────── */}
+      {/* Pipelines Tab */}
       {activeTab === 'pipelines' && (
         <div className="copilot-agents__pipelines-section">
           <div className="copilot-agents__pipelines-header">
@@ -863,12 +587,17 @@ export default function AIAgentsPage() {
           )}
 
           {pipelines.length === 0 && (
-            <p className="copilot-agents__empty">No pipelines yet. Create one or use a template to get started.</p>
+            <EmptyState
+              icon={<Zap size={32} />}
+              title="No pipelines yet"
+              description="Create a pipeline or use a template to get started."
+              action={{ label: 'Create Pipeline', onClick: handleOpenPipelineBuilder }}
+            />
           )}
         </div>
       )}
 
-      {/* ─── TEMPLATES TAB ───────────────────────────────────────── */}
+      {/* Templates Tab */}
       {activeTab === 'templates' && (
         <div className="copilot-agents__templates-section">
           <h3 className="copilot-agents__section-title">Workflow Templates</h3>
@@ -882,137 +611,22 @@ export default function AIAgentsPage() {
       )}
 
       {/* Active Runs Panel */}
-      {activeRuns.length > 0 && (
-        <section className="copilot-agents__active-runs" aria-label="Active agent runs">
-          <h3 className="copilot-agents__section-title">Active Runs</h3>
-          <div className="copilot-agents__runs-list">
-            {activeRuns.map((run) => {
-              const agentDef = AGENT_DEFINITIONS.find(a => a.type === run.agentType)
-              const completedSteps = run.steps.filter(s => s.status === StepStatus.Completed).length
-              const progressPercent = run.steps.length > 0
-                ? (completedSteps / run.steps.length) * 100
-                : 0
-
-              return (
-                <div key={run.id} className="copilot-agents__run-card">
-                  <div className="copilot-agents__run-header">
-                    <div className="copilot-agents__run-info">
-                      <span className="copilot-agents__run-agent">{agentDef?.label ?? run.agentType} Agent</span>
-                      <span className="copilot-agents__run-task">{run.task}</span>
-                    </div>
-                    <Badge variant={RUN_STATUS_VARIANT[run.status]} size="sm" dot>
-                      {run.status}
-                    </Badge>
-                  </div>
-
-                  <div className="copilot-agents__progress-bar" role="progressbar" aria-valuenow={completedSteps} aria-valuemin={0} aria-valuemax={run.steps.length} aria-label="Run progress">
-                    <div className="copilot-agents__progress-fill" style={{ width: `${progressPercent}%` }} />
-                  </div>
-
-                  <div className="copilot-agents__steps" role="list" aria-label="Run steps">
-                    {run.steps.map((step: RunStep) => {
-                      const StepIcon = STEP_ICON[step.status]
-                      return (
-                        <div key={step.id} className={`copilot-agents__step copilot-agents__step--${step.status}`} role="listitem">
-                          <StepIcon size={16} className={`copilot-agents__step-icon ${STEP_CLASS[step.status]}`} />
-                          <div className="copilot-agents__step-content">
-                            <span className="copilot-agents__step-label">{step.label}</span>
-                            {step.output && (
-                              <span className="copilot-agents__step-output">{step.output}</span>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-
-                  <div className="copilot-agents__run-controls">
-                    {run.status === RunStatus.Running && (
-                      <button className="copilot-agents__control-btn" onClick={() => handlePause(run.id)} aria-label="Pause run">
-                        <Pause size={14} /> Pause
-                      </button>
-                    )}
-                    {run.status === RunStatus.Paused && (
-                      <button className="copilot-agents__control-btn copilot-agents__control-btn--primary" onClick={() => handleResume(run.id)} aria-label="Resume run">
-                        <Play size={14} /> Resume
-                      </button>
-                    )}
-                    <button className="copilot-agents__control-btn copilot-agents__control-btn--danger" onClick={() => handleCancel(run.id)} aria-label="Cancel run">
-                      <Square size={14} /> Cancel
-                    </button>
-                    <button className="copilot-agents__control-btn" onClick={() => handleChat(run.id)} aria-label="Chat with agent">
-                      <MessageSquare size={14} /> Chat
-                    </button>
-                  </div>
-
-                  {chatRunId === run.id && (
-                    <div className="copilot-agents__chat-placeholder">
-                      <p className="copilot-agents__chat-note">Chat with this agent during its run. The agent is currently working on: {run.task}</p>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </section>
-      )}
+      <ActiveRunsPanel
+        runs={activeRuns}
+        chatRunId={chatRunId}
+        onPause={handlePause}
+        onResume={handleResume}
+        onCancel={handleCancel}
+        onChat={handleChat}
+      />
 
       {/* Run History */}
-      {completedRuns.length > 0 && (
-        <section className="copilot-agents__history" aria-label="Agent run history">
-          <button className="copilot-agents__history-toggle" onClick={toggleHistory} aria-expanded={showHistory}>
-            <h3 className="copilot-agents__section-title">Run History ({completedRuns.length})</h3>
-            {showHistory ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-          </button>
-
-          {showHistory && (
-            <div className="copilot-agents__history-table-wrap">
-              <table className="copilot-agents__history-table" role="table">
-                <thead>
-                  <tr>
-                    <th>Agent</th>
-                    <th>Task</th>
-                    <th>Status</th>
-                    <th>Duration</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {completedRuns.map((run) => {
-                    const agentDef = AGENT_DEFINITIONS.find(a => a.type === run.agentType)
-                    return (
-                      <tr key={run.id}>
-                        <td>{agentDef?.label ?? run.agentType} Agent</td>
-                        <td className="copilot-agents__history-task">{run.task}</td>
-                        <td>
-                          <Badge variant={RUN_STATUS_VARIANT[run.status]} size="sm">
-                            {run.status}
-                          </Badge>
-                        </td>
-                        <td>{formatDuration(run.startedAt, run.completedAt)}</td>
-                        <td>{new Date(run.startedAt).toLocaleDateString()}</td>
-                        <td>
-                          {run.status === RunStatus.Completed && run.result && (
-                            <button
-                              className="copilot-agents__view-results-btn"
-                              onClick={() => handleViewResults(run.id)}
-                              aria-label={`View results for ${run.task}`}
-                            >
-                              <Eye size={14} />
-                              View Results
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-      )}
+      <RunHistoryTable
+        runs={completedRuns}
+        showHistory={showHistory}
+        onToggleHistory={toggleHistory}
+        onViewResult={handleViewResults}
+      />
 
       {/* View Results Modal */}
       {viewingRun && (

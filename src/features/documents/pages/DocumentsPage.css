@@ -589,7 +589,7 @@
 
 /* ─── Responsive ────────────────────────────────────── */
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .docs-hub__stats {
     grid-template-columns: repeat(2, 1fr);
   }

@@ -1,0 +1,92 @@
+/* ─── Filters (Category Pills + Search) ────────────────── */
+
+.copilot-agents__filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.copilot-agents__category-pills {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.copilot-agents__category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.copilot-agents__category-pill:hover {
+  color: var(--text-primary);
+  border-color: var(--color-primary);
+}
+
+.copilot-agents__category-pill--active {
+  color: #fff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.copilot-agents__search-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  min-width: 200px;
+}
+
+.copilot-agents__search-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.copilot-agents__search-input {
+  flex: 1;
+  padding: 2px 0;
+  font-size: 0.8125rem;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.copilot-agents__search-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ─── Responsive ───────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .copilot-agents__filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .copilot-agents__category-pills {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: var(--space-xs);
+  }
+
+  .copilot-agents__search-bar {
+    min-width: unset;
+  }
+}

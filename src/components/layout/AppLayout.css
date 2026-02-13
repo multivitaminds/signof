@@ -59,7 +59,7 @@
   display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .app-layout__backdrop {
     display: block;
     position: fixed;
@@ -75,7 +75,7 @@
 }
 
 /* Tablet */
-@media (min-width: 769px) and (max-width: 1024px) {
+@media (min-width: 768px) and (max-width: 1023px) {
   .app-layout__content {
     padding: var(--space-4, 16px);
   }

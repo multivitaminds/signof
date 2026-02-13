@@ -3,6 +3,9 @@ import { useWorkspaceStore } from '../../workspace/stores/useWorkspaceStore'
 import { useProjectStore } from '../../projects/stores/useProjectStore'
 import { useSchedulingStore } from '../../scheduling/stores/useSchedulingStore'
 import { useDatabaseStore } from '../../databases/stores/useDatabaseStore'
+import { useTaxStore } from '../../tax/stores/useTaxStore'
+import { useInvoiceStore } from '../../accounting/stores/useInvoiceStore'
+import useAIAgentStore from '../../ai/stores/useAIAgentStore'
 import { SearchResultType, type SearchResult } from '../types'
 
 // ─── Scoring ────────────────────────────────────────────────────────
@@ -258,6 +261,88 @@ function searchDatabases(query: string): SearchResult[] {
   return results
 }
 
+function searchTaxDocuments(query: string): SearchResult[] {
+  const { documents, filings } = useTaxStore.getState()
+  const results: SearchResult[] = []
+
+  for (const doc of documents) {
+    const score = bestScore(query, doc.name, doc.type)
+    if (score < 0) continue
+
+    results.push({
+      id: doc.id,
+      title: doc.name,
+      description: `${doc.type} \u00B7 Tax year ${doc.taxYear}`,
+      type: SearchResultType.TaxDocument,
+      path: '/tax',
+      icon: '\uD83D\uDCCB',
+      score,
+    })
+  }
+
+  for (const filing of filings) {
+    const filingName = `${filing.firstName} ${filing.lastName} ${filing.taxYear} Filing`
+    const score = bestScore(query, filingName, filing.taxYear)
+    if (score < 0) continue
+
+    results.push({
+      id: filing.id,
+      title: filingName,
+      description: `${filing.filingStatus} \u00B7 ${filing.state}`,
+      type: SearchResultType.TaxDocument,
+      path: '/tax',
+      icon: '\uD83D\uDCC4',
+      score,
+    })
+  }
+
+  return results
+}
+
+function searchInvoices(query: string): SearchResult[] {
+  const { invoices } = useInvoiceStore.getState()
+  const results: SearchResult[] = []
+
+  for (const inv of invoices) {
+    const score = bestScore(query, inv.invoiceNumber, inv.customerName)
+    if (score < 0) continue
+
+    results.push({
+      id: inv.id,
+      title: `${inv.invoiceNumber} - ${inv.customerName}`,
+      description: `$${inv.total.toLocaleString()} \u00B7 ${inv.status}`,
+      type: SearchResultType.Invoice,
+      path: '/accounting/invoices',
+      icon: '\uD83D\uDCB0',
+      score,
+    })
+  }
+
+  return results
+}
+
+function searchAgentRuns(query: string): SearchResult[] {
+  const { runs } = useAIAgentStore.getState()
+  const results: SearchResult[] = []
+
+  for (const run of runs) {
+    const score = bestScore(query, run.task, run.agentType)
+    if (score < 0) continue
+
+    results.push({
+      id: run.id,
+      title: run.task,
+      description: `${run.agentType} agent \u00B7 ${run.status}`,
+      type: SearchResultType.AgentRun,
+      path: '/copilot',
+      icon: '\uD83E\uDD16',
+      score,
+    })
+  }
+
+  return results
+}
+
 // ─── Main Export ────────────────────────────────────────────────────
 
 /**
@@ -273,6 +358,9 @@ export function searchAll(query: string): SearchResult[] {
     ...searchDocuments(trimmed),
     ...searchBookings(trimmed),
     ...searchDatabases(trimmed),
+    ...searchTaxDocuments(trimmed),
+    ...searchInvoices(trimmed),
+    ...searchAgentRuns(trimmed),
   ]
 
   // Sort by score descending, then by title alphabetically for ties

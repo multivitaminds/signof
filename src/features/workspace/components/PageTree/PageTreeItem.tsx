@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { ChevronRight, FileText, Plus, Star } from 'lucide-react'
 import type { Page } from '../../types'
+import { getIconComponent, isEmojiIcon } from '../../../../lib/iconMap'
 import './PageTreeItem.css'
 
 interface PageTreeItemProps {
@@ -78,7 +79,13 @@ export default function PageTreeItem({
         )}
 
         <span className="page-tree-item__icon">
-          {page.icon || <FileText size={14} />}
+          {page.icon
+            ? (() => {
+                if (isEmojiIcon(page.icon)) return page.icon
+                const IC = getIconComponent(page.icon)
+                return IC ? <IC size={14} /> : page.icon
+              })()
+            : <FileText size={14} />}
         </span>
 
         <span className="page-tree-item__title" title={page.title}>

@@ -237,7 +237,7 @@
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .expense-list__filters {
     flex-direction: column;
     align-items: stretch;

@@ -23,6 +23,8 @@ export interface PricingPlan {
   documentLimit: number | null
   storageLimit: number | null
   memberLimit: number | null
+  includedModules: string[]
+  apiAccess: boolean
 }
 
 // ─── Plan Definitions ────────────────────────────────────────────────
@@ -38,6 +40,8 @@ export const PLANS: PricingPlan[] = [
     documentLimit: 50,
     storageLimit: 1,
     memberLimit: 3,
+    includedModules: ['documents', 'workspace', 'projects'],
+    apiAccess: false,
     features: [
       {
         name: 'Core',
@@ -49,11 +53,13 @@ export const PLANS: PricingPlan[] = [
         ],
       },
       {
-        name: 'Collaboration',
+        name: 'Modules',
         features: [
-          { text: 'Email notifications', included: true },
-          { text: 'Shared workspaces', included: false },
-          { text: 'Real-time collaboration', included: false },
+          { text: 'Documents & Signatures', included: true },
+          { text: 'Workspace & Pages', included: true },
+          { text: 'Projects & Issues', included: true },
+          { text: 'Calendar & Scheduling', included: false },
+          { text: 'Databases', included: false },
         ],
       },
       {
@@ -77,13 +83,15 @@ export const PLANS: PricingPlan[] = [
   {
     id: 'pro',
     name: 'Pro',
-    description: 'For professionals who need more power and flexibility.',
-    monthlyPrice: 12,
-    yearlyPrice: 10,
+    description: 'Replaces Notion + Linear + Calendly. For growing teams.',
+    monthlyPrice: 15,
+    yearlyPrice: 12,
     popular: true,
     documentLimit: 500,
     storageLimit: 50,
     memberLimit: 15,
+    includedModules: ['documents', 'workspace', 'projects', 'calendar', 'databases'],
+    apiAccess: false,
     features: [
       {
         name: 'Core',
@@ -96,12 +104,15 @@ export const PLANS: PricingPlan[] = [
         ],
       },
       {
-        name: 'Collaboration',
+        name: 'Modules',
         features: [
-          { text: 'Email notifications', included: true },
-          { text: 'Shared workspaces', included: true },
-          { text: 'Real-time collaboration', included: true },
-          { text: 'Comments & mentions', included: true },
+          { text: 'Documents & Signatures', included: true },
+          { text: 'Workspace & Pages', included: true },
+          { text: 'Projects & Issues', included: true },
+          { text: 'Calendar & Scheduling', included: true },
+          { text: 'Databases', included: true },
+          { text: 'Accounting & Tax', included: false },
+          { text: 'AI Copilot', included: false },
         ],
       },
       {
@@ -126,13 +137,15 @@ export const PLANS: PricingPlan[] = [
   {
     id: 'business',
     name: 'Business',
-    description: 'For teams that need advanced controls and integrations.',
-    monthlyPrice: 29,
-    yearlyPrice: 24,
+    description: 'All modules included — replaces 7+ tools for your entire team.',
+    monthlyPrice: 35,
+    yearlyPrice: 28,
     popular: false,
     documentLimit: 2000,
     storageLimit: 200,
     memberLimit: 50,
+    includedModules: ['documents', 'workspace', 'projects', 'calendar', 'databases', 'accounting', 'tax', 'copilot', 'developer'],
+    apiAccess: true,
     features: [
       {
         name: 'Core',
@@ -146,13 +159,12 @@ export const PLANS: PricingPlan[] = [
         ],
       },
       {
-        name: 'Collaboration',
+        name: 'Modules',
         features: [
-          { text: 'Email notifications', included: true },
-          { text: 'Shared workspaces', included: true },
-          { text: 'Real-time collaboration', included: true },
-          { text: 'Comments & mentions', included: true },
-          { text: 'Guest access', included: true },
+          { text: 'All modules included', included: true },
+          { text: 'Accounting & Tax', included: true },
+          { text: 'AI Copilot & Agents', included: true },
+          { text: 'Developer tools', included: true },
         ],
       },
       {
@@ -185,6 +197,8 @@ export const PLANS: PricingPlan[] = [
     documentLimit: null,
     storageLimit: null,
     memberLimit: null,
+    includedModules: ['documents', 'workspace', 'projects', 'calendar', 'databases', 'accounting', 'tax', 'copilot', 'developer'],
+    apiAccess: true,
     features: [
       {
         name: 'Core',
@@ -199,14 +213,13 @@ export const PLANS: PricingPlan[] = [
         ],
       },
       {
-        name: 'Collaboration',
+        name: 'Modules',
         features: [
-          { text: 'Email notifications', included: true },
-          { text: 'Shared workspaces', included: true },
-          { text: 'Real-time collaboration', included: true },
-          { text: 'Comments & mentions', included: true },
-          { text: 'Guest access', included: true },
-          { text: 'Cross-org sharing', included: true },
+          { text: 'All modules included', included: true },
+          { text: 'Accounting & Tax', included: true },
+          { text: 'AI Copilot & Agents', included: true },
+          { text: 'Developer tools', included: true },
+          { text: 'Custom modules', included: true },
         ],
       },
       {

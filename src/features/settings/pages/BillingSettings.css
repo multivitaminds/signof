@@ -277,7 +277,7 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   .billing__plans {
     grid-template-columns: 1fr;
   }
@@ -519,6 +519,165 @@
 .billing__feature-item--disabled .billing__feature-check {
   color: var(--billing-text-muted);
   opacity: 0.4;
+}
+
+/* ═══ Add-ons Section ══════════════════════════════════════════ */
+
+.billing__addons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .billing__addons-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .billing__addons-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.billing__addon-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--billing-bg);
+  border: 1px solid var(--billing-border);
+  border-radius: var(--billing-radius);
+  padding: 1.5rem;
+  transition:
+    box-shadow 200ms ease,
+    border-color 200ms ease;
+}
+
+.billing__addon-card:hover {
+  box-shadow: var(--billing-card-shadow);
+}
+
+.billing__addon-card--included {
+  border-color: var(--billing-success);
+  background: var(--billing-success-light);
+}
+
+.billing__addon-card--active {
+  border-color: var(--billing-primary);
+}
+
+.billing__addon-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.billing__addon-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--billing-text-primary);
+  margin: 0;
+}
+
+.billing__addon-included-badge {
+  display: inline-flex;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--billing-success-light);
+  color: var(--billing-success);
+  white-space: nowrap;
+}
+
+.billing__addon-active-badge {
+  display: inline-flex;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--billing-primary-light);
+  color: var(--billing-primary);
+  white-space: nowrap;
+}
+
+.billing__addon-description {
+  font-size: 0.8125rem;
+  color: var(--billing-text-muted);
+  margin: 0 0 1rem;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.billing__addon-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.billing__addon-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.125rem;
+}
+
+.billing__addon-amount {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--billing-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.billing__addon-unit {
+  font-size: 0.75rem;
+  color: var(--billing-text-muted);
+  font-weight: 500;
+}
+
+.billing__addon-included-text {
+  font-size: 0.8125rem;
+  color: var(--billing-success);
+  font-weight: 500;
+}
+
+.billing__addon-btn {
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--billing-radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 100ms ease;
+}
+
+.billing__addon-btn:active {
+  transform: scale(0.98);
+}
+
+.billing__addon-btn--activate {
+  background: var(--billing-primary);
+  color: #FFFFFF;
+  border: none;
+}
+
+.billing__addon-btn--activate:hover {
+  background: var(--billing-primary-hover);
+}
+
+.billing__addon-btn--deactivate {
+  background: var(--billing-bg);
+  color: var(--billing-text-primary);
+  border: 1px solid var(--billing-border);
+}
+
+.billing__addon-btn--deactivate:hover {
+  background: var(--billing-bg-secondary);
+  border-color: var(--billing-text-muted);
 }
 
 /* ═══ Section Layout ════════════════════════════════════════════ */
@@ -944,7 +1103,7 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   .billing__history-table {
     font-size: 0.8125rem;
   }

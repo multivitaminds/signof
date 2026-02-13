@@ -1,0 +1,50 @@
+/* ─── Stats Bar ────────────────────────────────────────── */
+
+.copilot-agents__stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.copilot-agents__stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.copilot-agents__stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.copilot-agents__stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ─── Responsive ───────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .copilot-agents__stats-bar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+  }
+
+  .copilot-agents__stat-card {
+    padding: var(--space-sm);
+  }
+
+  .copilot-agents__stat-value {
+    font-size: 1.25rem;
+  }
+}

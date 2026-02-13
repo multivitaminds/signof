@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import type { Editor } from '@tiptap/react'
+import { FileText } from 'lucide-react'
 import { useWorkspaceStore } from '../../stores/useWorkspaceStore'
+import { getIconComponent, isEmojiIcon } from '../../../../lib/iconMap'
 import './TiptapPageLinkMenu.css'
 
 interface TiptapPageLinkMenuProps {
@@ -240,7 +242,13 @@ export default function TiptapPageLinkMenu({ editor }: TiptapPageLinkMenuProps) 
               aria-selected={i === selectedIndex}
             >
               <div className="tiptap-page-link-menu__item-icon">
-                {page.icon || '📄'}
+                {page.icon
+                  ? (() => {
+                      if (isEmojiIcon(page.icon)) return page.icon
+                      const IC = getIconComponent(page.icon)
+                      return IC ? <IC size={14} /> : page.icon
+                    })()
+                  : <FileText size={14} />}
               </div>
               <div className="tiptap-page-link-menu__item-text">
                 <span className="tiptap-page-link-menu__item-title">

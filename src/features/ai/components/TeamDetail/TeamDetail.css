@@ -97,7 +97,7 @@
   min-height: 300px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .team-detail__body {
     grid-template-columns: 1fr;
   }

@@ -142,7 +142,7 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .list-view__header {
     grid-template-columns: 60px 1fr 100px 80px;
   }

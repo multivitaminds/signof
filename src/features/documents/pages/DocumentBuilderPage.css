@@ -853,7 +853,7 @@
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .doc-builder__fields-layout {
     grid-template-columns: 1fr;
   }

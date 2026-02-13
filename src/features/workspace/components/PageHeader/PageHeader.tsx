@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
 import { SmilePlus, ImagePlus } from 'lucide-react'
 import type { Page } from '../../types'
+import { getIconComponent, isEmojiIcon } from '../../../../lib/iconMap'
 import EmojiPicker from '../EmojiPicker/EmojiPicker'
 import CoverPicker from '../CoverPicker/CoverPicker'
 import './PageHeader.css'
@@ -124,7 +125,12 @@ export default function PageHeader({ page, onTitleChange, onIconChange, onCoverC
             onClick={handleIconClick}
             aria-label="Change icon"
           >
-            {page.icon}
+            {isEmojiIcon(page.icon)
+              ? page.icon
+              : (() => {
+                  const IC = getIconComponent(page.icon)
+                  return IC ? <IC size={28} /> : page.icon
+                })()}
           </button>
         </div>
       )}

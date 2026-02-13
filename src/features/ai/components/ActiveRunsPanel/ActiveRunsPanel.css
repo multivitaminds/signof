@@ -1,0 +1,190 @@
+/* ─── Active Runs ───────────────────────────────────────── */
+
+.copilot-agents__active-runs {
+  margin-bottom: var(--space-xl);
+}
+
+.copilot-agents__runs-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.copilot-agents__run-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.copilot-agents__run-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.copilot-agents__run-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.copilot-agents__run-agent {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.copilot-agents__run-task {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* Progress Bar */
+
+.copilot-agents__progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.copilot-agents__progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Steps */
+
+.copilot-agents__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.copilot-agents__step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.copilot-agents__step--completed {
+  color: var(--color-success);
+}
+
+.copilot-agents__step--running {
+  color: var(--color-primary);
+}
+
+.copilot-agents__step--error {
+  color: var(--color-danger);
+}
+
+.copilot-agents__step-icon--pending {
+  color: var(--text-muted);
+}
+
+.copilot-agents__step-icon--running {
+  color: var(--color-primary);
+  animation: copilot-agents-spin 1s linear infinite;
+}
+
+.copilot-agents__step-icon--completed {
+  color: var(--color-success);
+}
+
+.copilot-agents__step-icon--error {
+  color: var(--color-danger);
+}
+
+@keyframes copilot-agents-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.copilot-agents__step-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.copilot-agents__step-label {
+  flex: 1;
+}
+
+.copilot-agents__step-output {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Run Controls */
+
+.copilot-agents__run-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-sm);
+}
+
+.copilot-agents__control-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.copilot-agents__control-btn:hover {
+  background: var(--border-color);
+  color: var(--text-primary);
+}
+
+.copilot-agents__control-btn--primary {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.copilot-agents__control-btn--danger {
+  color: var(--color-danger);
+}
+
+.copilot-agents__control-btn--danger:hover {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: var(--color-danger);
+}
+
+/* Chat Placeholder */
+
+.copilot-agents__chat-placeholder {
+  padding: var(--space-sm);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.copilot-agents__chat-note {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0;
+}

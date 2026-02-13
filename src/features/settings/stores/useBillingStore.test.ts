@@ -18,6 +18,7 @@ describe('useBillingStore', () => {
       billingHistory: [
         { id: 'inv-001', date: '2026-02-01', description: 'Starter Plan', amount: '$0.00', status: 'paid', invoiceUrl: '#' },
       ],
+      activeAddOns: [],
     })
   })
 
@@ -70,5 +71,34 @@ describe('useBillingStore', () => {
     const { billingHistory } = useBillingStore.getState()
     expect(billingHistory.length).toBeGreaterThan(0)
     expect(billingHistory[0]?.status).toBe('paid')
+  })
+
+  it('has empty activeAddOns by default', () => {
+    const { activeAddOns } = useBillingStore.getState()
+    expect(activeAddOns).toEqual([])
+  })
+
+  it('activateAddOn adds an add-on ID', () => {
+    useBillingStore.getState().activateAddOn('tax-filing')
+    expect(useBillingStore.getState().activeAddOns).toEqual(['tax-filing'])
+  })
+
+  it('activateAddOn does not duplicate IDs', () => {
+    useBillingStore.getState().activateAddOn('tax-filing')
+    useBillingStore.getState().activateAddOn('tax-filing')
+    expect(useBillingStore.getState().activeAddOns).toEqual(['tax-filing'])
+  })
+
+  it('deactivateAddOn removes an add-on ID', () => {
+    useBillingStore.getState().activateAddOn('tax-filing')
+    useBillingStore.getState().activateAddOn('ai-copilot-pro')
+    useBillingStore.getState().deactivateAddOn('tax-filing')
+    expect(useBillingStore.getState().activeAddOns).toEqual(['ai-copilot-pro'])
+  })
+
+  it('clearSampleData resets activeAddOns', () => {
+    useBillingStore.getState().activateAddOn('tax-filing')
+    useBillingStore.getState().clearSampleData()
+    expect(useBillingStore.getState().activeAddOns).toEqual([])
   })
 })

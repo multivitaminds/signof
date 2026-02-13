@@ -1,9 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { X, Plus } from 'lucide-react'
 import { useFocusTrap } from '../../../../hooks/useFocusTrap'
+import { getIconComponent } from '../../../../lib/iconMap'
 import './CreateTableModal.css'
 
-const PRESET_ICONS = ['\uD83D\uDCCB', '\uD83D\uDCCA', '\uD83D\uDCC1', '\uD83D\uDCDD', '\uD83D\uDCCC', '\uD83D\uDDC2\uFE0F', '\uD83D\uDCCE', '\uD83D\uDCD1']
+const PRESET_ICONS = ['clipboard-list', 'bar-chart', 'file-text', 'edit', 'target', 'building', 'calendar', 'users']
 
 interface CreateTableModalProps {
   databaseId: string
@@ -19,7 +20,7 @@ export default function CreateTableModal({
   onClose,
 }: CreateTableModalProps) {
   const [name, setName] = useState('')
-  const [icon, setIcon] = useState(PRESET_ICONS[0] ?? '\uD83D\uDCCB')
+  const [icon, setIcon] = useState(PRESET_ICONS[0] ?? 'clipboard-list')
   const [description, setDescription] = useState('')
   const [error, setError] = useState('')
   const nameInputRef = useRef<HTMLInputElement>(null)
@@ -103,19 +104,22 @@ export default function CreateTableModal({
           <div className="create-table-modal__field">
             <label className="create-table-modal__label">Icon</label>
             <div className="create-table-modal__icons" role="radiogroup" aria-label="Table icon">
-              {PRESET_ICONS.map((emoji) => (
-                <button
-                  key={emoji}
-                  className={`create-table-modal__icon-btn ${icon === emoji ? 'create-table-modal__icon-btn--active' : ''}`}
-                  onClick={() => setIcon(emoji)}
-                  type="button"
-                  role="radio"
-                  aria-checked={icon === emoji}
-                  aria-label={`Icon ${emoji}`}
-                >
-                  {emoji}
-                </button>
-              ))}
+              {PRESET_ICONS.map((iconName) => {
+                const IconComp = getIconComponent(iconName)
+                return (
+                  <button
+                    key={iconName}
+                    className={`create-table-modal__icon-btn ${icon === iconName ? 'create-table-modal__icon-btn--active' : ''}`}
+                    onClick={() => setIcon(iconName)}
+                    type="button"
+                    role="radio"
+                    aria-checked={icon === iconName}
+                    aria-label={`Icon ${iconName}`}
+                  >
+                    {IconComp ? <IconComp size={18} /> : iconName}
+                  </button>
+                )
+              })}
             </div>
           </div>
 

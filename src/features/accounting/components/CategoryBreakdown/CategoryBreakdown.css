@@ -65,7 +65,7 @@
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   .category-breakdown__label {
     width: 100px;
     font-size: var(--text-xs);

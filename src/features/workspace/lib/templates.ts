@@ -5,14 +5,14 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'blank',
     title: 'Blank',
-    icon: '📄',
+    icon: 'file-text',
     description: 'Start with an empty page',
     blocks: [],
   },
   {
     id: 'meeting-notes',
     title: 'Meeting Notes',
-    icon: '📝',
+    icon: 'edit',
     description: 'Capture meeting notes and action items',
     blocks: [
       { type: BlockType.Heading1, content: 'Meeting Notes' },
@@ -27,7 +27,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'project-brief',
     title: 'Project Brief',
-    icon: '🎯',
+    icon: 'target',
     description: 'Outline a new project',
     blocks: [
       { type: BlockType.Heading1, content: 'Project Brief' },
@@ -44,7 +44,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'weekly-review',
     title: 'Weekly Review',
-    icon: '📊',
+    icon: 'bar-chart',
     description: 'Review your week',
     blocks: [
       { type: BlockType.Heading1, content: 'Weekly Review' },
@@ -59,7 +59,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'decision-log',
     title: 'Decision Log',
-    icon: '⚖️',
+    icon: 'scale',
     description: 'Record important decisions',
     blocks: [
       { type: BlockType.Heading1, content: 'Decision Log' },
@@ -70,7 +70,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'sprint-planning',
     title: 'Sprint Planning',
-    icon: '🏃',
+    icon: 'sprint',
     description: 'Plan your sprint goals and backlog',
     blocks: [
       { type: BlockType.Heading1, content: 'Sprint Planning - {{date}}' },
@@ -92,7 +92,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'bug-report',
     title: 'Bug Report',
-    icon: '🐛',
+    icon: 'bug',
     description: 'Document a bug with reproduction steps',
     blocks: [
       { type: BlockType.Heading1, content: '{{title}}' },
@@ -120,7 +120,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'product-roadmap',
     title: 'Product Roadmap',
-    icon: '🗺️',
+    icon: 'map',
     description: 'Plan your product vision and quarterly goals',
     blocks: [
       { type: BlockType.Heading1, content: 'Product Roadmap' },
@@ -144,7 +144,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'design-doc',
     title: 'Design Doc',
-    icon: '📐',
+    icon: 'ruler',
     description: 'Technical design document with goals, non-goals, and approach',
     blocks: [
       { type: BlockType.Heading1, content: '{{title}}' },
@@ -168,7 +168,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'user-research',
     title: 'User Research',
-    icon: '🔍',
+    icon: 'search',
     description: 'Capture questions, participants, findings, and recommendations',
     blocks: [
       { type: BlockType.Heading1, content: 'User Research - {{date}}' },
@@ -190,7 +190,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'retrospective',
     title: 'Retrospective',
-    icon: '🔄',
+    icon: 'refresh-cw',
     description: 'Reflect on what went well, what did not, and action items',
     blocks: [
       { type: BlockType.Heading1, content: 'Retrospective - {{date}}' },
@@ -208,7 +208,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: '1on1-notes',
     title: '1:1 Notes',
-    icon: '🤝',
+    icon: 'handshake',
     description: 'Track talking points, action items, and follow-ups from 1:1s',
     blocks: [
       { type: BlockType.Heading1, content: '1:1 Notes - {{date}}' },
@@ -226,7 +226,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'company-wiki',
     title: 'Company Wiki',
-    icon: '🏢',
+    icon: 'building',
     description: 'Central knowledge base with team directory, policies, and tools',
     blocks: [
       { type: BlockType.Heading1, content: '{{title}}' },
@@ -245,7 +245,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'feature-spec',
     title: 'Feature Spec',
-    icon: '📋',
+    icon: 'clipboard-list',
     description: 'Define problem, solution, requirements, and milestones',
     blocks: [
       { type: BlockType.Heading1, content: '{{title}}' },
@@ -267,7 +267,7 @@ export const PAGE_TEMPLATES: PageTemplate[] = [
   {
     id: 'release-notes',
     title: 'Release Notes',
-    icon: '🚀',
+    icon: 'rocket',
     description: 'Document version, new features, fixes, and known issues',
     blocks: [
       { type: BlockType.Heading1, content: 'Release Notes - {{date}}' },
