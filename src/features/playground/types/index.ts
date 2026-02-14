@@ -4,6 +4,8 @@ export const ModelProvider = {
   OpenAI: 'openai',
   Google: 'google',
   Meta: 'meta',
+  OpenRouter: 'openrouter',
+  XAI: 'xai',
 } as const
 
 export type ModelProvider = (typeof ModelProvider)[keyof typeof ModelProvider]
@@ -18,6 +20,7 @@ export const ModelId = {
   GeminiFlash: 'gemini-flash',
   GeminiPro: 'gemini-pro',
   Llama4Scout: 'llama-4-scout',
+  Grok3: 'grok-3',
 } as const
 
 export type ModelId = (typeof ModelId)[keyof typeof ModelId]

@@ -78,6 +78,17 @@ const MODEL_PERSONALITIES: Record<ModelId, (userContent: string) => string> = {
     '- The community forums have great discussion threads on best practices\n' +
     '- Several open-source projects demonstrate production-ready patterns\n\n' +
     'Open collaboration makes everyone better! Let me know if you want specific recommendations.',
+
+  [ModelId.Grok3]: (content) =>
+    `Alright, let's cut to the chase on "${truncate(content)}".\n\n` +
+    'Here\'s what\'s actually going on — no fluff:\n\n' +
+    '**The Real Answer:**\n' +
+    'Most people overcomplicate this. The straightforward solution is usually the right one. Here\'s the play-by-play:\n\n' +
+    '1. Strip out the unnecessary complexity\n' +
+    '2. Focus on what actually moves the needle\n' +
+    '3. Ship it and iterate based on real feedback\n\n' +
+    '**Hot Take:** The best approach is often the simplest one that works. Don\'t let perfect be the enemy of done.\n\n' +
+    'Want me to dig deeper or are we good? I can pull real-time data if that helps.',
 }
 
 function truncate(text: string, maxLen = 40): string {

@@ -74,6 +74,15 @@ export const MODEL_CATALOG: Record<ModelId, ModelDefinition> = {
     description: 'Open-source model with strong multilingual support',
     color: '#0467DF',
   },
+  [ModelId.Grok3]: {
+    id: ModelId.Grok3,
+    name: 'Grok 3',
+    provider: ModelProvider.XAI,
+    contextWindow: 131_000,
+    maxOutput: 4096,
+    description: 'Witty and direct reasoning model with real-time knowledge',
+    color: '#000000',
+  },
 }
 
 export function getModelsByProvider(): Record<ModelProvider, ModelDefinition[]> {
@@ -82,6 +91,8 @@ export function getModelsByProvider(): Record<ModelProvider, ModelDefinition[]> 
     [ModelProvider.OpenAI]: [],
     [ModelProvider.Google]: [],
     [ModelProvider.Meta]: [],
+    [ModelProvider.OpenRouter]: [],
+    [ModelProvider.XAI]: [],
   }
 
   for (const model of Object.values(MODEL_CATALOG)) {

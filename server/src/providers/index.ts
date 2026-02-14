@@ -117,6 +117,29 @@ function buildProviders(): Map<string, LLMProvider> {
     ],
   }));
 
+  map.set('openrouter', createOpenAICompatibleProvider({
+    name: 'OpenRouter',
+    envKey: 'OPENROUTER_API_KEY',
+    baseURL: 'https://openrouter.ai/api/v1',
+    models: [
+      { id: 'anthropic/claude-sonnet-4', name: 'Claude Sonnet 4 (via OpenRouter)', contextWindow: 200000 },
+      { id: 'openai/gpt-4o', name: 'GPT-4o (via OpenRouter)', contextWindow: 128000 },
+      { id: 'google/gemini-2.5-pro', name: 'Gemini 2.5 Pro (via OpenRouter)', contextWindow: 1048576 },
+      { id: 'meta-llama/llama-4-scout', name: 'Llama 4 Scout (via OpenRouter)', contextWindow: 512000 },
+      { id: 'deepseek/deepseek-r1', name: 'DeepSeek R1 (via OpenRouter)', contextWindow: 65536 },
+    ],
+  }));
+
+  map.set('xai', createOpenAICompatibleProvider({
+    name: 'xAI',
+    envKey: 'XAI_API_KEY',
+    baseURL: 'https://api.x.ai/v1',
+    models: [
+      { id: 'grok-3', name: 'Grok 3', contextWindow: 131072 },
+      { id: 'grok-3-mini', name: 'Grok 3 Mini', contextWindow: 131072 },
+    ],
+  }));
+
   return map;
 }
 

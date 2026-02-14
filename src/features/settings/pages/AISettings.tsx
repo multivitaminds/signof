@@ -12,10 +12,12 @@ const PROVIDER_LABELS: Record<LLMProvider, string> = {
   deepseek: 'DeepSeek',
   mistral: 'Mistral',
   groq: 'Groq',
+  openrouter: 'OpenRouter',
+  xai: 'xAI',
 }
 
 const ALL_PROVIDERS: LLMProvider[] = [
-  'anthropic', 'openai', 'google', 'minimax', 'deepseek', 'mistral', 'groq',
+  'anthropic', 'openai', 'google', 'minimax', 'deepseek', 'mistral', 'groq', 'openrouter', 'xai',
 ]
 
 export default function AISettings() {

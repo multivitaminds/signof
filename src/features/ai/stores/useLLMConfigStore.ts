@@ -35,6 +35,17 @@ export const PROVIDER_MODELS: Record<LLMProvider, LLMModelInfo[]> = {
     { id: 'llama-3.3-70b', name: 'Llama 3.3 70B', provider: 'groq', contextWindow: 128_000, description: 'Fast inference via Groq' },
     { id: 'mixtral-8x7b', name: 'Mixtral 8x7B', provider: 'groq', contextWindow: 32_000, description: 'MoE model via Groq' },
   ],
+  openrouter: [
+    { id: 'anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'openrouter', contextWindow: 200_000, description: 'Anthropic via OpenRouter' },
+    { id: 'openai/gpt-4o', name: 'GPT-4o', provider: 'openrouter', contextWindow: 128_000, description: 'OpenAI via OpenRouter' },
+    { id: 'google/gemini-2.5-pro', name: 'Gemini 2.5 Pro', provider: 'openrouter', contextWindow: 1_000_000, description: 'Google via OpenRouter' },
+    { id: 'meta-llama/llama-4-scout', name: 'Llama 4 Scout', provider: 'openrouter', contextWindow: 512_000, description: 'Meta via OpenRouter' },
+    { id: 'deepseek/deepseek-r1', name: 'DeepSeek R1', provider: 'openrouter', contextWindow: 64_000, description: 'DeepSeek via OpenRouter' },
+  ],
+  xai: [
+    { id: 'grok-3', name: 'Grok 3', provider: 'xai', contextWindow: 131_000, description: 'xAI flagship reasoning model' },
+    { id: 'grok-3-mini', name: 'Grok 3 Mini', provider: 'xai', contextWindow: 131_000, description: 'Fast and affordable xAI model' },
+  ],
 }
 
 // ─── Store ───────────────────────────────────────────────────────────

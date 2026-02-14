@@ -389,6 +389,8 @@ export const LLMProvider = {
   DeepSeek: 'deepseek',
   Mistral: 'mistral',
   Groq: 'groq',
+  OpenRouter: 'openrouter',
+  XAI: 'xai',
 } as const
 
 export type LLMProvider = (typeof LLMProvider)[keyof typeof LLMProvider]
