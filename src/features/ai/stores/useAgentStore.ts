@@ -3,14 +3,18 @@ import { persist } from 'zustand/middleware'
 import { AgentStatus, TeamStatus, StepStatus } from '../types'
 import type { AgentTeam, AgentInstance, ChatMessage, SimulationStep, AgentType } from '../types'
 import { AGENT_DEFINITIONS } from '../lib/agentDefinitions'
-import { runSimulation } from '../lib/simulationEngine'
-import type { SimulationController } from '../lib/simulationEngine'
+import { runSimulation, runWithLLM } from '../lib/simulationEngine'
+import type { SimulationController, LLMExecutionController } from '../lib/simulationEngine'
+import { isLLMAvailable, syncChat, buildAgentSystemPrompt } from '../lib/llmClient'
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
 }
 
 const controllers = new Map<string, SimulationController>()
+const llmControllers = new Map<string, LLMExecutionController>()
+// teamId → Map of agentId → final output text (for chaining agent outputs in LLM mode)
+const teamOutputs = new Map<string, Map<string, string>>()
 
 const MOCK_AGENT_RESPONSES = [
   "I'm working on it. Making good progress.",
@@ -133,8 +137,14 @@ const useAgentStore = create<AgentState>()(
               ctrl.cancel()
               controllers.delete(agent.id)
             }
+            const llmCtrl = llmControllers.get(agent.id)
+            if (llmCtrl) {
+              llmCtrl.cancel()
+              llmControllers.delete(agent.id)
+            }
           }
         }
+        teamOutputs.delete(teamId)
         set(state => ({
           teams: state.teams.filter(t => t.id !== teamId),
           activeTeamId: state.activeTeamId === teamId ? null : state.activeTeamId,
@@ -150,6 +160,142 @@ const useAgentStore = create<AgentState>()(
         const team = teams.find(t => t.id === teamId)
         if (!team) return
 
+        // ─── LLM mode: run agents sequentially with output chaining ──
+        if (isLLMAvailable()) {
+          // In LLM mode, only set team to Running; agents start Idle and run one at a time
+          set(state => ({
+            teams: updateTeam(state.teams, teamId, t => ({
+              ...t,
+              status: TeamStatus.Running as typeof TeamStatus.Running,
+              updatedAt: new Date().toISOString(),
+            })),
+          }))
+
+          if (!teamOutputs.has(teamId)) {
+            teamOutputs.set(teamId, new Map())
+          }
+          const outputs = teamOutputs.get(teamId)!
+
+          ;(async () => {
+            for (const agent of team.agents) {
+              // Mark this agent as Running before starting it
+              set(state => ({
+                teams: updateAgent(state.teams, teamId, agent.id, a => ({
+                  ...a,
+                  status: AgentStatus.Running as typeof AgentStatus.Running,
+                })),
+              }))
+
+              // Build enhanced task with previous agent outputs
+              let enhancedTask = agent.instructions
+              if (outputs.size > 0) {
+                const contextParts: string[] = []
+                for (const prevAgent of team.agents) {
+                  const prevOutput = outputs.get(prevAgent.id)
+                  if (prevOutput) {
+                    contextParts.push(
+                      `--- ${prevAgent.name} (${prevAgent.type}) ---\n${prevOutput}\n---`
+                    )
+                  }
+                }
+                if (contextParts.length > 0) {
+                  enhancedTask =
+                    `Previous agent outputs:\n${contextParts.join('\n\n')}\n\nCurrent task: ${agent.instructions}`
+                }
+              }
+
+              // Run this agent and wait for completion
+              await new Promise<void>((resolve, reject) => {
+                const llmCtrl = runWithLLM(agent.type, enhancedTask, agent.steps, {
+                  onStepStart: (stepIndex) => {
+                    set(state => ({
+                      teams: updateAgent(state.teams, teamId, agent.id, a => ({
+                        ...a,
+                        currentStepIndex: stepIndex,
+                        steps: a.steps.map((s, i) =>
+                          i === stepIndex
+                            ? { ...s, status: StepStatus.Running as typeof StepStatus.Running }
+                            : s
+                        ),
+                      })),
+                    }))
+                  },
+                  onStepComplete: (stepIndex, output) => {
+                    set(state => ({
+                      teams: updateAgent(state.teams, teamId, agent.id, a => ({
+                        ...a,
+                        steps: a.steps.map((s, i) =>
+                          i === stepIndex
+                            ? { ...s, status: StepStatus.Completed as typeof StepStatus.Completed, output }
+                            : s
+                        ),
+                      })),
+                    }))
+                  },
+                  onAllComplete: () => {
+                    // Store the agent's final output (from last completed step)
+                    const currentTeams = get().teams
+                    const currentTeam = currentTeams.find(t => t.id === teamId)
+                    const currentAgent = currentTeam?.agents.find(a => a.id === agent.id)
+                    if (currentAgent) {
+                      const lastCompletedStep = [...currentAgent.steps]
+                        .reverse()
+                        .find(s => s.status === StepStatus.Completed)
+                      if (lastCompletedStep?.output) {
+                        outputs.set(agent.id, lastCompletedStep.output)
+                      }
+                    }
+
+                    set(state => ({
+                      teams: updateAgent(state.teams, teamId, agent.id, a => ({
+                        ...a,
+                        status: AgentStatus.Completed as typeof AgentStatus.Completed,
+                      })),
+                    }))
+
+                    // Check if all agents in team are completed
+                    const updatedTeams = get().teams
+                    const updatedTeam = updatedTeams.find(t => t.id === teamId)
+                    if (updatedTeam) {
+                      const allDone = updatedTeam.agents.every(
+                        a => a.status === AgentStatus.Completed || a.id === agent.id
+                      )
+                      if (allDone) {
+                        set(state => ({
+                          teams: updateTeam(state.teams, teamId, t => ({
+                            ...t,
+                            status: TeamStatus.Completed as typeof TeamStatus.Completed,
+                            updatedAt: new Date().toISOString(),
+                          })),
+                        }))
+                      }
+                    }
+                    llmControllers.delete(agent.id)
+                    resolve()
+                  },
+                  onError: (_stepIndex, _error) => {
+                    set(state => ({
+                      teams: updateAgent(state.teams, teamId, agent.id, a => ({
+                        ...a,
+                        status: AgentStatus.Error as typeof AgentStatus.Error,
+                      })),
+                    }))
+                    llmControllers.delete(agent.id)
+                    reject(new Error(_error))
+                  },
+                })
+                llmControllers.set(agent.id, llmCtrl)
+              })
+            }
+          })().catch(() => {
+            // If sequential chain fails, mark team as having errors
+          })
+
+          return
+        }
+
+        // ─── Demo simulation mode (original behavior) ───────
+        // In simulation mode, all agents run in parallel
         set(state => ({
           teams: updateTeam(state.teams, teamId, t => ({
             ...t,
@@ -299,7 +445,13 @@ const useAgentStore = create<AgentState>()(
             ctrl.cancel()
             controllers.delete(agent.id)
           }
+          const llmCtrl = llmControllers.get(agent.id)
+          if (llmCtrl) {
+            llmCtrl.cancel()
+            llmControllers.delete(agent.id)
+          }
         }
+        teamOutputs.delete(teamId)
 
         set(state => ({
           teams: updateTeam(state.teams, teamId, t => ({
@@ -356,6 +508,62 @@ const useAgentStore = create<AgentState>()(
           })),
         }))
 
+        // ─── LLM-powered response ─────────────────────────────
+        if (isLLMAvailable()) {
+          const team = get().teams.find(t => t.id === teamId)
+          const agent = team?.agents.find(a => a.id === agentId)
+          if (agent) {
+            const systemPrompt = buildAgentSystemPrompt(agent.type, agent.instructions)
+
+            // Build conversation history from team messages for this agent
+            const history = (team?.messages ?? [])
+              .filter(m => m.agentId === agentId)
+              .slice(-10)
+              .map(m => ({
+                role: m.role === 'agent' ? 'assistant' as const : 'user' as const,
+                content: m.content,
+              }))
+
+            syncChat({
+              messages: [...history, { role: 'user', content }],
+              systemPrompt,
+            }).then(response => {
+              const agentMsg: ChatMessage = {
+                id: generateId(),
+                agentId,
+                role: 'agent',
+                content: response ?? getMockAgentResponse(),
+                timestamp: new Date().toISOString(),
+              }
+              set(state => ({
+                teams: updateTeam(state.teams, teamId, t => ({
+                  ...t,
+                  messages: [...t.messages, agentMsg],
+                  updatedAt: new Date().toISOString(),
+                })),
+              }))
+            }).catch(() => {
+              // Fallback to mock on error
+              const agentMsg: ChatMessage = {
+                id: generateId(),
+                agentId,
+                role: 'agent',
+                content: getMockAgentResponse(),
+                timestamp: new Date().toISOString(),
+              }
+              set(state => ({
+                teams: updateTeam(state.teams, teamId, t => ({
+                  ...t,
+                  messages: [...t.messages, agentMsg],
+                  updatedAt: new Date().toISOString(),
+                })),
+              }))
+            })
+            return
+          }
+        }
+
+        // ─── Demo simulation mode (original behavior) ─────────
         const delay = 500 + Math.random() * 1000
         setTimeout(() => {
           const agentMsg: ChatMessage = {
@@ -376,7 +584,7 @@ const useAgentStore = create<AgentState>()(
       },
 
       clearData: () => {
-        // Cancel all running simulations before clearing
+        // Cancel all running simulations and LLM controllers before clearing
         const { teams } = get()
         for (const team of teams) {
           for (const agent of team.agents) {
@@ -385,8 +593,14 @@ const useAgentStore = create<AgentState>()(
               ctrl.cancel()
               controllers.delete(agent.id)
             }
+            const llmCtrl = llmControllers.get(agent.id)
+            if (llmCtrl) {
+              llmCtrl.cancel()
+              llmControllers.delete(agent.id)
+            }
           }
         }
+        teamOutputs.clear()
         set({ teams: [], activeTeamId: null })
       },
     }),

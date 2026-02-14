@@ -158,6 +158,13 @@
   white-space: pre-wrap;
 }
 
+.ai-feature-chat__tool-results {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
 .ai-feature-chat__message-time {
   font-size: 0.625rem;
   opacity: 0.6;

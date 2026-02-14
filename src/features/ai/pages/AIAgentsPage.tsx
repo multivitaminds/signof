@@ -29,6 +29,9 @@ import MarketplaceSection from '../components/MarketplaceSection/MarketplaceSect
 import ActiveRunsPanel from '../components/ActiveRunsPanel/ActiveRunsPanel'
 import RunHistoryTable from '../components/RunHistoryTable/RunHistoryTable'
 import EmptyState from '../../../components/EmptyState/EmptyState'
+import { isLLMAvailable } from '../lib/llmClient'
+import { runWithLLM } from '../lib/simulationEngine'
+import type { LLMExecutionController } from '../lib/simulationEngine'
 import type { WorkflowTemplate } from '../lib/workflowTemplates'
 import './AIAgentsPage.css'
 
@@ -42,6 +45,9 @@ export default function AIAgentsPage() {
   const pauseRun = useAIAgentStore((s) => s.pauseRun)
   const resumeRun = useAIAgentStore((s) => s.resumeRun)
   const toggleFavorite = useAIAgentStore((s) => s.toggleFavorite)
+  const streamingOutputs = useAIAgentStore((s) => s.streamingOutputs)
+  const updateStreamingOutput = useAIAgentStore((s) => s.updateStreamingOutput)
+  const clearStreamingOutput = useAIAgentStore((s) => s.clearStreamingOutput)
 
   const pipelines = usePipelineStore((s) => s.pipelines)
   const pipelinePause = usePipelineStore((s) => s.pausePipeline)
@@ -68,6 +74,7 @@ export default function AIAgentsPage() {
   const [chatRunId, setChatRunId] = useState<string | null>(null)
   const [viewResultRunId, setViewResultRunId] = useState<string | null>(null)
   const simulationTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
+  const llmControllers = useRef<Map<string, LLMExecutionController>>(new Map())
 
   // View state
   const [activeTab, setActiveTab] = useState<'canvas' | 'agents' | 'pipelines' | 'templates'>('canvas')
@@ -90,12 +97,16 @@ export default function AIAgentsPage() {
     [selectedNodeId, canvasNodes],
   )
 
-  // Clean up timers on unmount
+  // Clean up timers and LLM controllers on unmount
   useEffect(() => {
     const timers = simulationTimers.current
+    const controllers = llmControllers.current
     return () => {
       for (const timer of timers.values()) {
         clearTimeout(timer)
+      }
+      for (const ctrl of controllers.values()) {
+        ctrl.cancel()
       }
     }
   }, [])
@@ -182,6 +193,40 @@ export default function AIAgentsPage() {
   )
 
   const simulateSteps = useCallback((run: AgentRun) => {
+    // ─── Live LLM mode ─────────────────────────────────────────
+    if (isLLMAvailable()) {
+      const def = AGENT_DEFINITIONS.find(d => d.type === run.agentType)
+      const simSteps = (def?.defaultSteps ?? []).map(s => ({
+        id: '',
+        label: s.label,
+        status: 'pending' as const,
+        durationMs: s.durationMs,
+      }))
+      const ctrl = runWithLLM(run.agentType, run.task, simSteps, {
+        onStepStart: (idx) => {
+          updateRunStep(run.id, idx, StepStatus.Running as typeof StepStatus.Running)
+        },
+        onStepComplete: (idx, output) => {
+          updateRunStep(run.id, idx, StepStatus.Completed as typeof StepStatus.Completed, output)
+        },
+        onStepStreaming: (idx, partialText) => {
+          updateStreamingOutput(run.id, idx, partialText)
+        },
+        onAllComplete: () => {
+          clearStreamingOutput(run.id)
+          llmControllers.current.delete(run.id)
+        },
+        onError: (idx, error) => {
+          // Fallback: fill remaining steps with simulation outputs
+          updateRunStep(run.id, idx, StepStatus.Completed as typeof StepStatus.Completed, `[Fallback] ${error}`)
+          llmControllers.current.delete(run.id)
+        },
+      })
+      llmControllers.current.set(run.id, ctrl)
+      return
+    }
+
+    // ─── Demo simulation mode (original behavior) ──────────────
     let stepIndex = 0
 
     function processNextStep() {
@@ -205,7 +250,7 @@ export default function AIAgentsPage() {
     }
 
     processNextStep()
-  }, [updateRunStep])
+  }, [updateRunStep, updateStreamingOutput, clearStreamingOutput])
 
   const handleRun = useCallback((agentType: AgentType) => {
     const task = runTaskInputs[agentType] || `Default task for ${agentType}`
@@ -232,6 +277,12 @@ export default function AIAgentsPage() {
         simulationTimers.current.delete(key)
       }
     }
+    // Cancel LLM controller on pause (LLM calls can't be paused)
+    const llmCtrl = llmControllers.current.get(runId)
+    if (llmCtrl) {
+      llmCtrl.cancel()
+      llmControllers.current.delete(runId)
+    }
   }, [pauseRun])
 
   const handleResume = useCallback((runId: string) => {
@@ -253,6 +304,12 @@ export default function AIAgentsPage() {
         clearTimeout(timer)
         simulationTimers.current.delete(key)
       }
+    }
+    // Cancel LLM controller if running
+    const llmCtrl = llmControllers.current.get(runId)
+    if (llmCtrl) {
+      llmCtrl.cancel()
+      llmControllers.current.delete(runId)
     }
   }, [cancelRun])
 
@@ -614,6 +671,7 @@ export default function AIAgentsPage() {
       <ActiveRunsPanel
         runs={activeRuns}
         chatRunId={chatRunId}
+        streamingOutputs={streamingOutputs}
         onPause={handlePause}
         onResume={handleResume}
         onCancel={handleCancel}

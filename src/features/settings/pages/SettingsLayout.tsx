@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation, Navigate } from 'react-router-dom'
-import { Settings, Users, Bell, Palette, Plug, CreditCard } from 'lucide-react'
+import { Settings, Users, Bell, Palette, Plug, CreditCard, Bot } from 'lucide-react'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { DemoVideoSection } from '../../../components/ui/DemoVideo'
 import './SettingsLayout.css'
@@ -11,6 +11,7 @@ const SETTINGS_NAV = [
   { path: '/settings/appearance', label: 'Appearance', icon: Palette },
   { path: '/settings/integrations', label: 'Integrations', icon: Plug },
   { path: '/settings/billing', label: 'Billing', icon: CreditCard },
+  { path: '/settings/ai', label: 'AI / Copilot', icon: Bot },
 ]
 
 export default function SettingsLayout() {

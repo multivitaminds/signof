@@ -1,8 +1,10 @@
-import type { SimulationStep } from '../types'
+import type { SimulationStep, AgentType } from '../types'
+import { runAgentWithLLM } from './llmClient'
 
 export interface SimulationCallbacks {
   onStepStart: (stepIndex: number) => void
   onStepComplete: (stepIndex: number, output: string) => void
+  onStepStreaming?: (stepIndex: number, partialText: string) => void
   onAllComplete: () => void
   onError: (stepIndex: number, error: string) => void
 }
@@ -89,5 +91,35 @@ export function runSimulation(
         timeoutId = null
       }
     },
+  }
+}
+
+// ─── LLM-backed execution ───────────────────────────────────────────
+
+export interface LLMExecutionController {
+  cancel: () => void
+}
+
+export function runWithLLM(
+  agentType: AgentType,
+  task: string,
+  steps: SimulationStep[],
+  callbacks: SimulationCallbacks,
+): LLMExecutionController {
+  const controller = new AbortController()
+  const stepLabels = steps.map((s) => s.label)
+
+  runAgentWithLLM(agentType, task, stepLabels, {
+    onStepStart: callbacks.onStepStart,
+    onStepComplete: callbacks.onStepComplete,
+    onStepStreaming: callbacks.onStepStreaming,
+    onAllComplete: () => callbacks.onAllComplete(),
+    onError: callbacks.onError,
+  }, controller.signal).catch(() => {
+    // Swallow — errors are reported via callbacks.onError
+  })
+
+  return {
+    cancel: () => controller.abort(),
   }
 }

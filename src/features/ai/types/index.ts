@@ -287,11 +287,18 @@ export interface StructuredRunResult {
 
 // ─── AI Chat Types ──────────────────────────────────────────────────
 
+export interface AIChatToolResult {
+  toolName: string
+  input: Record<string, unknown>
+  result: string
+}
+
 export interface AIChatMessage {
   id: string
   role: 'user' | 'assistant'
   content: string
   timestamp: string
+  toolResults?: AIChatToolResult[]
 }
 
 // ─── Canvas Types (Workflow Editor) ─────────────────────────────────
@@ -354,4 +361,48 @@ export interface MarketplaceDomain {
   agentCount: number
   color: string
   agents: MarketplaceAgent[]
+}
+
+// ─── LLM Configuration Types ────────────────────────────────────────
+
+export const LLMMode = {
+  Demo: 'demo',
+  Live: 'live',
+} as const
+
+export type LLMMode = (typeof LLMMode)[keyof typeof LLMMode]
+
+export const LLMConnectionStatus = {
+  Unknown: 'unknown',
+  Connected: 'connected',
+  Disconnected: 'disconnected',
+  Error: 'error',
+} as const
+
+export type LLMConnectionStatus = (typeof LLMConnectionStatus)[keyof typeof LLMConnectionStatus]
+
+export const LLMProvider = {
+  Anthropic: 'anthropic',
+  OpenAI: 'openai',
+  Google: 'google',
+  Minimax: 'minimax',
+  DeepSeek: 'deepseek',
+  Mistral: 'mistral',
+  Groq: 'groq',
+} as const
+
+export type LLMProvider = (typeof LLMProvider)[keyof typeof LLMProvider]
+
+export interface LLMModelInfo {
+  id: string
+  name: string
+  provider: LLMProvider
+  contextWindow: number
+  description: string
+}
+
+export interface ProviderStatus {
+  provider: LLMProvider
+  available: boolean
+  models: string[]
 }

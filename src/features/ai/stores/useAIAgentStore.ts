@@ -193,6 +193,7 @@ export interface AIAgentState {
   runs: AgentRun[]
   lastRunByAgent: Record<string, string>
   favorites: string[]
+  streamingOutputs: Record<string, string>
 
   startAgent: (agentType: AgentType, task: string) => AgentRun
   updateRunStep: (runId: string, stepIndex: number, status: StepStatus, output?: string) => void
@@ -204,6 +205,8 @@ export interface AIAgentState {
   failRun: (runId: string) => void
   getRunResult: (runId: string) => string | null
   toggleFavorite: (agentType: AgentType) => void
+  updateStreamingOutput: (runId: string, stepIndex: number, text: string) => void
+  clearStreamingOutput: (runId: string) => void
 }
 
 const useAIAgentStore = create<AIAgentState>()(
@@ -212,6 +215,7 @@ const useAIAgentStore = create<AIAgentState>()(
       runs: [],
       lastRunByAgent: {},
       favorites: [],
+      streamingOutputs: {},
 
       startAgent: (agentType, task) => {
         const definition = AGENT_DEFINITIONS.find(d => d.type === agentType)
@@ -347,6 +351,25 @@ const useAIAgentStore = create<AIAgentState>()(
             ? state.favorites.filter(f => f !== agentType)
             : [...state.favorites, agentType],
         }))
+      },
+
+      updateStreamingOutput: (runId, stepIndex, text) => {
+        set(state => ({
+          streamingOutputs: {
+            ...state.streamingOutputs,
+            [`${runId}-${stepIndex}`]: text,
+          },
+        }))
+      },
+
+      clearStreamingOutput: (runId) => {
+        set(state => {
+          const next = { ...state.streamingOutputs }
+          for (const key of Object.keys(next)) {
+            if (key.startsWith(runId)) delete next[key]
+          }
+          return { streamingOutputs: next }
+        })
       },
     }),
     {

@@ -3,6 +3,10 @@ import { X, Send, Wand2 } from 'lucide-react'
 import { FEATURE_CONTEXTS, type FeatureKey } from '../../lib/featureContexts'
 import useAIFeatureChatStore from '../../stores/useAIFeatureChatStore'
 import { parseIntent, executeIntent } from '../../lib/intentEngine'
+import { isLLMAvailable, syncChat } from '../../lib/llmClient'
+import { ORCHESTREE_TOOLS, executeTool } from '../../lib/toolDefinitions'
+import type { AIChatToolResult } from '../../types'
+import ToolResultCard from '../ToolResultCard/ToolResultCard'
 import VoiceInputButton from '../VoiceInputButton/VoiceInputButton'
 import './AIFeatureChatModal.css'
 
@@ -54,17 +58,83 @@ export default function AIFeatureChatModal({ featureKey, isOpen, onClose }: AIFe
       addMessage(featureKey, 'user', text)
       setIsTyping(true)
 
+      const intent = parseIntent(text, featureKey)
+
+      // High/medium confidence — use regex-based intent as before
+      if (intent.confidence !== 'low') {
+        const delay = 500 + Math.random() * 700
+        setTimeout(() => {
+          executeIntent(intent)
+          addMessage(featureKey, 'assistant', intent.response)
+          setIsTyping(false)
+        }, delay)
+        return
+      }
+
+      // Low confidence — try LLM if available
+      if (isLLMAvailable()) {
+        const systemPrompt = [
+          `You are the Orchestree Copilot for the ${context.label} module.`,
+          `Help the user with their request. Be concise and helpful.`,
+          `You have access to tools to create pages, issues, bookings, templates, contacts, and databases.`,
+          `You can also read workspace stats and upcoming deadlines.`,
+        ].join('\n')
+
+        // Build conversation history from session messages (last 10)
+        const history = messages.slice(-10).map(m => ({
+          role: m.role as 'user' | 'assistant',
+          content: m.content,
+        }))
+
+        syncChat({
+          messages: [...history, { role: 'user', content: text }],
+          systemPrompt,
+          tools: ORCHESTREE_TOOLS,
+        }).then(response => {
+          const toolResults: AIChatToolResult[] = []
+
+          // Check if the response includes a tool call result indicator
+          if (response) {
+            // Try to parse as JSON to see if it contains tool_use
+            try {
+              const parsed: { tool_calls?: Array<{ name: string; input: Record<string, unknown> }> } =
+                JSON.parse(response)
+              if (parsed.tool_calls) {
+                for (const call of parsed.tool_calls) {
+                  const result = executeTool(call.name, call.input)
+                  toolResults.push({ toolName: call.name, input: call.input, result })
+                }
+              }
+            } catch {
+              // Not JSON — just a text response, which is fine
+            }
+
+            const displayText = toolResults.length > 0
+              ? response.replace(/^\{[\s\S]*\}$/, '').trim() || 'Done! Here are the results:'
+              : response
+
+            addMessage(featureKey, 'assistant', displayText, toolResults.length > 0 ? toolResults : undefined)
+          } else {
+            // LLM failed — use regex fallback
+            addMessage(featureKey, 'assistant', intent.response)
+          }
+          setIsTyping(false)
+        }).catch(() => {
+          // Error — use regex fallback
+          addMessage(featureKey, 'assistant', intent.response)
+          setIsTyping(false)
+        })
+        return
+      }
+
+      // No LLM available — use regex fallback
       const delay = 500 + Math.random() * 700
       setTimeout(() => {
-        const intent = parseIntent(text, featureKey)
-        if (intent.confidence !== 'low') {
-          executeIntent(intent)
-        }
         addMessage(featureKey, 'assistant', intent.response)
         setIsTyping(false)
       }, delay)
     },
-    [featureKey, addMessage]
+    [featureKey, addMessage, context.label, messages]
   )
 
   const handleSend = useCallback(() => {
@@ -146,6 +216,18 @@ export default function AIFeatureChatModal({ featureKey, isOpen, onClose }: AIFe
               className={`ai-feature-chat__message ai-feature-chat__message--${msg.role}`}
             >
               <span className="ai-feature-chat__message-content">{msg.content}</span>
+              {msg.toolResults && msg.toolResults.length > 0 && (
+                <div className="ai-feature-chat__tool-results">
+                  {msg.toolResults.map((tr, idx) => (
+                    <ToolResultCard
+                      key={`${msg.id}-tool-${idx}`}
+                      toolName={tr.toolName}
+                      input={tr.input}
+                      result={tr.result}
+                    />
+                  ))}
+                </div>
+              )}
               <span className="ai-feature-chat__message-time">
                 {new Date(msg.timestamp).toLocaleTimeString([], {
                   hour: '2-digit',

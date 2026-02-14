@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { AIChatMessage } from '../types'
+import type { AIChatMessage, AIChatToolResult } from '../types'
 import { FEATURE_CONTEXTS, type FeatureKey } from '../lib/featureContexts'
 
 function generateId(): string {
@@ -17,7 +17,7 @@ interface AIFeatureChatState {
 
   openChat: (featureKey: FeatureKey) => void
   closeChat: (featureKey: FeatureKey) => void
-  addMessage: (featureKey: FeatureKey, role: 'user' | 'assistant', content: string) => void
+  addMessage: (featureKey: FeatureKey, role: 'user' | 'assistant', content: string, toolResults?: AIChatToolResult[]) => void
   clearMessages: (featureKey: FeatureKey) => void
 }
 
@@ -72,12 +72,13 @@ const useAIFeatureChatStore = create<AIFeatureChatState>()(
         }))
       },
 
-      addMessage: (featureKey, role, content) => {
+      addMessage: (featureKey, role, content, toolResults) => {
         const msg: AIChatMessage = {
           id: generateId(),
           role,
           content,
           timestamp: new Date().toISOString(),
+          ...(toolResults && toolResults.length > 0 ? { toolResults } : {}),
         }
         set((state) => ({
           sessions: {

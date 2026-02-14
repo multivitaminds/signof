@@ -9,6 +9,7 @@ import './ActiveRunsPanel.css'
 interface ActiveRunsPanelProps {
   runs: AgentRun[]
   chatRunId: string | null
+  streamingOutputs?: Record<string, string>
   onPause: (id: string) => void
   onResume: (id: string) => void
   onCancel: (id: string) => void
@@ -18,6 +19,7 @@ interface ActiveRunsPanelProps {
 export default function ActiveRunsPanel({
   runs,
   chatRunId,
+  streamingOutputs,
   onPause,
   onResume,
   onCancel,
@@ -53,8 +55,10 @@ export default function ActiveRunsPanel({
               </div>
 
               <div className="copilot-agents__steps" role="list" aria-label="Run steps">
-                {run.steps.map((step: RunStep) => {
+                {run.steps.map((step: RunStep, stepIndex: number) => {
                   const StepIcon = STEP_ICON[step.status]
+                  const streamingKey = `${run.id}-${stepIndex}`
+                  const streamingText = streamingOutputs?.[streamingKey]
                   return (
                     <div key={step.id} className={`copilot-agents__step copilot-agents__step--${step.status}`} role="listitem">
                       <StepIcon size={16} className={`copilot-agents__step-icon ${STEP_CLASS[step.status]}`} />
@@ -62,6 +66,12 @@ export default function ActiveRunsPanel({
                         <span className="copilot-agents__step-label">{step.label}</span>
                         {step.output && (
                           <span className="copilot-agents__step-output">{step.output}</span>
+                        )}
+                        {streamingText && (
+                          <div className="active-runs__streaming-text">
+                            {streamingText}
+                            <span className="active-runs__cursor">|</span>
+                          </div>
                         )}
                       </div>
                     </div>

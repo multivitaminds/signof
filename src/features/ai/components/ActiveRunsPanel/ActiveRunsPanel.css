@@ -188,3 +188,33 @@
   color: var(--text-secondary);
   margin: 0;
 }
+
+/* Streaming Text */
+
+.active-runs__streaming-text {
+  margin-top: 4px;
+  padding: 8px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.active-runs__cursor {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+[data-theme="dark"] .active-runs__streaming-text {
+  background: rgba(255, 255, 255, 0.05);
+}

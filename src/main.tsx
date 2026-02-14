@@ -53,6 +53,7 @@ const NotificationsSettings = lazy(() => import('./features/settings/pages/Notif
 const AppearanceSettings = lazy(() => import('./features/settings/pages/AppearanceSettings'))
 const IntegrationsSettings = lazy(() => import('./features/settings/pages/IntegrationsSettings'))
 const BillingSettings = lazy(() => import('./features/settings/pages/BillingSettings'))
+const AISettings = lazy(() => import('./features/settings/pages/AISettings'))
 
 const AILayout = lazy(() => import('./features/ai/pages/AILayout'))
 const AIMemoryPage = lazy(() => import('./features/ai/pages/AIMemoryPage'))
@@ -279,6 +280,7 @@ createRoot(root).render(
             <Route path="appearance" element={<Suspense fallback={EditorFallback}><AppearanceSettings /></Suspense>} />
             <Route path="integrations" element={<Suspense fallback={CardFallback}><IntegrationsSettings /></Suspense>} />
             <Route path="billing" element={<Suspense fallback={EditorFallback}><BillingSettings /></Suspense>} />
+            <Route path="ai" element={<Suspense fallback={CardFallback}><AISettings /></Suspense>} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />
