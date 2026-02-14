@@ -63,6 +63,12 @@ describe('SearchOverlay', () => {
     ).toBeInTheDocument()
   })
 
+  it('renders without errors with voice input integration', () => {
+    render(<SearchOverlay isOpen={true} onClose={vi.fn()} />)
+    expect(screen.getByLabelText('Search input')).toBeInTheDocument()
+    expect(screen.getByLabelText('Close search')).toBeInTheDocument()
+  })
+
   it('renders keyboard navigation footer', () => {
     render(<SearchOverlay isOpen={true} onClose={vi.fn()} />)
     expect(screen.getByText('navigate')).toBeInTheDocument()

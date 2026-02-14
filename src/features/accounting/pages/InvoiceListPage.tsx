@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react'
-import { Plus, Send, DollarSign, Eye, XCircle, Trash2, Pencil } from 'lucide-react'
+import { Plus, Send, DollarSign, Eye, XCircle, Trash2, Pencil, Upload } from 'lucide-react'
 import { useInvoiceStore } from '../stores/useInvoiceStore'
 import { useAccountingContactStore } from '../stores/useAccountingContactStore'
 import { formatCurrency } from '../lib/formatCurrency'
@@ -7,6 +7,8 @@ import { ACC_INVOICE_STATUS_LABELS, AccInvoiceStatus } from '../types'
 import type { Invoice, AccInvoiceStatus as AccInvoiceStatusType } from '../types'
 import InvoiceBuilder from '../components/InvoiceBuilder/InvoiceBuilder'
 import PaymentModal from '../components/PaymentModal/PaymentModal'
+import BulkImportModal from '../../../components/BulkImportModal/BulkImportModal'
+import { createInvoiceImportConfig } from '../../../lib/importConfigs'
 import './InvoiceListPage.css'
 
 type FilterValue = 'all' | AccInvoiceStatusType
@@ -41,9 +43,11 @@ function InvoiceListPage() {
   const getOutstandingTotal = useInvoiceStore((s) => s.getOutstandingTotal)
   const getOverdueTotal = useInvoiceStore((s) => s.getOverdueTotal)
   useAccountingContactStore((s) => s.contacts)
+  const importInvoices = useInvoiceStore((s) => s.importInvoices)
 
   const [activeFilter, setActiveFilter] = useState<FilterValue>('all')
   const [showBuilder, setShowBuilder] = useState(false)
+  const [showImport, setShowImport] = useState(false)
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null)
   const [paymentInvoice, setPaymentInvoice] = useState<Invoice | null>(null)
 
@@ -105,6 +109,14 @@ function InvoiceListPage() {
         >
           <Plus size={16} />
           New Invoice
+        </button>
+        <button
+          className="btn-secondary"
+          onClick={() => setShowImport(true)}
+          type="button"
+        >
+          <Upload size={16} />
+          Import CSV
         </button>
       </div>
 
@@ -265,6 +277,14 @@ function InvoiceListPage() {
       {/* Payment Modal */}
       {paymentInvoice && (
         <PaymentModal invoice={paymentInvoice} onClose={handleClosePayment} />
+      )}
+
+      {showImport && (
+        <BulkImportModal
+          config={createInvoiceImportConfig()}
+          onImport={(items) => importInvoices(items as Parameters<typeof importInvoices>[0])}
+          onClose={() => setShowImport(false)}
+        />
       )}
     </div>
   )

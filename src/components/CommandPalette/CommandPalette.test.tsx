@@ -44,6 +44,13 @@ describe('CommandPalette', () => {
     expect(screen.getByPlaceholderText('Type a command or search...')).toBeInTheDocument()
   })
 
+  it('renders without errors with voice input integration', () => {
+    useAppStore.setState({ commandPaletteOpen: true })
+    renderPalette()
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Type a command or search...')).toBeInTheDocument()
+  })
+
   it('shows navigation commands by default', () => {
     useAppStore.setState({ commandPaletteOpen: true })
     renderPalette()

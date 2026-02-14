@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react'
 import { Send } from 'lucide-react'
+import VoiceInputButton from '../../../ai/components/VoiceInputButton/VoiceInputButton'
 import './ChatInput.css'
 
 interface ChatInputProps {
@@ -28,6 +29,11 @@ function ChatInput({ onSend, disabled }: ChatInputProps) {
     }
   }, [value, disabled, onSend])
 
+  const handleVoiceTranscript = useCallback((text: string) => {
+    setValue((prev) => (prev ? prev + ' ' + text : text))
+    textareaRef.current?.focus()
+  }, [])
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -47,6 +53,7 @@ function ChatInput({ onSend, disabled }: ChatInputProps) {
         disabled={disabled}
         rows={1}
       />
+      <VoiceInputButton onTranscript={handleVoiceTranscript} disabled={disabled} />
       <button
         className="chat-input__send-btn"
         onClick={handleSend}

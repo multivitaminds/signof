@@ -33,6 +33,7 @@ interface ExpenseState {
   getExpensesByDateRange: (start: string, end: string) => Expense[]
   getTotalByCategory: () => Record<string, number>
   clearData: () => void
+  importExpenses: (items: Omit<Expense, 'id' | 'createdAt'>[]) => void
 }
 
 export const useExpenseStore = create<ExpenseState>()(
@@ -71,6 +72,18 @@ export const useExpenseStore = create<ExpenseState>()(
       },
 
       clearData: () => set({ expenses: [] }),
+
+      importExpenses: (items) =>
+        set((state) => ({
+          expenses: [
+            ...state.expenses,
+            ...items.map((item) => ({
+              ...item,
+              id: generateId(),
+              createdAt: new Date().toISOString(),
+            })),
+          ],
+        })),
     }),
     { name: 'orchestree-expense-storage' }
   )

@@ -170,6 +170,7 @@ interface AccountingState {
   getAccountsByType: (type: AccountType) => Account[]
   getTransactionsByDateRange: (start: string, end: string) => Transaction[]
   clearData: () => void
+  importTransactions: (items: Omit<Transaction, 'id' | 'createdAt'>[]) => void
 }
 
 export const useAccountingStore = create<AccountingState>()(
@@ -223,6 +224,18 @@ export const useAccountingStore = create<AccountingState>()(
           accounts: [],
           transactions: [],
         }),
+
+      importTransactions: (items) =>
+        set((state) => ({
+          transactions: [
+            ...state.transactions,
+            ...items.map((item) => ({
+              ...item,
+              id: generateId(),
+              createdAt: new Date().toISOString(),
+            })),
+          ],
+        })),
     }),
     { name: 'orchestree-accounting-storage' }
   )

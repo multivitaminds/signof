@@ -14,6 +14,7 @@ import {
 import { useGlobalSearch } from '../../hooks/useGlobalSearch'
 import { SearchResultType, type SearchResult } from '../../types'
 import { getIconComponent, isEmojiIcon } from '../../../../lib/iconMap'
+import VoiceInputButton from '../../../ai/components/VoiceInputButton/VoiceInputButton'
 import './SearchOverlay.css'
 
 interface SearchOverlayProps {
@@ -79,6 +80,10 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     )
     selectedEl?.scrollIntoView({ block: 'nearest' })
   }, [selectedIndex])
+
+  const handleVoiceTranscript = useCallback((text: string) => {
+    search(text)
+  }, [search])
 
   const handleSelect = useCallback(
     (result: SearchResult) => {
@@ -175,6 +180,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             spellCheck="false"
             aria-label="Search input"
           />
+          <VoiceInputButton onTranscript={handleVoiceTranscript} />
           <button
             className="search-overlay__close-btn"
             onClick={onClose}

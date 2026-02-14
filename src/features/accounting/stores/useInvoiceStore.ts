@@ -84,6 +84,7 @@ interface InvoiceState {
   getOutstandingTotal: () => number
   getOverdueTotal: () => number
   clearData: () => void
+  importInvoices: (items: Omit<Invoice, 'id' | 'invoiceNumber' | 'createdAt'>[]) => void
 }
 
 export const useInvoiceStore = create<InvoiceState>()(
@@ -166,6 +167,20 @@ export const useInvoiceStore = create<InvoiceState>()(
           invoices: [],
           nextInvoiceNumber: 1,
         }),
+
+      importInvoices: (items) => {
+        const startNum = get().nextInvoiceNumber
+        const newInvoices = items.map((item, i) => ({
+          ...item,
+          id: generateId(),
+          invoiceNumber: formatInvoiceNumber(startNum + i),
+          createdAt: new Date().toISOString(),
+        }))
+        set((state) => ({
+          invoices: [...state.invoices, ...newInvoices],
+          nextInvoiceNumber: state.nextInvoiceNumber + items.length,
+        }))
+      },
     }),
     { name: 'orchestree-invoice-storage' }
   )

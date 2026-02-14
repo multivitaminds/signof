@@ -30,6 +30,7 @@ import { useProjectStore } from '../../features/projects/stores/useProjectStore'
 import { useSchedulingStore } from '../../features/scheduling/stores/useSchedulingStore'
 import { useDatabaseStore } from '../../features/databases/stores/useDatabaseStore'
 import { fuzzyMatch, highlightMatches } from '../../lib/fuzzyMatch'
+import VoiceInputButton from '../../features/ai/components/VoiceInputButton/VoiceInputButton'
 import './CommandPalette.css'
 
 interface CommandItem {
@@ -84,6 +85,10 @@ export default function CommandPalette() {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+
+  const handleVoiceTranscript = useCallback((text: string) => {
+    setQuery(text)
+  }, [])
 
   const navigateAndTrack = useCallback(
     (path: string, label: string) => {
@@ -603,6 +608,7 @@ export default function CommandPalette() {
             autoCorrect="off"
             spellCheck="false"
           />
+          <VoiceInputButton onTranscript={handleVoiceTranscript} />
         </div>
 
         {/* Results */}

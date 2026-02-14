@@ -5,7 +5,8 @@ import { TRANSACTION_TYPE_LABELS, ReconciliationStatus } from '../types'
 import type { Transaction, TransactionType } from '../types'
 import { formatCurrency } from '../lib/formatCurrency'
 import TransactionForm from '../components/TransactionForm/TransactionForm'
-import CsvImportModal from '../components/CsvImportModal/CsvImportModal'
+import BulkImportModal from '../../../components/BulkImportModal/BulkImportModal'
+import { createTransactionImportConfig } from '../../../lib/importConfigs'
 import './BankingPage.css'
 
 function BankingPage() {
@@ -21,6 +22,7 @@ function BankingPage() {
   const [dateEnd, setDateEnd] = useState('')
   const [showTransactionForm, setShowTransactionForm] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
+  const importTransactions = useAccountingStore((s) => s.importTransactions)
   const [showCsvImport, setShowCsvImport] = useState(false)
 
   const bankAccounts = useMemo(
@@ -374,7 +376,13 @@ function BankingPage() {
         />
       )}
 
-      {showCsvImport && <CsvImportModal onClose={handleCloseCsvImport} />}
+      {showCsvImport && (
+        <BulkImportModal
+          config={createTransactionImportConfig()}
+          onImport={(items) => importTransactions(items as Parameters<typeof importTransactions>[0])}
+          onClose={handleCloseCsvImport}
+        />
+      )}
     </div>
   )
 }

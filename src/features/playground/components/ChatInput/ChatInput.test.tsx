@@ -28,6 +28,12 @@ describe('ChatInput', () => {
     expect(onSend).not.toHaveBeenCalled()
   })
 
+  it('renders without errors with voice input integration', () => {
+    render(<ChatInput onSend={vi.fn()} />)
+    expect(screen.getByPlaceholderText('Send a message...')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Send message' })).toBeInTheDocument()
+  })
+
   it('does not send when empty', async () => {
     const onSend = vi.fn()
     const user = userEvent.setup()

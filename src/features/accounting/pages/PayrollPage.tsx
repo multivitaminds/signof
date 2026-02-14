@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { Plus, Play, Eye, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Play, Eye, Pencil, Trash2, Upload } from 'lucide-react'
 import { usePayrollStore } from '../stores/usePayrollStore'
 import {
   EMPLOYEE_STATUS_LABELS,
@@ -11,16 +11,20 @@ import { formatCurrency } from '../lib/formatCurrency'
 import EmployeeForm from '../components/EmployeeForm/EmployeeForm'
 import PayRunWizard from '../components/PayRunWizard/PayRunWizard'
 import PayStubModal from '../components/PayStubModal/PayStubModal'
+import BulkImportModal from '../../../components/BulkImportModal/BulkImportModal'
+import { createEmployeeImportConfig } from '../../../lib/importConfigs'
 import './PayrollPage.css'
 
 function PayrollPage() {
   const employees = usePayrollStore((s) => s.employees)
   const payRuns = usePayrollStore((s) => s.payRuns)
   const deleteEmployee = usePayrollStore((s) => s.deleteEmployee)
+  const importEmployees = usePayrollStore((s) => s.importEmployees)
 
   const [showEmployeeForm, setShowEmployeeForm] = useState(false)
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null)
   const [showWizard, setShowWizard] = useState(false)
+  const [showImport, setShowImport] = useState(false)
   const [viewingPayRun, setViewingPayRun] = useState<PayRun | null>(null)
 
   const handleAddEmployee = useCallback(() => {
@@ -107,6 +111,14 @@ function PayrollPage() {
           >
             <Plus size={16} />
             Add Employee
+          </button>
+          <button
+            className="btn-secondary"
+            onClick={() => setShowImport(true)}
+            type="button"
+          >
+            <Upload size={16} />
+            Import CSV
           </button>
         </div>
       </div>
@@ -241,6 +253,14 @@ function PayrollPage() {
 
       {viewingPayRun && (
         <PayStubModal payRun={viewingPayRun} onClose={handleCloseStubs} />
+      )}
+
+      {showImport && (
+        <BulkImportModal
+          config={createEmployeeImportConfig()}
+          onImport={(items) => importEmployees(items as Parameters<typeof importEmployees>[0])}
+          onClose={() => setShowImport(false)}
+        />
       )}
     </div>
   )

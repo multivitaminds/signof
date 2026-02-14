@@ -6,16 +6,20 @@ import type { Expense, ExpenseCategory } from '../types'
 import { formatCurrency } from '../lib/formatCurrency'
 import ExpenseForm from '../components/ExpenseForm/ExpenseForm'
 import CategoryBreakdown from '../components/CategoryBreakdown/CategoryBreakdown'
+import BulkImportModal from '../../../components/BulkImportModal/BulkImportModal'
+import { createExpenseImportConfig } from '../../../lib/importConfigs'
 import './ExpenseListPage.css'
 
 function ExpenseListPage() {
   const expenses = useExpenseStore((s) => s.expenses)
   const deleteExpense = useExpenseStore((s) => s.deleteExpense)
+  const importExpenses = useExpenseStore((s) => s.importExpenses)
 
   const [categoryFilter, setCategoryFilter] = useState<'all' | ExpenseCategory>('all')
   const [dateStart, setDateStart] = useState('')
   const [dateEnd, setDateEnd] = useState('')
   const [showForm, setShowForm] = useState(false)
+  const [showImport, setShowImport] = useState(false)
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
 
   const filteredExpenses = useMemo(() => {
@@ -117,6 +121,14 @@ function ExpenseListPage() {
         >
           <Plus size={16} />
           Add Expense
+        </button>
+        <button
+          className="btn-secondary"
+          onClick={() => setShowImport(true)}
+          type="button"
+        >
+          <Upload size={16} />
+          Import CSV
         </button>
       </div>
 
@@ -255,6 +267,14 @@ function ExpenseListPage() {
       {/* Form Modal */}
       {showForm && (
         <ExpenseForm expense={editingExpense ?? undefined} onClose={handleCloseForm} />
+      )}
+
+      {showImport && (
+        <BulkImportModal
+          config={createExpenseImportConfig()}
+          onImport={(items) => importExpenses(items as Parameters<typeof importExpenses>[0])}
+          onClose={() => setShowImport(false)}
+        />
       )}
     </div>
   )

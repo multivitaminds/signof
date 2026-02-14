@@ -1,0 +1,279 @@
+/* ─── BulkImportModal ─────────────────────────────────────── */
+
+.bulk-import .modal-content {
+  max-width: 700px;
+}
+
+/* ─── Step Indicator ─────────────────────────────────────── */
+
+.bulk-import__steps {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+
+.bulk-import__step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.bulk-import__step--active {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.bulk-import__step--done {
+  color: var(--color-success);
+}
+
+.bulk-import__step-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: var(--bg-tertiary);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.bulk-import__step--active .bulk-import__step-dot {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.bulk-import__step--done .bulk-import__step-dot {
+  background-color: var(--color-success);
+  color: #fff;
+}
+
+.bulk-import__step-separator {
+  width: 24px;
+  height: 1px;
+  background-color: var(--border-color);
+  flex-shrink: 0;
+}
+
+/* ─── Step 1: Upload ─────────────────────────────────────── */
+
+.bulk-import__dropzone {
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl) var(--space-lg);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 150ms, background-color 150ms;
+}
+
+.bulk-import__dropzone:hover,
+.bulk-import__dropzone--active {
+  border-color: var(--color-primary);
+  background-color: var(--bg-secondary);
+}
+
+.bulk-import__dropzone-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-sm);
+  color: var(--text-muted);
+}
+
+.bulk-import__dropzone-text {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.bulk-import__dropzone-hint {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin: var(--space-xs) 0 0;
+}
+
+.bulk-import__file-input {
+  display: none;
+}
+
+/* ─── Step 2: Mapping ────────────────────────────────────── */
+
+.bulk-import__mapping-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.bulk-import__mapping-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.bulk-import__mapping-label {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.bulk-import__mapping-required {
+  color: var(--color-danger);
+  margin-left: 2px;
+}
+
+.bulk-import__mapping-select {
+  flex: 1;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.bulk-import__sample-link {
+  display: inline-block;
+  margin-top: var(--space-md);
+  font-size: 0.8125rem;
+  color: var(--color-primary);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.bulk-import__sample-link:hover {
+  text-decoration: underline;
+}
+
+/* ─── Step 3: Preview ────────────────────────────────────── */
+
+.bulk-import__table-wrap {
+  overflow-x: auto;
+  margin-bottom: var(--space-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+}
+
+.bulk-import__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.bulk-import__table th {
+  background-color: var(--bg-secondary);
+  padding: var(--space-xs) var(--space-sm);
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.bulk-import__table td {
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.bulk-import__table tr:last-child td {
+  border-bottom: none;
+}
+
+.bulk-import__cell--error {
+  background-color: rgba(220, 38, 38, 0.1);
+  color: var(--color-danger);
+}
+
+.bulk-import__summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-md);
+}
+
+.bulk-import__summary-valid {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.bulk-import__summary-errors {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.bulk-import__checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+/* ─── Step 4: Success ────────────────────────────────────── */
+
+.bulk-import__success {
+  text-align: center;
+  padding: var(--space-xl) 0;
+}
+
+.bulk-import__success-icon {
+  font-size: 3rem;
+  color: var(--color-success);
+  margin-bottom: var(--space-md);
+}
+
+.bulk-import__success-count {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-xs);
+}
+
+.bulk-import__success-detail {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* ─── Footer / Actions ───────────────────────────────────── */
+
+.bulk-import__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-color);
+}
+
+/* ─── Error Message ──────────────────────────────────────── */
+
+.bulk-import__error {
+  color: var(--color-danger);
+  font-size: 0.8125rem;
+  margin-top: var(--space-sm);
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .bulk-import .modal-content {
+    max-width: 100%;
+  }
+
+  .bulk-import__mapping-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-xs);
+  }
+
+  .bulk-import__step-label {
+    display: none;
+  }
+}

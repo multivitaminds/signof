@@ -33,6 +33,7 @@ interface AccountingContactState {
   getVendors: () => AccountingContact[]
   getContactById: (id: string) => AccountingContact | undefined
   clearData: () => void
+  importContacts: (items: Omit<AccountingContact, 'id' | 'createdAt'>[]) => void
 }
 
 export const useAccountingContactStore = create<AccountingContactState>()(
@@ -62,6 +63,18 @@ export const useAccountingContactStore = create<AccountingContactState>()(
       getContactById: (id) => get().contacts.find((c) => c.id === id),
 
       clearData: () => set({ contacts: [] }),
+
+      importContacts: (items) =>
+        set((state) => ({
+          contacts: [
+            ...state.contacts,
+            ...items.map((item) => ({
+              ...item,
+              id: generateId(),
+              createdAt: new Date().toISOString(),
+            })),
+          ],
+        })),
     }),
     { name: 'orchestree-accounting-contacts-storage' }
   )

@@ -10,6 +10,7 @@ import {
   Pencil,
   Trash2,
 } from 'lucide-react'
+import { Upload } from 'lucide-react'
 import { useAccountingContactStore } from '../stores/useAccountingContactStore'
 import { useInvoiceStore } from '../stores/useInvoiceStore'
 import { useExpenseStore } from '../stores/useExpenseStore'
@@ -17,6 +18,8 @@ import { CONTACT_TYPE_LABELS } from '../types'
 import type { AccountingContact, ContactType } from '../types'
 import { formatCurrency } from '../lib/formatCurrency'
 import ContactForm from '../components/ContactForm/ContactForm'
+import BulkImportModal from '../../../components/BulkImportModal/BulkImportModal'
+import { createContactImportConfig } from '../../../lib/importConfigs'
 import './ContactsPage.css'
 
 type TypeFilter = 'all' | ContactType
@@ -24,6 +27,7 @@ type TypeFilter = 'all' | ContactType
 function ContactsPage() {
   const contacts = useAccountingContactStore((s) => s.contacts)
   const deleteContact = useAccountingContactStore((s) => s.deleteContact)
+  const importContacts = useAccountingContactStore((s) => s.importContacts)
   const invoices = useInvoiceStore((s) => s.invoices)
   const expenses = useExpenseStore((s) => s.expenses)
 
@@ -31,6 +35,7 @@ function ContactsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [editingContact, setEditingContact] = useState<AccountingContact | null>(null)
+  const [showImport, setShowImport] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
@@ -126,6 +131,14 @@ function ContactsPage() {
         >
           <Plus size={16} />
           Add Contact
+        </button>
+        <button
+          className="btn-secondary"
+          onClick={() => setShowImport(true)}
+          type="button"
+        >
+          <Upload size={16} />
+          Import CSV
         </button>
       </div>
 
@@ -356,6 +369,14 @@ function ContactsPage() {
       )}
 
       {showForm && <ContactForm contact={editingContact ?? undefined} onClose={handleCloseForm} />}
+
+      {showImport && (
+        <BulkImportModal
+          config={createContactImportConfig()}
+          onImport={(items) => importContacts(items as Parameters<typeof importContacts>[0])}
+          onClose={() => setShowImport(false)}
+        />
+      )}
     </div>
   )
 }

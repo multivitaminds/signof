@@ -82,6 +82,7 @@ interface PayrollState {
   getStubsByEmployee: (employeeId: string) => PayStub[]
   getStubsByPayRun: (payRunId: string) => PayStub[]
   clearData: () => void
+  importEmployees: (items: Omit<Employee, 'id'>[]) => void
 }
 
 export const usePayrollStore = create<PayrollState>()(
@@ -203,6 +204,17 @@ export const usePayrollStore = create<PayrollState>()(
           payRuns: [],
           payStubs: [],
         }),
+
+      importEmployees: (items) =>
+        set((state) => ({
+          employees: [
+            ...state.employees,
+            ...items.map((item) => ({
+              ...item,
+              id: generateId(),
+            })),
+          ],
+        })),
     }),
     { name: 'orchestree-payroll-storage' }
   )
