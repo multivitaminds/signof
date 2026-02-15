@@ -16,6 +16,7 @@ const {
   mockSubscribe,
   mockRemember,
   mockGetAgentMemories,
+  mockDeleteMemory,
   mockAddRepair,
   mockUpdateRepair,
   mockGetRepairsByAgent,
@@ -24,6 +25,16 @@ const {
   mockSyncChat,
   mockExecuteTool,
   mockTriggerWorkflow,
+  mockCheckActionCircuit,
+  mockRecordActionOutcome,
+  mockAcquireActionLock,
+  mockReleaseActionLock,
+  mockPruneAgentMemories,
+  mockRecordUsage,
+  mockCheckBudget,
+  mockCheckContract,
+  mockRecordContractViolation,
+  mockIdentityValues,
 } = vi.hoisted(() => ({
   mockGetAgent: vi.fn(),
   mockSetLifecycle: vi.fn(),
@@ -37,6 +48,7 @@ const {
   mockSubscribe: vi.fn(),
   mockRemember: vi.fn(),
   mockGetAgentMemories: vi.fn().mockReturnValue([]),
+  mockDeleteMemory: vi.fn(),
   mockAddRepair: vi.fn().mockReturnValue('repair-1'),
   mockUpdateRepair: vi.fn(),
   mockGetRepairsByAgent: vi.fn().mockReturnValue([]),
@@ -45,6 +57,16 @@ const {
   mockSyncChat: vi.fn().mockResolvedValue(null),
   mockExecuteTool: vi.fn().mockReturnValue('{"success":true}'),
   mockTriggerWorkflow: vi.fn(),
+  mockCheckActionCircuit: vi.fn().mockReturnValue(null),
+  mockRecordActionOutcome: vi.fn(),
+  mockAcquireActionLock: vi.fn().mockReturnValue({ allowed: true, reason: 'Lock acquired' }),
+  mockReleaseActionLock: vi.fn(),
+  mockPruneAgentMemories: vi.fn().mockReturnValue({ deletedCount: 0, freedTokens: 0, deletedIds: [] }),
+  mockRecordUsage: vi.fn().mockReturnValue('cost-1'),
+  mockCheckBudget: vi.fn().mockReturnValue({ allowed: true, reason: 'Within budget', remainingTokens: 100000, remainingCostUsd: 10, usagePct: 0 }),
+  mockCheckContract: vi.fn().mockReturnValue({ allowed: true, reason: 'Within contract scope' }),
+  mockRecordContractViolation: vi.fn(),
+  mockIdentityValues: vi.fn().mockReturnValue([]),
 }))
 
 // ─── Mock all dependencies ──────────────────────────────────────────
@@ -86,6 +108,26 @@ vi.mock('./autonomousPromptBuilder', () => ({
   buildAutonomousPrompt: vi.fn().mockReturnValue('system prompt'),
 }))
 
+vi.mock('./circuitBreakerEngine', () => ({
+  checkActionCircuit: mockCheckActionCircuit,
+  recordActionOutcome: mockRecordActionOutcome,
+}))
+
+vi.mock('./governorEngine', () => ({
+  acquireActionLock: mockAcquireActionLock,
+  releaseActionLock: mockReleaseActionLock,
+}))
+
+vi.mock('./memoryLifecycleManager', () => ({
+  pruneAgentMemories: mockPruneAgentMemories,
+}))
+
+vi.mock('./tokenCount', () => ({
+  countTokens: vi.fn().mockReturnValue(100),
+  TOKEN_BUDGET: 1_000_000,
+  formatTokenCount: vi.fn().mockReturnValue('100'),
+}))
+
 // ─── Mock stores ────────────────────────────────────────────────────
 
 vi.mock('../stores/useAgentRuntimeStore', () => {
@@ -119,6 +161,7 @@ vi.mock('../stores/useAgentMemoryStore', () => {
     getState: vi.fn().mockReturnValue({
       remember: mockRemember,
       getAgentMemories: mockGetAgentMemories,
+      deleteMemory: mockDeleteMemory,
     }),
   }
   return { default: mockStore }
@@ -140,6 +183,27 @@ vi.mock('../stores/useConnectorStore', () => {
     getState: vi.fn().mockReturnValue({
       getConnector: mockGetConnector,
       mockExecute: mockMockExecute,
+    }),
+  }
+  return { default: mockStore }
+})
+
+vi.mock('../stores/useCostTrackingStore', () => {
+  const mockStore = {
+    getState: vi.fn().mockReturnValue({
+      recordUsage: mockRecordUsage,
+      checkBudget: mockCheckBudget,
+    }),
+  }
+  return { default: mockStore }
+})
+
+vi.mock('../stores/useAgentIdentityStore', () => {
+  const mockStore = {
+    getState: vi.fn().mockReturnValue({
+      identities: { values: mockIdentityValues },
+      checkContract: mockCheckContract,
+      recordContractViolation: mockRecordContractViolation,
     }),
   }
   return { default: mockStore }
@@ -476,6 +540,115 @@ describe('autonomousLoop', () => {
 
       expect(mockExecuteTool).toHaveBeenCalledWith('list_issues', {})
       expect(mockQueueApproval).not.toHaveBeenCalled()
+    })
+  })
+
+  // ── Pre-flight checks ────────────────────────────────────────────
+
+  describe('pre-flight checks', () => {
+    it('calls pruneAgentMemories during observe', async () => {
+      setupSingleCycle(makeAgent(), 'reasoning', null)
+
+      startAutonomousLoop('test-agent', 100)
+      await vi.advanceTimersByTimeAsync(500)
+
+      expect(mockPruneAgentMemories).toHaveBeenCalledWith('test-agent')
+    })
+
+    it('records cost usage after reason and plan LLM calls', async () => {
+      setupSingleCycle(makeAgent(), 'reasoning', null)
+
+      startAutonomousLoop('test-agent', 100)
+      await vi.advanceTimersByTimeAsync(500)
+
+      // recordUsage should be called for reason() and planAction() LLM calls
+      const usageCalls = mockRecordUsage.mock.calls as Array<[string, string, string, unknown, number]>
+      const reasonCall = usageCalls.find((c) => c[2] === 'reason')
+      const planCall = usageCalls.find((c) => c[2] === 'plan')
+      expect(reasonCall).toBeDefined()
+      expect(planCall).toBeDefined()
+    })
+
+    it('blocks action when circuit breaker is open', async () => {
+      mockCheckActionCircuit.mockReturnValueOnce({ allowed: false, state: 'open', reason: 'Circuit open' })
+      const plan = JSON.stringify([
+        { type: 'connector', connectorId: 'gmail', actionId: 'send', params: {}, description: 'Send email' },
+      ])
+      setupSingleCycle(makeAgent(), 'reasoning', plan)
+
+      startAutonomousLoop('test-agent', 100)
+      await vi.advanceTimersByTimeAsync(500)
+
+      expect(mockMockExecute).not.toHaveBeenCalled()
+      expect(mockQueueApproval).toHaveBeenCalledWith(
+        'test-agent',
+        'preflight_blocked',
+        expect.stringContaining('Circuit breaker'),
+      )
+    })
+
+    it('blocks action when budget is exhausted', async () => {
+      mockCheckBudget.mockReturnValueOnce({ allowed: false, reason: 'Token budget exhausted', remainingTokens: 0, remainingCostUsd: 0, usagePct: 100 })
+      const plan = JSON.stringify([
+        { type: 'tool', toolName: 'create_page', params: {}, description: 'Create page' },
+      ])
+      setupSingleCycle(makeAgent(), 'reasoning', plan)
+
+      startAutonomousLoop('test-agent', 100)
+      await vi.advanceTimersByTimeAsync(500)
+
+      expect(mockExecuteTool).not.toHaveBeenCalled()
+      expect(mockQueueApproval).toHaveBeenCalledWith(
+        'test-agent',
+        'preflight_blocked',
+        expect.stringContaining('Budget'),
+      )
+    })
+
+    it('blocks action when lock is denied', async () => {
+      mockAcquireActionLock.mockReturnValueOnce({ allowed: false, reason: 'Lower priority' })
+      const plan = JSON.stringify([
+        { type: 'tool', toolName: 'create_page', params: {}, description: 'Create page' },
+      ])
+      setupSingleCycle(makeAgent(), 'reasoning', plan)
+
+      startAutonomousLoop('test-agent', 100)
+      await vi.advanceTimersByTimeAsync(500)
+
+      expect(mockExecuteTool).not.toHaveBeenCalled()
+      const actStep = mockAddThinkingStep.mock.calls.find(
+        (c) => (c[1] as { type: string }).type === 'act',
+      )
+      expect(actStep).toBeDefined()
+      expect((actStep![1] as { content: string }).content).toContain('LOCK_DENIED')
+    })
+
+    it('releases lock after action execution', async () => {
+      const plan = JSON.stringify([
+        { type: 'tool', toolName: 'create_page', params: {}, description: 'Create page' },
+      ])
+      setupSingleCycle(makeAgent(), 'reasoning', plan)
+
+      startAutonomousLoop('test-agent', 100)
+      await vi.advanceTimersByTimeAsync(500)
+
+      expect(mockAcquireActionLock).toHaveBeenCalled()
+      expect(mockReleaseActionLock).toHaveBeenCalled()
+    })
+
+    it('records connector success outcome', async () => {
+      const plan = JSON.stringify([
+        { type: 'connector', connectorId: 'gmail', actionId: 'gmail-send', params: {}, description: 'Send' },
+      ])
+      setupSingleCycle(makeAgent(), 'reasoning', plan)
+
+      startAutonomousLoop('test-agent', 100)
+      await vi.advanceTimersByTimeAsync(500)
+
+      expect(mockRecordActionOutcome).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'connector', connectorId: 'gmail' }),
+        true,
+      )
     })
   })
 })

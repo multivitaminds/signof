@@ -1,5 +1,5 @@
 import { AgentLifecycle } from '../types'
-import type { ParsedAction, ThinkingStep } from '../types'
+import type { ParsedAction, ThinkingStep, PreflightResult } from '../types'
 import useAgentRuntimeStore from '../stores/useAgentRuntimeStore'
 import useMessageBusStore from '../stores/useMessageBusStore'
 import useAgentMemoryStore from '../stores/useAgentMemoryStore'
@@ -10,6 +10,12 @@ import { syncChat } from './llmClient'
 import { classifyError, analyzeError, attemptRepair } from './selfHealingEngine'
 import { executeTool, ORCHESTREE_TOOLS } from './toolDefinitions'
 import { triggerWorkflowFromAgent } from './agentWorkflowBridge'
+import { checkActionCircuit, recordActionOutcome } from './circuitBreakerEngine'
+import { acquireActionLock, releaseActionLock } from './governorEngine'
+import { pruneAgentMemories } from './memoryLifecycleManager'
+import useCostTrackingStore from '../stores/useCostTrackingStore'
+import useAgentIdentityStore from '../stores/useAgentIdentityStore'
+import { countTokens } from './tokenCount'
 
 const DEFAULT_CYCLE_INTERVAL_MS = 30_000
 const activeLoops = new Map<string, AbortController>()
@@ -109,6 +115,9 @@ async function runLoop(
 // ─── Step Implementations ──────────────────────────────────────────
 
 async function observe(agentId: string): Promise<string> {
+  // Lightweight rule-based memory pruning — zero LLM cost
+  pruneAgentMemories(agentId)
+
   const agent = useAgentRuntimeStore.getState().getAgent(agentId)
   if (!agent) return 'Agent not found'
 
@@ -142,14 +151,21 @@ async function reason(agentId: string, observations: string): Promise<string> {
 
   const systemPrompt = buildAutonomousPrompt(agent, memories, connectors, recentMessages, recentRepairs)
 
+  const userContent = `Current observations:\n${observations}\n\nAnalyze the situation and determine what actions should be taken next. Be specific about which tools or connectors to use.`
   const result = await syncChat({
-    messages: [{
-      role: 'user',
-      content: `Current observations:\n${observations}\n\nAnalyze the situation and determine what actions should be taken next. Be specific about which tools or connectors to use.`,
-    }],
+    messages: [{ role: 'user', content: userContent }],
     systemPrompt,
     maxTokens: 512,
   })
+
+  // Track cost of LLM call
+  const inputTokens = countTokens(systemPrompt + userContent)
+  const outputTokens = result ? countTokens(result) : 0
+  useCostTrackingStore.getState().recordUsage(
+    agentId, 'llm', 'reason',
+    { inputTokens, outputTokens, totalTokens: inputTokens + outputTokens },
+    (inputTokens * 0.003 + outputTokens * 0.015) / 1000,
+  )
 
   return result ?? 'No reasoning available — LLM may be in demo mode.'
 }
@@ -201,6 +217,15 @@ Respond ONLY with the JSON array, no markdown fences or explanation.`
     messages: [{ role: 'user', content: planPrompt }],
     maxTokens: 512,
   })
+
+  // Track cost of LLM call
+  const planInputTokens = countTokens(planPrompt)
+  const planOutputTokens = result ? countTokens(result) : 0
+  useCostTrackingStore.getState().recordUsage(
+    agentId, 'llm', 'plan',
+    { inputTokens: planInputTokens, outputTokens: planOutputTokens, totalTokens: planInputTokens + planOutputTokens },
+    (planInputTokens * 0.003 + planOutputTokens * 0.015) / 1000,
+  )
 
   if (!result) {
     return JSON.stringify([{ type: 'none', params: {}, description: reasoning }])
@@ -266,53 +291,90 @@ async function act(agentId: string, plan: string): Promise<string> {
   const results: string[] = []
 
   for (const action of actions) {
-    switch (action.type) {
-      case 'connector': {
-        if (action.connectorId && action.actionId) {
-          const result = useConnectorStore.getState().mockExecute(
-            action.connectorId,
-            action.actionId,
-            action.params,
-          )
-          results.push(`Connector(${action.connectorId}/${action.actionId}): ${result}`)
-        } else {
-          results.push(`Connector action skipped — missing connectorId or actionId`)
+    // ── PRE-FLIGHT CHECKS ──────────────────────────────────────────
+    const preflight = runPreflightChecks(agentId, action)
+    if (!preflight.allowed) {
+      useAgentRuntimeStore.getState().queueApproval(
+        agentId, 'preflight_blocked',
+        `Blocked: ${preflight.blockingReason} — [${action.type}] ${action.description}`,
+      )
+      results.push(`BLOCKED: ${preflight.blockingReason}`)
+      continue
+    }
+
+    // ── ACQUIRE LOCK ───────────────────────────────────────────────
+    const topGoal = agent.goalStack[0]
+    const priority = topGoal ? topGoal.priority : 1
+    const lock = acquireActionLock(action, agentId, priority)
+    if (!lock.allowed) {
+      results.push(`LOCK_DENIED: ${lock.reason}`)
+      continue
+    }
+
+    try {
+      switch (action.type) {
+        case 'connector': {
+          if (action.connectorId && action.actionId) {
+            const result = useConnectorStore.getState().mockExecute(
+              action.connectorId,
+              action.actionId,
+              action.params,
+            )
+            results.push(`Connector(${action.connectorId}/${action.actionId}): ${result}`)
+          } else {
+            results.push(`Connector action skipped — missing connectorId or actionId`)
+          }
+          break
         }
-        break
-      }
 
-      case 'tool': {
-        if (action.toolName) {
-          const result = executeTool(action.toolName, action.params)
-          results.push(`Tool(${action.toolName}): ${result}`)
-        } else {
-          results.push(`Tool action skipped — missing toolName`)
+        case 'tool': {
+          if (action.toolName) {
+            const result = executeTool(action.toolName, action.params)
+            results.push(`Tool(${action.toolName}): ${result}`)
+          } else {
+            results.push(`Tool action skipped — missing toolName`)
+          }
+          break
         }
-        break
-      }
 
-      case 'workflow': {
-        if (action.workflowId) {
-          triggerWorkflowFromAgent(agentId, action.workflowId)
-          results.push(`Workflow(${action.workflowId}): triggered`)
-        } else {
-          results.push(`Workflow action skipped — missing workflowId`)
+        case 'workflow': {
+          if (action.workflowId) {
+            triggerWorkflowFromAgent(agentId, action.workflowId)
+            results.push(`Workflow(${action.workflowId}): triggered`)
+          } else {
+            results.push(`Workflow action skipped — missing workflowId`)
+          }
+          break
         }
-        break
+
+        case 'message': {
+          const topic = typeof action.params.topic === 'string' ? action.params.topic : 'coordination.handoff'
+          useMessageBusStore.getState().publish(agentId, topic, action.description)
+          results.push(`Message(${topic}): published`)
+          break
+        }
+
+        case 'none':
+        default: {
+          results.push(`No-op: ${action.description}`)
+          break
+        }
       }
 
-      case 'message': {
-        const topic = typeof action.params.topic === 'string' ? action.params.topic : 'coordination.handoff'
-        useMessageBusStore.getState().publish(agentId, topic, action.description)
-        results.push(`Message(${topic}): published`)
-        break
+      // ── RECORD SUCCESS ─────────────────────────────────────────
+      if (action.type === 'connector' && action.connectorId) {
+        recordActionOutcome(action, true)
       }
-
-      case 'none':
-      default: {
-        results.push(`No-op: ${action.description}`)
-        break
-      }
+      // Record tool/connector cost
+      useCostTrackingStore.getState().recordUsage(
+        agentId,
+        action.type === 'connector' ? 'connector' : 'tool',
+        `${action.type}:${action.toolName ?? action.connectorId ?? 'unknown'}`,
+        null,
+        action.type === 'connector' ? 0.001 : 0.0001,
+      )
+    } finally {
+      releaseActionLock(action, agentId)
     }
   }
 
@@ -353,6 +415,14 @@ async function heal(agentId: string, error: unknown): Promise<void> {
     resolvedAt: repaired.resolvedAt,
   })
 
+  // Record circuit breaker outcome for connector errors
+  if (record.context?.connectorId) {
+    recordActionOutcome(
+      { type: 'connector', connectorId: record.context.connectorId, params: {}, description: '' },
+      repaired.status === 'resolved',
+    )
+  }
+
   // Report healing to message bus
   useMessageBusStore.getState().publish(
     agentId,
@@ -361,6 +431,58 @@ async function heal(agentId: string, error: unknown): Promise<void> {
   )
 
   addStep(agentId, 'reflect', `Self-healing: ${repaired.status} — ${errorType}`, 0)
+}
+
+// ─── Pre-Flight Checks ────────────────────────────────────────────
+
+function runPreflightChecks(agentId: string, action: ParsedAction): PreflightResult {
+  const result: PreflightResult = {
+    allowed: true,
+    checks: {
+      circuitBreaker: null,
+      budget: null,
+      contract: null,
+      governor: null,
+    },
+    blockingReason: null,
+  }
+
+  // 1. Circuit breaker check
+  const circuitCheck = checkActionCircuit(action)
+  result.checks.circuitBreaker = circuitCheck
+  if (circuitCheck && !circuitCheck.allowed) {
+    result.allowed = false
+    result.blockingReason = `Circuit breaker: ${circuitCheck.reason}`
+    return result
+  }
+
+  // 2. Budget check
+  const estimatedTokens = action.type === 'connector' ? 0 : 50
+  const estimatedCost = action.type === 'connector' ? 0.001 : 0.0001
+  const budgetCheck = useCostTrackingStore.getState().checkBudget(agentId, estimatedTokens, estimatedCost)
+  result.checks.budget = budgetCheck
+  if (!budgetCheck.allowed) {
+    result.allowed = false
+    result.blockingReason = `Budget: ${budgetCheck.reason}`
+    return result
+  }
+
+  // 3. Contract check
+  const identities = useAgentIdentityStore.getState()
+  const allIdentities = Array.from(identities.identities.values())
+  const identity = allIdentities.find((i) => i.id === agentId || i.displayName === agentId)
+  if (identity) {
+    const contractCheck = identities.checkContract(identity.id, action)
+    result.checks.contract = contractCheck
+    if (!contractCheck.allowed) {
+      identities.recordContractViolation(identity.id)
+      result.allowed = false
+      result.blockingReason = `Contract: ${contractCheck.reason}`
+      return result
+    }
+  }
+
+  return result
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────
