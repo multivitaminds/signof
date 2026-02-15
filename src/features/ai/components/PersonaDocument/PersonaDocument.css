@@ -1,0 +1,473 @@
+/* ─── Persona Document ─────────────────────────────────────────── */
+
+/* Section layout */
+.persona-doc__section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ─── Section Titles ───────────────────────────────────────────── */
+
+.persona-doc__section-title {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+/* ─── Mission / Blockquote ─────────────────────────────────────── */
+
+.persona-doc__blockquote {
+  border-left: 4px solid var(--color-primary, #4f46e5);
+  padding: 16px 20px;
+  margin: 0;
+  font-style: italic;
+  font-size: 1.05rem;
+  background: var(--bg-secondary, #f8fafc);
+  border-radius: 0 8px 8px 0;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* ─── Info Grid ────────────────────────────────────────────────── */
+
+.persona-doc__info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.persona-doc__info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.persona-doc__info-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, #64748b);
+  font-weight: 600;
+}
+
+.persona-doc__info-value {
+  font-size: 0.9rem;
+  color: var(--text-primary, #1e293b);
+}
+
+.persona-doc__info-value--badge {
+  display: inline-block;
+  background: var(--bg-secondary, #f1f5f9);
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  width: fit-content;
+}
+
+/* ─── Lists ────────────────────────────────────────────────────── */
+
+.persona-doc__list-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.persona-doc__list {
+  list-style: disc;
+  padding-left: 20px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.persona-doc__list--boundaries {
+  list-style: none;
+  padding-left: 0;
+}
+
+.persona-doc__list--boundaries li {
+  padding-left: 24px;
+  position: relative;
+}
+
+.persona-doc__list--boundaries li::before {
+  content: '\26D4';
+  position: absolute;
+  left: 0;
+  font-size: 0.8rem;
+}
+
+.persona-doc__ordered-list {
+  padding-left: 20px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* ─── Skill Bars ───────────────────────────────────────────────── */
+
+.persona-doc__skills-group {
+  margin-bottom: 20px;
+}
+
+.persona-doc__skill {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.persona-doc__skill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.persona-doc__skill-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.persona-doc__skill-level {
+  font-size: 0.75rem;
+  text-transform: capitalize;
+  color: var(--text-muted);
+}
+
+.persona-doc__skill-bar-track {
+  height: 6px;
+  background: var(--bg-secondary, #e2e8f0);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.persona-doc__skill-bar-fill {
+  height: 100%;
+  background: var(--color-primary, #4f46e5);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.persona-doc__skill-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ─── Tags / Chips ─────────────────────────────────────────────── */
+
+.persona-doc__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.persona-doc__tag {
+  display: inline-block;
+  padding: 4px 12px;
+  background: var(--bg-secondary, #f1f5f9);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.persona-doc__tag--value {
+  background: color-mix(in srgb, var(--color-primary, #4f46e5) 12%, transparent);
+  color: var(--color-primary, #4f46e5);
+  font-weight: 500;
+}
+
+/* ─── Timeline ─────────────────────────────────────────────────── */
+
+.persona-doc__timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 20px;
+  border-left: 2px solid var(--border-color, #e2e8f0);
+}
+
+.persona-doc__timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+}
+
+.persona-doc__timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-primary, #4f46e5);
+  flex-shrink: 0;
+  margin-top: 5px;
+  position: absolute;
+  left: -26px;
+}
+
+.persona-doc__timeline-item p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* ─── Spec Table ───────────────────────────────────────────────── */
+
+.persona-doc__spec-table {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.persona-doc__spec-row {
+  display: flex;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.persona-doc__spec-row:last-child {
+  border-bottom: none;
+}
+
+.persona-doc__spec-label {
+  width: 180px;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.persona-doc__spec-value {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+/* ─── Checklist ────────────────────────────────────────────────── */
+
+.persona-doc__checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.persona-doc__checklist li {
+  padding-left: 24px;
+  position: relative;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.persona-doc__checklist li::before {
+  content: '\2610';
+  position: absolute;
+  left: 0;
+  color: var(--color-primary);
+}
+
+/* ─── Purpose Hero ─────────────────────────────────────────────── */
+
+.persona-doc__purpose {
+  padding: 24px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--agent-color, #4f46e5) 8%, transparent),
+    color-mix(in srgb, var(--agent-color, #4f46e5) 3%, transparent)
+  );
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--agent-color, #4f46e5) 15%, transparent);
+}
+
+.persona-doc__purpose-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* ─── Identity Hero ────────────────────────────────────────────── */
+
+.persona-doc__codename-hero {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.persona-doc__codename {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+}
+
+.persona-doc__version {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+/* ─── Tagline / Motto ──────────────────────────────────────────── */
+
+.persona-doc__tagline-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.persona-doc__tagline,
+.persona-doc__motto {
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ─── Origin ───────────────────────────────────────────────────── */
+
+.persona-doc__origin {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ─── Visual Identity ──────────────────────────────────────────── */
+
+.persona-doc__visual-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.persona-doc__color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 2px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.persona-doc__visual-label {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.persona-doc__visual-badge {
+  padding: 4px 12px;
+  background: var(--bg-secondary);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* ─── Dark Mode ────────────────────────────────────────────────── */
+
+[data-theme="dark"] .persona-doc__blockquote {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .persona-doc__spec-table {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .persona-doc__spec-row {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .persona-doc__skill-bar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .persona-doc__tag {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .persona-doc__info-value--badge {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .persona-doc__version {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .persona-doc__visual-badge {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .persona-doc__purpose {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .persona-doc__timeline {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .persona-doc__color-swatch {
+  border-color: var(--border-color);
+}
+
+/* ─── Responsive ───────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .persona-doc__info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .persona-doc__spec-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .persona-doc__spec-label {
+    width: auto;
+  }
+
+  .persona-doc__codename {
+    font-size: 1.5rem;
+  }
+
+  .persona-doc__purpose {
+    padding: 16px;
+  }
+
+  .persona-doc__purpose-text {
+    font-size: 1rem;
+  }
+
+  .persona-doc__blockquote {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+  }
+}

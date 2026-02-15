@@ -62,6 +62,7 @@ const WorkflowListPage = lazy(() => import('./features/ai/pages/WorkflowListPage
 const WorkflowEditorPage = lazy(() => import('./features/ai/pages/WorkflowEditorPage'))
 const AgentOpsPage = lazy(() => import('./features/ai/pages/AgentOpsPage'))
 const ConnectorHubPage = lazy(() => import('./features/ai/pages/ConnectorHubPage'))
+const AgentDetailPage = lazy(() => import('./features/ai/pages/AgentDetailPage/AgentDetailPage'))
 
 const PlanSelectionPage = lazy(() => import('./features/auth/pages/PlanSelectionPage'))
 const PaymentPage = lazy(() => import('./features/auth/pages/PaymentPage'))
@@ -215,6 +216,7 @@ createRoot(root).render(
             <Route index element={<Navigate to="/copilot/memory" replace />} />
             <Route path="memory" element={<Suspense fallback={TableFallback}><AIMemoryPage /></Suspense>} />
             <Route path="agents" element={<Suspense fallback={CardFallback}><AIAgentsPage /></Suspense>} />
+            <Route path="agents/:agentId" element={<Suspense fallback={CardFallback}><AgentDetailPage /></Suspense>} />
             <Route path="workflows" element={<Suspense fallback={CardFallback}><WorkflowListPage /></Suspense>} />
             <Route path="workflows/:workflowId" element={<Suspense fallback={CardFallback}><WorkflowEditorPage /></Suspense>} />
             <Route path="operations" element={<Suspense fallback={CardFallback}><AgentOpsPage /></Suspense>} />

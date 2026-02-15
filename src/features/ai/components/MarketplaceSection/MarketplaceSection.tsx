@@ -9,6 +9,7 @@ interface MarketplaceSectionProps {
   expandedDomains: Set<string>
   onToggleDomain: (id: string) => void
   onMarketplaceRun: (domainId: string, agentName: string) => void
+  onCardClick?: (domainId: string, agentId: number) => void
 }
 
 export default function MarketplaceSection({
@@ -16,6 +17,7 @@ export default function MarketplaceSection({
   expandedDomains,
   onToggleDomain,
   onMarketplaceRun,
+  onCardClick,
 }: MarketplaceSectionProps) {
   if (domains.length === 0) return null
 
@@ -60,11 +62,11 @@ export default function MarketplaceSection({
                   {domain.agents.map(agent => (
                     <div
                       key={`${domain.id}-${agent.id}`}
-                      className="copilot-agents__marketplace-card"
-                      onClick={() => onMarketplaceRun(domain.id, agent.name)}
+                      className={`copilot-agents__marketplace-card${onCardClick ? ' copilot-agents__marketplace-card--clickable' : ''}`}
+                      onClick={onCardClick ? () => onCardClick(domain.id, agent.id) : () => onMarketplaceRun(domain.id, agent.name)}
                       role="button"
                       tabIndex={0}
-                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onMarketplaceRun(domain.id, agent.name) } }}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (onCardClick) { onCardClick(domain.id, agent.id) } else { onMarketplaceRun(domain.id, agent.name) } } }}
                     >
                       <div className="copilot-agents__marketplace-card-header">
                         <span className="copilot-agents__marketplace-card-icon">

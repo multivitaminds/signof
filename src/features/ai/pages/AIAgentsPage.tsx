@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Plus, Zap, Search, Users,
 } from 'lucide-react'
@@ -36,6 +37,7 @@ import type { WorkflowTemplate } from '../lib/workflowTemplates'
 import './AIAgentsPage.css'
 
 export default function AIAgentsPage() {
+  const navigate = useNavigate()
   const runs = useAIAgentStore((s) => s.runs)
   const lastRunByAgent = useAIAgentStore((s) => s.lastRunByAgent)
   const favorites = useAIAgentStore((s) => s.favorites)
@@ -317,6 +319,14 @@ export default function AIAgentsPage() {
     setChatRunId(chatRunId === runId ? null : runId)
   }, [chatRunId])
 
+  const handleCoreCardClick = useCallback((agentType: AgentType) => {
+    navigate(`/copilot/agents/${agentType}`)
+  }, [navigate])
+
+  const handleMarketplaceCardClick = useCallback((domainId: string, agentId: number) => {
+    navigate(`/copilot/agents/${domainId}-${agentId}`)
+  }, [navigate])
+
   const toggleDomain = useCallback((domainId: string) => {
     setExpandedDomains(prev => {
       const next = new Set(prev)
@@ -581,6 +591,7 @@ export default function AIAgentsPage() {
             onTaskInputChange={handleTaskInputChange}
             onRun={handleRun}
             onToggleFavorite={toggleFavorite}
+            onCardClick={handleCoreCardClick}
           />
 
           {filteredAgents.length === 0 && !searchQuery.trim() && (
@@ -596,6 +607,7 @@ export default function AIAgentsPage() {
             expandedDomains={expandedDomains}
             onToggleDomain={toggleDomain}
             onMarketplaceRun={handleMarketplaceRun}
+            onCardClick={handleMarketplaceCardClick}
           />
 
           {filteredAgents.length === 0 && filteredMarketplace.length === 0 && searchQuery.trim() && (

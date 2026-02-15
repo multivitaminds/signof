@@ -622,3 +622,289 @@ export interface NodeResult {
   output: unknown
   error?: string
 }
+
+// ─── Governor Types (Resource Arbitration) ──────────────────────────
+
+export const ResourceLockStatus = {
+  Free: 'free',
+  Locked: 'locked',
+  Contested: 'contested',
+} as const
+
+export type ResourceLockStatus = (typeof ResourceLockStatus)[keyof typeof ResourceLockStatus]
+
+export const ConflictResolutionPolicy = {
+  PriorityBased: 'priority_based',
+  FirstComeFirstServed: 'first_come_first_served',
+  EscalateToUser: 'escalate_to_user',
+} as const
+
+export type ConflictResolutionPolicy = (typeof ConflictResolutionPolicy)[keyof typeof ConflictResolutionPolicy]
+
+export interface ResourceLock {
+  resourceId: string
+  resourceType: string
+  heldBy: string
+  acquiredAt: string
+  expiresAt: string
+  priority: number
+}
+
+export interface ResourceConflict {
+  id: string
+  resourceId: string
+  contenders: string[]
+  resolution: ConflictResolutionPolicy
+  resolvedAt: string | null
+  winnerId: string | null
+}
+
+export interface GovernorDecision {
+  allowed: boolean
+  reason: string
+  conflictId?: string
+  waitMs?: number
+}
+
+// ─── Cost Tracking Types ────────────────────────────────────────────
+
+export interface TokenUsage {
+  inputTokens: number
+  outputTokens: number
+  totalTokens: number
+}
+
+export interface CostRecord {
+  id: string
+  agentId: string
+  type: string
+  operation: string
+  tokenUsage: TokenUsage | null
+  estimatedCostUsd: number
+  timestamp: string
+}
+
+export interface AgentBudget {
+  agentId: string
+  maxTokens: number
+  maxCostUsd: number
+  usedTokens: number
+  usedCostUsd: number
+  warningThresholdPct: number
+  pauseThresholdPct: number
+}
+
+export interface BudgetCheckResult {
+  allowed: boolean
+  reason: string
+  remainingTokens: number
+  remainingCostUsd: number
+  usagePct: number
+}
+
+// ─── Circuit Breaker Types ──────────────────────────────────────────
+
+export const CircuitState = {
+  Closed: 'closed',
+  Open: 'open',
+  HalfOpen: 'half_open',
+} as const
+
+export type CircuitState = (typeof CircuitState)[keyof typeof CircuitState]
+
+export interface CircuitBreaker {
+  connectorId: string
+  state: CircuitState
+  failureCount: number
+  successCount: number
+  lastFailureAt: string | null
+  lastSuccessAt: string | null
+  openedAt: string | null
+  nextRetryAt: string | null
+  failureThreshold: number
+  resetTimeoutMs: number
+  halfOpenMaxTests: number
+}
+
+export interface CircuitBreakerCheckResult {
+  allowed: boolean
+  state: CircuitState
+  reason: string
+}
+
+// ─── Identity & Contract Types ──────────────────────────────────────
+
+export const ContractViolationType = {
+  ScopeExceeded: 'scope_exceeded',
+  BudgetExceeded: 'budget_exceeded',
+  AutonomyExceeded: 'autonomy_exceeded',
+  ConnectorDenied: 'connector_denied',
+  ToolDenied: 'tool_denied',
+} as const
+
+export type ContractViolationType = (typeof ContractViolationType)[keyof typeof ContractViolationType]
+
+export interface CognitiveContract {
+  agentId: string
+  allowedTools: string[]
+  allowedConnectors: string[]
+  maxAutonomyLevel: AutonomyMode
+  maxTokenBudget: number
+  maxCostUsdBudget: number
+  restrictions: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface AgentIdentity {
+  id: string
+  agentType: AgentType
+  displayName: string
+  createdAt: string
+  lastDeployedAt: string | null
+  retiredAt: string | null
+  totalDeployments: number
+  totalCycles: number
+  totalActionsExecuted: number
+  totalErrors: number
+  totalRepairs: number
+  successRate: number
+  reputationScore: number
+  contractViolations: number
+  contract: CognitiveContract
+}
+
+export interface ContractCheckResult {
+  allowed: boolean
+  violationType?: ContractViolationType
+  reason: string
+}
+
+// ─── Aggregate Pre-Flight Type ──────────────────────────────────────
+
+export interface PreflightResult {
+  allowed: boolean
+  checks: {
+    circuitBreaker: CircuitBreakerCheckResult | null
+    budget: BudgetCheckResult | null
+    contract: ContractCheckResult | null
+    governor: GovernorDecision | null
+  }
+  blockingReason: string | null
+}
+
+// ─── Persona Types (Agent Identity System) ──────────────────────────
+
+export const PersonaTab = {
+  Roles: 'roles',
+  Skills: 'skills',
+  Memory: 'memory',
+  User: 'user',
+  Soul: 'soul',
+  Identity: 'identity',
+} as const
+
+export type PersonaTab = (typeof PersonaTab)[keyof typeof PersonaTab]
+
+export const ProficiencyLevel = {
+  Beginner: 'beginner',
+  Intermediate: 'intermediate',
+  Advanced: 'advanced',
+  Expert: 'expert',
+  Master: 'master',
+} as const
+
+export type ProficiencyLevel = (typeof ProficiencyLevel)[keyof typeof ProficiencyLevel]
+
+export interface PersonaRoles {
+  title: string
+  department: string
+  reportingTo: string
+  missionStatement: string
+  responsibilities: string[]
+  authorities: string[]
+  boundaries: string[]
+}
+
+export interface SkillEntry {
+  name: string
+  level: ProficiencyLevel
+  description: string
+}
+
+export interface PersonaSkills {
+  technical: SkillEntry[]
+  soft: SkillEntry[]
+  domain: SkillEntry[]
+  certifications: string[]
+}
+
+export interface PersonaMemory {
+  contextWindow: string
+  longTermCapacity: string
+  retrievalStrategy: string
+  knowledgeDomains: string[]
+  formativeExperiences: string[]
+  corePrinciples: string[]
+}
+
+export interface PersonaUser {
+  interactionStyle: string
+  communicationTone: string
+  preferredFormat: string
+  availability: string
+  escalationPath: string
+  userExpectations: string[]
+  deliverables: string[]
+}
+
+export interface PersonaSoul {
+  purpose: string
+  values: string[]
+  personality: string
+  creativityLevel: string
+  riskTolerance: string
+  ethicalBoundaries: string[]
+  motivation: string
+  fears: string[]
+}
+
+export interface PersonaIdentity {
+  codename: string
+  version: string
+  createdAt: string
+  origin: string
+  archetype: string
+  tagline: string
+  motto: string
+  visualIdentity: {
+    primaryColor: string
+    icon: string
+    badge: string
+  }
+}
+
+export interface AgentPersona {
+  roles: PersonaRoles
+  skills: PersonaSkills
+  memory: PersonaMemory
+  user: PersonaUser
+  soul: PersonaSoul
+  identity: PersonaIdentity
+}
+
+export interface AgentDetailInfo {
+  id: string
+  name: string
+  description: string
+  icon: string
+  color: string
+  category: string
+  persona: AgentPersona
+  useCases?: string[]
+  capabilities?: string[]
+  integrations?: string
+  autonomy?: string
+  price?: string
+  domainId?: string
+}

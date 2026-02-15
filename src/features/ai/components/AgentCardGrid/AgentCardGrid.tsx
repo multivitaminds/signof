@@ -11,6 +11,7 @@ interface AgentCardGridProps {
   onTaskInputChange: (type: AgentType, value: string) => void
   onRun: (type: AgentType) => void
   onToggleFavorite: (type: AgentType) => void
+  onCardClick?: (type: AgentType) => void
 }
 
 export default function AgentCardGrid({
@@ -21,6 +22,7 @@ export default function AgentCardGrid({
   onTaskInputChange,
   onRun,
   onToggleFavorite,
+  onCardClick,
 }: AgentCardGridProps) {
   return (
     <div className="copilot-agents__grid">
@@ -31,8 +33,12 @@ export default function AgentCardGrid({
         return (
           <div
             key={agent.type}
-            className="copilot-agents__card"
+            className={`copilot-agents__card${onCardClick ? ' copilot-agents__card--clickable' : ''}`}
             style={{ '--agent-color': agent.color } as React.CSSProperties}
+            onClick={onCardClick ? () => onCardClick(agent.type) : undefined}
+            role={onCardClick ? 'button' : undefined}
+            tabIndex={onCardClick ? 0 : undefined}
+            onKeyDown={onCardClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onCardClick(agent.type) } } : undefined}
           >
             <div className="copilot-agents__card-header">
               <div className="copilot-agents__card-icon">
@@ -43,7 +49,7 @@ export default function AgentCardGrid({
                   <h3 className="copilot-agents__card-name">{agent.label} Agent</h3>
                   <button
                     className={`copilot-agents__card-favorite${isFavorite ? ' copilot-agents__card-favorite--active' : ''}`}
-                    onClick={() => onToggleFavorite(agent.type)}
+                    onClick={(e) => { e.stopPropagation(); onToggleFavorite(agent.type) }}
                     aria-label={isFavorite ? `Unfavorite ${agent.label}` : `Favorite ${agent.label}`}
                   >
                     <Star size={14} fill={isFavorite ? 'currentColor' : 'none'} />
@@ -55,7 +61,7 @@ export default function AgentCardGrid({
             <span className="copilot-agents__card-category-badge">
               {agent.category}
             </span>
-            <div className="copilot-agents__card-input-row">
+            <div className="copilot-agents__card-input-row" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
               <input
                 className="copilot-agents__card-task-input"
                 type="text"
@@ -69,7 +75,7 @@ export default function AgentCardGrid({
               />
               <button
                 className="copilot-agents__run-btn"
-                onClick={() => onRun(agent.type)}
+                onClick={(e) => { e.stopPropagation(); onRun(agent.type) }}
                 aria-label={`Run ${agent.label} Agent`}
               >
                 <Play size={14} />
