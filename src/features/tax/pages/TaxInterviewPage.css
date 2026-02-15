@@ -168,6 +168,26 @@
   margin: 0;
 }
 
+/* ─── Copilot Suggestions ────────────────────────────────────────── */
+
+.tax-interview__suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  animation: tax-interview-suggestions-in 300ms var(--ease-out);
+}
+
+@keyframes tax-interview-suggestions-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ─── Question Container ─────────────────────────────────────────── */
 
 .tax-interview__question-container {

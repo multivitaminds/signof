@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,6 +11,7 @@ import {
 import { useTaxInterviewStore } from '../stores/useTaxInterviewStore'
 import { useTaxStore } from '../stores/useTaxStore'
 import { useTaxFilingStore } from '../stores/useTaxFilingStore'
+import { useTaxCopilotStore } from '../stores/useTaxCopilotStore'
 import { getQuestionsForSection, TAX_TOPICS } from '../lib/interviewQuestions'
 import InterviewQuestion from '../components/InterviewQuestion/InterviewQuestion'
 import TopicTileGrid from '../components/TopicTileGrid/TopicTileGrid'
@@ -18,8 +19,132 @@ import RefundTracker from '../components/RefundTracker/RefundTracker'
 import SectionNavSidebar from '../components/SectionNavSidebar/SectionNavSidebar'
 import MilestoneCelebration from '../components/MilestoneCelebration/MilestoneCelebration'
 import CompleteCheck from '../components/CompleteCheck/CompleteCheck'
+import TaxCopilotSuggestion from '../components/TaxCopilotSuggestion/TaxCopilotSuggestion'
 import type { InterviewSectionId } from '../types'
+import type { CopilotSuggestion } from '../stores/useTaxCopilotStore'
 import './TaxInterviewPage.css'
+
+// ─── Section-specific tips ──────────────────────────────────────────────────
+
+const SECTION_TIPS: Record<string, Omit<CopilotSuggestion, 'id' | 'dismissed'>[]> = {
+  personal_info: [
+    {
+      type: 'tip',
+      title: 'Use your legal name',
+      description: 'Your name must match your Social Security card exactly. Mismatches can delay processing.',
+      sectionId: 'personal_info',
+    },
+  ],
+  filing_status: [
+    {
+      type: 'tip',
+      title: 'Filing status affects your tax bracket',
+      description: 'Head of Household status offers a larger standard deduction than Single. If you have dependents, this could save you money.',
+      sectionId: 'filing_status',
+    },
+  ],
+  dependents: [
+    {
+      type: 'deduction',
+      title: 'Child Tax Credit',
+      description: 'Each qualifying child under 17 may qualify for up to $2,000 in credits. Make sure to include all eligible dependents.',
+      sectionId: 'dependents',
+    },
+  ],
+  income_w2: [
+    {
+      type: 'tip',
+      title: 'Upload your W-2 for auto-fill',
+      description: 'If you uploaded your W-2 in the Documents tab, we can auto-populate these fields. Check the extracted data carefully.',
+      action: { label: 'Go to Documents', route: '/tax/documents' },
+      sectionId: 'income_w2',
+    },
+  ],
+  income_1099: [
+    {
+      type: 'warning',
+      title: 'Track your business expenses',
+      description: 'As a freelancer or contractor, you can deduct business expenses against your 1099 income. Keep receipts for home office, supplies, and travel.',
+      sectionId: 'income_1099',
+    },
+    {
+      type: 'deduction',
+      title: 'Self-employment tax deduction',
+      description: 'You can deduct half of your self-employment tax as an above-the-line deduction, reducing your adjusted gross income.',
+      sectionId: 'income_1099',
+    },
+  ],
+  income_investments: [
+    {
+      type: 'tip',
+      title: 'Capital loss carryover',
+      description: 'If you had investment losses exceeding $3,000, the excess carries over to future years. Check last year\'s return for carryover amounts.',
+      sectionId: 'income_investments',
+    },
+  ],
+  income_business: [
+    {
+      type: 'deduction',
+      title: 'Home office deduction',
+      description: 'If you use part of your home exclusively for business, you may qualify for the home office deduction — either simplified ($5/sq ft) or actual expenses.',
+      sectionId: 'income_business',
+    },
+    {
+      type: 'tip',
+      title: 'Vehicle expenses',
+      description: 'If you use your car for business, track your mileage. The standard rate is 67 cents per mile for 2025.',
+      sectionId: 'income_business',
+    },
+  ],
+  deductions_standard: [
+    {
+      type: 'tip',
+      title: 'Standard vs. Itemized',
+      description: 'Most taxpayers benefit from the standard deduction ($14,600 single, $29,200 married filing jointly for 2025). Only itemize if your deductions exceed these amounts.',
+      sectionId: 'deductions_standard',
+    },
+  ],
+  deductions_itemized: [
+    {
+      type: 'deduction',
+      title: 'State and local tax (SALT) cap',
+      description: 'State and local tax deductions are capped at $10,000. If you live in a high-tax state, this limit may affect your itemized total.',
+      sectionId: 'deductions_itemized',
+    },
+  ],
+  credits: [
+    {
+      type: 'deduction',
+      title: 'Don\'t miss education credits',
+      description: 'The American Opportunity Credit (up to $2,500) and Lifetime Learning Credit (up to $2,000) can significantly reduce your tax bill if you or dependents attended college.',
+      sectionId: 'credits',
+    },
+  ],
+  health_insurance: [
+    {
+      type: 'tip',
+      title: 'Form 1095-A required',
+      description: 'If you had marketplace health insurance, you need Form 1095-A to reconcile your premium tax credit. Check Healthcare.gov for your form.',
+      sectionId: 'health_insurance',
+    },
+  ],
+  estimated_payments: [
+    {
+      type: 'warning',
+      title: 'Underpayment penalty',
+      description: 'If you owed more than $1,000 last year and didn\'t make estimated payments, you may face an underpayment penalty. Enter all quarterly payments accurately.',
+      sectionId: 'estimated_payments',
+    },
+  ],
+  bank_info: [
+    {
+      type: 'tip',
+      title: 'Direct deposit is fastest',
+      description: 'Refunds via direct deposit typically arrive in 21 days or less. Double-check your routing and account numbers to avoid delays.',
+      sectionId: 'bank_info',
+    },
+  ],
+}
 
 type InterviewPhase = 'welcome' | 'topics' | 'questions' | 'review' | 'filed'
 
@@ -49,6 +174,14 @@ function TaxInterviewPage() {
 
   // Tax store
   const activeTaxYear = useTaxStore((s) => s.activeTaxYear)
+
+  // Copilot store
+  const suggestions = useTaxCopilotStore((s) => s.suggestions)
+  const addSuggestion = useTaxCopilotStore((s) => s.addSuggestion)
+  const dismissSuggestion = useTaxCopilotStore((s) => s.dismissSuggestion)
+
+  // Track which sections have already had tips added
+  const seededSections = useRef<Set<string>>(new Set())
 
   // Filing store
   const submitFiling = useTaxFilingStore((s) => s.submitFiling)
@@ -84,6 +217,34 @@ function TaxInterviewPage() {
   }, [getFilingByYear, activeTaxYear])
 
   const overallProgress = getOverallProgress()
+
+  // Seed copilot suggestions when entering a new section
+  useEffect(() => {
+    if (phase !== 'questions' || !currentSectionId) return
+    if (seededSections.current.has(currentSectionId)) return
+
+    const tips = SECTION_TIPS[currentSectionId]
+    if (tips) {
+      tips.forEach((tip) => addSuggestion(tip))
+      seededSections.current.add(currentSectionId)
+    }
+  }, [phase, currentSectionId, addSuggestion])
+
+  // Get active (undismissed) suggestions for the current section
+  const currentSuggestions = useMemo(
+    () => suggestions.filter(
+      (s) => s.sectionId === currentSectionId && !s.dismissed
+    ),
+    [suggestions, currentSectionId]
+  )
+
+  // Get active suggestions for the review phase
+  const reviewSuggestions = useMemo(
+    () => suggestions.filter(
+      (s) => s.sectionId === 'review' && !s.dismissed
+    ),
+    [suggestions]
+  )
 
   // ─── Phase Handlers ──────────────────────────────────────────────────
 
@@ -369,6 +530,17 @@ function TaxInterviewPage() {
               amount={Math.abs(refundEstimate)}
               isRefund={refundEstimate <= 0}
             />
+            {reviewSuggestions.length > 0 && (
+              <div className="tax-interview__suggestions">
+                {reviewSuggestions.map((suggestion) => (
+                  <TaxCopilotSuggestion
+                    key={suggestion.id}
+                    suggestion={suggestion}
+                    onDismiss={dismissSuggestion}
+                  />
+                ))}
+              </div>
+            )}
             <CompleteCheck
               sections={sections}
               answers={answers}
@@ -439,6 +611,19 @@ function TaxInterviewPage() {
               {currentSection?.description}
             </p>
           </div>
+
+          {/* Copilot Suggestions */}
+          {currentSuggestions.length > 0 && (
+            <div className="tax-interview__suggestions">
+              {currentSuggestions.map((suggestion) => (
+                <TaxCopilotSuggestion
+                  key={suggestion.id}
+                  suggestion={suggestion}
+                  onDismiss={dismissSuggestion}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Question */}
           {displayQuestion ? (
