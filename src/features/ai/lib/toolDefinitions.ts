@@ -8,6 +8,8 @@ import { useDatabaseStore } from '../../databases/stores/useDatabaseStore'
 import { useInvoiceStore } from '../../accounting/stores/useInvoiceStore'
 import { useExpenseStore } from '../../accounting/stores/useExpenseStore'
 import { useTaxFilingStore } from '../../tax/stores/useTaxFilingStore'
+import { useTaxDocumentStore } from '../../tax/stores/useTaxDocumentStore'
+import { useTaxInterviewStore } from '../../tax/stores/useTaxInterviewStore'
 import { useInboxStore } from '../../inbox/stores/useInboxStore'
 import { getModuleMetrics, getUpcomingDeadlines } from '../../../lib/crossModuleService'
 import { DEFAULT_SCHEDULE, EventTypeCategory, LocationType } from '../../scheduling/types'
@@ -280,6 +282,71 @@ export const ORCHESTREE_TOOLS: ToolDefinition[] = [
         },
       },
       required: ['taxYear'],
+    },
+  },
+
+  {
+    name: 'analyze_tax_document',
+    description: 'Analyze a tax document by ID. Returns extracted fields and any warnings.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        documentId: { type: 'string', description: 'The ID of the uploaded tax document to analyze' },
+      },
+      required: ['documentId'],
+    },
+  },
+  {
+    name: 'suggest_deductions',
+    description: 'Suggest applicable deductions and credits based on interview answers for a given tax year.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        taxYear: {
+          type: 'string',
+          description: 'Tax year to suggest deductions for',
+          enum: ['2025', '2024', '2023'],
+        },
+      },
+      required: ['taxYear'],
+    },
+  },
+  {
+    name: 'review_filing',
+    description: 'Review a tax filing for errors by aggregating data from all tax stores. Returns a list of issues found.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        taxYear: {
+          type: 'string',
+          description: 'Tax year to review',
+          enum: ['2025', '2024', '2023'],
+        },
+      },
+      required: ['taxYear'],
+    },
+  },
+  {
+    name: 'explain_tax_field',
+    description: 'Explain a specific tax form field in plain English.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        formType: { type: 'string', description: 'The tax form type (e.g. "w2", "1099_nec", "1098")' },
+        fieldKey: { type: 'string', description: 'The field key to explain (e.g. "box_1", "wages", "ein")' },
+      },
+      required: ['formType', 'fieldKey'],
+    },
+  },
+  {
+    name: 'check_submission_status',
+    description: 'Check the status of a TaxBandit submission by its local submission ID.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        submissionId: { type: 'string', description: 'The local submission ID to check' },
+      },
+      required: ['submissionId'],
     },
   },
 
@@ -637,6 +704,315 @@ export function executeTool(
         return JSON.stringify({ success: true, taxYear })
       }
 
+      case 'analyze_tax_document': {
+        const documentId = input.documentId as string
+        if (!documentId) {
+          return JSON.stringify({ success: false, error: 'documentId is required' })
+        }
+        const docState = useTaxDocumentStore.getState()
+        const doc = docState.documents.find((d) => d.id === documentId)
+        if (!doc) {
+          return JSON.stringify({ success: false, error: `Document not found: ${documentId}` })
+        }
+        const extraction = docState.extractionResults[documentId]
+        const fields = extraction
+          ? extraction.fields.map((f) => ({
+              key: f.key,
+              value: f.value,
+              confidence: f.confidence,
+              confirmed: f.confirmed,
+            }))
+          : []
+        const warnings: string[] = []
+        if (!extraction) {
+          warnings.push('Document has not been extracted yet — trigger extraction first')
+        } else if (extraction.warnings.length > 0) {
+          warnings.push(...extraction.warnings)
+        }
+        if (doc.status === 'issue_found' && doc.issueNote) {
+          warnings.push(`Issue flagged: ${doc.issueNote}`)
+        }
+        return JSON.stringify({
+          success: true,
+          document: {
+            id: doc.id,
+            fileName: doc.fileName,
+            formType: doc.formType,
+            taxYear: doc.taxYear,
+            employerName: doc.employerName,
+            status: doc.status,
+          },
+          extractedFields: fields,
+          overallConfidence: extraction?.overallConfidence ?? null,
+          warnings,
+        })
+      }
+
+      case 'suggest_deductions': {
+        const year = (input.taxYear as string) || '2025'
+        const interviewState = useTaxInterviewStore.getState()
+        const answers = interviewState.answers
+        const completedSections = interviewState.getCompletedSections()
+        const suggestions: Array<{ deduction: string; description: string; eligibility: string }> = []
+
+        // Standard vs Itemized
+        suggestions.push({
+          deduction: 'Standard Deduction',
+          description: `For tax year ${year}, the standard deduction may reduce your taxable income significantly.`,
+          eligibility: 'Available to most filers who do not itemize',
+        })
+
+        // Check if mortgage-related answers or documents exist
+        const docState = useTaxDocumentStore.getState()
+        const hasMortgageDocs = docState.documents.some(
+          (d) => d.formType === '1098' && d.taxYear === year
+        )
+        if (hasMortgageDocs) {
+          suggestions.push({
+            deduction: 'Mortgage Interest Deduction',
+            description: 'You have a 1098 form uploaded — mortgage interest may be deductible if you itemize.',
+            eligibility: 'Requires itemized deductions and qualified home mortgage',
+          })
+        }
+
+        // Self-employment / 1099 income
+        const has1099Docs = docState.documents.some(
+          (d) => d.formType === '1099_nec' && d.taxYear === year
+        )
+        if (has1099Docs) {
+          suggestions.push({
+            deduction: 'Self-Employment Tax Deduction',
+            description: 'You may deduct half of your self-employment tax from gross income.',
+            eligibility: 'Available if you have 1099-NEC self-employment income',
+          })
+          suggestions.push({
+            deduction: 'Home Office Deduction',
+            description: 'If you use part of your home exclusively for business, you may qualify.',
+            eligibility: 'Requires exclusive and regular use of home space for business',
+          })
+          suggestions.push({
+            deduction: 'Business Expense Deductions',
+            description: 'Equipment, software, supplies, and other ordinary business expenses.',
+            eligibility: 'Must be ordinary and necessary expenses for your trade or business',
+          })
+        }
+
+        // Education credits
+        if (completedSections.includes('credits') || Object.keys(answers).some((k) => k.startsWith('credits_'))) {
+          suggestions.push({
+            deduction: 'Education Credits (American Opportunity / Lifetime Learning)',
+            description: 'Credits for qualified tuition and education expenses.',
+            eligibility: 'Subject to income limits and enrollment requirements',
+          })
+        }
+
+        // Health insurance
+        if (completedSections.includes('health_insurance')) {
+          suggestions.push({
+            deduction: 'Health Insurance Premium Deduction',
+            description: 'Self-employed individuals may deduct health insurance premiums.',
+            eligibility: 'Available for self-employed taxpayers not eligible for employer coverage',
+          })
+        }
+
+        // Student loan interest (general suggestion)
+        suggestions.push({
+          deduction: 'Student Loan Interest Deduction',
+          description: 'Up to $2,500 of student loan interest may be deductible.',
+          eligibility: 'Subject to income limits; available even if you do not itemize',
+        })
+
+        return JSON.stringify({
+          success: true,
+          taxYear: year,
+          interviewProgress: interviewState.getOverallProgress(),
+          suggestions,
+        })
+      }
+
+      case 'review_filing': {
+        const year = (input.taxYear as string) || '2025'
+        const filing = useTaxFilingStore.getState().getFilingByYear(year as TaxYear)
+        const docState = useTaxDocumentStore.getState()
+        const interviewState = useTaxInterviewStore.getState()
+        const issues: Array<{ severity: 'error' | 'warning' | 'info'; field: string; message: string }> = []
+
+        if (!filing) {
+          return JSON.stringify({
+            success: true,
+            taxYear: year,
+            issues: [{ severity: 'error', field: 'filing', message: `No filing found for tax year ${year}` }],
+          })
+        }
+
+        // Check personal info
+        if (!filing.firstName || !filing.lastName) {
+          issues.push({ severity: 'error', field: 'name', message: 'First name and last name are required' })
+        }
+        if (!filing.ssn) {
+          issues.push({ severity: 'error', field: 'ssn', message: 'SSN is required for filing' })
+        }
+        if (!filing.email) {
+          issues.push({ severity: 'warning', field: 'email', message: 'Email address is missing — recommended for IRS correspondence' })
+        }
+        if (!filing.address.street || !filing.address.city || !filing.address.state || !filing.address.zip) {
+          issues.push({ severity: 'error', field: 'address', message: 'Complete mailing address is required' })
+        }
+
+        // Check income
+        if (filing.wages === 0 && filing.otherIncome === 0) {
+          issues.push({ severity: 'warning', field: 'income', message: 'No income reported — verify this is correct' })
+        }
+
+        // Cross-reference documents
+        const yearDocs = docState.documents.filter((d) => d.taxYear === year)
+        const docsWithIssues = yearDocs.filter((d) => d.status === 'issue_found')
+        if (docsWithIssues.length > 0) {
+          issues.push({
+            severity: 'error',
+            field: 'documents',
+            message: `${docsWithIssues.length} document(s) have unresolved issues: ${docsWithIssues.map((d) => d.fileName).join(', ')}`,
+          })
+        }
+        const pendingDocs = yearDocs.filter((d) => d.status === 'pending_review')
+        if (pendingDocs.length > 0) {
+          issues.push({
+            severity: 'warning',
+            field: 'documents',
+            message: `${pendingDocs.length} document(s) still pending review: ${pendingDocs.map((d) => d.fileName).join(', ')}`,
+          })
+        }
+
+        // Check interview completeness
+        const interviewProgress = interviewState.getOverallProgress()
+        if (interviewProgress < 100) {
+          issues.push({
+            severity: 'warning',
+            field: 'interview',
+            message: `Tax interview is ${interviewProgress}% complete — finish all sections before filing`,
+          })
+        }
+
+        // Check checklist
+        const checklist = useTaxFilingStore.getState().checklist
+        const incompleteItems = checklist.filter((item) => !item.completed)
+        if (incompleteItems.length > 0) {
+          issues.push({
+            severity: 'info',
+            field: 'checklist',
+            message: `${incompleteItems.length} checklist item(s) incomplete: ${incompleteItems.map((i) => i.label).join(', ')}`,
+          })
+        }
+
+        return JSON.stringify({
+          success: true,
+          taxYear: year,
+          filingState: filing.state,
+          totalIssues: issues.length,
+          errors: issues.filter((i) => i.severity === 'error').length,
+          warnings: issues.filter((i) => i.severity === 'warning').length,
+          info: issues.filter((i) => i.severity === 'info').length,
+          issues,
+        })
+      }
+
+      case 'explain_tax_field': {
+        const formType = (input.formType as string) || ''
+        const fieldKey = (input.fieldKey as string) || ''
+
+        const explanations: Record<string, Record<string, string>> = {
+          w2: {
+            box_1: 'Wages, tips, other compensation — your total taxable wages from this employer before any pre-tax deductions.',
+            box_2: 'Federal income tax withheld — the amount your employer already sent to the IRS on your behalf.',
+            box_3: 'Social Security wages — the portion of your wages subject to Social Security tax (may differ from Box 1).',
+            box_4: 'Social Security tax withheld — the 6.2% tax withheld for Social Security.',
+            box_5: 'Medicare wages and tips — wages subject to Medicare tax (usually same as or more than Box 1).',
+            box_6: 'Medicare tax withheld — the 1.45% tax withheld for Medicare.',
+            box_12: 'Various codes for retirement contributions (D = 401k), health savings (W = HSA), and other benefits.',
+            wages: 'Your total taxable compensation from this employer, reported in Box 1.',
+            ein: 'Employer Identification Number — the 9-digit number identifying your employer with the IRS.',
+          },
+          '1099_nec': {
+            box_1: 'Nonemployee compensation — the total amount you were paid as a freelancer or independent contractor.',
+            box_4: 'Federal income tax withheld, if any backup withholding was applied.',
+            payer_tin: 'Payer Taxpayer Identification Number — the company or person who paid you.',
+          },
+          '1099_int': {
+            box_1: 'Interest income — the total interest earned from this bank or financial institution.',
+            box_2: 'Early withdrawal penalty — any penalty charged for withdrawing funds before maturity.',
+            box_3: 'Interest on U.S. Savings Bonds and Treasury obligations.',
+            box_4: 'Federal income tax withheld from interest payments.',
+          },
+          '1099_div': {
+            box_1a: 'Total ordinary dividends — all dividends paid to you during the tax year.',
+            box_1b: 'Qualified dividends — the portion of dividends taxed at the lower capital gains rate.',
+            box_2a: 'Total capital gain distributions from mutual funds or REITs.',
+          },
+          '1098': {
+            box_1: 'Mortgage interest received — the deductible interest you paid on your home loan.',
+            box_2: 'Outstanding mortgage principal — the remaining balance on your loan.',
+            box_5: 'Mortgage insurance premiums — may be deductible depending on income and tax year.',
+            box_6: 'Points paid on purchase — upfront interest charges that may be deductible.',
+          },
+        }
+
+        const formExplanations = explanations[formType.toLowerCase()]
+        if (!formExplanations) {
+          return JSON.stringify({
+            success: true,
+            formType,
+            fieldKey,
+            explanation: `No detailed explanations available for form type "${formType}". Please consult IRS instructions for this form.`,
+          })
+        }
+
+        const explanation = formExplanations[fieldKey.toLowerCase()]
+        if (!explanation) {
+          const availableFields = Object.keys(formExplanations).join(', ')
+          return JSON.stringify({
+            success: true,
+            formType,
+            fieldKey,
+            explanation: `No explanation found for field "${fieldKey}" on form "${formType}". Available fields: ${availableFields}`,
+          })
+        }
+
+        return JSON.stringify({
+          success: true,
+          formType,
+          fieldKey,
+          explanation,
+        })
+      }
+
+      case 'check_submission_status': {
+        const subId = input.submissionId as string
+        if (!subId) {
+          return JSON.stringify({ success: false, error: 'submissionId is required' })
+        }
+        const submission = useTaxFilingStore.getState().submissions.find((s) => s.id === subId)
+        if (!submission) {
+          return JSON.stringify({ success: false, error: `Submission not found: ${subId}` })
+        }
+        return JSON.stringify({
+          success: true,
+          submission: {
+            id: submission.id,
+            formType: submission.formType,
+            taxYear: submission.taxYear,
+            state: submission.state,
+            taxBanditSubmissionId: submission.taxBanditSubmissionId,
+            taxBanditRecordId: submission.taxBanditRecordId,
+            validationErrors: submission.validationErrors,
+            irsErrors: submission.irsErrors,
+            pdfUrl: submission.pdfUrl,
+            createdAt: submission.createdAt,
+            updatedAt: submission.updatedAt,
+            filedAt: submission.filedAt,
+          },
+        })
+      }
+
       // ── Inbox ──────────────────────────────────────────────────
       case 'mark_all_read': {
         useInboxStore.getState().markAllAsRead()
@@ -686,9 +1062,9 @@ const AGENT_TOOL_MAP: Partial<Record<AgentType, string[]>> = {
   coordinator: ['create_issue', 'create_booking', 'cancel_booking', 'list_bookings', 'create_event_type', 'send_notification', 'get_workspace_stats', 'get_upcoming_deadlines'],
   sales: ['add_contact', 'create_booking', 'create_template', 'create_invoice', 'list_bookings', 'get_workspace_stats'],
   marketing: ['create_page', 'add_block', 'create_template', 'send_notification', 'get_workspace_stats'],
-  finance: ['create_invoice', 'create_expense', 'create_tax_filing', 'create_database', 'add_table', 'add_row', 'get_workspace_stats', 'get_upcoming_deadlines'],
+  finance: ['create_invoice', 'create_expense', 'create_tax_filing', 'analyze_tax_document', 'suggest_deductions', 'create_database', 'add_table', 'add_row', 'get_workspace_stats', 'get_upcoming_deadlines'],
   legal: ['create_page', 'create_template', 'search_pages', 'get_workspace_stats'],
-  compliance: ['get_workspace_stats', 'get_upcoming_deadlines', 'create_tax_filing', 'list_issues'],
+  compliance: ['get_workspace_stats', 'get_upcoming_deadlines', 'create_tax_filing', 'review_filing', 'list_issues'],
   hr: ['create_page', 'create_template', 'add_contact', 'create_booking', 'send_notification', 'create_expense'],
   customerSuccess: ['add_contact', 'create_issue', 'create_booking', 'send_notification', 'list_bookings', 'get_workspace_stats'],
   translation: ['create_page', 'search_pages', 'add_block'],
@@ -696,6 +1072,7 @@ const AGENT_TOOL_MAP: Partial<Record<AgentType, string[]>> = {
   socialMedia: ['create_page', 'add_block', 'send_notification', 'get_workspace_stats'],
   security: ['get_workspace_stats', 'create_issue', 'list_issues', 'send_notification'],
   devops: ['create_issue', 'list_issues', 'create_cycle', 'get_workspace_stats'],
+  tax: ['create_tax_filing', 'analyze_tax_document', 'suggest_deductions', 'review_filing', 'explain_tax_field', 'check_submission_status', 'get_upcoming_deadlines'],
 }
 
 export function getToolsForAgent(agentType: AgentType): ToolDefinition[] {

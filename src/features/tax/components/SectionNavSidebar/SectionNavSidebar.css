@@ -112,6 +112,16 @@
   text-overflow: ellipsis;
 }
 
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .section-nav-sidebar__item--current {
+  background-color: rgba(79, 70, 229, 0.1);
+}
+
+[data-theme="dark"] .section-nav-sidebar__item--current:hover {
+  background-color: rgba(79, 70, 229, 0.1);
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
 @media (max-width: 1023px) {

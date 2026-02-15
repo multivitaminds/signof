@@ -946,6 +946,76 @@
   color: var(--color-danger-dark);
 }
 
+/* ─── Dark Mode ───────────────────────────────────────────────────── */
+
+[data-theme="dark"] .tax-filing__checklist-warning {
+  background-color: rgba(251, 191, 36, 0.06);
+}
+
+[data-theme="dark"] .tax-filing__amendment-banner {
+  background-color: rgba(251, 191, 36, 0.06);
+}
+
+[data-theme="dark"] .tax-filing__auto-populate {
+  background-color: rgba(59, 130, 246, 0.08);
+}
+
+[data-theme="dark"] .tax-filing__toggle-btn--active {
+  background-color: rgba(79, 70, 229, 0.12);
+}
+
+[data-theme="dark"] .tax-filing__calc-row--refund {
+  background-color: rgba(5, 150, 105, 0.08);
+}
+
+[data-theme="dark"] .tax-filing__calc-row--owed {
+  background-color: rgba(251, 191, 36, 0.06);
+}
+
+[data-theme="dark"] .tax-filing__confirmation-icon--success {
+  background-color: rgba(5, 150, 105, 0.12);
+}
+
+[data-theme="dark"] .tax-filing__filed-icon--success {
+  background-color: rgba(5, 150, 105, 0.12);
+}
+
+[data-theme="dark"] .tax-filing__filed-icon--danger {
+  background-color: rgba(220, 38, 38, 0.1);
+}
+
+[data-theme="dark"] .tax-filing__filed-icon--primary {
+  background-color: rgba(79, 70, 229, 0.12);
+}
+
+[data-theme="dark"] .tax-filing__transmission-progress {
+  background-color: rgba(79, 70, 229, 0.08);
+}
+
+[data-theme="dark"] .tax-filing__transmission-progress--error {
+  background-color: rgba(220, 38, 38, 0.08);
+}
+
+[data-theme="dark"] .tax-filing__transmission-progress--success {
+  background-color: rgba(5, 150, 105, 0.08);
+}
+
+[data-theme="dark"] .tax-filing__validation-errors {
+  background-color: rgba(220, 38, 38, 0.08);
+}
+
+[data-theme="dark"] .tax-filing__transmission-error {
+  background-color: rgba(220, 38, 38, 0.08);
+}
+
+[data-theme="dark"] .tax-filing__status-step--active .tax-filing__status-dot {
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+[data-theme="dark"] .tax-filing__transmission-step--active .tax-filing__transmission-step-dot {
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
 /* ─── Responsive ──────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {

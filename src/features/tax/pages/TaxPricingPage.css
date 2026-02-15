@@ -183,8 +183,8 @@
 }
 
 .tax-pricing__card-cta:hover:not(:disabled) {
-  background: #4338CA;
-  border-color: #4338CA;
+  background: var(--color-primary-dark, #4338CA);
+  border-color: var(--color-primary-dark, #4338CA);
 }
 
 .tax-pricing__card-cta--current {
@@ -306,7 +306,7 @@
 }
 
 .tax-pricing__modal-confirm:hover {
-  background: #4338CA;
+  background: var(--color-primary-dark, #4338CA);
 }
 
 /* ─── Dark mode ─── */
@@ -325,6 +325,10 @@
 
 [data-theme="dark"] .tax-pricing__tab:hover {
   color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .tax-pricing__card-cta--current {
+  background: transparent;
 }
 
 /* ─── Responsive ─── */

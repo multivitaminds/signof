@@ -82,3 +82,23 @@
   color: var(--text-muted);
   line-height: var(--leading-relaxed);
 }
+
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .tax-form-card__icon {
+  background-color: rgba(79, 70, 229, 0.12);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .tax-form-card {
+    flex-direction: column;
+    padding: var(--space-4);
+  }
+
+  .tax-form-card__icon {
+    width: 40px;
+    height: 40px;
+  }
+}

@@ -136,7 +136,7 @@
 }
 
 .taxbandit-settings__env-btn--active.taxbandit-settings__env-btn--demo {
-  background-color: #f59e0b;
+  background-color: var(--color-warning);
   color: #fff;
 }
 
@@ -146,11 +146,11 @@
 }
 
 [data-theme="dark"] .taxbandit-settings__env-btn--active.taxbandit-settings__env-btn--demo {
-  background-color: #d97706;
+  background-color: var(--color-warning-dark);
 }
 
 [data-theme="dark"] .taxbandit-settings__env-btn--active.taxbandit-settings__env-btn--live {
-  background-color: #059669;
+  background-color: var(--color-success-dark);
 }
 
 .taxbandit-settings__test-btn {

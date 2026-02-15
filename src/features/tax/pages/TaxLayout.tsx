@@ -6,6 +6,8 @@ import { DemoVideoSection } from '../../../components/ui/DemoVideo'
 import { useTaxStore } from '../stores/useTaxStore'
 import { TAX_YEARS } from '../types'
 import type { TaxYear } from '../types'
+import TaxCopilotButton from '../components/TaxCopilotButton/TaxCopilotButton'
+import TaxCopilotPanel from '../components/TaxCopilotPanel/TaxCopilotPanel'
 import './TaxLayout.css'
 
 function TaxLayout() {
@@ -119,6 +121,9 @@ function TaxLayout() {
       <main className="tax-layout__content">
         <Outlet />
       </main>
+
+      <TaxCopilotButton />
+      <TaxCopilotPanel />
     </div>
   )
 }

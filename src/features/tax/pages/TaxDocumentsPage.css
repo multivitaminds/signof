@@ -408,6 +408,52 @@
   background-color: var(--color-danger-light);
 }
 
+/* ─── Dark Mode ───────────────────────────────────────────────────── */
+
+[data-theme="dark"] .tax-documents__stat-icon--total {
+  background-color: rgba(79, 70, 229, 0.12);
+}
+
+[data-theme="dark"] .tax-documents__stat-icon--verified {
+  background-color: rgba(5, 150, 105, 0.12);
+}
+
+[data-theme="dark"] .tax-documents__stat-icon--pending {
+  background-color: rgba(251, 191, 36, 0.1);
+}
+
+[data-theme="dark"] .tax-documents__stat-icon--issues {
+  background-color: rgba(220, 38, 38, 0.1);
+}
+
+[data-theme="dark"] .tax-documents__dropzone--active {
+  background-color: rgba(79, 70, 229, 0.08);
+}
+
+[data-theme="dark"] .tax-documents__type-badge {
+  background-color: rgba(79, 70, 229, 0.12);
+}
+
+[data-theme="dark"] .tax-documents__status-badge--pending_review {
+  background-color: rgba(251, 191, 36, 0.1);
+}
+
+[data-theme="dark"] .tax-documents__status-badge--verified {
+  background-color: rgba(5, 150, 105, 0.1);
+}
+
+[data-theme="dark"] .tax-documents__status-badge--issue_found {
+  background-color: rgba(220, 38, 38, 0.1);
+}
+
+[data-theme="dark"] .tax-documents__issue-note {
+  background-color: rgba(220, 38, 38, 0.06);
+}
+
+[data-theme="dark"] .tax-documents__delete-btn:hover {
+  background-color: rgba(220, 38, 38, 0.1);
+}
+
 /* ─── Responsive ──────────────────────────────────────────────────── */
 
 @media (max-width: 1023px) {

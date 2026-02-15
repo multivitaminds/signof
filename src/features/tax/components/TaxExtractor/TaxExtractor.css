@@ -152,7 +152,7 @@
 
 .tax-extractor__step--active .tax-extractor__step-dot {
   background-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.2);
+  box-shadow: 0 0 0 3px var(--alpha-focus);
   animation: tax-extractor-pulse 1.5s ease-in-out infinite;
 }
 
@@ -165,8 +165,8 @@
 }
 
 @keyframes tax-extractor-pulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.2); }
-  50% { box-shadow: 0 0 0 6px rgba(99, 91, 255, 0.1); }
+  0%, 100% { box-shadow: 0 0 0 3px var(--alpha-focus); }
+  50% { box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.1); }
 }
 
 /* ─── Data Table ──────────────────────────────────────────────────── */
@@ -214,7 +214,7 @@
   outline: none;
   border-color: var(--color-primary);
   background-color: var(--bg-primary);
-  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .tax-extractor__input--key {
@@ -224,6 +224,20 @@
 
 .tax-extractor__input--value {
   font-family: var(--font-mono);
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .tax-extractor__status--extracting {
+  background-color: rgba(79, 70, 229, 0.12);
+}
+
+[data-theme="dark"] .tax-extractor__status--completed {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+[data-theme="dark"] .tax-extractor__status--failed {
+  background-color: rgba(239, 68, 68, 0.1);
 }
 
 /* ─── Save Bar ────────────────────────────────────────────────────── */
@@ -240,4 +254,29 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .tax-extractor__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .tax-extractor__data {
+    padding: var(--space-3);
+  }
+
+  .tax-extractor__table th,
+  .tax-extractor__table td {
+    padding: var(--space-1);
+    font-size: var(--text-xs);
+  }
+
+  .tax-extractor__action {
+    padding: var(--space-4);
+  }
 }

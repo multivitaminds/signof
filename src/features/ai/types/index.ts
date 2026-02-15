@@ -96,6 +96,7 @@ export const AgentType = {
   SocialMedia: 'socialMedia',
   Security: 'security',
   DevOps: 'devops',
+  Tax: 'tax',
 } as const
 
 export type AgentType = (typeof AgentType)[keyof typeof AgentType]

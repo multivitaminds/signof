@@ -224,7 +224,23 @@
   font-size: var(--text-sm);
 }
 
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .interview-question__yesno-btn:hover {
+  background-color: rgba(79, 70, 229, 0.1);
+}
+
+[data-theme="dark"] .interview-question__upload:hover {
+  background-color: rgba(79, 70, 229, 0.08);
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 1023px) {
+  .interview-question__tiles {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
 
 @media (max-width: 767px) {
   .interview-question {

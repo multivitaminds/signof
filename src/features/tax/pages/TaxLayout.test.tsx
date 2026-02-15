@@ -23,6 +23,14 @@ vi.mock('../../../components/ui/DemoVideo', () => ({
   DemoVideoSection: () => <div data-testid="demo-videos">DemoVideos</div>,
 }))
 
+vi.mock('../components/TaxCopilotButton/TaxCopilotButton', () => ({
+  default: () => <div data-testid="tax-copilot-button">CopilotButton</div>,
+}))
+
+vi.mock('../components/TaxCopilotPanel/TaxCopilotPanel', () => ({
+  default: () => <div data-testid="tax-copilot-panel">CopilotPanel</div>,
+}))
+
 describe('TaxLayout', () => {
   beforeEach(() => {
     mockSetActiveTaxYear.mockClear()
@@ -60,5 +68,11 @@ describe('TaxLayout', () => {
   it('renders DemoVideoSection', () => {
     render(<MemoryRouter><TaxLayout /></MemoryRouter>)
     expect(screen.getByTestId('demo-videos')).toBeInTheDocument()
+  })
+
+  it('renders TaxCopilotButton and TaxCopilotPanel', () => {
+    render(<MemoryRouter><TaxLayout /></MemoryRouter>)
+    expect(screen.getByTestId('tax-copilot-button')).toBeInTheDocument()
+    expect(screen.getByTestId('tax-copilot-panel')).toBeInTheDocument()
   })
 })

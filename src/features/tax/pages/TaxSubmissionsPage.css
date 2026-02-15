@@ -106,6 +106,12 @@
   gap: var(--space-4);
 }
 
+/* ─── Dark Mode ───────────────────────────────────────────────────── */
+
+[data-theme="dark"] .tax-submissions__group-count {
+  background-color: var(--bg-tertiary);
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {

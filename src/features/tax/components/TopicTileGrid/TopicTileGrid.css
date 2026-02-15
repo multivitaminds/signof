@@ -88,6 +88,16 @@
   line-height: var(--leading-normal);
 }
 
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .topic-tile-grid__tile--selected {
+  background-color: rgba(79, 70, 229, 0.12);
+}
+
+[data-theme="dark"] .topic-tile-grid__tile--selected:hover {
+  background-color: rgba(79, 70, 229, 0.15);
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
 @media (max-width: 1023px) {
