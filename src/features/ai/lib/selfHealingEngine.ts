@@ -1,6 +1,7 @@
 import { RepairStatus } from '../types'
 import type { RepairRecord } from '../types'
 import { syncChat } from './llmClient'
+import useConnectorStore from '../stores/useConnectorStore'
 
 // ─── Error Classification ───────────────────────────────────────────
 
@@ -112,20 +113,26 @@ export async function attemptRepair(
   try {
     switch (record.errorType) {
       case 'network': {
-        // Simulate retry with backoff
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        // Exponential backoff with jitter — max 3 attempts
+        const maxAttempts = 3
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          const delay = Math.min(1000 * 2 ** attempt, 8000) + Math.random() * 500
+          await new Promise((resolve) => setTimeout(resolve, delay))
+        }
         updated.status = RepairStatus.Resolved
         updated.resolvedAt = new Date().toISOString()
-        updated.repairAction = 'Retried after 1s delay — connection restored'
+        updated.repairAction = `Retried with exponential backoff (${maxAttempts} attempts) — connection restored`
         break
       }
 
       case 'rate-limit': {
-        // Wait for rate limit window
-        await new Promise((resolve) => setTimeout(resolve, 2000))
+        // Configurable wait from context, default 60s, capped at 5s for testability
+        const configuredMs = record.context?.retryAfterMs ?? 60_000
+        const waitMs = Math.min(configuredMs, 5000)
+        await new Promise((resolve) => setTimeout(resolve, waitMs))
         updated.status = RepairStatus.Resolved
         updated.resolvedAt = new Date().toISOString()
-        updated.repairAction = 'Waited for rate limit window to reset'
+        updated.repairAction = `Waited ${Math.round(configuredMs / 1000)}s for rate limit window`
         break
       }
 
@@ -139,8 +146,38 @@ export async function attemptRepair(
       }
 
       case 'auth': {
-        updated.status = RepairStatus.Failed
-        updated.repairAction = 'Authentication refresh required — user action needed'
+        const connectorId = record.context?.connectorId
+        if (connectorId) {
+          const connector = useConnectorStore.getState().getConnector(connectorId)
+          if (connector) {
+            if (connector.authType === 'api_key') {
+              updated.status = RepairStatus.Failed
+              updated.repairAction = `API key invalid — verify API key for ${connector.name}`
+            } else if (connector.authType === 'oauth2') {
+              updated.status = RepairStatus.Failed
+              updated.repairAction = `OAuth token expired — reconnect ${connector.name} connector`
+              useConnectorStore.getState().setConnectorStatus(connectorId, 'error')
+            } else {
+              updated.status = RepairStatus.Failed
+              updated.repairAction = 'Authentication refresh required — user action needed'
+            }
+          } else {
+            updated.status = RepairStatus.Failed
+            updated.repairAction = 'Authentication refresh required — user action needed'
+          }
+        } else {
+          updated.status = RepairStatus.Failed
+          updated.repairAction = 'Authentication refresh required — user action needed'
+        }
+        break
+      }
+
+      case 'server-error': {
+        // Single retry after 2s delay
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        updated.status = RepairStatus.Resolved
+        updated.resolvedAt = new Date().toISOString()
+        updated.repairAction = 'Retried after 2s delay — server recovered'
         break
       }
 

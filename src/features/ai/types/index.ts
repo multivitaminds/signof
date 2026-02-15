@@ -489,6 +489,12 @@ export interface AgentMessage {
   acknowledged: boolean
 }
 
+export interface RepairContext {
+  retryCount?: number
+  retryAfterMs?: number
+  connectorId?: string
+}
+
 export interface RepairRecord {
   id: string
   agentId: string
@@ -499,6 +505,17 @@ export interface RepairRecord {
   status: RepairStatus
   timestamp: string
   resolvedAt: string | null
+  context?: RepairContext
+}
+
+export interface ParsedAction {
+  type: 'connector' | 'tool' | 'workflow' | 'message' | 'none'
+  connectorId?: string
+  actionId?: string
+  toolName?: string
+  workflowId?: string
+  params: Record<string, unknown>
+  description: string
 }
 
 export interface ConnectorDefinition {

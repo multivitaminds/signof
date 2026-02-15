@@ -1,6 +1,7 @@
 import { evaluateExpression, evaluateCondition, buildExecutionPlan, executeNode } from './workflowExecutionEngine'
 import { NodeStatus } from '../types'
 import type { WorkflowNode, WorkflowConnection } from '../types'
+import { syncChat } from './llmClient'
 
 // Mock dependencies
 vi.mock('./toolDefinitions', () => ({
@@ -9,6 +10,24 @@ vi.mock('./toolDefinitions', () => ({
 
 vi.mock('./llmClient', () => ({
   syncChat: vi.fn().mockResolvedValue('LLM response for test'),
+}))
+
+vi.mock('../stores/useConnectorStore', () => ({
+  default: {
+    getState: () => ({
+      mockExecute: vi.fn().mockReturnValue(JSON.stringify({
+        success: true,
+        connector: 'Gmail',
+        action: 'Send Email',
+        params: {},
+        result: 'Mock result',
+      })),
+    }),
+  },
+}))
+
+vi.mock('./agentWorkflowBridge', () => ({
+  deployAgentFromWorkflow: vi.fn().mockReturnValue('deployed-agent-123'),
 }))
 
 describe('workflowExecutionEngine', () => {
@@ -155,10 +174,25 @@ describe('workflowExecutionEngine', () => {
       expect(result.success).toBe(true)
     })
 
-    it('executes connector_action nodes', async () => {
-      const result = await executeNode(makeNode('connector_action', { connectorId: 'gmail', actionId: 'send' }), {}, ctx)
+    it('executes connector_action nodes via mockExecute', async () => {
+      const result = await executeNode(makeNode('connector_action', { connectorId: 'gmail', actionId: 'gmail-send' }), {}, ctx)
       expect(result.success).toBe(true)
-      expect((result.output as Record<string, unknown>).connector).toBe('gmail')
+      expect((result.output as Record<string, unknown>).connector).toBe('Gmail')
+    })
+
+    it('connector_action fails when mockExecute returns failure', async () => {
+      const { default: useConnectorStore } = await import('../stores/useConnectorStore')
+      const mockExecute = vi.fn().mockReturnValue(JSON.stringify({
+        success: false,
+        error: 'Connector not found: unknown',
+      }))
+      vi.spyOn(useConnectorStore, 'getState').mockReturnValueOnce({
+        mockExecute,
+      } as unknown as ReturnType<typeof useConnectorStore.getState>)
+
+      const result = await executeNode(makeNode('connector_action', { connectorId: 'unknown', actionId: 'action' }), {}, ctx)
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('Connector not found: unknown')
     })
 
     it('executes if_else with true condition', async () => {
@@ -276,14 +310,105 @@ describe('workflowExecutionEngine', () => {
       expect(result.error).toContain('Unknown node type')
     })
 
-    it('executes agent_autonomous as placeholder', async () => {
+    // ── http_request tests ────────────────────────────────────────────
+
+    it('http_request renders templates in URL', async () => {
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: () => Promise.resolve(JSON.stringify({ data: 'response' })),
+        headers: new Headers(),
+      })
+      globalThis.fetch = mockFetch
+
+      const result = await executeNode(
+        makeNode('http_request', { url: 'https://api.example.com/users/{{userId}}', method: 'GET' }),
+        { userId: '42' },
+        ctx,
+      )
+      expect(result.success).toBe(true)
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://api.example.com/users/42',
+        expect.objectContaining({ method: 'GET' }),
+      )
+    })
+
+    // ── agent_extract tests ───────────────────────────────────────────
+
+    it('agent_extract with valid schema passes validation', async () => {
+      const mockSyncChat = vi.mocked(syncChat)
+      mockSyncChat.mockResolvedValueOnce(JSON.stringify({ name: 'Alice', age: 30 }))
+
+      const schema = {
+        required: ['name', 'age'],
+        properties: {
+          name: { type: 'string' },
+          age: { type: 'number' },
+        },
+      }
+
+      const result = await executeNode(
+        makeNode('agent_extract', { schema, instructions: 'Extract name and age' }),
+        { text: 'Alice is 30 years old' },
+        ctx,
+      )
+      expect(result.success).toBe(true)
+      expect((result.output as Record<string, unknown>).name).toBe('Alice')
+      expect((result.output as Record<string, unknown>).age).toBe(30)
+    })
+
+    it('agent_extract retries and fails on schema validation error', async () => {
+      const mockSyncChat = vi.mocked(syncChat)
+      const callCountBefore = mockSyncChat.mock.calls.length
+      // First call returns invalid data (missing required field)
+      mockSyncChat.mockResolvedValueOnce(JSON.stringify({ name: 'Alice' }))
+      // Retry also returns invalid data
+      mockSyncChat.mockResolvedValueOnce(JSON.stringify({ name: 'Alice' }))
+
+      const schema = {
+        required: ['name', 'age'],
+        properties: {
+          name: { type: 'string' },
+          age: { type: 'number' },
+        },
+      }
+
+      const result = await executeNode(
+        makeNode('agent_extract', { schema }),
+        { text: 'Some input' },
+        ctx,
+      )
+      expect(result.success).toBe(false)
+      expect(result.error).toContain('Schema validation failed')
+      expect(result.error).toContain('Missing required field: age')
+      // Should have made exactly 2 calls for this test (initial + retry)
+      expect(mockSyncChat.mock.calls.length - callCountBefore).toBe(2)
+    })
+
+    // ── agent_autonomous tests ────────────────────────────────────────
+
+    it('agent_autonomous deploys via bridge and returns deployed ID', async () => {
       const result = await executeNode(
         makeNode('agent_autonomous', { agentId: 'a1', task: 'Do something' }),
         {},
         ctx,
       )
       expect(result.success).toBe(true)
+      expect((result.output as Record<string, unknown>).agentId).toBe('deployed-agent-123')
       expect((result.output as Record<string, unknown>).status).toBe('deployed')
+    })
+
+    it('agent_autonomous fails when agentId is missing', async () => {
+      const { deployAgentFromWorkflow } = await import('./agentWorkflowBridge')
+      vi.mocked(deployAgentFromWorkflow).mockReturnValueOnce(null)
+
+      const result = await executeNode(
+        makeNode('agent_autonomous', { task: 'Do something' }),
+        {},
+        ctx,
+      )
+      expect(result.success).toBe(false)
+      expect(result.error).toContain('Failed to deploy agent')
     })
   })
 })

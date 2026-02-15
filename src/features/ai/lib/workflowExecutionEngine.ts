@@ -2,6 +2,8 @@ import type { Workflow, WorkflowNode, WorkflowConnection, ExecutionEvent, NodeRe
 import { getNodeDefinition } from './nodeDefinitions'
 import { executeTool } from './toolDefinitions'
 import { syncChat } from './llmClient'
+import useConnectorStore from '../stores/useConnectorStore'
+import { deployAgentFromWorkflow } from './agentWorkflowBridge'
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -125,6 +127,39 @@ export function buildExecutionPlan(
   return { stages }
 }
 
+// ─── Schema Validation ──────────────────────────────────────────────
+
+function validateAgainstSchema(data: unknown, schema: Record<string, unknown> | undefined): string | null {
+  if (!schema || typeof data !== 'object' || data === null) {
+    if (schema && (typeof data !== 'object' || data === null)) {
+      return 'Expected an object but got ' + typeof data
+    }
+    return null
+  }
+  const obj = data as Record<string, unknown>
+  const required = (schema.required as string[]) ?? []
+  const properties = (schema.properties as Record<string, { type?: string }>) ?? {}
+
+  const errors: string[] = []
+  for (const key of required) {
+    if (!(key in obj)) {
+      errors.push(`Missing required field: ${key}`)
+    }
+  }
+
+  for (const [key, value] of Object.entries(obj)) {
+    const propDef = properties[key]
+    if (propDef?.type) {
+      const actualType = Array.isArray(value) ? 'array' : typeof value
+      if (actualType !== propDef.type && !(propDef.type === 'integer' && typeof value === 'number')) {
+        errors.push(`Field "${key}" expected type "${propDef.type}" but got "${actualType}"`)
+      }
+    }
+  }
+
+  return errors.length > 0 ? errors.join('; ') : null
+}
+
 // ─── Node Execution ─────────────────────────────────────────────────
 
 export async function executeNode(
@@ -157,36 +192,66 @@ export async function executeNode(
       }
 
       case 'connector_action': {
-        // Mock connector execution — real integration later
-        return {
-          success: true,
-          output: {
-            connector: node.data.connectorId,
-            action: node.data.actionId,
-            result: `Mock result for ${node.data.actionId}`,
-          },
+        const connectorId = node.data.connectorId as string
+        const actionId = node.data.actionId as string
+        const nodeParams = (node.data.params as Record<string, unknown>) ?? {}
+        const mergedParams = {
+          ...(typeof inputData === 'object' && inputData !== null ? inputData as Record<string, unknown> : {}),
+          ...nodeParams,
         }
+        const resultStr = useConnectorStore.getState().mockExecute(connectorId, actionId, mergedParams)
+        const parsed = JSON.parse(resultStr) as Record<string, unknown>
+        if (parsed.success === false) {
+          return { success: false, output: parsed, error: parsed.error as string }
+        }
+        return { success: true, output: parsed }
       }
 
       case 'http_request': {
-        try {
-          const response = await fetch(node.data.url as string, {
-            method: (node.data.method as string) ?? 'GET',
-            headers: typeof node.data.headers === 'object' && node.data.headers !== null
-              ? node.data.headers as Record<string, string>
-              : undefined,
-            body: node.data.method !== 'GET' && node.data.body
-              ? JSON.stringify(node.data.body)
-              : undefined,
-          })
-          const text = await response.text()
-          let parsed: unknown = text
-          try { parsed = JSON.parse(text) } catch { /* use raw text */ }
-          return { success: response.ok, output: parsed, error: response.ok ? undefined : `HTTP ${response.status}` }
-        } catch (err: unknown) {
-          const msg = err instanceof Error ? err.message : 'HTTP request failed'
-          return { success: false, output: null, error: msg }
+        const data = (typeof inputData === 'object' && inputData !== null ? inputData : {}) as Record<string, unknown>
+        const url = renderTemplate((node.data.url as string) ?? '', data)
+        const rawBody = node.data.body
+        const bodyStr = typeof rawBody === 'string' ? renderTemplate(rawBody, data) : (rawBody ? JSON.stringify(rawBody) : undefined)
+        const method = (node.data.method as string) ?? 'GET'
+        const timeoutMs = (node.data.timeout as number) ?? 30000
+        const maxRetries = (node.data.retries as number) ?? 0
+
+        let lastError = ''
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+          try {
+            const response = await fetch(url, {
+              method,
+              headers: typeof node.data.headers === 'object' && node.data.headers !== null
+                ? node.data.headers as Record<string, string>
+                : undefined,
+              body: method !== 'GET' && bodyStr ? bodyStr : undefined,
+              signal: controller.signal,
+            })
+            clearTimeout(timeoutId)
+
+            if (response.status === 429 && attempt < maxRetries) {
+              const retryAfter = response.headers.get('Retry-After')
+              const waitMs = retryAfter ? Math.min(parseInt(retryAfter, 10) * 1000, 10000) : 5000
+              await new Promise((resolve) => setTimeout(resolve, waitMs))
+              continue
+            }
+
+            const text = await response.text()
+            let parsed: unknown = text
+            try { parsed = JSON.parse(text) } catch { /* use raw text */ }
+            return { success: response.ok, output: parsed, error: response.ok ? undefined : `HTTP ${response.status}` }
+          } catch (err: unknown) {
+            clearTimeout(timeoutId)
+            lastError = err instanceof Error ? err.message : 'HTTP request failed'
+            if (attempt < maxRetries) {
+              await new Promise((resolve) => setTimeout(resolve, Math.min(1000 * 2 ** attempt, 8000)))
+              continue
+            }
+          }
         }
+        return { success: false, output: null, error: lastError }
       }
 
       case 'send_notification': {
@@ -226,25 +291,49 @@ export async function executeNode(
       }
 
       case 'agent_extract': {
-        const schema = JSON.stringify(node.data.schema)
+        const schema = node.data.schema as Record<string, unknown> | undefined
+        const schemaStr = JSON.stringify(schema)
         const instructions = (node.data.instructions as string) || ''
         const result = await syncChat({
           messages: [{
             role: 'user',
-            content: `Extract structured data from the following input according to this schema: ${schema}\n${instructions ? `Instructions: ${instructions}\n` : ''}\nInput: ${JSON.stringify(inputData)}\n\nRespond with only valid JSON.`,
+            content: `Extract structured data from the following input according to this schema: ${schemaStr}\n${instructions ? `Instructions: ${instructions}\n` : ''}\nInput: ${JSON.stringify(inputData)}\n\nRespond with only valid JSON.`,
           }],
         })
         let parsed: unknown = result
         try { if (result) parsed = JSON.parse(result) } catch { /* use raw */ }
+
+        // Validate against schema
+        const validationError = validateAgainstSchema(parsed, schema)
+        if (validationError) {
+          // Retry once with explicit error feedback
+          const retryResult = await syncChat({
+            messages: [{
+              role: 'user',
+              content: `Your previous response had validation errors: ${validationError}\n\nPlease extract structured data from this input according to this schema: ${schemaStr}\n${instructions ? `Instructions: ${instructions}\n` : ''}\nInput: ${JSON.stringify(inputData)}\n\nRespond with ONLY valid JSON matching the schema exactly.`,
+            }],
+          })
+          let retryParsed: unknown = retryResult
+          try { if (retryResult) retryParsed = JSON.parse(retryResult) } catch { /* use raw */ }
+          const retryError = validateAgainstSchema(retryParsed, schema)
+          if (retryError) {
+            return { success: false, output: retryParsed, error: `Schema validation failed: ${retryError}` }
+          }
+          return { success: true, output: retryParsed }
+        }
+
         return { success: true, output: parsed }
       }
 
       case 'agent_autonomous': {
-        // Placeholder — real autonomous agent deployment handled by agentWorkflowBridge
+        const deployedId = deployAgentFromWorkflow(node.data)
+        if (!deployedId) {
+          return { success: false, output: null, error: 'Failed to deploy agent — missing agentId in node data' }
+        }
         return {
           success: true,
           output: {
-            agentId: node.data.agentId,
+            agentId: deployedId,
             task: node.data.task,
             status: 'deployed',
           },

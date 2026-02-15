@@ -1,5 +1,5 @@
 import { AgentLifecycle } from '../types'
-import type { ThinkingStep } from '../types'
+import type { ParsedAction, ThinkingStep } from '../types'
 import useAgentRuntimeStore from '../stores/useAgentRuntimeStore'
 import useMessageBusStore from '../stores/useMessageBusStore'
 import useAgentMemoryStore from '../stores/useAgentMemoryStore'
@@ -8,6 +8,8 @@ import useConnectorStore from '../stores/useConnectorStore'
 import { buildAutonomousPrompt } from './autonomousPromptBuilder'
 import { syncChat } from './llmClient'
 import { classifyError, analyzeError, attemptRepair } from './selfHealingEngine'
+import { executeTool, ORCHESTREE_TOOLS } from './toolDefinitions'
+import { triggerWorkflowFromAgent } from './agentWorkflowBridge'
 
 const DEFAULT_CYCLE_INTERVAL_MS = 30_000
 const activeLoops = new Map<string, AbortController>()
@@ -152,28 +154,169 @@ async function reason(agentId: string, observations: string): Promise<string> {
   return result ?? 'No reasoning available — LLM may be in demo mode.'
 }
 
-async function planAction(_agentId: string, reasoning: string): Promise<string> {
-  // In a full implementation, this would parse the LLM's reasoning to extract
-  // specific tool calls or connector actions. For now, return the plan as text.
-  return reasoning
+async function planAction(agentId: string, reasoning: string): Promise<string> {
+  const agent = useAgentRuntimeStore.getState().getAgent(agentId)
+  if (!agent) return JSON.stringify([{ type: 'none', params: {}, description: 'Agent not found' }])
+
+  // Build context about available connectors and tools
+  const connectors = agent.connectorIds
+    .map((id) => useConnectorStore.getState().getConnector(id))
+    .filter((c): c is NonNullable<typeof c> => c !== undefined)
+
+  const tools = ORCHESTREE_TOOLS
+
+  const connectorContext = connectors.length > 0
+    ? connectors.map((c) => `Connector "${c.name}" (id: ${c.id}, status: ${c.status}): actions=[${c.actions.map((a) => `${a.id}: ${a.name}`).join(', ')}]`).join('\n')
+    : 'No connectors available.'
+
+  const toolContext = tools.length > 0
+    ? tools.map((t) => `Tool "${t.name}": ${t.description}`).join('\n')
+    : 'No tools available.'
+
+  const planPrompt = `Given the following reasoning about the current situation, output a JSON array of actions to take.
+
+Reasoning:
+${reasoning}
+
+Available connectors:
+${connectorContext}
+
+Available tools:
+${toolContext}
+
+Each action in the array must be a JSON object with these fields:
+- "type": one of "connector", "tool", "workflow", "message", "none"
+- "connectorId": (for connector type) the connector id
+- "actionId": (for connector type) the action id
+- "toolName": (for tool type) the tool name
+- "workflowId": (for workflow type) the workflow id
+- "params": object of parameters
+- "description": brief description of what this action does
+
+If no action is needed, return: [{"type":"none","params":{},"description":"No action needed"}]
+
+Respond ONLY with the JSON array, no markdown fences or explanation.`
+
+  const result = await syncChat({
+    messages: [{ role: 'user', content: planPrompt }],
+    maxTokens: 512,
+  })
+
+  if (!result) {
+    return JSON.stringify([{ type: 'none', params: {}, description: reasoning }])
+  }
+
+  // Try to parse the response as JSON
+  try {
+    const parsed: unknown = JSON.parse(result)
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      // Validate each item has at minimum type and description
+      const actions = (parsed as Record<string, unknown>[]).map((item): ParsedAction => ({
+        type: (typeof item.type === 'string' && ['connector', 'tool', 'workflow', 'message', 'none'].includes(item.type))
+          ? item.type as ParsedAction['type']
+          : 'none',
+        connectorId: typeof item.connectorId === 'string' ? item.connectorId : undefined,
+        actionId: typeof item.actionId === 'string' ? item.actionId : undefined,
+        toolName: typeof item.toolName === 'string' ? item.toolName : undefined,
+        workflowId: typeof item.workflowId === 'string' ? item.workflowId : undefined,
+        params: (item.params !== null && typeof item.params === 'object' && !Array.isArray(item.params))
+          ? item.params as Record<string, unknown>
+          : {},
+        description: typeof item.description === 'string' ? item.description : 'No description',
+      }))
+      return JSON.stringify(actions)
+    }
+  } catch {
+    // JSON parse failed — fall through
+  }
+
+  // Fallback: wrap raw reasoning as a no-op action
+  return JSON.stringify([{ type: 'none', params: {}, description: result }])
 }
 
 async function act(agentId: string, plan: string): Promise<string> {
   const agent = useAgentRuntimeStore.getState().getAgent(agentId)
   if (!agent) return 'Agent not found'
 
-  if (agent.autonomyMode === 'full_auto') {
-    // Execute directly — in full implementation, parse plan for tool calls
-    return `Executed plan: ${plan.slice(0, 200)}`
+  // Deserialize the action plan
+  let actions: ParsedAction[]
+  try {
+    const parsed: unknown = JSON.parse(plan)
+    actions = Array.isArray(parsed) ? parsed as ParsedAction[] : []
+  } catch {
+    return `Could not parse action plan: ${plan.slice(0, 200)}`
   }
 
-  // Queue for approval
-  useAgentRuntimeStore.getState().queueApproval(
-    agentId,
-    'execute_plan',
-    plan.slice(0, 500),
-  )
-  return 'Action queued for user approval'
+  if (actions.length === 0) {
+    return 'No actions to execute'
+  }
+
+  // For suggest/ask_first modes, queue for approval instead of executing
+  if (agent.autonomyMode !== 'full_auto') {
+    const descriptions = actions.map((a) => `[${a.type}] ${a.description}`).join('; ')
+    useAgentRuntimeStore.getState().queueApproval(
+      agentId,
+      'execute_plan',
+      descriptions.slice(0, 500),
+    )
+    return 'Action queued for user approval'
+  }
+
+  // Full auto: execute each action and collect results
+  const results: string[] = []
+
+  for (const action of actions) {
+    switch (action.type) {
+      case 'connector': {
+        if (action.connectorId && action.actionId) {
+          const result = useConnectorStore.getState().mockExecute(
+            action.connectorId,
+            action.actionId,
+            action.params,
+          )
+          results.push(`Connector(${action.connectorId}/${action.actionId}): ${result}`)
+        } else {
+          results.push(`Connector action skipped — missing connectorId or actionId`)
+        }
+        break
+      }
+
+      case 'tool': {
+        if (action.toolName) {
+          const result = executeTool(action.toolName, action.params)
+          results.push(`Tool(${action.toolName}): ${result}`)
+        } else {
+          results.push(`Tool action skipped — missing toolName`)
+        }
+        break
+      }
+
+      case 'workflow': {
+        if (action.workflowId) {
+          triggerWorkflowFromAgent(agentId, action.workflowId)
+          results.push(`Workflow(${action.workflowId}): triggered`)
+        } else {
+          results.push(`Workflow action skipped — missing workflowId`)
+        }
+        break
+      }
+
+      case 'message': {
+        const topic = typeof action.params.topic === 'string' ? action.params.topic : 'coordination.handoff'
+        useMessageBusStore.getState().publish(agentId, topic, action.description)
+        results.push(`Message(${topic}): published`)
+        break
+      }
+
+      case 'none':
+      default: {
+        results.push(`No-op: ${action.description}`)
+        break
+      }
+    }
+  }
+
+  return results.join('\n')
 }
 
 async function reflect(agentId: string, result: string): Promise<void> {
