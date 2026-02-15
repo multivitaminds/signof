@@ -408,3 +408,200 @@ export interface ProviderStatus {
   available: boolean
   models: string[]
 }
+
+// ─── Autonomous Agent Types ─────────────────────────────────────────
+
+export const AutonomyMode = {
+  FullAuto: 'full_auto',
+  Suggest: 'suggest',
+  AskFirst: 'ask_first',
+} as const
+
+export type AutonomyMode = (typeof AutonomyMode)[keyof typeof AutonomyMode]
+
+export const AgentLifecycle = {
+  Idle: 'idle',
+  Deployed: 'deployed',
+  Thinking: 'thinking',
+  Acting: 'acting',
+  Waiting: 'waiting',
+  Healing: 'healing',
+  Retired: 'retired',
+} as const
+
+export type AgentLifecycle = (typeof AgentLifecycle)[keyof typeof AgentLifecycle]
+
+export const RepairStatus = {
+  Detected: 'detected',
+  Analyzing: 'analyzing',
+  Repairing: 'repairing',
+  Resolved: 'resolved',
+  Failed: 'failed',
+} as const
+
+export type RepairStatus = (typeof RepairStatus)[keyof typeof RepairStatus]
+
+export const MessagePriority = {
+  Critical: 'critical',
+  High: 'high',
+  Normal: 'normal',
+  Low: 'low',
+} as const
+
+export type MessagePriority = (typeof MessagePriority)[keyof typeof MessagePriority]
+
+export interface AutonomousAgent extends MarketplaceAgent {
+  lifecycle: AgentLifecycle
+  autonomyMode: AutonomyMode
+  memoryIds: string[]
+  goalStack: AgentGoal[]
+  thinkingLog: ThinkingStep[]
+  errorCount: number
+  lastHeartbeat: string
+  connectorIds: string[]
+}
+
+export interface AgentGoal {
+  id: string
+  description: string
+  priority: number
+  status: 'active' | 'completed' | 'blocked'
+  subGoals: string[]
+  createdAt: string
+}
+
+export interface ThinkingStep {
+  id: string
+  type: 'observe' | 'reason' | 'plan' | 'act' | 'reflect'
+  content: string
+  timestamp: string
+  durationMs: number
+}
+
+export interface AgentMessage {
+  id: string
+  fromAgentId: string
+  toAgentId: string | null
+  topic: string
+  content: string
+  priority: MessagePriority
+  timestamp: string
+  acknowledged: boolean
+}
+
+export interface RepairRecord {
+  id: string
+  agentId: string
+  errorType: string
+  errorMessage: string
+  analysis: string
+  repairAction: string
+  status: RepairStatus
+  timestamp: string
+  resolvedAt: string | null
+}
+
+export interface ConnectorDefinition {
+  id: string
+  name: string
+  category: string
+  icon: string
+  description: string
+  authType: 'oauth2' | 'api_key' | 'basic' | 'none'
+  status: 'connected' | 'disconnected' | 'error'
+  actions: ConnectorAction[]
+}
+
+export interface ConnectorAction {
+  id: string
+  name: string
+  description: string
+  inputSchema: Record<string, unknown>
+  outputSchema: Record<string, unknown>
+}
+
+export interface PendingApproval {
+  id: string
+  agentId: string
+  action: string
+  description: string
+  createdAt: string
+}
+
+// ─── Workflow Engine Types ──────────────────────────────────────────
+
+export interface WorkflowNodeDefinition {
+  type: string
+  category: 'trigger' | 'action' | 'agent' | 'logic' | 'transform'
+  label: string
+  description: string
+  icon: string
+  color: string
+  inputs: PortDefinition[]
+  outputs: PortDefinition[]
+  parameters: ParameterDefinition[]
+  defaultData: Record<string, unknown>
+}
+
+export interface PortDefinition {
+  id: string
+  label: string
+  type: 'flow' | 'data'
+}
+
+export interface ParameterDefinition {
+  key: string
+  label: string
+  type: 'string' | 'number' | 'boolean' | 'select' | 'expression' | 'json' | 'code'
+  required: boolean
+  default?: unknown
+  options?: Array<{ label: string; value: string }>
+  placeholder?: string
+}
+
+export interface Workflow {
+  id: string
+  name: string
+  description: string
+  nodes: WorkflowNode[]
+  connections: WorkflowConnection[]
+  status: 'draft' | 'active' | 'paused' | 'error'
+  createdAt: string
+  updatedAt: string
+  lastRunAt: string | null
+  runCount: number
+  viewport: CanvasViewport
+}
+
+export interface WorkflowNode {
+  id: string
+  type: string
+  label: string
+  x: number
+  y: number
+  data: Record<string, unknown>
+  status: NodeStatus
+  output: unknown
+}
+
+export interface WorkflowConnection {
+  id: string
+  sourceNodeId: string
+  sourcePortId: string
+  targetNodeId: string
+  targetPortId: string
+  status: NodeStatus
+}
+
+export interface ExecutionEvent {
+  nodeId: string
+  type: 'start' | 'complete' | 'error' | 'data'
+  data: unknown
+  timestamp: string
+}
+
+export interface NodeResult {
+  success: boolean
+  output: unknown
+  error?: string
+}

@@ -1,0 +1,66 @@
+import type { WorkflowNodeDefinition } from '../../types'
+
+export const agentNodes: WorkflowNodeDefinition[] = [
+  {
+    type: 'agent_think',
+    category: 'agent',
+    label: 'AI Think',
+    description: 'Send data to LLM for analysis or generation',
+    icon: 'brain',
+    color: '#EC4899',
+    inputs: [{ id: 'in', label: 'Input', type: 'flow' }],
+    outputs: [{ id: 'out', label: 'Output', type: 'flow' }],
+    parameters: [
+      { key: 'prompt', label: 'Prompt', type: 'string', required: true, placeholder: 'Analyze the following data...' },
+      { key: 'systemPrompt', label: 'System Prompt', type: 'string', required: false, placeholder: 'You are a helpful assistant.' },
+      { key: 'maxTokens', label: 'Max Tokens', type: 'number', required: false, default: 1024 },
+    ],
+    defaultData: { prompt: '', systemPrompt: '', maxTokens: 1024 },
+  },
+  {
+    type: 'agent_classify',
+    category: 'agent',
+    label: 'AI Classify',
+    description: 'Categorize input data using LLM',
+    icon: 'tag',
+    color: '#EC4899',
+    inputs: [{ id: 'in', label: 'Input', type: 'flow' }],
+    outputs: [{ id: 'out', label: 'Output', type: 'flow' }],
+    parameters: [
+      { key: 'categories', label: 'Categories', type: 'string', required: true, placeholder: 'positive, negative, neutral' },
+      { key: 'inputField', label: 'Input Field', type: 'string', required: false, placeholder: 'content' },
+    ],
+    defaultData: { categories: '', inputField: 'content' },
+  },
+  {
+    type: 'agent_extract',
+    category: 'agent',
+    label: 'AI Extract',
+    description: 'Extract structured data from unstructured input',
+    icon: 'file-search',
+    color: '#EC4899',
+    inputs: [{ id: 'in', label: 'Input', type: 'flow' }],
+    outputs: [{ id: 'out', label: 'Output', type: 'flow' }],
+    parameters: [
+      { key: 'schema', label: 'Output Schema', type: 'json', required: true, placeholder: '{ "name": "string", "email": "string" }' },
+      { key: 'instructions', label: 'Instructions', type: 'string', required: false, placeholder: 'Extract the following fields...' },
+    ],
+    defaultData: { schema: {}, instructions: '' },
+  },
+  {
+    type: 'agent_autonomous',
+    category: 'agent',
+    label: 'Autonomous Agent',
+    description: 'Deploy an autonomous agent as a workflow step',
+    icon: 'bot',
+    color: '#EC4899',
+    inputs: [{ id: 'in', label: 'Input', type: 'flow' }],
+    outputs: [{ id: 'out', label: 'Output', type: 'flow' }],
+    parameters: [
+      { key: 'agentId', label: 'Marketplace Agent', type: 'string', required: true, placeholder: 'Agent ID from marketplace' },
+      { key: 'task', label: 'Task Description', type: 'string', required: true, placeholder: 'What should the agent do?' },
+      { key: 'autonomyMode', label: 'Autonomy Mode', type: 'select', required: true, options: [{ label: 'Full Auto', value: 'full_auto' }, { label: 'Suggest', value: 'suggest' }, { label: 'Ask First', value: 'ask_first' }] },
+    ],
+    defaultData: { agentId: '', task: '', autonomyMode: 'suggest' },
+  },
+]

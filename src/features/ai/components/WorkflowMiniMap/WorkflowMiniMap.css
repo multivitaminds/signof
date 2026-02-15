@@ -1,0 +1,34 @@
+.wf-minimap {
+  position: absolute;
+  bottom: var(--space-md);
+  right: var(--space-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  z-index: 5;
+}
+
+.wf-minimap__svg {
+  display: block;
+  cursor: pointer;
+  background: var(--bg-secondary);
+}
+
+.wf-minimap__node {
+  fill: var(--color-primary);
+  opacity: 0.5;
+}
+
+.wf-minimap__viewport {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 1.5;
+  opacity: 0.8;
+}
+
+[data-theme="dark"] .wf-minimap__node {
+  fill: #7C5CFC;
+  opacity: 0.4;
+}

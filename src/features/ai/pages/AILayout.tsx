@@ -31,6 +31,30 @@ export default function AILayout() {
         >
           Agent Marketplace
         </NavLink>
+        <NavLink
+          to="/copilot/workflows"
+          className={({ isActive }) =>
+            `ai-layout__tab${isActive ? ' ai-layout__tab--active' : ''}`
+          }
+        >
+          Workflows
+        </NavLink>
+        <NavLink
+          to="/copilot/operations"
+          className={({ isActive }) =>
+            `ai-layout__tab${isActive ? ' ai-layout__tab--active' : ''}`
+          }
+        >
+          Operations
+        </NavLink>
+        <NavLink
+          to="/copilot/connectors"
+          className={({ isActive }) =>
+            `ai-layout__tab${isActive ? ' ai-layout__tab--active' : ''}`
+          }
+        >
+          Connectors
+        </NavLink>
       </nav>
 
       <div className="ai-layout__content">

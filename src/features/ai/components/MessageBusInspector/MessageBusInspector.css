@@ -1,0 +1,94 @@
+.msg-inspector {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.msg-inspector__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.msg-inspector__topic-select {
+  padding: 4px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  outline: none;
+}
+
+.msg-inspector__count {
+  margin-left: auto;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.msg-inspector__list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.msg-inspector__empty {
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.msg-inspector__msg {
+  padding: 8px var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.msg-inspector__msg:hover {
+  background: var(--bg-secondary);
+}
+
+.msg-inspector__msg-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  margin-bottom: 4px;
+}
+
+.msg-inspector__msg-time {
+  color: var(--text-muted);
+  font-family: 'SF Mono', Monaco, monospace;
+  font-size: 0.65rem;
+}
+
+.msg-inspector__msg-from {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.msg-inspector__msg-arrow {
+  color: var(--text-muted);
+}
+
+.msg-inspector__msg-to {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.msg-inspector__msg-priority {
+  margin-left: auto;
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.msg-inspector__msg-content {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

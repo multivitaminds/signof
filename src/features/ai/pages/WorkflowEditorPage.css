@@ -1,0 +1,116 @@
+.wf-editor {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 200px);
+  min-height: 500px;
+}
+
+.wf-editor--not-found {
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.wf-editor__body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.wf-editor__palette {
+  width: 260px;
+  border-right: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  overflow-y: auto;
+}
+
+.wf-editor__palette-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.wf-editor__close-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0 4px;
+}
+
+.wf-editor__canvas {
+  flex: 1;
+  position: relative;
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wf-editor__canvas-inner {
+  text-align: center;
+}
+
+.wf-editor__canvas-text {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.wf-editor__toggle-palette {
+  position: absolute;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wf-editor__params {
+  width: 280px;
+  border-left: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wf-editor__placeholder {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: var(--space-md);
+}
+
+.wf-editor__back {
+  padding: var(--space-sm) var(--space-md);
+  border-top: 1px solid var(--border-color);
+}
+
+.wf-editor__back-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.78rem;
+  padding: 4px 0;
+}
+
+.wf-editor__back-btn:hover {
+  color: var(--color-primary);
+}

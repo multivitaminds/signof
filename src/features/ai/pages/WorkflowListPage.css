@@ -1,0 +1,119 @@
+.wf-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.wf-list__title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.wf-list__new-btn {
+  padding: 8px 16px;
+  font-size: 0.82rem;
+}
+
+.wf-list__empty {
+  text-align: center;
+  padding: var(--space-2xl);
+}
+
+.wf-list__empty-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.wf-list__empty-sub {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: var(--space-md);
+}
+
+.wf-list__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-md);
+}
+
+.wf-list__card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.wf-list__card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.wf-list__card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.wf-list__card-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.wf-list__card-status {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wf-list__card-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 0 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wf-list__card-meta {
+  display: flex;
+  gap: var(--space-md);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.wf-list__card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.wf-list__action-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.wf-list__action-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.wf-list__action-btn--danger:hover {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}

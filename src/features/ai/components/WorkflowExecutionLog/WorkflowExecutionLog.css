@@ -1,0 +1,119 @@
+.wf-exec-log {
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  height: 200px;
+}
+
+.wf-exec-log__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.wf-exec-log__title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.wf-exec-log__count {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.wf-exec-log__clear {
+  margin-left: auto;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.wf-exec-log__clear:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.wf-exec-log__list {
+  flex: 1;
+  overflow-y: auto;
+  font-size: 0.75rem;
+}
+
+.wf-exec-log__empty {
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.wf-exec-log__event {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.wf-exec-log__event-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px var(--space-md);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+}
+
+.wf-exec-log__event-row:hover {
+  background: var(--bg-secondary);
+}
+
+.wf-exec-log__event-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.wf-exec-log__event-time {
+  color: var(--text-muted);
+  font-family: 'SF Mono', Monaco, monospace;
+  font-size: 0.68rem;
+  min-width: 70px;
+}
+
+.wf-exec-log__event-node {
+  font-weight: 600;
+  min-width: 80px;
+}
+
+.wf-exec-log__event-type {
+  font-weight: 500;
+  flex: 1;
+}
+
+.wf-exec-log__event-expand {
+  font-size: 0.55rem;
+  color: var(--text-muted);
+}
+
+.wf-exec-log__event-data {
+  margin: 0;
+  padding: 8px var(--space-md) 8px var(--space-2xl);
+  background: var(--bg-secondary);
+  font-family: 'SF Mono', Monaco, monospace;
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

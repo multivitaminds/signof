@@ -1,0 +1,78 @@
+import type { WorkflowNodeDefinition } from '../../types'
+
+export const transformNodes: WorkflowNodeDefinition[] = [
+  {
+    type: 'set_variable',
+    category: 'transform',
+    label: 'Set Variable',
+    description: 'Assign a value to a variable',
+    icon: 'variable',
+    color: '#10B981',
+    inputs: [{ id: 'in', label: 'Input', type: 'flow' }],
+    outputs: [{ id: 'out', label: 'Output', type: 'flow' }],
+    parameters: [
+      { key: 'name', label: 'Variable Name', type: 'string', required: true, placeholder: 'myVar' },
+      { key: 'value', label: 'Value', type: 'expression', required: true, placeholder: 'data.result' },
+    ],
+    defaultData: { name: '', value: '' },
+  },
+  {
+    type: 'map_fields',
+    category: 'transform',
+    label: 'Map Fields',
+    description: 'Rename and restructure data fields',
+    icon: 'arrow-right-left',
+    color: '#10B981',
+    inputs: [{ id: 'in', label: 'Input', type: 'flow' }],
+    outputs: [{ id: 'out', label: 'Output', type: 'flow' }],
+    parameters: [
+      { key: 'mapping', label: 'Field Mapping', type: 'json', required: true, placeholder: '{ "oldField": "newField" }' },
+    ],
+    defaultData: { mapping: {} },
+  },
+  {
+    type: 'filter',
+    category: 'transform',
+    label: 'Filter',
+    description: 'Filter array items by condition',
+    icon: 'filter',
+    color: '#10B981',
+    inputs: [{ id: 'in', label: 'Input', type: 'flow' }],
+    outputs: [{ id: 'out', label: 'Output', type: 'flow' }],
+    parameters: [
+      { key: 'arrayField', label: 'Array Field', type: 'string', required: true, placeholder: 'data.items' },
+      { key: 'condition', label: 'Filter Condition', type: 'expression', required: true, placeholder: 'item.active === true' },
+    ],
+    defaultData: { arrayField: '', condition: '' },
+  },
+  {
+    type: 'aggregate',
+    category: 'transform',
+    label: 'Aggregate',
+    description: 'Reduce an array to a single value',
+    icon: 'sigma',
+    color: '#10B981',
+    inputs: [{ id: 'in', label: 'Input', type: 'flow' }],
+    outputs: [{ id: 'out', label: 'Output', type: 'flow' }],
+    parameters: [
+      { key: 'arrayField', label: 'Array Field', type: 'string', required: true, placeholder: 'data.items' },
+      { key: 'operation', label: 'Operation', type: 'select', required: true, options: [{ label: 'Sum', value: 'sum' }, { label: 'Count', value: 'count' }, { label: 'Average', value: 'avg' }, { label: 'Min', value: 'min' }, { label: 'Max', value: 'max' }] },
+      { key: 'field', label: 'Field', type: 'string', required: false, placeholder: 'amount' },
+    ],
+    defaultData: { arrayField: '', operation: 'count', field: '' },
+  },
+  {
+    type: 'template',
+    category: 'transform',
+    label: 'Template',
+    description: 'String interpolation with Mustache-like syntax',
+    icon: 'file-text',
+    color: '#10B981',
+    inputs: [{ id: 'in', label: 'Input', type: 'flow' }],
+    outputs: [{ id: 'out', label: 'Output', type: 'flow' }],
+    parameters: [
+      { key: 'template', label: 'Template', type: 'code', required: true, placeholder: 'Hello {{name}}, your order #{{orderId}} is ready.' },
+    ],
+    defaultData: { template: '' },
+  },
+]

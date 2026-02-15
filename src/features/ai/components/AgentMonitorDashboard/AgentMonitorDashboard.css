@@ -1,0 +1,94 @@
+.agent-monitor--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.agent-monitor__empty-text {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.agent-monitor__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+
+.agent-monitor__card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.agent-monitor__card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.agent-monitor__card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.agent-monitor__name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.agent-monitor__lifecycle {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.agent-monitor__card-body {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.agent-monitor__stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.agent-monitor__stat-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-muted);
+}
+
+.agent-monitor__stat-value {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.agent-monitor__thinking {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 6px;
+}
+
+.agent-monitor__heartbeat {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}

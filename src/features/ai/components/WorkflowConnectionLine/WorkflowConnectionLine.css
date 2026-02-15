@@ -1,0 +1,14 @@
+.wf-conn-line {
+  transition: stroke 0.2s;
+  pointer-events: none;
+}
+
+.wf-conn-line--running {
+  animation: wf-conn-dash 0.6s linear infinite;
+}
+
+@keyframes wf-conn-dash {
+  to {
+    stroke-dashoffset: -9;
+  }
+}
