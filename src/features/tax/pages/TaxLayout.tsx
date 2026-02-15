@@ -3,7 +3,6 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { LayoutDashboard, FileText, FolderOpen, Send, ChevronDown, CreditCard, Sparkles, Activity } from 'lucide-react'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { DemoVideoSection } from '../../../components/ui/DemoVideo'
-import EnvironmentBanner from '../components/EnvironmentBanner/EnvironmentBanner'
 import { useTaxStore } from '../stores/useTaxStore'
 import { TAX_YEARS } from '../types'
 import type { TaxYear } from '../types'
@@ -12,8 +11,6 @@ import './TaxLayout.css'
 function TaxLayout() {
   const activeTaxYear = useTaxStore((s) => s.activeTaxYear)
   const setActiveTaxYear = useTaxStore((s) => s.setActiveTaxYear)
-  const environment = useTaxStore((s) => s.environment)
-  const setEnvironment = useTaxStore((s) => s.setEnvironment)
 
   const handleYearChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -22,13 +19,8 @@ function TaxLayout() {
     [setActiveTaxYear]
   )
 
-  const handleToggleEnvironment = useCallback(() => {
-    setEnvironment(environment === 'sandbox' ? 'production' : 'sandbox')
-  }, [environment, setEnvironment])
-
   return (
     <div className="tax-layout">
-      <EnvironmentBanner environment={environment} onToggle={handleToggleEnvironment} />
 
       <ModuleHeader title="Tax" subtitle="E-file tax forms and track submissions" />
 
