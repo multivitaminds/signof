@@ -149,13 +149,39 @@ export const InvoiceStatus = {
 export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus]
 
 export const TaxPlanId = {
-  TaxFree: 'tax_free',
-  TaxPlus: 'tax_plus',
-  TaxPremium: 'tax_premium',
-  TaxBusiness: 'tax_business',
+  // Individual
+  IndividualBasic: 'individual_basic',
+  IndividualPlus: 'individual_plus',
+  IndividualSelfEmployed: 'individual_self_employed',
+  IndividualCpa: 'individual_cpa',
+  // Business
+  BusinessBasic: 'business_basic',
+  BusinessPro: 'business_pro',
+  BusinessEnterprise: 'business_enterprise',
+  // API
+  ApiPlatformFree: 'api_platform_free',
+  ApiLiveUsage: 'api_live_usage',
+  ApiPlatformPro: 'api_platform_pro',
+  ApiEnterprise: 'api_enterprise',
 } as const
 
 export type TaxPlanId = (typeof TaxPlanId)[keyof typeof TaxPlanId]
+
+export const TaxPlanCategory = {
+  Individual: 'individual',
+  Business: 'business',
+  Api: 'api',
+} as const
+
+export type TaxPlanCategory = (typeof TaxPlanCategory)[keyof typeof TaxPlanCategory]
+
+export const PriceUnit = {
+  OneTime: 'one-time',
+  Monthly: 'monthly',
+  Custom: 'custom',
+} as const
+
+export type PriceUnit = (typeof PriceUnit)[keyof typeof PriceUnit]
 
 export const AccountingPlanId = {
   AcctFree: 'acct_free',

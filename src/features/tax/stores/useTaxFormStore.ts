@@ -1,21 +1,15 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
-// ─── Tax Form ID ────────────────────────────────────────────────────────
-
-export const TaxFormId = {
-  F1040: 'f1040',
-  F1040SR: 'f1040sr',
-  F1040NR: 'f1040nr',
-  ScheduleA: 'schedule_a',
-  ScheduleB: 'schedule_b',
-  ScheduleC: 'schedule_c',
-  ScheduleD: 'schedule_d',
-  ScheduleE: 'schedule_e',
-  Form8949: 'form_8949',
-} as const
-
-export type TaxFormId = (typeof TaxFormId)[keyof typeof TaxFormId]
+import {
+  type TaxFormType,
+  type FormCategory,
+  TaxFormType as TaxFormTypeValues,
+  FormCategory as FormCategoryValues,
+  TAXBANDITS_FORM_PATHS,
+  TAX_FORM_LABELS,
+  TAX_FORM_DESCRIPTIONS,
+  FORM_CATEGORY_MAP,
+} from '../types'
 
 // ─── Form Completion Status ─────────────────────────────────────────────
 
@@ -27,91 +21,118 @@ export const FormCompletionStatus = {
 
 export type FormCompletionStatus = (typeof FormCompletionStatus)[keyof typeof FormCompletionStatus]
 
-// ─── Form Definitions ──────────────────────────────────────────────────
+// ─── TaxBandits Form Definition ─────────────────────────────────────────
 
-export interface TaxFormDefinition {
-  id: TaxFormId
+export interface TaxBanditsFormDefinition {
+  id: TaxFormType
   name: string
   fullName: string
   description: string
-  category: string
+  category: FormCategory
+  taxBanditsPath: string | null
 }
 
-export const TAX_FORM_DEFINITIONS: TaxFormDefinition[] = [
-  { id: TaxFormId.F1040, name: 'Form 1040', fullName: 'U.S. Individual Income Tax Return', description: 'The main federal income tax form for individuals.', category: 'Primary' },
-  { id: TaxFormId.F1040SR, name: 'Form 1040-SR', fullName: 'U.S. Tax Return for Seniors', description: 'Simplified tax form for taxpayers age 65 and older.', category: 'Primary' },
-  { id: TaxFormId.F1040NR, name: 'Form 1040-NR', fullName: 'U.S. Nonresident Alien Income Tax Return', description: 'Tax return for nonresident aliens.', category: 'Primary' },
-  { id: TaxFormId.ScheduleA, name: 'Schedule A', fullName: 'Itemized Deductions', description: 'Medical expenses, taxes, interest, gifts, casualty losses, and other deductions.', category: 'Schedules' },
-  { id: TaxFormId.ScheduleB, name: 'Schedule B', fullName: 'Interest and Ordinary Dividends', description: 'Report interest and dividend income over $1,500.', category: 'Schedules' },
-  { id: TaxFormId.ScheduleC, name: 'Schedule C', fullName: 'Profit or Loss from Business', description: 'Report income or loss from a sole proprietorship.', category: 'Schedules' },
-  { id: TaxFormId.ScheduleD, name: 'Schedule D', fullName: 'Capital Gains and Losses', description: 'Report sale of stocks, bonds, real estate, and other capital assets.', category: 'Schedules' },
-  { id: TaxFormId.ScheduleE, name: 'Schedule E', fullName: 'Supplemental Income and Loss', description: 'Rental real estate, royalties, partnerships, S corps, estates, trusts.', category: 'Schedules' },
-  { id: TaxFormId.Form8949, name: 'Form 8949', fullName: 'Sales and Dispositions of Capital Assets', description: 'Report individual capital asset transactions.', category: 'Additional Forms' },
-]
+// ─── Build definitions from types ───────────────────────────────────────
+
+function buildFormDefinitions(): TaxBanditsFormDefinition[] {
+  return Object.values(TaxFormTypeValues).map((formType) => ({
+    id: formType,
+    name: TAX_FORM_LABELS[formType],
+    fullName: TAX_FORM_DESCRIPTIONS[formType],
+    description: TAX_FORM_DESCRIPTIONS[formType],
+    category: FORM_CATEGORY_MAP[formType],
+    taxBanditsPath: TAXBANDITS_FORM_PATHS[formType] ?? null,
+  }))
+}
+
+export const TAXBANDITS_FORM_DEFINITIONS: TaxBanditsFormDefinition[] = buildFormDefinitions()
+
+// ─── Form Category Labels ───────────────────────────────────────────────
+
+export const FORM_CATEGORY_LABELS: Record<FormCategory, string> = {
+  [FormCategoryValues.Series1099]: '1099 Series',
+  [FormCategoryValues.W2Employment]: 'W-2 Employment',
+  [FormCategoryValues.Payroll94x]: 'Payroll (94x)',
+  [FormCategoryValues.ACAReporting]: 'ACA Reporting',
+  [FormCategoryValues.WithholdingCerts]: 'Withholding Certificates',
+  [FormCategoryValues.Series5498]: '5498 Series',
+  [FormCategoryValues.Series1098]: '1098 Series',
+  [FormCategoryValues.Extensions]: 'Extensions',
+  [FormCategoryValues.Other]: 'Other',
+}
 
 // ─── Wizard Steps ───────────────────────────────────────────────────────
 
-export const WIZARD_STEPS = ['Personal Info', 'Income', 'Deductions', 'Credits', 'Review'] as const
+export const WIZARD_STEPS = ['Payer Info', 'Recipient Info', 'Amounts', 'State Info', 'Review'] as const
 
 export type WizardStep = (typeof WIZARD_STEPS)[number]
 
 // ─── Form Entry Data ────────────────────────────────────────────────────
 
 export interface FormEntryData {
-  // Personal Info
-  firstName: string
-  lastName: string
-  ssn: string
-  filingStatus: string
-  // Income
-  wagesIncome: number
-  interestIncome: number
-  dividendIncome: number
-  businessIncome: number
-  capitalGains: number
-  otherIncome: number
-  // Deductions
-  useStandardDeduction: boolean
-  medicalExpenses: number
-  stateLocalTaxes: number
-  mortgageInterest: number
-  charitableContributions: number
-  otherDeductions: number
-  // Credits
-  childTaxCredit: number
-  educationCredit: number
-  energyCredit: number
-  otherCredits: number
+  // Payer / Employer info
+  payerName: string
+  payerTin: string
+  payerAddress: string
+  payerCity: string
+  payerState: string
+  payerZip: string
+  // Recipient / Employee info
+  recipientName: string
+  recipientTin: string
+  recipientAddress: string
+  recipientCity: string
+  recipientState: string
+  recipientZip: string
+  // Amounts — generic fields that map to different boxes by form type
+  amount1: number
+  amount2: number
+  amount3: number
+  amount4: number
+  amount5: number
+  amount6: number
+  // State info
+  stateCode: string
+  stateTaxId: string
+  stateIncome: number
+  stateTaxWithheld: number
+  // Additional
+  accountNumber: string
+  notes: string
 }
 
 const EMPTY_ENTRY_DATA: FormEntryData = {
-  firstName: '',
-  lastName: '',
-  ssn: '',
-  filingStatus: 'single',
-  wagesIncome: 0,
-  interestIncome: 0,
-  dividendIncome: 0,
-  businessIncome: 0,
-  capitalGains: 0,
-  otherIncome: 0,
-  useStandardDeduction: true,
-  medicalExpenses: 0,
-  stateLocalTaxes: 0,
-  mortgageInterest: 0,
-  charitableContributions: 0,
-  otherDeductions: 0,
-  childTaxCredit: 0,
-  educationCredit: 0,
-  energyCredit: 0,
-  otherCredits: 0,
+  payerName: '',
+  payerTin: '',
+  payerAddress: '',
+  payerCity: '',
+  payerState: '',
+  payerZip: '',
+  recipientName: '',
+  recipientTin: '',
+  recipientAddress: '',
+  recipientCity: '',
+  recipientState: '',
+  recipientZip: '',
+  amount1: 0,
+  amount2: 0,
+  amount3: 0,
+  amount4: 0,
+  amount5: 0,
+  amount6: 0,
+  stateCode: '',
+  stateTaxId: '',
+  stateIncome: 0,
+  stateTaxWithheld: 0,
+  accountNumber: '',
+  notes: '',
 }
 
 // ─── Form Entry ─────────────────────────────────────────────────────────
 
 export interface FormEntry {
   id: string
-  formId: TaxFormId
+  formId: TaxFormType
   taxYear: string
   currentStep: number
   completedSteps: number[]
@@ -133,19 +154,18 @@ function createSampleEntries(): FormEntry[] {
   return [
     {
       id: 'entry_1',
-      formId: TaxFormId.F1040,
+      formId: TaxFormTypeValues.NEC1099,
       taxYear: '2025',
       currentStep: 2,
       completedSteps: [0, 1],
       status: FormCompletionStatus.InProgress,
       data: {
         ...EMPTY_ENTRY_DATA,
-        firstName: 'Alex',
-        lastName: 'Johnson',
-        ssn: '***-**-4589',
-        filingStatus: 'single',
-        wagesIncome: 85000,
-        interestIncome: 450,
+        payerName: 'Acme Corporation',
+        payerTin: '12-3456789',
+        recipientName: 'Alex Johnson',
+        recipientTin: '***-**-4589',
+        amount1: 12000,
       },
       createdAt: '2026-01-28T16:00:00Z',
       updatedAt: '2026-02-05T11:30:00Z',
@@ -159,7 +179,7 @@ interface TaxFormState {
   entries: FormEntry[]
 
   // Actions
-  startForm: (formId: TaxFormId, taxYear: string) => string
+  startForm: (formId: TaxFormType, taxYear: string) => string
   updateFormData: (entryId: string, data: Partial<FormEntryData>) => void
   setCurrentStep: (entryId: string, step: number) => void
   completeStep: (entryId: string, step: number) => void
@@ -171,9 +191,10 @@ interface TaxFormState {
 
   // Queries
   getEntry: (entryId: string) => FormEntry | undefined
-  getEntryByForm: (formId: TaxFormId, taxYear: string) => FormEntry | undefined
-  getFormStatus: (formId: TaxFormId, taxYear: string) => FormCompletionStatus
+  getEntryByForm: (formId: TaxFormType, taxYear: string) => FormEntry | undefined
+  getFormStatus: (formId: TaxFormType, taxYear: string) => FormCompletionStatus
   getProgressPercent: (entryId: string) => number
+  getFormsByCategory: (category: FormCategory) => TaxBanditsFormDefinition[]
 }
 
 export const useTaxFormStore = create<TaxFormState>()(
@@ -285,6 +306,9 @@ export const useTaxFormStore = create<TaxFormState>()(
           (entry.completedSteps.length / WIZARD_STEPS.length) * 100
         )
       },
+
+      getFormsByCategory: (category) =>
+        TAXBANDITS_FORM_DEFINITIONS.filter((f) => f.category === category),
     }),
     {
       name: 'orchestree-tax-form-storage',

@@ -1,0 +1,226 @@
+/* ─── ExtractionConfirmation ────────────────────────────────────────── */
+
+.extraction-confirmation {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ─── Header ─────────────────────────────────────────────────────── */
+
+.extraction-confirmation__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.extraction-confirmation__header-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.extraction-confirmation__title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.extraction-confirmation__form-badge {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+}
+
+.extraction-confirmation__confidence-score {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--color-primary);
+}
+
+/* ─── Warnings ───────────────────────────────────────────────────── */
+
+.extraction-confirmation__warnings {
+  padding: var(--space-3) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background-color: var(--color-warning-light);
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .extraction-confirmation__warnings {
+  background-color: rgba(251, 191, 36, 0.06);
+}
+
+.extraction-confirmation__warning {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-warning-dark);
+}
+
+[data-theme="dark"] .extraction-confirmation__warning {
+  color: var(--color-warning);
+}
+
+/* ─── Fields Table ───────────────────────────────────────────────── */
+
+.extraction-confirmation__fields {
+  padding: var(--space-4) var(--space-5);
+  overflow-x: auto;
+}
+
+.extraction-confirmation__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.extraction-confirmation__table th {
+  text-align: left;
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.extraction-confirmation__table td {
+  padding: var(--space-2);
+  vertical-align: middle;
+}
+
+.extraction-confirmation__field-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.extraction-confirmation__input {
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  background-color: transparent;
+  color: var(--text-primary);
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+
+.extraction-confirmation__input:hover {
+  border-color: var(--border-color);
+}
+
+.extraction-confirmation__input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background-color: var(--bg-primary);
+  box-shadow: 0 0 0 3px var(--alpha-focus);
+}
+
+/* ─── Confidence Badge ───────────────────────────────────────────── */
+
+.extraction-confirmation__confidence {
+  display: inline-block;
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+}
+
+.extraction-confirmation__confidence--high {
+  color: var(--color-success-dark);
+  background-color: var(--color-success-light);
+}
+
+.extraction-confirmation__confidence--medium {
+  color: var(--color-warning-dark);
+  background-color: var(--color-warning-light);
+}
+
+.extraction-confirmation__confidence--low {
+  color: var(--color-danger-dark);
+  background-color: var(--color-danger-light);
+}
+
+/* ─── Confirm Checkbox ───────────────────────────────────────────── */
+
+.extraction-confirmation__check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: none;
+  color: transparent;
+  cursor: pointer;
+  transition: all var(--motion-fast) var(--ease-out);
+}
+
+.extraction-confirmation__check:hover {
+  border-color: var(--color-primary);
+}
+
+.extraction-confirmation__check--active {
+  border-color: var(--color-success);
+  background-color: var(--color-success);
+  color: #ffffff;
+}
+
+/* ─── Actions ────────────────────────────────────────────────────── */
+
+.extraction-confirmation__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--border-color);
+}
+
+.extraction-confirmation__reject {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.extraction-confirmation__confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .extraction-confirmation__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .extraction-confirmation__fields {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .extraction-confirmation__actions {
+    padding: var(--space-3) var(--space-4);
+  }
+}

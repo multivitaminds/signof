@@ -85,7 +85,7 @@ export const useBillingStore = create<BillingState>()(
           invoiceUrl: '#',
         },
       ],
-      taxPlan: 'tax_free',
+      taxPlan: 'individual_basic',
       accountingPlan: 'acct_free',
       activeAddOns: [],
 

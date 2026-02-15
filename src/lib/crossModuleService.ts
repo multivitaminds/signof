@@ -16,6 +16,7 @@ import { useActivityStore } from '../features/activity/stores/useActivityStore'
 import useAIAgentStore from '../features/ai/stores/useAIAgentStore'
 import { useDatabaseStore } from '../features/databases/stores/useDatabaseStore'
 import { useTaxStore } from '../features/tax/stores/useTaxStore'
+import { useTaxFilingStore } from '../features/tax/stores/useTaxFilingStore'
 import { RunStatus } from '../features/ai/types'
 import { ACTIVE_STATUSES } from '../types'
 
@@ -99,7 +100,8 @@ export function getModuleMetrics(): ModuleMetrics {
 
   // Tax metrics
   const taxState = useTaxStore.getState()
-  const pendingFilings = taxState.filings.filter(
+  const taxFilingState = useTaxFilingStore.getState()
+  const pendingFilings = taxFilingState.filings.filter(
     (f) => f.state !== 'filed' && f.state !== 'accepted' && f.state !== 'rejected'
   ).length
   const upcomingTaxDeadlines = taxState.deadlines.filter((d) => !d.completed).length

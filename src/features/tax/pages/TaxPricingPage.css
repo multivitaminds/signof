@@ -19,11 +19,43 @@
   margin: 0;
 }
 
+/* ─── Tabs ─── */
+
+.tax-pricing__tabs {
+  display: flex;
+  gap: var(--space-1, 0.25rem);
+  margin-bottom: var(--space-6, 2rem);
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+}
+
+.tax-pricing__tab {
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border: none;
+  background: transparent;
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--text-muted, #9CA3AF);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.tax-pricing__tab:hover {
+  color: var(--text-primary, #111827);
+}
+
+.tax-pricing__tab--active {
+  color: var(--color-primary, #4F46E5);
+  font-weight: 700;
+  border-bottom-color: var(--color-primary, #4F46E5);
+}
+
 /* ─── Grid ─── */
 
 .tax-pricing__grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--space-4, 1rem);
 }
 
@@ -50,6 +82,10 @@
   box-shadow: 0 0 0 1px var(--color-primary, #4F46E5);
 }
 
+.tax-pricing__card--popular {
+  border-color: var(--color-primary, #4F46E5);
+}
+
 .tax-pricing__card-badge {
   position: absolute;
   top: -10px;
@@ -60,6 +96,10 @@
   font-weight: 600;
   padding: 2px 10px;
   border-radius: 999px;
+}
+
+.tax-pricing__card-badge--popular {
+  background: var(--color-warning, #D97706);
 }
 
 /* ─── Card Header ─── */
@@ -87,7 +127,7 @@
   display: flex;
   align-items: baseline;
   gap: var(--space-1, 0.25rem);
-  margin-bottom: var(--space-2, 0.5rem);
+  margin-bottom: var(--space-1, 0.25rem);
 }
 
 .tax-pricing__card-amount {
@@ -100,6 +140,17 @@
 .tax-pricing__card-period {
   font-size: var(--text-sm, 0.875rem);
   color: var(--text-muted, #9CA3AF);
+}
+
+.tax-pricing__card-competitor {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+  margin: 0 0 var(--space-2, 0.5rem);
+}
+
+.tax-pricing__card-competitor-price {
+  text-decoration: line-through;
+  color: var(--color-danger, #DC2626);
 }
 
 .tax-pricing__card-description {
@@ -270,6 +321,10 @@
 
 [data-theme="dark"] .tax-pricing__modal-cancel:hover {
   background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .tax-pricing__tab:hover {
+  color: var(--text-primary, #F1F5F9);
 }
 
 /* ─── Responsive ─── */

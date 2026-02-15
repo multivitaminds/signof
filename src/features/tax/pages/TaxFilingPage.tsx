@@ -1,5 +1,8 @@
+// Expert Mode filing — direct wizard with manual field entry.
+// For the guided Interview flow, see TaxInterviewPage.
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useTaxStore } from '../stores/useTaxStore'
+import { useTaxDocumentStore } from '../stores/useTaxDocumentStore'
 import { useTaxFilingStore } from '../stores/useTaxFilingStore'
 import { FILING_STATUS_LABELS, FILING_STATE_LABELS, FilingState, STANDARD_DEDUCTION_2025, TransmissionStatus } from '../types'
 import type { TaxFiling, FilingStatus, TaxBanditConfig } from '../types'
@@ -35,7 +38,7 @@ const TRANSMISSION_STEP_LABELS: Record<string, string> = {
 
 function TaxFilingPage() {
   const activeTaxYear = useTaxStore((s) => s.activeTaxYear)
-  const documents = useTaxStore((s) => s.documents)
+  const documents = useTaxDocumentStore((s) => s.documents)
 
   const filings = useTaxFilingStore((s) => s.filings)
   const createFiling = useTaxFilingStore((s) => s.createFiling)
@@ -197,15 +200,18 @@ function TaxFilingPage() {
   const connected = isTaxBanditConnected()
 
   // Auto-populate income from extracted documents
+  const extractionResults = useTaxDocumentStore((s) => s.extractionResults)
   const autoPopulatedWages = useMemo(() => {
     const yearDocs = documents.filter(
-      (d) => d.taxYear === activeTaxYear && d.extractionStatus === 'completed'
+      (d) => d.taxYear === activeTaxYear
     )
     let wages = 0
     let otherIncome = 0
     let withheld = 0
     for (const doc of yearDocs) {
-      for (const field of doc.extractedData) {
+      const extraction = extractionResults[doc.id]
+      if (!extraction || !extraction.extractedAt) continue
+      for (const field of extraction.fields) {
         if (field.key.toLowerCase().includes('wages') && field.key.includes('Box 1')) {
           wages += parseFloat(field.value) || 0
         }
@@ -221,7 +227,7 @@ function TaxFilingPage() {
       }
     }
     return { wages, otherIncome, withheld }
-  }, [documents, activeTaxYear])
+  }, [documents, activeTaxYear, extractionResults])
 
   const handleAutoPopulate = useCallback(() => {
     if (!filing) return

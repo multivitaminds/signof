@@ -97,11 +97,11 @@ describe('TaxBanditSettings', () => {
     })
   })
 
-  it('toggles sandbox checkbox', async () => {
+  it('toggles to demo mode via segmented control', async () => {
     const user = userEvent.setup()
     render(<TaxBanditSettings {...defaultProps} />)
     await user.click(screen.getByRole('button', { expanded: false }))
-    await user.click(screen.getByText('Sandbox Mode'))
+    await user.click(screen.getByText('Demo'))
     expect(defaultProps.onConfigChange).toHaveBeenCalledWith({ useSandbox: true })
   })
 })

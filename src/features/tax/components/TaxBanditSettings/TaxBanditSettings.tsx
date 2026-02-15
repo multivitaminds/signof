@@ -152,16 +152,22 @@ function TaxBanditSettings({
           </div>
 
           <div className="taxbandit-settings__actions">
-            <label className="taxbandit-settings__sandbox-toggle">
-              <input
-                type="checkbox"
-                checked={config.useSandbox}
-                onChange={(e) =>
-                  onConfigChange({ useSandbox: e.target.checked })
-                }
-              />
-              <span>Sandbox Mode</span>
-            </label>
+            <div className="taxbandit-settings__environment-toggle">
+              <button
+                className={`taxbandit-settings__env-btn ${config.useSandbox ? 'taxbandit-settings__env-btn--active taxbandit-settings__env-btn--demo' : ''}`}
+                onClick={() => onConfigChange({ useSandbox: true })}
+                type="button"
+              >
+                Demo
+              </button>
+              <button
+                className={`taxbandit-settings__env-btn ${!config.useSandbox ? 'taxbandit-settings__env-btn--active taxbandit-settings__env-btn--live' : ''}`}
+                onClick={() => onConfigChange({ useSandbox: false })}
+                type="button"
+              >
+                Live
+              </button>
+            </div>
 
             <button
               className="btn-primary taxbandit-settings__test-btn"

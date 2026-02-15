@@ -1,0 +1,62 @@
+/* ─── MilestoneCelebration ──────────────────────────────────────────── */
+
+.milestone-celebration {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: var(--z-modal);
+  animation: fadeIn 150ms ease;
+}
+
+.milestone-celebration__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-8);
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-4);
+  text-align: center;
+  animation: milestone-scale-in 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ─── Icon ───────────────────────────────────────────────────────── */
+
+.milestone-celebration__icon {
+  display: flex;
+  color: var(--color-success);
+  animation: milestone-check-pop 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes milestone-check-pop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ─── Title ──────────────────────────────────────────────────────── */
+
+.milestone-celebration__title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+/* ─── Button ─────────────────────────────────────────────────────── */
+
+.milestone-celebration__btn {
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--text-base);
+}
+
+/* ─── Scale In ───────────────────────────────────────────────────── */
+
+@keyframes milestone-scale-in {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}

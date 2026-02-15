@@ -111,6 +111,64 @@
   font-size: var(--text-sm);
 }
 
+/* ─── Extraction Steps ───────────────────────────────────────────── */
+
+.tax-extractor__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 320px;
+}
+
+.tax-extractor__step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  transition: color var(--motion-fast) var(--ease-out),
+    opacity var(--motion-fast) var(--ease-out);
+}
+
+.tax-extractor__step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background-color: var(--border-color);
+  flex-shrink: 0;
+  transition: background-color var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out);
+}
+
+.tax-extractor__step--pending {
+  opacity: 0.5;
+}
+
+.tax-extractor__step--active {
+  color: var(--color-primary);
+  font-weight: var(--font-medium);
+}
+
+.tax-extractor__step--active .tax-extractor__step-dot {
+  background-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.2);
+  animation: tax-extractor-pulse 1.5s ease-in-out infinite;
+}
+
+.tax-extractor__step--done {
+  color: var(--color-success-dark);
+}
+
+.tax-extractor__step--done .tax-extractor__step-dot {
+  background-color: var(--color-success);
+}
+
+@keyframes tax-extractor-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.2); }
+  50% { box-shadow: 0 0 0 6px rgba(99, 91, 255, 0.1); }
+}
+
 /* ─── Data Table ──────────────────────────────────────────────────── */
 
 .tax-extractor__data {

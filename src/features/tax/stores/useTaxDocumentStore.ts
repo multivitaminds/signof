@@ -1,7 +1,13 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { TaxFormType } from '../types'
-import type { TaxYear } from '../types'
+import type {
+  TaxYear,
+  TaxFormType as TaxFormTypeT,
+  ExtractionResult,
+  ExtractionField,
+  ExtractionConfidence,
+} from '../types'
 
 // ─── Document Review Status ─────────────────────────────────────────────
 
@@ -24,7 +30,7 @@ export const DOC_REVIEW_LABELS: Record<DocReviewStatus, string> = {
 export interface TaxUploadedDoc {
   id: string
   fileName: string
-  formType: TaxFormType
+  formType: TaxFormTypeT
   taxYear: TaxYear
   employerName: string
   uploadDate: string
@@ -35,7 +41,7 @@ export interface TaxUploadedDoc {
 
 // ─── Filename Auto-Detection ────────────────────────────────────────────
 
-const FILENAME_PATTERNS: { pattern: RegExp; type: TaxFormType }[] = [
+const FILENAME_PATTERNS: { pattern: RegExp; type: TaxFormTypeT }[] = [
   { pattern: /w[_-]?2/i, type: TaxFormType.W2 },
   { pattern: /1099[_-]?nec/i, type: TaxFormType.NEC1099 },
   { pattern: /1099[_-]?int/i, type: TaxFormType.INT1099 },
@@ -46,7 +52,7 @@ const FILENAME_PATTERNS: { pattern: RegExp; type: TaxFormType }[] = [
   { pattern: /w[_-]?9/i, type: TaxFormType.W9 },
 ]
 
-export function detectFormType(filename: string): TaxFormType {
+export function detectFormType(filename: string): TaxFormTypeT {
   for (const { pattern, type } of FILENAME_PATTERNS) {
     if (pattern.test(filename)) return type
   }
@@ -110,12 +116,62 @@ function createSampleDocs(): TaxUploadedDoc[] {
   ]
 }
 
+// ─── Extraction Simulation ──────────────────────────────────────────────
+
+function generateExtractionFields(formType: TaxFormTypeT): ExtractionField[] {
+  const high: ExtractionConfidence = 'high'
+  const medium: ExtractionConfidence = 'medium'
+  const low: ExtractionConfidence = 'low'
+
+  switch (formType) {
+    case TaxFormType.W2:
+      return [
+        { key: 'Employer Name', value: 'Acme Corporation', confidence: high, confirmed: false },
+        { key: 'Employer EIN', value: '12-3456789', confidence: high, confirmed: false },
+        { key: 'Wages (Box 1)', value: '85000.00', confidence: high, confirmed: false },
+        { key: 'Federal Tax Withheld (Box 2)', value: '14500.00', confidence: high, confirmed: false },
+        { key: 'Social Security Wages (Box 3)', value: '85000.00', confidence: medium, confirmed: false },
+        { key: 'Medicare Wages (Box 5)', value: '85000.00', confidence: medium, confirmed: false },
+      ]
+    case TaxFormType.NEC1099:
+      return [
+        { key: 'Payer Name', value: 'Design Studio LLC', confidence: high, confirmed: false },
+        { key: 'Payer TIN', value: '98-7654321', confidence: high, confirmed: false },
+        { key: 'Nonemployee Compensation (Box 1)', value: '12000.00', confidence: high, confirmed: false },
+      ]
+    case TaxFormType.INT1099:
+      return [
+        { key: 'Payer Name', value: 'Fidelity National Bank', confidence: high, confirmed: false },
+        { key: 'Interest Income (Box 1)', value: '450.00', confidence: medium, confirmed: false },
+        { key: 'Early Withdrawal Penalty (Box 2)', value: '0.00', confidence: low, confirmed: false },
+      ]
+    case TaxFormType.DIV1099:
+      return [
+        { key: 'Payer Name', value: 'Brokerage Inc.', confidence: high, confirmed: false },
+        { key: 'Total Ordinary Dividends (Box 1a)', value: '2500.00', confidence: medium, confirmed: false },
+        { key: 'Qualified Dividends (Box 1b)', value: '1800.00', confidence: medium, confirmed: false },
+      ]
+    case TaxFormType.Mortgage1098:
+      return [
+        { key: 'Lender Name', value: 'Wells Fargo Home Mortgage', confidence: high, confirmed: false },
+        { key: 'Mortgage Interest Received (Box 1)', value: '8200.00', confidence: medium, confirmed: false },
+        { key: 'Points Paid (Box 6)', value: '0.00', confidence: low, confirmed: false },
+      ]
+    default:
+      return [
+        { key: 'Form Type', value: formType, confidence: medium, confirmed: false },
+        { key: 'Extracted Amount', value: '0.00', confidence: low, confirmed: false },
+      ]
+  }
+}
+
 // ─── Store ──────────────────────────────────────────────────────────────
 
 interface TaxDocumentState {
   documents: TaxUploadedDoc[]
   activeTaxYear: TaxYear
   isDragging: boolean
+  extractionResults: Record<string, ExtractionResult>
 
   // Actions
   addDocument: (doc: Omit<TaxUploadedDoc, 'id' | 'uploadDate' | 'status' | 'issueNote'>) => void
@@ -123,6 +179,11 @@ interface TaxDocumentState {
   updateDocumentStatus: (id: string, status: DocReviewStatus, issueNote?: string) => void
   setActiveTaxYear: (year: TaxYear) => void
   setDragging: (dragging: boolean) => void
+
+  // Extraction
+  extractDocument: (id: string) => void
+  setExtractionConfirmed: (id: string, confirmed: boolean) => void
+  getExtractionResult: (id: string) => ExtractionResult | undefined
 
   // Clear data
   clearData: () => void
@@ -141,6 +202,7 @@ export const useTaxDocumentStore = create<TaxDocumentState>()(
       documents: createSampleDocs(),
       activeTaxYear: '2025' as TaxYear,
       isDragging: false,
+      extractionResults: {},
 
       addDocument: (doc) =>
         set((state) => ({
@@ -159,6 +221,9 @@ export const useTaxDocumentStore = create<TaxDocumentState>()(
       deleteDocument: (id) =>
         set((state) => ({
           documents: state.documents.filter((d) => d.id !== id),
+          extractionResults: Object.fromEntries(
+            Object.entries(state.extractionResults).filter(([key]) => key !== id)
+          ),
         })),
 
       updateDocumentStatus: (id, status, issueNote) =>
@@ -174,9 +239,142 @@ export const useTaxDocumentStore = create<TaxDocumentState>()(
 
       setDragging: (dragging) => set({ isDragging: dragging }),
 
-      clearData: () => {
-        set({ documents: [] })
+      // ─── Extraction ─────────────────────────────────────────────────
+
+      extractDocument: (id) => {
+        const doc = get().documents.find((d) => d.id === id)
+        if (!doc) return
+
+        // Step 1: Set status to extracting
+        set((state) => ({
+          extractionResults: {
+            ...state.extractionResults,
+            [id]: {
+              fields: [],
+              overallConfidence: 0,
+              formType: doc.formType,
+              warnings: ['Analyzing document format...'],
+              extractedAt: '',
+            },
+          },
+        }))
+
+        // Step 2: Analyzing document format (500ms)
+        setTimeout(() => {
+          set((state) => {
+            const current = state.extractionResults[id]
+            if (!current) return state
+            return {
+              extractionResults: {
+                ...state.extractionResults,
+                [id]: {
+                  ...current,
+                  warnings: ['Identifying form type...'],
+                },
+              },
+            }
+          })
+        }, 500)
+
+        // Step 3: Identifying form type (900ms)
+        setTimeout(() => {
+          set((state) => {
+            const current = state.extractionResults[id]
+            if (!current) return state
+            return {
+              extractionResults: {
+                ...state.extractionResults,
+                [id]: {
+                  ...current,
+                  warnings: ['Reading field values...'],
+                },
+              },
+            }
+          })
+        }, 900)
+
+        // Step 4: Reading field values (1700ms)
+        setTimeout(() => {
+          set((state) => {
+            const current = state.extractionResults[id]
+            if (!current) return state
+            return {
+              extractionResults: {
+                ...state.extractionResults,
+                [id]: {
+                  ...current,
+                  warnings: ['Validating extracted data...'],
+                },
+              },
+            }
+          })
+        }, 1700)
+
+        // Step 5: Complete extraction (2000ms)
+        setTimeout(() => {
+          const currentDoc = get().documents.find((d) => d.id === id)
+          if (!currentDoc) return
+
+          const fields = generateExtractionFields(currentDoc.formType)
+          const confidenceScores = fields.map((f) =>
+            f.confidence === 'high' ? 0.95 : f.confidence === 'medium' ? 0.78 : 0.55
+          )
+          const overallConfidence =
+            fields.length > 0
+              ? Math.round(
+                  (confidenceScores.reduce((a, b) => a + b, 0) /
+                    confidenceScores.length) *
+                    100
+                )
+              : 0
+
+          const warnings: string[] = []
+          const lowConfidenceFields = fields.filter((f) => f.confidence === 'low')
+          if (lowConfidenceFields.length > 0) {
+            warnings.push(
+              `${lowConfidenceFields.length} field(s) extracted with low confidence — please review`
+            )
+          }
+
+          set((state) => ({
+            extractionResults: {
+              ...state.extractionResults,
+              [id]: {
+                fields,
+                overallConfidence,
+                formType: currentDoc.formType,
+                warnings,
+                extractedAt: new Date().toISOString(),
+              },
+            },
+          }))
+        }, 2000)
       },
+
+      setExtractionConfirmed: (id, confirmed) =>
+        set((state) => {
+          const result = state.extractionResults[id]
+          if (!result) return state
+          return {
+            extractionResults: {
+              ...state.extractionResults,
+              [id]: {
+                ...result,
+                fields: result.fields.map((f) => ({ ...f, confirmed })),
+              },
+            },
+          }
+        }),
+
+      getExtractionResult: (id) => get().extractionResults[id],
+
+      // ─── Clear ──────────────────────────────────────────────────────
+
+      clearData: () => {
+        set({ documents: [], extractionResults: {} })
+      },
+
+      // ─── Queries ────────────────────────────────────────────────────
 
       getDocsByYear: (year) =>
         get().documents.filter((d) => d.taxYear === year),
@@ -212,6 +410,7 @@ export const useTaxDocumentStore = create<TaxDocumentState>()(
       partialize: (state) => ({
         documents: state.documents,
         activeTaxYear: state.activeTaxYear,
+        extractionResults: state.extractionResults,
       }),
     }
   )

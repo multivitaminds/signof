@@ -7,7 +7,7 @@ import { useContactStore } from '../../documents/stores/useContactStore'
 import { useDatabaseStore } from '../../databases/stores/useDatabaseStore'
 import { useInvoiceStore } from '../../accounting/stores/useInvoiceStore'
 import { useExpenseStore } from '../../accounting/stores/useExpenseStore'
-import { useTaxStore } from '../../tax/stores/useTaxStore'
+import { useTaxFilingStore } from '../../tax/stores/useTaxFilingStore'
 import { useInboxStore } from '../../inbox/stores/useInboxStore'
 import { getModuleMetrics, getUpcomingDeadlines } from '../../../lib/crossModuleService'
 import { DEFAULT_SCHEDULE, EventTypeCategory, LocationType } from '../../scheduling/types'
@@ -633,7 +633,7 @@ export function executeTool(
       // ── Tax ────────────────────────────────────────────────────
       case 'create_tax_filing': {
         const taxYear = (input.taxYear as string) || '2025'
-        useTaxStore.getState().createFiling(taxYear as TaxYear)
+        useTaxFilingStore.getState().createFiling(taxYear as TaxYear)
         return JSON.stringify({ success: true, taxYear })
       }
 

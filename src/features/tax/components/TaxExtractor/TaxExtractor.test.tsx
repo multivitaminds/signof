@@ -52,7 +52,7 @@ describe('TaxExtractor', () => {
     const doc = { ...baseMockDoc, extractionStatus: 'extracting' as const }
     render(<TaxExtractor {...defaultProps} document={doc} />)
     expect(screen.getByText('Extracting...')).toBeInTheDocument()
-    expect(screen.getByText('Analyzing document and extracting fields...')).toBeInTheDocument()
+    expect(screen.getByText('Analyzing document format...')).toBeInTheDocument()
   })
 
   it('shows Extracted status with data table for completed', () => {

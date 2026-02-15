@@ -15,15 +15,22 @@ function renderPage() {
 
 describe('TaxPricingPage', () => {
   beforeEach(() => {
-    useBillingStore.setState({ taxPlan: 'tax_free' })
+    useBillingStore.setState({ taxPlan: 'individual_basic' })
   })
 
-  it('renders all 4 tax tier cards', () => {
+  it('renders Individual tab plans by default', () => {
     renderPage()
-    expect(screen.getByText('Tax Free')).toBeInTheDocument()
-    expect(screen.getByText('Tax Plus')).toBeInTheDocument()
-    expect(screen.getByText('Tax Premium')).toBeInTheDocument()
-    expect(screen.getByText('Tax Business')).toBeInTheDocument()
+    expect(screen.getByText('Basic')).toBeInTheDocument()
+    expect(screen.getByText('Plus')).toBeInTheDocument()
+    expect(screen.getByText('Self-Employed')).toBeInTheDocument()
+    expect(screen.getByText('CPA Assisted')).toBeInTheDocument()
+  })
+
+  it('renders 3 category tabs', () => {
+    renderPage()
+    expect(screen.getByRole('tab', { name: 'Individual' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Business' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'API' })).toBeInTheDocument()
   })
 
   it('highlights current plan', () => {
@@ -52,7 +59,7 @@ describe('TaxPricingPage', () => {
     const upgradeButtons = screen.getAllByText('Upgrade')
     await user.click(upgradeButtons[0]!)
     await user.click(screen.getByText('Confirm Change'))
-    expect(useBillingStore.getState().taxPlan).toBe('tax_plus')
+    expect(useBillingStore.getState().taxPlan).toBe('individual_plus')
   })
 
   it('cancels modal without changing plan', async () => {
@@ -61,6 +68,36 @@ describe('TaxPricingPage', () => {
     const upgradeButtons = screen.getAllByText('Upgrade')
     await user.click(upgradeButtons[0]!)
     await user.click(screen.getByText('Cancel'))
-    expect(useBillingStore.getState().taxPlan).toBe('tax_free')
+    expect(useBillingStore.getState().taxPlan).toBe('individual_basic')
+  })
+
+  it('switches to Business tab', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(screen.getByRole('tab', { name: 'Business' }))
+    expect(screen.getByText('Business Starter')).toBeInTheDocument()
+    expect(screen.getByText('Business Pro')).toBeInTheDocument()
+    expect(screen.getAllByText('Enterprise').length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('switches to API tab', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(screen.getByRole('tab', { name: 'API' }))
+    expect(screen.getByText('API Free')).toBeInTheDocument()
+    expect(screen.getByText('API Pay-as-you-go')).toBeInTheDocument()
+    expect(screen.getByText('API Pro')).toBeInTheDocument()
+    expect(screen.getByText('API Enterprise')).toBeInTheDocument()
+  })
+
+  it('shows competitor prices with strikethrough', () => {
+    renderPage()
+    expect(screen.getByText('$89')).toBeInTheDocument()
+    expect(screen.getByText('$169')).toBeInTheDocument()
+  })
+
+  it('shows popular badge on Plus plan', () => {
+    renderPage()
+    expect(screen.getByText('Popular')).toBeInTheDocument()
   })
 })

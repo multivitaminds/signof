@@ -1,0 +1,207 @@
+/* ─── SubmissionStatusTracker ───────────────────────────────────────── */
+
+.submission-tracker {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ─── Header ─────────────────────────────────────────────────────── */
+
+.submission-tracker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.submission-tracker__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.submission-tracker__form-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: var(--radius-sm);
+}
+
+.submission-tracker__year {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.submission-tracker__download {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--color-primary);
+  text-decoration: none;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--motion-fast) var(--ease-out);
+}
+
+.submission-tracker__download:hover {
+  background-color: var(--color-primary-light);
+}
+
+/* ─── Timeline ───────────────────────────────────────────────────── */
+
+.submission-tracker__timeline {
+  display: flex;
+  align-items: flex-start;
+  padding: var(--space-5);
+  gap: 0;
+}
+
+.submission-tracker__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  position: relative;
+  flex: 1;
+  text-align: center;
+}
+
+/* ─── Step Icon ──────────────────────────────────────────────────── */
+
+.submission-tracker__step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.submission-tracker__step--complete .submission-tracker__step-icon {
+  color: var(--color-success);
+}
+
+.submission-tracker__step--active .submission-tracker__step-icon {
+  color: var(--color-primary);
+}
+
+.submission-tracker__step--rejected .submission-tracker__step-icon {
+  color: var(--color-danger);
+}
+
+.submission-tracker__step--future .submission-tracker__step-icon {
+  color: var(--text-muted);
+}
+
+/* ─── Pulse Animation ────────────────────────────────────────────── */
+
+@keyframes submission-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.submission-tracker__pulse {
+  animation: submission-pulse 1.5s ease-in-out infinite;
+}
+
+/* ─── Step Label ─────────────────────────────────────────────────── */
+
+.submission-tracker__step-label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+}
+
+.submission-tracker__step--complete .submission-tracker__step-label {
+  color: var(--color-success-dark);
+}
+
+.submission-tracker__step--active .submission-tracker__step-label {
+  color: var(--color-primary);
+  font-weight: var(--font-semibold);
+}
+
+.submission-tracker__step--rejected .submission-tracker__step-label {
+  color: var(--color-danger);
+  font-weight: var(--font-semibold);
+}
+
+/* ─── Connector ──────────────────────────────────────────────────── */
+
+.submission-tracker__connector {
+  position: absolute;
+  top: 10px;
+  left: calc(50% + 14px);
+  width: calc(100% - 28px);
+  height: 2px;
+  background-color: var(--border-color);
+}
+
+.submission-tracker__connector--done {
+  background-color: var(--color-success);
+}
+
+/* ─── Errors ─────────────────────────────────────────────────────── */
+
+.submission-tracker__errors {
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background-color: var(--color-danger-light);
+}
+
+[data-theme="dark"] .submission-tracker__errors {
+  background-color: rgba(255, 77, 53, 0.06);
+}
+
+.submission-tracker__error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-danger-dark);
+}
+
+[data-theme="dark"] .submission-tracker__error {
+  color: var(--color-danger);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .submission-tracker__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .submission-tracker__timeline {
+    padding: var(--space-4);
+    overflow-x: auto;
+  }
+
+  .submission-tracker__step {
+    min-width: 64px;
+  }
+
+  .submission-tracker__errors {
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+@media (max-width: 1023px) {
+  .submission-tracker__step-label {
+    font-size: 0.625rem;
+  }
+}

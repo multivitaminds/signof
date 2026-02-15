@@ -4,6 +4,7 @@ import { FilingState, TaxYear } from '../types'
 function resetStore() {
   useTaxFilingStore.setState({
     filings: [],
+    submissions: [],
     checklist: DEFAULT_CHECKLIST.map((item) => ({ ...item })),
     confirmation: null,
     isAmendmentMode: false,

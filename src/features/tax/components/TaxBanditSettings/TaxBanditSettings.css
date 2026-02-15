@@ -111,17 +111,46 @@
   gap: var(--space-3);
 }
 
-.taxbandit-settings__sandbox-toggle {
+.taxbandit-settings__environment-toggle {
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  cursor: pointer;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
 
-.taxbandit-settings__sandbox-toggle input {
-  accent-color: var(--color-primary);
+.taxbandit-settings__env-btn {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: background-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
+}
+
+.taxbandit-settings__env-btn:hover {
+  background-color: var(--bg-secondary);
+}
+
+.taxbandit-settings__env-btn--active.taxbandit-settings__env-btn--demo {
+  background-color: #f59e0b;
+  color: #fff;
+}
+
+.taxbandit-settings__env-btn--active.taxbandit-settings__env-btn--live {
+  background-color: var(--color-success);
+  color: #fff;
+}
+
+[data-theme="dark"] .taxbandit-settings__env-btn--active.taxbandit-settings__env-btn--demo {
+  background-color: #d97706;
+}
+
+[data-theme="dark"] .taxbandit-settings__env-btn--active.taxbandit-settings__env-btn--live {
+  background-color: #059669;
 }
 
 .taxbandit-settings__test-btn {

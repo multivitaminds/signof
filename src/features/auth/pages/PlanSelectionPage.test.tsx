@@ -124,9 +124,9 @@ describe('PlanSelectionPage', () => {
     const taxToggle = screen.getByRole('switch', { name: /toggle tax add-on/i })
     await user.click(taxToggle)
 
-    expect(screen.getByText('Tax Free')).toBeInTheDocument()
-    expect(screen.getByText('Tax Plus')).toBeInTheDocument()
-    expect(screen.getByText('Tax Premium')).toBeInTheDocument()
-    expect(screen.getByText('Tax Business')).toBeInTheDocument()
+    expect(screen.getByText('Basic')).toBeInTheDocument()
+    expect(screen.getByText('Plus')).toBeInTheDocument()
+    expect(screen.getByText('Self-Employed')).toBeInTheDocument()
+    expect(screen.getByText('CPA Assisted')).toBeInTheDocument()
   })
 })

@@ -14,14 +14,33 @@ vi.mock('../stores/useTaxStore', () => ({
   useTaxStore: (selector: (s: Record<string, unknown>) => unknown) =>
     selector({
       activeTaxYear: '2025',
-      documents: [],
-      filings: [],
       deadlines: [
         { id: 'd1', title: 'File Taxes', description: 'File your return', date: '2026-04-15T00:00:00Z', completed: false, taxYear: '2025' },
         { id: 'd2', title: 'Extension Deadline', description: 'Extension due', date: '2026-10-15T00:00:00Z', completed: true, taxYear: '2025' },
       ],
       toggleDeadline: vi.fn(),
+    }),
+}))
+
+vi.mock('../stores/useTaxDocumentStore', () => ({
+  useTaxDocumentStore: (selector: (s: Record<string, unknown>) => unknown) =>
+    selector({
+      documents: [],
+    }),
+}))
+
+vi.mock('../stores/useTaxFilingStore', () => ({
+  useTaxFilingStore: (selector: (s: Record<string, unknown>) => unknown) =>
+    selector({
+      filings: [],
       createFiling: vi.fn(),
+    }),
+}))
+
+vi.mock('../../settings/stores/useBillingStore', () => ({
+  useBillingStore: (selector: (s: Record<string, unknown>) => unknown) =>
+    selector({
+      taxPlan: 'individual_basic',
     }),
 }))
 

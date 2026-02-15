@@ -1,22 +1,72 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Scan, Loader, CheckCircle, AlertTriangle, Save } from 'lucide-react'
-import type { TaxDocument, ExtractedField } from '../../types'
+import type { TaxDocument, ExtractedField, ExtractionResult, ExtractionField } from '../../types'
 import { TAX_FORM_LABELS } from '../../types'
+import ExtractionConfirmation from '../ExtractionConfirmation/ExtractionConfirmation'
 import './TaxExtractor.css'
+
+const EXTRACTION_STEPS = [
+  'Analyzing document format...',
+  'Identifying form type...',
+  'Reading field values...',
+  'Validating extracted data...',
+]
 
 interface TaxExtractorProps {
   document: TaxDocument
+  extractionResult?: ExtractionResult
   onExtract: (id: string) => void
   onSave: (id: string, data: ExtractedField[]) => void
+  onConfirmExtraction?: (id: string, fields: ExtractionField[]) => void
+  onRejectExtraction?: (id: string) => void
 }
 
-function TaxExtractor({ document, onExtract, onSave }: TaxExtractorProps) {
+function TaxExtractor({
+  document,
+  extractionResult,
+  onExtract,
+  onSave,
+  onConfirmExtraction,
+  onRejectExtraction,
+}: TaxExtractorProps) {
   const [editedData, setEditedData] = useState<ExtractedField[]>(document.extractedData)
   const [hasChanges, setHasChanges] = useState(false)
+  const [isExtracting, setIsExtracting] = useState(false)
+  const [currentStep, setCurrentStep] = useState(0)
 
   const handleExtract = useCallback(() => {
+    setIsExtracting(true)
+    setCurrentStep(0)
     onExtract(document.id)
   }, [document.id, onExtract])
+
+  // Step-by-step progress during extraction
+  useEffect(() => {
+    if (!isExtracting) return
+
+    const timers: ReturnType<typeof setTimeout>[] = []
+    EXTRACTION_STEPS.forEach((_, i) => {
+      if (i === 0) return // Step 0 shown immediately
+      timers.push(
+        setTimeout(() => {
+          setCurrentStep(i)
+        }, i * 600)
+      )
+    })
+
+    return () => {
+      timers.forEach(clearTimeout)
+    }
+  }, [isExtracting])
+
+  // Stop extraction progress when result arrives or status changes to completed/failed
+  const shouldStopExtracting =
+    !!extractionResult?.extractedAt ||
+    document.extractionStatus === 'completed' ||
+    document.extractionStatus === 'failed'
+  if (shouldStopExtracting && isExtracting) {
+    setIsExtracting(false)
+  }
 
   const handleFieldChange = useCallback(
     (index: number, field: 'key' | 'value', newValue: string) => {
@@ -34,6 +84,21 @@ function TaxExtractor({ document, onExtract, onSave }: TaxExtractorProps) {
     onSave(document.id, editedData)
     setHasChanges(false)
   }, [document.id, editedData, onSave])
+
+  const handleConfirm = useCallback(
+    (fields: ExtractionField[]) => {
+      onConfirmExtraction?.(document.id, fields)
+    },
+    [document.id, onConfirmExtraction]
+  )
+
+  const handleEdit = useCallback((_fieldIndex: number, _value: string) => {
+    // Edit is handled internally by ExtractionConfirmation
+  }, [])
+
+  const handleReject = useCallback(() => {
+    onRejectExtraction?.(document.id)
+  }, [document.id, onRejectExtraction])
 
   // Sync editedData when document.extractedData changes (e.g., after extraction)
   const currentDataJson = JSON.stringify(document.extractedData)
@@ -87,7 +152,8 @@ function TaxExtractor({ document, onExtract, onSave }: TaxExtractorProps) {
       </div>
 
       {(document.extractionStatus === 'pending' ||
-        document.extractionStatus === 'failed') && (
+        document.extractionStatus === 'failed') &&
+        !isExtracting && (
         <div className="tax-extractor__action">
           <button
             className="btn-primary"
@@ -103,14 +169,39 @@ function TaxExtractor({ document, onExtract, onSave }: TaxExtractorProps) {
         </div>
       )}
 
-      {document.extractionStatus === 'extracting' && (
+      {(document.extractionStatus === 'extracting' || isExtracting) && (
         <div className="tax-extractor__loading">
-          <Loader size={24} className="tax-extractor__spinner" />
-          <p>Analyzing document and extracting fields...</p>
+          <div className="tax-extractor__steps">
+            {EXTRACTION_STEPS.map((step, i) => {
+              const isDone = i < currentStep
+              const isActive = i === currentStep
+              return (
+                <div
+                  key={step}
+                  className={`tax-extractor__step${
+                    isDone ? ' tax-extractor__step--done' : ''
+                  }${isActive ? ' tax-extractor__step--active' : ''
+                  }${!isDone && !isActive ? ' tax-extractor__step--pending' : ''}`}
+                >
+                  <div className="tax-extractor__step-dot" />
+                  <span>{step}</span>
+                </div>
+              )
+            })}
+          </div>
         </div>
       )}
 
-      {document.extractionStatus === 'completed' && editedData.length > 0 && (
+      {document.extractionStatus === 'completed' && extractionResult && (
+        <ExtractionConfirmation
+          result={extractionResult}
+          onConfirm={handleConfirm}
+          onEdit={handleEdit}
+          onReject={handleReject}
+        />
+      )}
+
+      {document.extractionStatus === 'completed' && !extractionResult && editedData.length > 0 && (
         <div className="tax-extractor__data">
           <table className="tax-extractor__table" role="grid">
             <thead>

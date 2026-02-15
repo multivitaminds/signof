@@ -1,0 +1,185 @@
+/* ─── CompleteCheck ─────────────────────────────────────────────────── */
+
+.complete-check {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ─── Header ─────────────────────────────────────────────────────── */
+
+.complete-check__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.complete-check__header-icon {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--color-success);
+}
+
+.complete-check__header:has(.complete-check__title:not(:only-child)) .complete-check__header-icon {
+  color: var(--color-success);
+}
+
+.complete-check__header-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.complete-check__title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.complete-check__subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* ─── Sections ───────────────────────────────────────────────────── */
+
+.complete-check__sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.complete-check__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+
+.complete-check__section--issue {
+  border-color: var(--color-warning);
+  background-color: var(--color-warning-light);
+}
+
+[data-theme="dark"] .complete-check__section--issue {
+  background-color: rgba(251, 191, 36, 0.06);
+}
+
+.complete-check__section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.complete-check__section-icon {
+  display: flex;
+  color: var(--text-muted);
+}
+
+.complete-check__section-icon--complete {
+  color: var(--color-success);
+}
+
+.complete-check__section-icon--issue {
+  color: var(--color-warning-dark);
+}
+
+.complete-check__section-icon--skipped {
+  color: var(--text-muted);
+}
+
+.complete-check__section-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.complete-check__badge {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  background-color: var(--color-warning-light);
+  color: var(--color-warning-dark);
+}
+
+[data-theme="dark"] .complete-check__badge {
+  background-color: rgba(251, 191, 36, 0.15);
+  color: var(--color-warning);
+}
+
+.complete-check__badge--skipped {
+  background-color: var(--bg-secondary);
+  color: var(--text-muted);
+}
+
+.complete-check__section-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  padding-left: calc(16px + var(--space-2));
+}
+
+.complete-check__edit-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  margin-left: calc(16px + var(--space-2));
+}
+
+/* ─── CTA ────────────────────────────────────────────────────────── */
+
+.complete-check__cta {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--space-4);
+}
+
+.complete-check__submit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  border-radius: var(--radius-lg);
+}
+
+@keyframes complete-check-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.complete-check__spinner {
+  animation: complete-check-spin 1s linear infinite;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .complete-check__header {
+    flex-direction: column;
+    padding: var(--space-4);
+  }
+
+  .complete-check__section {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .complete-check__submit {
+    width: 100%;
+    justify-content: center;
+    padding: var(--space-4);
+    font-size: var(--text-base);
+  }
+}

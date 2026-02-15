@@ -73,6 +73,8 @@ const TaxDocumentsPage = lazy(() => import('./features/tax/pages/TaxDocumentsPag
 const TaxFormsPage = lazy(() => import('./features/tax/pages/TaxFormsPage'))
 const TaxFilingPage = lazy(() => import('./features/tax/pages/TaxFilingPage'))
 const TaxPricingPage = lazy(() => import('./features/tax/pages/TaxPricingPage'))
+const TaxInterviewPage = lazy(() => import('./features/tax/pages/TaxInterviewPage'))
+const TaxSubmissionsPage = lazy(() => import('./features/tax/pages/TaxSubmissionsPage'))
 
 const AccountingLayout = lazy(() => import('./features/accounting/pages/AccountingLayout'))
 const AccountingDashboard = lazy(() => import('./features/accounting/pages/AccountingDashboard'))
@@ -234,6 +236,8 @@ createRoot(root).render(
             <Route path="documents" element={<Suspense fallback={TableFallback}><TaxDocumentsPage /></Suspense>} />
             <Route path="forms" element={<Suspense fallback={TableFallback}><TaxFormsPage /></Suspense>} />
             <Route path="filing" element={<Suspense fallback={TableFallback}><TaxFilingPage /></Suspense>} />
+            <Route path="interview" element={<Suspense fallback={CardFallback}><TaxInterviewPage /></Suspense>} />
+            <Route path="submissions" element={<Suspense fallback={TableFallback}><TaxSubmissionsPage /></Suspense>} />
             <Route path="pricing" element={<Suspense fallback={CardFallback}><TaxPricingPage /></Suspense>} />
           </Route>
 

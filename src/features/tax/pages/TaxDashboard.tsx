@@ -11,6 +11,8 @@ import {
   Play,
 } from 'lucide-react'
 import { useTaxStore } from '../stores/useTaxStore'
+import { useTaxFilingStore } from '../stores/useTaxFilingStore'
+import { useTaxDocumentStore } from '../stores/useTaxDocumentStore'
 import { useBillingStore } from '../../settings/stores/useBillingStore'
 import { FILING_STATE_LABELS } from '../types'
 import TaxTimeline from '../components/TaxTimeline/TaxTimeline'
@@ -18,11 +20,11 @@ import './TaxDashboard.css'
 
 function TaxDashboard() {
   const activeTaxYear = useTaxStore((s) => s.activeTaxYear)
-  const documents = useTaxStore((s) => s.documents)
-  const filings = useTaxStore((s) => s.filings)
   const deadlines = useTaxStore((s) => s.deadlines)
   const toggleDeadline = useTaxStore((s) => s.toggleDeadline)
-  const createFiling = useTaxStore((s) => s.createFiling)
+  const documents = useTaxDocumentStore((s) => s.documents)
+  const filings = useTaxFilingStore((s) => s.filings)
+  const createFiling = useTaxFilingStore((s) => s.createFiling)
   const taxPlan = useBillingStore((s) => s.taxPlan)
   const navigate = useNavigate()
 
@@ -78,17 +80,17 @@ function TaxDashboard() {
   return (
     <div className="tax-dashboard">
       {/* Tax Plan Upgrade Banner */}
-      {taxPlan === 'tax_free' && (
+      {taxPlan === 'individual_basic' && (
         <div className="tax-dashboard__upgrade-banner">
           <span className="tax-dashboard__upgrade-text">
-            You&apos;re on <strong>Tax Free</strong> &mdash; limited to 1 filing with W-2 only.
+            You&apos;re on <strong>Basic</strong> &mdash; limited to 1 filing with W-2 only.
           </span>
           <button
             className="tax-dashboard__upgrade-btn"
             onClick={handleUpgradeTax}
             type="button"
           >
-            Upgrade to Tax Plus
+            Upgrade to Plus
           </button>
         </div>
       )}

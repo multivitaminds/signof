@@ -3,7 +3,8 @@ import { useWorkspaceStore } from '../../workspace/stores/useWorkspaceStore'
 import { useProjectStore } from '../../projects/stores/useProjectStore'
 import { useSchedulingStore } from '../../scheduling/stores/useSchedulingStore'
 import { useDatabaseStore } from '../../databases/stores/useDatabaseStore'
-import { useTaxStore } from '../../tax/stores/useTaxStore'
+import { useTaxFilingStore } from '../../tax/stores/useTaxFilingStore'
+import { useTaxDocumentStore } from '../../tax/stores/useTaxDocumentStore'
 import { useInvoiceStore } from '../../accounting/stores/useInvoiceStore'
 import useAIAgentStore from '../../ai/stores/useAIAgentStore'
 import { SearchResultType, type SearchResult } from '../types'
@@ -262,17 +263,18 @@ function searchDatabases(query: string): SearchResult[] {
 }
 
 function searchTaxDocuments(query: string): SearchResult[] {
-  const { documents, filings } = useTaxStore.getState()
+  const { documents } = useTaxDocumentStore.getState()
+  const { filings } = useTaxFilingStore.getState()
   const results: SearchResult[] = []
 
   for (const doc of documents) {
-    const score = bestScore(query, doc.name, doc.type)
+    const score = bestScore(query, doc.fileName, doc.formType)
     if (score < 0) continue
 
     results.push({
       id: doc.id,
-      title: doc.name,
-      description: `${doc.type} \u00B7 Tax year ${doc.taxYear}`,
+      title: doc.fileName,
+      description: `${doc.formType} \u00B7 Tax year ${doc.taxYear}`,
       type: SearchResultType.TaxDocument,
       path: '/tax',
       icon: '\uD83D\uDCCB',

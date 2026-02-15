@@ -19,7 +19,7 @@ interface TaxFormCardProps {
   onClick: (formType: TaxFormType) => void
 }
 
-const FORM_ICONS: Record<TaxFormType, React.ReactNode> = {
+const FORM_ICONS: Partial<Record<TaxFormType, React.ReactNode>> = {
   w2: <FileText size={24} />,
   '1099_nec': <Receipt size={24} />,
   '1099_int': <Landmark size={24} />,

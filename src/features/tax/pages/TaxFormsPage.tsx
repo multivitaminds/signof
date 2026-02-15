@@ -2,11 +2,13 @@ import { useMemo, useCallback, useState } from 'react'
 import { ChevronLeft, ChevronRight, Check, FileText } from 'lucide-react'
 import {
   useTaxFormStore,
-  TAX_FORM_DEFINITIONS,
+  TAXBANDITS_FORM_DEFINITIONS,
+  FORM_CATEGORY_LABELS,
   WIZARD_STEPS,
   FormCompletionStatus,
 } from '../stores/useTaxFormStore'
-import type { TaxFormId, FormEntryData } from '../stores/useTaxFormStore'
+import type { TaxFormType, FormCategory } from '../types'
+import type { FormEntryData } from '../stores/useTaxFormStore'
 import { useTaxStore } from '../stores/useTaxStore'
 import './TaxFormsPage.css'
 
@@ -22,7 +24,7 @@ function TaxFormsPage() {
   const getEntryByForm = useTaxFormStore((s) => s.getEntryByForm)
   const getProgressPercent = useTaxFormStore((s) => s.getProgressPercent)
 
-  const [activeFormId, setActiveFormId] = useState<TaxFormId | null>(null)
+  const [activeFormId, setActiveFormId] = useState<TaxFormType | null>(null)
   const [activeEntryId, setActiveEntryId] = useState<string | null>(null)
 
   const activeEntry = useMemo(() => {
@@ -31,8 +33,8 @@ function TaxFormsPage() {
   }, [entries, activeEntryId])
 
   const categories = useMemo(() => {
-    const cats: Record<string, typeof TAX_FORM_DEFINITIONS> = {}
-    for (const def of TAX_FORM_DEFINITIONS) {
+    const cats: Record<string, typeof TAXBANDITS_FORM_DEFINITIONS> = {}
+    for (const def of TAXBANDITS_FORM_DEFINITIONS) {
       if (!cats[def.category]) cats[def.category] = []
       cats[def.category]!.push(def)
     }
@@ -40,7 +42,7 @@ function TaxFormsPage() {
   }, [])
 
   const handleStartOrContinue = useCallback(
-    (formId: TaxFormId) => {
+    (formId: TaxFormType) => {
       const entryId = startForm(formId, activeTaxYear)
       setActiveFormId(formId)
       setActiveEntryId(entryId)
@@ -100,7 +102,7 @@ function TaxFormsPage() {
   // ─── Wizard View ──────────────────────────────────────────────────────
 
   if (activeEntry && activeFormId) {
-    const formDef = TAX_FORM_DEFINITIONS.find((d) => d.id === activeFormId)
+    const formDef = TAXBANDITS_FORM_DEFINITIONS.find((d) => d.id === activeFormId)
     const progress = getProgressPercent(activeEntry.id)
     const isLastStep = activeEntry.currentStep === WIZARD_STEPS.length - 1
 
@@ -153,29 +155,31 @@ function TaxFormsPage() {
         <div className="tax-forms__step-content" role="tabpanel">
           {activeEntry.currentStep === 0 && (
             <div className="tax-forms__fields">
-              <h3 className="tax-forms__section-title">Personal Information</h3>
+              <h3 className="tax-forms__section-title">Payer / Employer Information</h3>
               <div className="tax-forms__field-grid">
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-firstName" className="tax-forms__label">First Name</label>
-                  <input id="tf-firstName" type="text" value={activeEntry.data.firstName} onChange={(e) => handleFieldChange('firstName', e.target.value)} className="tax-forms__input" placeholder="First name" />
+                  <label htmlFor="tf-payerName" className="tax-forms__label">Payer Name</label>
+                  <input id="tf-payerName" type="text" value={activeEntry.data.payerName} onChange={(e) => handleFieldChange('payerName', e.target.value)} className="tax-forms__input" placeholder="Company name" />
                 </div>
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-lastName" className="tax-forms__label">Last Name</label>
-                  <input id="tf-lastName" type="text" value={activeEntry.data.lastName} onChange={(e) => handleFieldChange('lastName', e.target.value)} className="tax-forms__input" placeholder="Last name" />
+                  <label htmlFor="tf-payerTin" className="tax-forms__label">Payer TIN/EIN</label>
+                  <input id="tf-payerTin" type="text" value={activeEntry.data.payerTin} onChange={(e) => handleFieldChange('payerTin', e.target.value)} className="tax-forms__input" placeholder="XX-XXXXXXX" />
                 </div>
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-ssn" className="tax-forms__label">SSN</label>
-                  <input id="tf-ssn" type="text" value={activeEntry.data.ssn} onChange={(e) => handleFieldChange('ssn', e.target.value)} className="tax-forms__input" placeholder="***-**-0000" />
+                  <label htmlFor="tf-payerAddress" className="tax-forms__label">Address</label>
+                  <input id="tf-payerAddress" type="text" value={activeEntry.data.payerAddress} onChange={(e) => handleFieldChange('payerAddress', e.target.value)} className="tax-forms__input" placeholder="Street address" />
                 </div>
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-filingStatus" className="tax-forms__label">Filing Status</label>
-                  <select id="tf-filingStatus" value={activeEntry.data.filingStatus} onChange={(e) => handleFieldChange('filingStatus', e.target.value)} className="tax-forms__select">
-                    <option value="single">Single</option>
-                    <option value="married_joint">Married Filing Jointly</option>
-                    <option value="married_separate">Married Filing Separately</option>
-                    <option value="head_of_household">Head of Household</option>
-                    <option value="qualifying_widow">Qualifying Surviving Spouse</option>
-                  </select>
+                  <label htmlFor="tf-payerCity" className="tax-forms__label">City</label>
+                  <input id="tf-payerCity" type="text" value={activeEntry.data.payerCity} onChange={(e) => handleFieldChange('payerCity', e.target.value)} className="tax-forms__input" placeholder="City" />
+                </div>
+                <div className="tax-forms__field">
+                  <label htmlFor="tf-payerState" className="tax-forms__label">State</label>
+                  <input id="tf-payerState" type="text" value={activeEntry.data.payerState} onChange={(e) => handleFieldChange('payerState', e.target.value)} className="tax-forms__input" placeholder="ST" />
+                </div>
+                <div className="tax-forms__field">
+                  <label htmlFor="tf-payerZip" className="tax-forms__label">ZIP</label>
+                  <input id="tf-payerZip" type="text" value={activeEntry.data.payerZip} onChange={(e) => handleFieldChange('payerZip', e.target.value)} className="tax-forms__input" placeholder="00000" />
                 </div>
               </div>
             </div>
@@ -183,31 +187,31 @@ function TaxFormsPage() {
 
           {activeEntry.currentStep === 1 && (
             <div className="tax-forms__fields">
-              <h3 className="tax-forms__section-title">Income</h3>
+              <h3 className="tax-forms__section-title">Recipient / Employee Information</h3>
               <div className="tax-forms__field-grid">
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-wages" className="tax-forms__label">Wages & Salaries</label>
-                  <input id="tf-wages" type="number" step="0.01" min="0" value={activeEntry.data.wagesIncome || ''} onChange={(e) => handleNumericChange('wagesIncome', e.target.value)} className="tax-forms__input" placeholder="0.00" />
+                  <label htmlFor="tf-recipientName" className="tax-forms__label">Recipient Name</label>
+                  <input id="tf-recipientName" type="text" value={activeEntry.data.recipientName} onChange={(e) => handleFieldChange('recipientName', e.target.value)} className="tax-forms__input" placeholder="Full name" />
                 </div>
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-interest" className="tax-forms__label">Interest Income</label>
-                  <input id="tf-interest" type="number" step="0.01" min="0" value={activeEntry.data.interestIncome || ''} onChange={(e) => handleNumericChange('interestIncome', e.target.value)} className="tax-forms__input" placeholder="0.00" />
+                  <label htmlFor="tf-recipientTin" className="tax-forms__label">Recipient TIN/SSN</label>
+                  <input id="tf-recipientTin" type="text" value={activeEntry.data.recipientTin} onChange={(e) => handleFieldChange('recipientTin', e.target.value)} className="tax-forms__input" placeholder="XXX-XX-XXXX" />
                 </div>
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-dividends" className="tax-forms__label">Dividend Income</label>
-                  <input id="tf-dividends" type="number" step="0.01" min="0" value={activeEntry.data.dividendIncome || ''} onChange={(e) => handleNumericChange('dividendIncome', e.target.value)} className="tax-forms__input" placeholder="0.00" />
+                  <label htmlFor="tf-recipientAddress" className="tax-forms__label">Address</label>
+                  <input id="tf-recipientAddress" type="text" value={activeEntry.data.recipientAddress} onChange={(e) => handleFieldChange('recipientAddress', e.target.value)} className="tax-forms__input" placeholder="Street address" />
                 </div>
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-business" className="tax-forms__label">Business Income</label>
-                  <input id="tf-business" type="number" step="0.01" min="0" value={activeEntry.data.businessIncome || ''} onChange={(e) => handleNumericChange('businessIncome', e.target.value)} className="tax-forms__input" placeholder="0.00" />
+                  <label htmlFor="tf-recipientCity" className="tax-forms__label">City</label>
+                  <input id="tf-recipientCity" type="text" value={activeEntry.data.recipientCity} onChange={(e) => handleFieldChange('recipientCity', e.target.value)} className="tax-forms__input" placeholder="City" />
                 </div>
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-capgains" className="tax-forms__label">Capital Gains</label>
-                  <input id="tf-capgains" type="number" step="0.01" min="0" value={activeEntry.data.capitalGains || ''} onChange={(e) => handleNumericChange('capitalGains', e.target.value)} className="tax-forms__input" placeholder="0.00" />
+                  <label htmlFor="tf-recipientState" className="tax-forms__label">State</label>
+                  <input id="tf-recipientState" type="text" value={activeEntry.data.recipientState} onChange={(e) => handleFieldChange('recipientState', e.target.value)} className="tax-forms__input" placeholder="ST" />
                 </div>
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-otherIncome" className="tax-forms__label">Other Income</label>
-                  <input id="tf-otherIncome" type="number" step="0.01" min="0" value={activeEntry.data.otherIncome || ''} onChange={(e) => handleNumericChange('otherIncome', e.target.value)} className="tax-forms__input" placeholder="0.00" />
+                  <label htmlFor="tf-recipientZip" className="tax-forms__label">ZIP</label>
+                  <input id="tf-recipientZip" type="text" value={activeEntry.data.recipientZip} onChange={(e) => handleFieldChange('recipientZip', e.target.value)} className="tax-forms__input" placeholder="00000" />
                 </div>
               </div>
             </div>
@@ -215,55 +219,51 @@ function TaxFormsPage() {
 
           {activeEntry.currentStep === 2 && (
             <div className="tax-forms__fields">
-              <h3 className="tax-forms__section-title">Deductions</h3>
-              <div className="tax-forms__deduction-toggle">
-                <label className="tax-forms__checkbox-label">
-                  <input type="checkbox" checked={activeEntry.data.useStandardDeduction} onChange={(e) => handleFieldChange('useStandardDeduction', e.target.checked)} />
-                  <span>Use Standard Deduction ($15,000)</span>
-                </label>
-              </div>
-              {!activeEntry.data.useStandardDeduction && (
-                <div className="tax-forms__field-grid">
-                  <div className="tax-forms__field">
-                    <label htmlFor="tf-medical" className="tax-forms__label">Medical Expenses</label>
-                    <input id="tf-medical" type="number" step="0.01" min="0" value={activeEntry.data.medicalExpenses || ''} onChange={(e) => handleNumericChange('medicalExpenses', e.target.value)} className="tax-forms__input" placeholder="0.00" />
-                  </div>
-                  <div className="tax-forms__field">
-                    <label htmlFor="tf-salt" className="tax-forms__label">State & Local Taxes</label>
-                    <input id="tf-salt" type="number" step="0.01" min="0" value={activeEntry.data.stateLocalTaxes || ''} onChange={(e) => handleNumericChange('stateLocalTaxes', e.target.value)} className="tax-forms__input" placeholder="0.00" />
-                  </div>
-                  <div className="tax-forms__field">
-                    <label htmlFor="tf-mortgage" className="tax-forms__label">Mortgage Interest</label>
-                    <input id="tf-mortgage" type="number" step="0.01" min="0" value={activeEntry.data.mortgageInterest || ''} onChange={(e) => handleNumericChange('mortgageInterest', e.target.value)} className="tax-forms__input" placeholder="0.00" />
-                  </div>
-                  <div className="tax-forms__field">
-                    <label htmlFor="tf-charity" className="tax-forms__label">Charitable Contributions</label>
-                    <input id="tf-charity" type="number" step="0.01" min="0" value={activeEntry.data.charitableContributions || ''} onChange={(e) => handleNumericChange('charitableContributions', e.target.value)} className="tax-forms__input" placeholder="0.00" />
-                  </div>
+              <h3 className="tax-forms__section-title">Amounts</h3>
+              <div className="tax-forms__field-grid">
+                <div className="tax-forms__field">
+                  <label htmlFor="tf-amount1" className="tax-forms__label">Amount 1</label>
+                  <input id="tf-amount1" type="number" step="0.01" min="0" value={activeEntry.data.amount1 || ''} onChange={(e) => handleNumericChange('amount1', e.target.value)} className="tax-forms__input" placeholder="0.00" />
                 </div>
-              )}
+                <div className="tax-forms__field">
+                  <label htmlFor="tf-amount2" className="tax-forms__label">Amount 2</label>
+                  <input id="tf-amount2" type="number" step="0.01" min="0" value={activeEntry.data.amount2 || ''} onChange={(e) => handleNumericChange('amount2', e.target.value)} className="tax-forms__input" placeholder="0.00" />
+                </div>
+                <div className="tax-forms__field">
+                  <label htmlFor="tf-amount3" className="tax-forms__label">Amount 3</label>
+                  <input id="tf-amount3" type="number" step="0.01" min="0" value={activeEntry.data.amount3 || ''} onChange={(e) => handleNumericChange('amount3', e.target.value)} className="tax-forms__input" placeholder="0.00" />
+                </div>
+                <div className="tax-forms__field">
+                  <label htmlFor="tf-amount4" className="tax-forms__label">Amount 4</label>
+                  <input id="tf-amount4" type="number" step="0.01" min="0" value={activeEntry.data.amount4 || ''} onChange={(e) => handleNumericChange('amount4', e.target.value)} className="tax-forms__input" placeholder="0.00" />
+                </div>
+                <div className="tax-forms__field">
+                  <label htmlFor="tf-accountNumber" className="tax-forms__label">Account Number</label>
+                  <input id="tf-accountNumber" type="text" value={activeEntry.data.accountNumber} onChange={(e) => handleFieldChange('accountNumber', e.target.value)} className="tax-forms__input" placeholder="Optional" />
+                </div>
+              </div>
             </div>
           )}
 
           {activeEntry.currentStep === 3 && (
             <div className="tax-forms__fields">
-              <h3 className="tax-forms__section-title">Credits</h3>
+              <h3 className="tax-forms__section-title">State Information</h3>
               <div className="tax-forms__field-grid">
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-childcredit" className="tax-forms__label">Child Tax Credit</label>
-                  <input id="tf-childcredit" type="number" step="0.01" min="0" value={activeEntry.data.childTaxCredit || ''} onChange={(e) => handleNumericChange('childTaxCredit', e.target.value)} className="tax-forms__input" placeholder="0.00" />
+                  <label htmlFor="tf-stateCode" className="tax-forms__label">State Code</label>
+                  <input id="tf-stateCode" type="text" value={activeEntry.data.stateCode} onChange={(e) => handleFieldChange('stateCode', e.target.value)} className="tax-forms__input" placeholder="ST" />
                 </div>
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-educredit" className="tax-forms__label">Education Credit</label>
-                  <input id="tf-educredit" type="number" step="0.01" min="0" value={activeEntry.data.educationCredit || ''} onChange={(e) => handleNumericChange('educationCredit', e.target.value)} className="tax-forms__input" placeholder="0.00" />
+                  <label htmlFor="tf-stateTaxId" className="tax-forms__label">State Tax ID</label>
+                  <input id="tf-stateTaxId" type="text" value={activeEntry.data.stateTaxId} onChange={(e) => handleFieldChange('stateTaxId', e.target.value)} className="tax-forms__input" placeholder="State tax ID" />
                 </div>
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-energycredit" className="tax-forms__label">Energy Credit</label>
-                  <input id="tf-energycredit" type="number" step="0.01" min="0" value={activeEntry.data.energyCredit || ''} onChange={(e) => handleNumericChange('energyCredit', e.target.value)} className="tax-forms__input" placeholder="0.00" />
+                  <label htmlFor="tf-stateIncome" className="tax-forms__label">State Income</label>
+                  <input id="tf-stateIncome" type="number" step="0.01" min="0" value={activeEntry.data.stateIncome || ''} onChange={(e) => handleNumericChange('stateIncome', e.target.value)} className="tax-forms__input" placeholder="0.00" />
                 </div>
                 <div className="tax-forms__field">
-                  <label htmlFor="tf-othercredits" className="tax-forms__label">Other Credits</label>
-                  <input id="tf-othercredits" type="number" step="0.01" min="0" value={activeEntry.data.otherCredits || ''} onChange={(e) => handleNumericChange('otherCredits', e.target.value)} className="tax-forms__input" placeholder="0.00" />
+                  <label htmlFor="tf-stateTaxWithheld" className="tax-forms__label">State Tax Withheld</label>
+                  <input id="tf-stateTaxWithheld" type="number" step="0.01" min="0" value={activeEntry.data.stateTaxWithheld || ''} onChange={(e) => handleNumericChange('stateTaxWithheld', e.target.value)} className="tax-forms__input" placeholder="0.00" />
                 </div>
               </div>
             </div>
@@ -274,24 +274,22 @@ function TaxFormsPage() {
               <h3 className="tax-forms__section-title">Review</h3>
               <div className="tax-forms__review-grid">
                 <div className="tax-forms__review-item">
-                  <span className="tax-forms__review-label">Name</span>
-                  <span className="tax-forms__review-value">{activeEntry.data.firstName} {activeEntry.data.lastName}</span>
+                  <span className="tax-forms__review-label">Payer</span>
+                  <span className="tax-forms__review-value">{activeEntry.data.payerName} ({activeEntry.data.payerTin})</span>
                 </div>
                 <div className="tax-forms__review-item">
-                  <span className="tax-forms__review-label">Total Income</span>
+                  <span className="tax-forms__review-label">Recipient</span>
+                  <span className="tax-forms__review-value">{activeEntry.data.recipientName} ({activeEntry.data.recipientTin})</span>
+                </div>
+                <div className="tax-forms__review-item">
+                  <span className="tax-forms__review-label">Total Amounts</span>
                   <span className="tax-forms__review-value">
-                    ${(activeEntry.data.wagesIncome + activeEntry.data.interestIncome + activeEntry.data.dividendIncome + activeEntry.data.businessIncome + activeEntry.data.capitalGains + activeEntry.data.otherIncome).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    ${(activeEntry.data.amount1 + activeEntry.data.amount2 + activeEntry.data.amount3 + activeEntry.data.amount4).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="tax-forms__review-item">
-                  <span className="tax-forms__review-label">Deduction Type</span>
-                  <span className="tax-forms__review-value">{activeEntry.data.useStandardDeduction ? 'Standard ($15,000)' : 'Itemized'}</span>
-                </div>
-                <div className="tax-forms__review-item">
-                  <span className="tax-forms__review-label">Total Credits</span>
-                  <span className="tax-forms__review-value">
-                    ${(activeEntry.data.childTaxCredit + activeEntry.data.educationCredit + activeEntry.data.energyCredit + activeEntry.data.otherCredits).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                  </span>
+                  <span className="tax-forms__review-label">State</span>
+                  <span className="tax-forms__review-value">{activeEntry.data.stateCode || 'N/A'}</span>
                 </div>
               </div>
             </div>
@@ -333,7 +331,7 @@ function TaxFormsPage() {
 
       {Object.entries(categories).map(([category, forms]) => (
         <div key={category} className="tax-forms__category">
-          <h3 className="tax-forms__category-title">{category}</h3>
+          <h3 className="tax-forms__category-title">{FORM_CATEGORY_LABELS[category as FormCategory] ?? category}</h3>
           <div className="tax-forms__grid">
             {forms.map((formDef) => {
               const status = getFormStatus(formDef.id, activeTaxYear)

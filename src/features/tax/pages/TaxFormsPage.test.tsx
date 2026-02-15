@@ -21,11 +21,15 @@ vi.mock('../stores/useTaxFormStore', () => ({
       getEntryByForm: () => null,
       getProgressPercent: () => 0,
     }),
-  TAX_FORM_DEFINITIONS: [
-    { id: 'f1040', name: 'Form 1040', fullName: 'U.S. Individual Income Tax Return', description: 'The main federal income tax form.', category: 'Primary' },
-    { id: 'schedule_a', name: 'Schedule A', fullName: 'Itemized Deductions', description: 'Itemized deductions form.', category: 'Schedules' },
+  TAXBANDITS_FORM_DEFINITIONS: [
+    { id: '1099_nec', name: '1099-NEC', fullName: 'Nonemployee Compensation', description: 'Report payments to independent contractors', category: '1099_series', taxBanditsPath: 'Form1099NEC' },
+    { id: 'w2', name: 'W-2', fullName: 'Wage and Tax Statement', description: 'Report employee wages and tax withholdings', category: 'w2_employment', taxBanditsPath: 'FormW2' },
   ],
-  WIZARD_STEPS: ['Personal Info', 'Income', 'Deductions', 'Credits', 'Review'],
+  FORM_CATEGORY_LABELS: {
+    '1099_series': '1099 Series',
+    'w2_employment': 'W-2 Employment',
+  },
+  WIZARD_STEPS: ['Payer Info', 'Recipient Info', 'Amounts', 'State Info', 'Review'],
   FormCompletionStatus: {
     NotStarted: 'not_started',
     InProgress: 'in_progress',
@@ -48,20 +52,20 @@ describe('TaxFormsPage', () => {
 
   it('renders form categories', () => {
     render(<TaxFormsPage />)
-    expect(screen.getByText('Primary')).toBeInTheDocument()
-    expect(screen.getByText('Schedules')).toBeInTheDocument()
+    expect(screen.getByText('1099 Series')).toBeInTheDocument()
+    expect(screen.getByText('W-2 Employment')).toBeInTheDocument()
   })
 
   it('renders form cards with names', () => {
     render(<TaxFormsPage />)
-    expect(screen.getByText('Form 1040')).toBeInTheDocument()
-    expect(screen.getByText('Schedule A')).toBeInTheDocument()
+    expect(screen.getByText('1099-NEC')).toBeInTheDocument()
+    expect(screen.getByText('W-2')).toBeInTheDocument()
   })
 
   it('renders form descriptions', () => {
     render(<TaxFormsPage />)
-    expect(screen.getByText('The main federal income tax form.')).toBeInTheDocument()
-    expect(screen.getByText('Itemized deductions form.')).toBeInTheDocument()
+    expect(screen.getByText('Report payments to independent contractors')).toBeInTheDocument()
+    expect(screen.getByText('Report employee wages and tax withholdings')).toBeInTheDocument()
   })
 
   it('renders Start buttons for unstarted forms', () => {
@@ -72,7 +76,7 @@ describe('TaxFormsPage', () => {
 
   it('renders full names of forms', () => {
     render(<TaxFormsPage />)
-    expect(screen.getByText('U.S. Individual Income Tax Return')).toBeInTheDocument()
-    expect(screen.getByText('Itemized Deductions')).toBeInTheDocument()
+    expect(screen.getByText('Nonemployee Compensation')).toBeInTheDocument()
+    expect(screen.getByText('Wage and Tax Statement')).toBeInTheDocument()
   })
 })

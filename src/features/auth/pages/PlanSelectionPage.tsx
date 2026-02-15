@@ -24,7 +24,7 @@ export default function PlanSelectionPage() {
 
   const [billingCycle, setLocalBillingCycle] = useState<BillingCycle>('monthly')
   const [showTaxAddon, setShowTaxAddon] = useState(false)
-  const [selectedTaxPlan, setSelectedTaxPlan] = useState<TaxPlanId>('tax_free')
+  const [selectedTaxPlan, setSelectedTaxPlan] = useState<TaxPlanId>('individual_basic')
 
   const handleToggleBillingCycle = useCallback(() => {
     setLocalBillingCycle((prev) => (prev === 'monthly' ? 'yearly' : 'monthly'))
