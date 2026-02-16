@@ -138,6 +138,31 @@
   background: rgba(79, 70, 229, 0.02);
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .gallery-view {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-3, 0.75rem);
+  }
+
+  .gallery-view__card-cover {
+    height: 100px;
+  }
+
+  .gallery-view__card-body {
+    padding: var(--space-2, 0.5rem);
+  }
+
+  .gallery-view__card-title {
+    font-size: var(--text-sm, 0.875rem);
+  }
+
+  .gallery-view__add-card {
+    min-height: 160px;
+  }
+}
+
 /* ─── Dark mode ──────────────────────────────────────────────────── */
 
 [data-theme="dark"] .gallery-view__card {

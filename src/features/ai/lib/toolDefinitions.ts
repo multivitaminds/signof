@@ -288,6 +288,61 @@ export const ORCHESTREE_TOOLS: ToolDefinition[] = [
     },
   },
 
+  // ── Database Analysis ────────────────────────────────────────────
+  {
+    name: 'analyze_database_schema',
+    description: 'Analyze database schema: summarize tables, fields, field types, and relation connections.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        database_id: { type: 'string', description: 'Filter by specific database ID' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'get_table_stats',
+    description: 'Get table statistics: row counts, field distribution, and empty/filled rates per table.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        table_id: { type: 'string', description: 'Filter by specific table ID' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'review_database_automations',
+    description: 'List automation rules with their triggers, actions, active/inactive status, and run counts.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        enabled_only: { type: 'string', description: 'Set to "true" to show only enabled automations' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'analyze_views',
+    description: 'Summarize database views by type (grid, kanban, calendar, gallery, form, timeline) across all tables.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        table_id: { type: 'string', description: 'Filter by specific table ID' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'get_relation_map',
+    description: 'Map all relation, lookup, and rollup fields and their connections between tables.',
+    input_schema: {
+      type: 'object',
+      properties: {},
+      required: [],
+    },
+  },
+
   // ── Accounting ───────────────────────────────────────────────────
   {
     name: 'create_invoice',
@@ -937,6 +992,194 @@ export function executeTool(
         return JSON.stringify({ success: true, rowId, tableId: firstTableId })
       }
 
+      // ── Database Analysis ────────────────────────────────────────
+      case 'analyze_database_schema': {
+        const dbState = useDatabaseStore.getState()
+        const databaseId = input.database_id as string | undefined
+        const databases = databaseId
+          ? [dbState.databases[databaseId]].filter(Boolean)
+          : Object.values(dbState.databases)
+
+        const tableIds = databases.flatMap((db) => db!.tables)
+        const tables = tableIds.map((tid) => dbState.tables[tid]).filter(Boolean)
+
+        const tableSchemas = tables.map((t) => ({
+          id: t!.id,
+          name: t!.name,
+          fieldCount: t!.fields.length,
+          rowCount: t!.rows.length,
+          viewCount: t!.views.length,
+          fields: t!.fields.map((f) => ({
+            name: f.name,
+            type: f.type,
+            hasRelation: !!f.relationConfig,
+            hasLookup: !!f.lookupConfig,
+            hasRollup: !!f.rollupConfig,
+            hasFormula: !!f.formulaConfig,
+          })),
+        }))
+
+        return JSON.stringify({
+          success: true,
+          databaseCount: databases.length,
+          tableCount: tables.length,
+          tables: tableSchemas,
+        })
+      }
+
+      case 'get_table_stats': {
+        const dbState = useDatabaseStore.getState()
+        const tableId = input.table_id as string | undefined
+        const tables = tableId
+          ? [dbState.tables[tableId]].filter(Boolean)
+          : Object.values(dbState.tables)
+
+        const stats = tables.map((t) => {
+          const totalCells = t!.rows.length * t!.fields.length
+          let filledCells = 0
+          for (const row of t!.rows) {
+            for (const field of t!.fields) {
+              const val = row.cells[field.id]
+              if (val !== null && val !== undefined && val !== '') {
+                filledCells++
+              }
+            }
+          }
+          const fieldTypeDist: Record<string, number> = {}
+          for (const f of t!.fields) {
+            fieldTypeDist[f.type] = (fieldTypeDist[f.type] ?? 0) + 1
+          }
+          return {
+            tableId: t!.id,
+            name: t!.name,
+            rowCount: t!.rows.length,
+            fieldCount: t!.fields.length,
+            totalCells,
+            filledCells,
+            fillRate: totalCells > 0 ? Math.round((filledCells / totalCells) * 100) : 0,
+            fieldTypeDistribution: fieldTypeDist,
+          }
+        })
+
+        return JSON.stringify({ success: true, tables: stats })
+      }
+
+      case 'review_database_automations': {
+        const dbState = useDatabaseStore.getState()
+        const enabledOnly = input.enabled_only === 'true'
+        const automations = enabledOnly
+          ? dbState.automations.filter((a) => a.enabled)
+          : dbState.automations
+
+        const rules = automations.map((a) => ({
+          id: a.id,
+          name: a.name,
+          description: a.description,
+          trigger: a.trigger,
+          action: a.action,
+          enabled: a.enabled,
+          runCount: a.runCount,
+          lastRunAt: a.lastRunAt,
+        }))
+
+        const activeCount = dbState.automations.filter((a) => a.enabled).length
+        const inactiveCount = dbState.automations.filter((a) => !a.enabled).length
+
+        return JSON.stringify({
+          success: true,
+          total: dbState.automations.length,
+          active: activeCount,
+          inactive: inactiveCount,
+          rules,
+        })
+      }
+
+      case 'analyze_views': {
+        const dbState = useDatabaseStore.getState()
+        const tableIdFilter = input.table_id as string | undefined
+        const tables = tableIdFilter
+          ? [dbState.tables[tableIdFilter]].filter(Boolean)
+          : Object.values(dbState.tables)
+
+        const allViews = tables.flatMap((t) => t!.views)
+        const byType: Record<string, number> = {}
+        for (const v of allViews) {
+          byType[v.type] = (byType[v.type] ?? 0) + 1
+        }
+
+        const viewDetails = allViews.map((v) => ({
+          id: v.id,
+          name: v.name,
+          type: v.type,
+          tableId: v.tableId,
+          filterCount: v.filters.length,
+          sortCount: v.sorts.length,
+          hasGrouping: !!v.groupBy,
+          hiddenFieldCount: v.hiddenFields.length,
+        }))
+
+        return JSON.stringify({
+          success: true,
+          totalViews: allViews.length,
+          byType,
+          views: viewDetails,
+        })
+      }
+
+      case 'get_relation_map': {
+        const dbState = useDatabaseStore.getState()
+        const allTables = Object.values(dbState.tables)
+
+        const relations = allTables.flatMap((t) =>
+          t.fields
+            .filter((f) => f.type === 'relation' && f.relationConfig)
+            .map((f) => ({
+              sourceTable: t.name,
+              sourceTableId: t.id,
+              sourceField: f.name,
+              sourceFieldId: f.id,
+              targetTableId: f.relationConfig!.targetTableId,
+              targetFieldId: f.relationConfig!.targetFieldId,
+              allowMultiple: f.relationConfig!.allowMultiple,
+            }))
+        )
+
+        const lookups = allTables.flatMap((t) =>
+          t.fields
+            .filter((f) => f.type === 'lookup' && f.lookupConfig)
+            .map((f) => ({
+              table: t.name,
+              tableId: t.id,
+              field: f.name,
+              fieldId: f.id,
+              relationFieldId: f.lookupConfig!.relationFieldId,
+              targetFieldId: f.lookupConfig!.targetFieldId,
+            }))
+        )
+
+        const rollups = allTables.flatMap((t) =>
+          t.fields
+            .filter((f) => f.type === 'rollup' && f.rollupConfig)
+            .map((f) => ({
+              table: t.name,
+              tableId: t.id,
+              field: f.name,
+              fieldId: f.id,
+              relationFieldId: f.rollupConfig!.relationFieldId,
+              targetFieldId: f.rollupConfig!.targetFieldId,
+              aggregation: f.rollupConfig!.aggregation,
+            }))
+        )
+
+        return JSON.stringify({
+          success: true,
+          relations,
+          lookups,
+          rollups,
+          totalConnections: relations.length + lookups.length + rollups.length,
+        })
+      }
+
       // ── Accounting ─────────────────────────────────────────────
       case 'create_invoice': {
         const amount = parseFloat((input.amount as string) || '0')
@@ -1501,7 +1744,7 @@ const AGENT_TOOL_MAP: Partial<Record<AgentType, string[]>> = {
   planner: ['create_page', 'create_issue', 'create_goal', 'create_cycle', 'list_issues', 'get_workspace_stats', 'get_upcoming_deadlines'],
   researcher: ['search_pages', 'list_issues', 'list_bookings', 'get_workspace_stats', 'get_upcoming_deadlines'],
   writer: ['create_page', 'add_block', 'search_pages', 'create_template'],
-  analyst: ['get_workspace_stats', 'get_upcoming_deadlines', 'create_database', 'add_table', 'add_row', 'list_issues', 'list_bookings'],
+  analyst: ['get_workspace_stats', 'get_upcoming_deadlines', 'create_database', 'add_table', 'add_row', 'list_issues', 'list_bookings', 'analyze_database_schema', 'get_table_stats', 'review_database_automations', 'analyze_views', 'get_relation_map'],
   designer: ['create_page', 'add_block'],
   developer: ['create_issue', 'create_page', 'list_issues', 'create_cycle', 'get_workspace_stats'],
   reviewer: ['create_issue', 'list_issues', 'get_workspace_stats'],

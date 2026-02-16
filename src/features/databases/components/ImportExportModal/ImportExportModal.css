@@ -288,6 +288,33 @@
   color: var(--color-danger);
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .import-export-modal {
+    max-width: 600px;
+  }
+
+  .import-export-modal__dropzone {
+    padding: var(--space-6, 1.5rem) var(--space-3, 0.75rem);
+  }
+
+  .import-export-modal__code {
+    max-height: 160px;
+    font-size: 0.6875rem;
+  }
+
+  .import-export-modal__table th,
+  .import-export-modal__table td {
+    padding: var(--space-1) var(--space-1);
+    max-width: 120px;
+  }
+
+  .import-export-modal__format-options {
+    gap: var(--space-3, 0.75rem);
+  }
+}
+
 /* ─── Dark Mode ───────────────────────────────────────────── */
 
 [data-theme="dark"] .import-export-modal__dropzone {

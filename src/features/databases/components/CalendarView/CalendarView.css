@@ -234,6 +234,38 @@
   color: var(--text-primary, #111827);
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .db-calendar-view__cell {
+    min-height: 80px;
+  }
+
+  .db-calendar-view__month {
+    font-size: var(--text-base, 1rem);
+    min-width: 150px;
+  }
+
+  .db-calendar-view__event {
+    font-size: 10px;
+    padding: 1px 3px;
+  }
+
+  .db-calendar-view__day-num {
+    font-size: 11px;
+    min-width: 20px;
+    height: 20px;
+  }
+
+  .db-calendar-view__detail {
+    padding: var(--space-3, 0.75rem);
+  }
+
+  .db-calendar-view__detail-label {
+    min-width: 70px;
+  }
+}
+
 /* ─── Dark mode ──────────────────────────────────────────────── */
 
 [data-theme="dark"] .db-calendar-view__cell {

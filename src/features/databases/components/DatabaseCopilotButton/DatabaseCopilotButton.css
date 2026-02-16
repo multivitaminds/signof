@@ -1,0 +1,104 @@
+/* ─── DatabaseCopilotButton ────────────────────────────────────────── */
+
+.database-copilot-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition:
+    background-color var(--motion-fast) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out),
+    box-shadow var(--motion-fast) var(--ease-out);
+}
+
+.database-copilot-btn:hover {
+  background-color: var(--color-primary-hover);
+  transform: scale(1.05);
+  box-shadow: var(--shadow-xl);
+}
+
+.database-copilot-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.database-copilot-btn:active {
+  transform: scale(0.95);
+}
+
+/* ─── Pulse Animation ─────────────────────────────────────────────── */
+
+@keyframes database-copilot-pulse {
+  0% { box-shadow: var(--shadow-lg), 0 0 0 0 rgba(124, 92, 252, 0.4); }
+  70% { box-shadow: var(--shadow-lg), 0 0 0 10px rgba(124, 92, 252, 0); }
+  100% { box-shadow: var(--shadow-lg), 0 0 0 0 rgba(124, 92, 252, 0); }
+}
+
+.database-copilot-btn--pulse {
+  animation: database-copilot-pulse 2s infinite;
+}
+
+/* ─── Badge ───────────────────────────────────────────────────────── */
+
+.database-copilot-btn__badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  color: #fff;
+  background-color: var(--color-danger);
+  border-radius: var(--radius-full);
+  line-height: 1;
+}
+
+/* ─── Dark Mode ───────────────────────────────────────────────────── */
+
+[data-theme="dark"] .database-copilot-btn {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .database-copilot-btn:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .database-copilot-btn {
+    width: 48px;
+    height: 48px;
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .database-copilot-btn__badge {
+    min-width: 18px;
+    height: 18px;
+    font-size: 0.625rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .database-copilot-btn {
+    bottom: 20px;
+    right: 20px;
+  }
+}

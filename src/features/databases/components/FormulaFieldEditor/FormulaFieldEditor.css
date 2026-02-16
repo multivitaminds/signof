@@ -248,6 +248,34 @@
   gap: var(--space-1, 0.25rem);
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .formula-field-editor {
+    min-width: 300px;
+    max-width: 420px;
+    padding: var(--space-3, 0.75rem);
+  }
+
+  .formula-field-editor__textarea {
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .formula-field-editor__function-list {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    max-height: 140px;
+  }
+
+  .formula-field-editor__suggestions {
+    max-height: 150px;
+  }
+
+  .formula-field-editor__preview {
+    padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+    font-size: var(--text-xs, 0.75rem);
+  }
+}
+
 /* ─── Dark mode ──────────────────────────────────────────────────── */
 
 [data-theme="dark"] .formula-field-editor {

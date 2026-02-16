@@ -97,6 +97,23 @@
   max-width: 100%;
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .field-stats__stat-btn {
+    padding: var(--space-1, 0.25rem);
+    min-height: 38px;
+  }
+
+  .field-stats__stat-value {
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .field-stats__stat-label {
+    font-size: 9px;
+  }
+}
+
 /* ─── Dark Mode ──────────────────────────────────────────── */
 
 [data-theme="dark"] .field-stats {

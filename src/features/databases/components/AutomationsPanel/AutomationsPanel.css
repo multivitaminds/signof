@@ -19,6 +19,18 @@
   padding-top: var(--space-2, 0.5rem);
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .automations-panel {
+    max-width: 580px;
+  }
+
+  .automations-panel__body {
+    max-height: 55vh;
+  }
+}
+
 /* ─── Dark Mode ───────────────────────────────────────────── */
 
 [data-theme="dark"] .automations-panel {

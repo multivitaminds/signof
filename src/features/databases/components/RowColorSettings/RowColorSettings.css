@@ -172,6 +172,41 @@
   align-self: flex-start;
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .row-color-settings {
+    max-width: 480px;
+  }
+
+  .row-color-settings__rule {
+    padding: var(--space-2, 0.5rem);
+  }
+
+  .row-color-settings__rule-row {
+    gap: var(--space-1, 0.25rem);
+  }
+
+  .row-color-settings__select {
+    font-size: var(--text-xs, 0.75rem);
+    padding: var(--space-1, 0.25rem) var(--space-1, 0.25rem);
+  }
+
+  .row-color-settings__input {
+    font-size: var(--text-xs, 0.75rem);
+    min-width: 60px;
+  }
+
+  .row-color-settings__color-palette {
+    width: 140px;
+  }
+
+  .row-color-settings__color-swatch {
+    width: 20px;
+    height: 20px;
+  }
+}
+
 /* ─── Dark Mode ──────────────────────────────────────────── */
 
 [data-theme="dark"] .row-color-settings__rule {

@@ -262,6 +262,38 @@
   75% { transform: translateX(4px); }
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .row-detail {
+    max-width: 540px;
+  }
+
+  .row-detail__title {
+    font-size: var(--text-base, 1rem);
+  }
+
+  .row-detail__fields {
+    gap: var(--space-2, 0.5rem);
+    padding: var(--space-3, 0.75rem) 0;
+  }
+
+  .row-detail__input,
+  .row-detail__select {
+    padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .row-detail__field-readonly {
+    padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .row-detail__activity-label {
+    min-width: 64px;
+  }
+}
+
 /* ─── Dark Mode ──────────────────────────────────────────── */
 
 [data-theme="dark"] .row-detail__field-readonly {

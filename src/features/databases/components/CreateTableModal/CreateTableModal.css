@@ -153,6 +153,25 @@
   cursor: not-allowed;
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .create-table-modal {
+    max-width: 420px;
+  }
+
+  .create-table-modal__body {
+    padding: var(--space-3, 0.75rem) 0;
+    gap: var(--space-3, 0.75rem);
+  }
+
+  .create-table-modal__icon-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1.125rem;
+  }
+}
+
 /* ─── Dark Mode ───────────────────────────────────────────── */
 
 [data-theme="dark"] .create-table-modal__input {

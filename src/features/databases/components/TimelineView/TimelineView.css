@@ -311,6 +311,34 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .timeline-view__labels {
+    width: 150px;
+    min-width: 150px;
+  }
+
+  .timeline-view__toolbar {
+    padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  }
+
+  .timeline-view__label {
+    font-size: var(--text-xs, 0.75rem);
+    padding: 0 var(--space-2, 0.5rem);
+  }
+
+  .timeline-view__bar-label {
+    font-size: 0.6875rem;
+  }
+
+  .timeline-view__zoom-btn,
+  .timeline-view__today-btn {
+    font-size: 0.6875rem;
+    padding: var(--space-1, 0.25rem);
+  }
+}
+
 /* ─── Responsive ─────────────────────────────────────────── */
 
 @media (max-width: 767px) {

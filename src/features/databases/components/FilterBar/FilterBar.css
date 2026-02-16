@@ -98,3 +98,60 @@
 .filter-bar__add-row:hover {
   color: var(--color-primary, #4F46E5);
 }
+
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .filter-bar__row {
+    flex-wrap: wrap;
+  }
+
+  .filter-bar__select,
+  .filter-bar__input {
+    font-size: 11px;
+  }
+
+  .filter-bar__input {
+    min-width: 80px;
+  }
+
+  .filter-bar__section {
+    padding: var(--space-2, 0.5rem);
+  }
+}
+
+/* ─── Dark Mode ───────────────────────────────────────── */
+
+[data-theme="dark"] .filter-bar__section {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .filter-bar__btn {
+  border-color: var(--border-color, #334155);
+  color: var(--text-secondary, #94A3B8);
+}
+
+[data-theme="dark"] .filter-bar__btn:hover {
+  background: var(--bg-tertiary, #1E1E36);
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .filter-bar__select,
+[data-theme="dark"] .filter-bar__input {
+  background: var(--bg-primary, #0F0F1A);
+  border-color: var(--border-color, #334155);
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .filter-bar__remove:hover {
+  background: rgba(220, 38, 38, 0.15);
+}
+
+[data-theme="dark"] .filter-bar__add-row {
+  color: var(--text-muted, #64748B);
+}
+
+[data-theme="dark"] .filter-bar__add-row:hover {
+  color: var(--color-primary, #4F46E5);
+}

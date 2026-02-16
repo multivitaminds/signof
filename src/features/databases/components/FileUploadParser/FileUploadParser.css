@@ -340,6 +340,30 @@
   cursor: not-allowed;
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .file-upload-parser {
+    max-width: 620px;
+  }
+
+  .file-upload-parser__dropzone {
+    padding: var(--space-6, 2rem) var(--space-3, 0.75rem);
+  }
+
+  .file-upload-parser__column-type {
+    width: 100px;
+  }
+
+  .file-upload-parser__body {
+    max-height: 55vh;
+  }
+
+  .file-upload-parser__mode-options {
+    gap: var(--space-3, 0.75rem);
+  }
+}
+
 /* ─── Dark Mode ───────────────────────────────────────────── */
 
 [data-theme="dark"] .file-upload-parser__dropzone {

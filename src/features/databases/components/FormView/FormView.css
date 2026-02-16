@@ -176,6 +176,24 @@
   margin-top: var(--space-sm);
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .form-view {
+    max-width: 480px;
+    gap: var(--space-md, 1.25rem);
+  }
+
+  .form-view__title {
+    font-size: 1.125rem;
+  }
+
+  .form-view__multi-option {
+    padding: 3px 10px;
+    font-size: 0.7rem;
+  }
+}
+
 /* ─── Dark Mode ──────────────────────────────────────────────────── */
 
 [data-theme="dark"] .form-view__shareable-hint {

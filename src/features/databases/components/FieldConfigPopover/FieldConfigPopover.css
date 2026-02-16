@@ -188,6 +188,23 @@
   background: var(--bg-secondary, #F9FAFB);
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .field-config-popover--wide {
+    min-width: 280px;
+  }
+
+  .field-config-popover__form {
+    padding: var(--space-2, 0.5rem);
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .field-config-popover__type-option {
+    padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  }
+}
+
 /* ─── Dark mode ──────────────────────────────────────────────────── */
 
 [data-theme="dark"] .field-config-popover {

@@ -1,7 +1,8 @@
 import { Outlet } from 'react-router-dom'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { DemoVideoSection } from '../../../components/ui/DemoVideo'
-import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
+import DatabaseCopilotButton from '../components/DatabaseCopilotButton/DatabaseCopilotButton'
+import DatabaseCopilotPanel from '../components/DatabaseCopilotPanel/DatabaseCopilotPanel'
 
 export default function DatabasesLayout() {
   return (
@@ -15,7 +16,8 @@ export default function DatabasesLayout() {
       ]} />
 
       <Outlet />
-      <AIFeatureWidget featureKey="databases" />
+      <DatabaseCopilotButton />
+      <DatabaseCopilotPanel />
     </>
   )
 }

@@ -295,6 +295,31 @@
   gap: var(--space-1);
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .automation-builder {
+    max-width: 540px;
+  }
+
+  .automation-builder__option {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .automation-builder__summary {
+    padding: var(--space-3);
+  }
+
+  .automation-builder__summary-label {
+    min-width: 70px;
+  }
+
+  .automation-builder__config-textarea {
+    min-height: 50px;
+  }
+}
+
 /* ─── Dark Mode ───────────────────────────────────────────── */
 
 [data-theme="dark"] .automation-builder__option:hover,

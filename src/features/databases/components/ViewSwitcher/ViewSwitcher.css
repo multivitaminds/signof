@@ -154,6 +154,26 @@
   color: var(--color-primary, #4F46E5);
 }
 
+/* ─── Tablet ──────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .view-switcher__tab {
+    padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .view-switcher__field-btn {
+    font-size: 0.6875rem;
+    padding: var(--space-1, 0.25rem) var(--space-1, 0.25rem);
+  }
+
+  .view-switcher__field-option,
+  .view-switcher__add-option {
+    padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+    font-size: var(--text-xs, 0.75rem);
+  }
+}
+
 /* ─── Dark mode ──────────────────────────────────────────────── */
 
 [data-theme="dark"] .view-switcher__field-dropdown,
