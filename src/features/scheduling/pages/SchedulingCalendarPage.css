@@ -11,3 +11,26 @@
   color: var(--text-primary, #111827);
   margin-left: var(--space-2, 0.5rem);
 }
+
+/* ─── Dark mode ───────────────────────────────────────────── */
+[data-theme="dark"] .scheduling-calendar-page__month {
+  color: var(--text-primary);
+}
+
+/* ─── Tablet ──────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .scheduling-calendar-page__controls {
+    flex-wrap: wrap;
+  }
+}
+
+/* ─── Mobile ──────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .scheduling-calendar-page__controls {
+    flex-wrap: wrap;
+  }
+
+  .scheduling-calendar-page__month {
+    font-size: var(--text-base, 1rem);
+  }
+}

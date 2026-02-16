@@ -53,12 +53,12 @@
 
 .booking-analytics__stat-icon--star {
   background: rgba(245, 158, 11, 0.1);
-  color: #F59E0B;
+  color: var(--color-warning, #F59E0B);
 }
 
 .booking-analytics__stat-icon--clock {
   background: rgba(5, 150, 105, 0.1);
-  color: #059669;
+  color: var(--color-success, #059669);
 }
 
 .booking-analytics__stat-icon--bar {
@@ -103,12 +103,12 @@
 }
 
 .booking-analytics__stat-change--up {
-  color: #059669;
+  color: var(--color-success, #059669);
   background: rgba(5, 150, 105, 0.1);
 }
 
 .booking-analytics__stat-change--down {
-  color: #DC2626;
+  color: var(--color-danger, #DC2626);
   background: rgba(220, 38, 38, 0.1);
 }
 
@@ -250,8 +250,43 @@
   margin: 0;
 }
 
+/* ─── Tablet ─────────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .booking-analytics__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .booking-analytics__charts {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ─── Dark mode ──────────────────────────────────────────────── */
 [data-theme="dark"] .booking-analytics__stat-card,
 [data-theme="dark"] .booking-analytics__chart-card {
   background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .booking-analytics__stat-icon {
+  background: rgba(79, 70, 229, 0.15);
+}
+
+[data-theme="dark"] .booking-analytics__stat-icon--star {
+  background: rgba(245, 158, 11, 0.15);
+}
+
+[data-theme="dark"] .booking-analytics__stat-icon--clock {
+  background: rgba(5, 150, 105, 0.15);
+}
+
+[data-theme="dark"] .booking-analytics__stat-icon--bar {
+  background: rgba(139, 92, 246, 0.15);
+}
+
+[data-theme="dark"] .booking-analytics__stat-change--up {
+  background: rgba(5, 150, 105, 0.15);
+}
+
+[data-theme="dark"] .booking-analytics__stat-change--down {
+  background: rgba(220, 38, 38, 0.15);
 }

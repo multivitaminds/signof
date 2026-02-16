@@ -39,7 +39,7 @@
 .recurrence-editor__select:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px var(--color-primary-ring, rgba(79, 70, 229, 0.1));
 }
 
 .recurrence-editor__days {
@@ -73,13 +73,13 @@
 .recurrence-editor__day-btn--active {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
-  color: #fff;
+  color: var(--color-text-on-primary, #fff);
 }
 
 .recurrence-editor__day-btn--active:hover {
   background-color: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
-  color: #fff;
+  color: var(--color-text-on-primary, #fff);
 }
 
 .recurrence-editor__end-input {
@@ -106,7 +106,7 @@
 .recurrence-editor__date-input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px var(--color-primary-ring, rgba(79, 70, 229, 0.1));
 }
 
 .recurrence-editor__preview {
@@ -128,4 +128,19 @@
 
 [data-theme="dark"] .recurrence-editor__preview {
   background-color: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .recurrence-editor__day-btn {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .recurrence-editor__day-btn--active {
+  background-color: var(--color-primary);
+}
+
+/* ─── Tablet ─────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .recurrence-editor__days {
+    gap: var(--space-sm);
+  }
 }

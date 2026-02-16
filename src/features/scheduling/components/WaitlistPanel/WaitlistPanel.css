@@ -111,27 +111,27 @@
 
 .waitlist-panel__entry-status--waiting {
   background: rgba(245, 158, 11, 0.1);
-  color: #D97706;
+  color: var(--color-warning, #D97706);
 }
 
 .waitlist-panel__entry-status--notified {
   background: rgba(79, 70, 229, 0.1);
-  color: #4F46E5;
+  color: var(--color-primary, #4F46E5);
 }
 
 .waitlist-panel__entry-status--approved {
   background: rgba(5, 150, 105, 0.1);
-  color: #059669;
+  color: var(--color-success, #059669);
 }
 
 .waitlist-panel__entry-status--rejected {
   background: rgba(220, 38, 38, 0.1);
-  color: #DC2626;
+  color: var(--color-danger, #DC2626);
 }
 
 .waitlist-panel__entry-status--expired {
   background: rgba(107, 114, 128, 0.1);
-  color: #6B7280;
+  color: var(--text-secondary, #6B7280);
 }
 
 .waitlist-panel__entry-details {
@@ -222,4 +222,23 @@
 /* ─── Dark mode ──────────────────────────────────────────────── */
 [data-theme="dark"] .waitlist-panel__entry {
   background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .waitlist-panel__entry:hover {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .waitlist-panel__action-btn {
+  border-color: var(--border-color);
+}
+
+/* ─── Tablet ─────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .waitlist-panel__entry {
+    flex-wrap: wrap;
+  }
+
+  .waitlist-panel__entry-actions {
+    margin-left: auto;
+  }
 }

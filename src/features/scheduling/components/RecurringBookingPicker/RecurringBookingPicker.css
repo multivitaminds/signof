@@ -51,7 +51,7 @@
 .recurring-booking-picker__select:focus {
   outline: none;
   border-color: var(--color-primary, #4F46E5);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px var(--color-primary-ring, rgba(79, 70, 229, 0.1));
 }
 
 /* ─── Count buttons ──────────────────────────────────────────── */
@@ -81,12 +81,12 @@
 .recurring-booking-picker__count-btn--active {
   background: var(--color-primary, #4F46E5);
   border-color: var(--color-primary, #4F46E5);
-  color: #fff;
+  color: var(--color-text-on-primary, #fff);
 }
 
 .recurring-booking-picker__count-btn--active:hover {
   background: var(--color-primary-hover, #4338CA);
-  color: #fff;
+  color: var(--color-text-on-primary, #fff);
 }
 
 /* ─── Date preview ───────────────────────────────────────────── */
@@ -181,4 +181,11 @@
 
 [data-theme="dark"] .recurring-booking-picker__preview {
   background: var(--bg-tertiary);
+}
+
+/* ─── Tablet ─────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .recurring-booking-picker__date-list {
+    max-height: 140px;
+  }
 }

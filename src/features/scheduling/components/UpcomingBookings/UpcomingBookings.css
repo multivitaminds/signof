@@ -105,28 +105,28 @@
 }
 
 .upcoming-bookings__card-status--confirmed {
-  background: rgba(0, 212, 170, 0.12);
-  color: #059669;
+  background: rgba(5, 150, 105, 0.12);
+  color: var(--color-success, #059669);
 }
 
 .upcoming-bookings__card-status--rescheduled {
-  background: rgba(245, 166, 35, 0.12);
-  color: #D97706;
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--color-warning, #D97706);
 }
 
 .upcoming-bookings__card-status--completed {
   background: rgba(79, 70, 229, 0.1);
-  color: #4F46E5;
+  color: var(--color-primary, #4F46E5);
 }
 
 .upcoming-bookings__card-status--cancelled {
-  background: rgba(255, 90, 90, 0.1);
-  color: #DC2626;
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--color-danger, #DC2626);
 }
 
 .upcoming-bookings__card-status--no_show {
   background: rgba(107, 114, 128, 0.1);
-  color: #6B7280;
+  color: var(--text-secondary, #6B7280);
 }
 
 .upcoming-bookings__card-attendee {
@@ -173,4 +173,11 @@
 
 [data-theme="dark"] .upcoming-bookings__card-duration {
   background-color: var(--bg-tertiary);
+}
+
+/* ─── Tablet ─────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .upcoming-bookings__card-details {
+    gap: var(--space-2);
+  }
 }

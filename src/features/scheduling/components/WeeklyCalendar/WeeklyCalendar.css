@@ -94,7 +94,7 @@
   right: 2px;
   border-radius: var(--radius-sm);
   padding: 2px var(--space-xs);
-  color: #fff;
+  color: var(--color-text-on-primary, #fff);
   font-size: var(--text-xs);
   overflow: hidden;
   display: flex;
@@ -115,4 +115,28 @@
   overflow: hidden;
   text-overflow: ellipsis;
   opacity: 0.9;
+}
+
+/* ─── Dark mode ──────────────────────────────────────────── */
+[data-theme="dark"] .weekly-calendar {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .weekly-calendar__header {
+  background-color: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .weekly-calendar__time-slot:hover {
+  background-color: rgba(79, 70, 229, 0.1);
+}
+
+/* ─── Tablet ─────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .weekly-calendar__body {
+    max-height: 400px;
+  }
+
+  .weekly-calendar__day-name {
+    font-size: 10px;
+  }
 }

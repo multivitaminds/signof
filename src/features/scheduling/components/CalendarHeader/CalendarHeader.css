@@ -70,3 +70,24 @@
   color: var(--text-primary);
   box-shadow: var(--shadow-sm);
 }
+
+/* ─── Tablet ─────────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .calendar-header__title {
+    min-width: 160px;
+    font-size: var(--text-base);
+  }
+}
+
+/* ─── Dark mode ──────────────────────────────────────────────── */
+[data-theme="dark"] .calendar-header__view-toggle {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .calendar-header__view-btn--active {
+  background-color: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .calendar-header__btn:hover {
+  background-color: var(--bg-secondary);
+}

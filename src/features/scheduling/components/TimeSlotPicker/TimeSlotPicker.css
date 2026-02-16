@@ -43,7 +43,7 @@
 
 .time-slot-picker__slot--selected {
   background-color: var(--color-primary);
-  color: #fff;
+  color: var(--color-text-on-primary, #fff);
   border-color: var(--color-primary);
 }
 
@@ -56,4 +56,24 @@
   padding: var(--space-xl);
   color: var(--text-muted);
   font-size: var(--text-sm);
+}
+
+/* ─── Dark mode ──────────────────────────────────────────── */
+[data-theme="dark"] .time-slot-picker__slot {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .time-slot-picker__slot:hover {
+  background-color: rgba(79, 70, 229, 0.15);
+}
+
+[data-theme="dark"] .time-slot-picker__slot--selected {
+  background-color: var(--color-primary);
+}
+
+/* ─── Tablet ─────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .time-slot-picker__grid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  }
 }

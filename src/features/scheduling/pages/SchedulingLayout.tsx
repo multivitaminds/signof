@@ -2,7 +2,8 @@ import { NavLink, Outlet, useLocation, Navigate } from 'react-router-dom'
 import { CalendarDays, Clock, List, Link2, BarChart3, UserX } from 'lucide-react'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { DemoVideoSection } from '../../../components/ui/DemoVideo'
-import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
+import SchedulingCopilotButton from '../components/SchedulingCopilotButton/SchedulingCopilotButton'
+import SchedulingCopilotPanel from '../components/SchedulingCopilotPanel/SchedulingCopilotPanel'
 import './SchedulingLayout.css'
 
 const TABS = [
@@ -50,7 +51,8 @@ export default function SchedulingLayout() {
       <div className="scheduling-layout__content">
         <Outlet />
       </div>
-      <AIFeatureWidget featureKey="scheduling" />
+      <SchedulingCopilotButton />
+      <SchedulingCopilotPanel />
     </div>
   )
 }

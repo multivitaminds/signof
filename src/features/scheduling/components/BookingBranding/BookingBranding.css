@@ -228,6 +228,13 @@
   font-weight: var(--font-semibold, 600);
 }
 
+/* --- Tablet --- */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .booking-branding__preview {
+    max-width: 260px;
+  }
+}
+
 /* --- Dark mode --- */
 [data-theme="dark"] .booking-branding__input {
   background: var(--bg-primary);

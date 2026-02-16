@@ -28,13 +28,13 @@
 
 .duration-select__option--active {
   background-color: var(--color-primary);
-  color: #fff;
+  color: var(--text-on-primary, #fff);
   border-color: var(--color-primary);
 }
 
 .duration-select__option--active:hover {
   background-color: var(--color-primary-hover);
-  color: #fff;
+  color: var(--text-on-primary, #fff);
 }
 
 .duration-select__custom {
@@ -50,4 +50,20 @@
 .duration-select__unit {
   font-size: var(--text-sm);
   color: var(--text-muted);
+}
+
+/* ─── Tablet ─────────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .duration-select__options {
+    gap: var(--space-xs);
+  }
+}
+
+/* ─── Dark mode ──────────────────────────────────────────────── */
+[data-theme="dark"] .duration-select__option {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .duration-select__option--active {
+  background-color: var(--color-primary);
 }

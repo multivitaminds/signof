@@ -167,11 +167,22 @@
   opacity: 0.8;
 }
 
+/* ─── Tablet ─────────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .booking-confirmation__details-card {
+    max-width: 360px;
+  }
+
+  .booking-confirmation__actions {
+    max-width: 360px;
+  }
+}
+
 /* ─── Dark mode ──────────────────────────────────────────────── */
 [data-theme="dark"] .booking-confirmation__details-card {
   background: var(--bg-tertiary);
 }
 
 [data-theme="dark"] .booking-confirmation__email-notice {
-  background: rgba(79, 70, 229, 0.1);
+  background: rgba(79, 70, 229, 0.12);
 }

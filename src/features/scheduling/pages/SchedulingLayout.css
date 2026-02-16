@@ -48,3 +48,49 @@
 .scheduling-layout__content {
   padding-top: var(--space-4, 1rem);
 }
+
+/* ─── Dark mode ───────────────────────────────────────────── */
+[data-theme="dark"] .scheduling-layout__title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .scheduling-layout__tabs {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .scheduling-layout__tab {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .scheduling-layout__tab:hover {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .scheduling-layout__tab--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+/* ─── Tablet ──────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .scheduling-layout {
+    padding: var(--space-4, 1rem);
+  }
+}
+
+/* ─── Mobile ──────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .scheduling-layout {
+    padding: var(--space-3, 0.75rem);
+  }
+
+  .scheduling-layout__tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scheduling-layout__tab {
+    white-space: nowrap;
+    font-size: var(--text-xs, 0.75rem);
+  }
+}

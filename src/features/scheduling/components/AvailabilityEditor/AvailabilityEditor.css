@@ -132,7 +132,7 @@
   top: 2px;
   width: 16px;
   height: 16px;
-  background-color: #fff;
+  background-color: var(--bg-primary);
   border-radius: var(--radius-full);
   transition: transform var(--motion-fast) var(--ease-out);
 }
@@ -289,6 +289,21 @@
   gap: var(--space-sm);
   padding-top: var(--space-md);
   border-top: 1px solid var(--border-color);
+}
+
+/* ─── Tablet ───────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .availability-editor__ranges {
+    padding-left: 40px;
+  }
+
+  .availability-editor__timeline {
+    padding-left: 40px;
+  }
+
+  .availability-editor__time-input {
+    width: 100px;
+  }
 }
 
 /* ─── Dark mode adjustments ─────────────────────────────────── */

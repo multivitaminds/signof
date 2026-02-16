@@ -59,3 +59,19 @@
   padding-top: var(--space-md);
   border-top: 1px solid var(--border-color);
 }
+
+/* ─── Dark mode ──────────────────────────────────────────── */
+[data-theme="dark"] .event-type-form__input {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .event-type-form__color--selected {
+  box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--text-primary);
+}
+
+/* ─── Tablet ─────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .event-type-form__row {
+    grid-template-columns: 1fr;
+  }
+}

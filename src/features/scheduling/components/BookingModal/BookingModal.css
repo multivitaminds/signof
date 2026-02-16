@@ -138,3 +138,23 @@
 .booking-modal__actions-right {
   margin-left: auto;
 }
+
+/* ─── Tablet ─────────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .booking-modal {
+    max-width: 500px;
+  }
+}
+
+/* ─── Dark mode ──────────────────────────────────────────────── */
+[data-theme="dark"] .booking-modal__summary {
+  background-color: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .booking-modal__step-dot {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .booking-modal__success-icon {
+  background-color: rgba(5, 150, 105, 0.15);
+}

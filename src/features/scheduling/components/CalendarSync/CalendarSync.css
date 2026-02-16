@@ -56,7 +56,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
   font-weight: 700;
   font-size: var(--text-sm, 0.875rem);
   flex-shrink: 0;
@@ -92,12 +91,12 @@
 
 .calendar-sync__badge--connected {
   background: rgba(5, 150, 105, 0.1);
-  color: #059669;
+  color: var(--color-success, #059669);
 }
 
 .calendar-sync__badge--disconnected {
   background: rgba(107, 114, 128, 0.1);
-  color: #6B7280;
+  color: var(--text-secondary, #6B7280);
 }
 
 /* ─── Actions ────────────────────────────────────────────────── */
@@ -230,13 +229,24 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--bg-primary);
   transition: transform 150ms ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .calendar-sync__toggle--on .calendar-sync__toggle-thumb {
   transform: translateX(18px);
+}
+
+/* ─── Tablet ─────────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .calendar-sync {
+    max-width: 600px;
+  }
+
+  .calendar-sync__item-header {
+    flex-wrap: wrap;
+  }
 }
 
 /* ─── Dark mode ──────────────────────────────────────────────── */

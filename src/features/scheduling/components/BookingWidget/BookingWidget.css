@@ -409,11 +409,39 @@
   color: var(--text-muted);
 }
 
+/* ─── Tablet ─────────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .booking-widget {
+    max-width: 420px;
+  }
+
+  .booking-widget__header {
+    padding: var(--space-md) var(--space-md) var(--space-sm);
+  }
+
+  .booking-widget__body {
+    padding: var(--space-md);
+  }
+}
+
 /* ─── Dark mode ─────────────────────────────────────────────── */
 [data-theme="dark"] .booking-widget__slot {
   background: var(--bg-secondary);
 }
 
 [data-theme="dark"] .booking-widget__day--today {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .booking-widget__input,
+[data-theme="dark"] .booking-widget__textarea {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .booking-widget__form-summary {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .booking-widget__confirmed-summary {
   background: var(--bg-tertiary);
 }

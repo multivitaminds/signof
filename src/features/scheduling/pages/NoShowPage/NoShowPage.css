@@ -20,3 +20,30 @@
   color: var(--text-muted, #9CA3AF);
   margin: 0;
 }
+
+/* ─── Dark mode ───────────────────────────────────────────── */
+[data-theme="dark"] .no-show-page__title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .no-show-page__subtitle {
+  color: var(--text-muted);
+}
+
+/* ─── Tablet ──────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .no-show-page {
+    gap: var(--space-3, 0.75rem);
+  }
+}
+
+/* ─── Mobile ──────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .no-show-page {
+    gap: var(--space-3, 0.75rem);
+  }
+
+  .no-show-page__title {
+    font-size: var(--text-lg, 1.125rem);
+  }
+}

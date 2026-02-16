@@ -200,6 +200,58 @@ export const ORCHESTREE_TOOLS: ToolDefinition[] = [
       required: [],
     },
   },
+  {
+    name: 'analyze_bookings',
+    description: 'Analyze booking data by status, event type, or date range. Returns booking breakdown and trends.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        event_type_id: { type: 'string', description: 'Filter by event type ID' },
+        status: { type: 'string', description: 'Filter by booking status', enum: ['confirmed', 'cancelled', 'rescheduled', 'completed', 'no_show'] },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'get_availability_summary',
+    description: 'Get a summary of availability gaps and busy periods across event types.',
+    input_schema: {
+      type: 'object',
+      properties: {},
+      required: [],
+    },
+  },
+  {
+    name: 'get_no_show_stats',
+    description: 'Get no-show rates and patterns by event type.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        event_type_id: { type: 'string', description: 'Filter by specific event type ID' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'review_calendar_health',
+    description: 'Check calendar sync status, conflicts, and upcoming booking load.',
+    input_schema: {
+      type: 'object',
+      properties: {},
+      required: [],
+    },
+  },
+  {
+    name: 'get_waitlist_summary',
+    description: 'Summarize waitlist entries by event type and status.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        event_type_id: { type: 'string', description: 'Filter by event type ID' },
+      },
+      required: [],
+    },
+  },
 
   // ── Databases ────────────────────────────────────────────────────
   {
@@ -668,6 +720,183 @@ export function executeTool(
           attendees: b.attendees.map((a) => a.name),
         }))
         return JSON.stringify({ success: true, count: upcoming.length, bookings: results })
+      }
+
+      case 'analyze_bookings': {
+        const schedState = useSchedulingStore.getState()
+        const allBookings = schedState.bookings
+        const eventTypeId = input.event_type_id as string | undefined
+        const statusFilter = input.status as string | undefined
+
+        let filtered = allBookings
+        if (eventTypeId) {
+          filtered = filtered.filter((b) => b.eventTypeId === eventTypeId)
+        }
+        if (statusFilter) {
+          filtered = filtered.filter((b) => b.status === statusFilter)
+        }
+
+        const today = new Date()
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+
+        const byStatus: Record<string, number> = {}
+        for (const b of filtered) {
+          byStatus[b.status] = (byStatus[b.status] ?? 0) + 1
+        }
+
+        const upcomingCount = filtered.filter((b) => b.date >= todayStr && b.status !== 'cancelled').length
+        const pastCount = filtered.filter((b) => b.date < todayStr).length
+
+        return JSON.stringify({
+          success: true,
+          total: filtered.length,
+          upcoming: upcomingCount,
+          past: pastCount,
+          byStatus,
+        })
+      }
+
+      case 'get_availability_summary': {
+        const schedState = useSchedulingStore.getState()
+        const eventTypes = schedState.eventTypes
+        const allBookings = schedState.bookings
+        const today = new Date()
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+
+        const availability = eventTypes.map((et) => {
+          const upcomingBookings = allBookings.filter(
+            (b) => b.eventTypeId === et.id && b.date >= todayStr && b.status !== 'cancelled'
+          )
+          const bookingsByDate: Record<string, number> = {}
+          for (const b of upcomingBookings) {
+            bookingsByDate[b.date] = (bookingsByDate[b.date] ?? 0) + 1
+          }
+          const fullyBookedDates = Object.entries(bookingsByDate)
+            .filter(([, count]) => count >= et.maxBookingsPerDay)
+            .map(([date]) => date)
+
+          return {
+            eventTypeId: et.id,
+            name: et.name,
+            isActive: et.isActive,
+            durationMinutes: et.durationMinutes,
+            maxBookingsPerDay: et.maxBookingsPerDay,
+            upcomingBookings: upcomingBookings.length,
+            fullyBookedDates,
+          }
+        })
+
+        return JSON.stringify({ success: true, eventTypes: availability })
+      }
+
+      case 'get_no_show_stats': {
+        const schedState = useSchedulingStore.getState()
+        const eventTypeIdFilter = input.event_type_id as string | undefined
+
+        if (eventTypeIdFilter) {
+          const et = schedState.eventTypes.find((e) => e.id === eventTypeIdFilter)
+          const rate = schedState.getNoShowRate(eventTypeIdFilter)
+          return JSON.stringify({
+            success: true,
+            eventType: et ? { id: et.id, name: et.name } : null,
+            noShowRate: rate,
+          })
+        }
+
+        const overallRate = schedState.getNoShowRate()
+        const byEventType = schedState.eventTypes.map((et) => ({
+          eventTypeId: et.id,
+          name: et.name,
+          noShowRate: schedState.getNoShowRate(et.id),
+          totalBookings: schedState.bookings.filter((b) => b.eventTypeId === et.id).length,
+        }))
+
+        return JSON.stringify({
+          success: true,
+          overallNoShowRate: overallRate,
+          byEventType,
+        })
+      }
+
+      case 'review_calendar_health': {
+        const schedState = useSchedulingStore.getState()
+        const connections = schedState.calendarConnections
+        const allBookings = schedState.bookings
+        const today = new Date()
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+        const nextWeek = new Date(today)
+        nextWeek.setDate(nextWeek.getDate() + 7)
+        const nextWeekStr = `${nextWeek.getFullYear()}-${String(nextWeek.getMonth() + 1).padStart(2, '0')}-${String(nextWeek.getDate()).padStart(2, '0')}`
+
+        const connectedCalendars = connections.filter((c) => c.connected)
+        const next7Days = allBookings.filter(
+          (b) => b.date >= todayStr && b.date <= nextWeekStr && b.status !== 'cancelled'
+        )
+
+        // Check for conflicts
+        const activeBookings = allBookings.filter((b) => b.status !== 'cancelled')
+        const conflicts: Array<{ date: string; booking1: string; booking2: string }> = []
+        for (let i = 0; i < activeBookings.length; i++) {
+          for (let j = i + 1; j < activeBookings.length; j++) {
+            const a = activeBookings[i]!
+            const b = activeBookings[j]!
+            if (a.date === b.date && a.startTime < b.endTime && b.startTime < a.endTime) {
+              conflicts.push({ date: a.date, booking1: a.id, booking2: b.id })
+            }
+          }
+        }
+
+        return JSON.stringify({
+          success: true,
+          calendars: {
+            total: connections.length,
+            connected: connectedCalendars.length,
+            details: connections.map((c) => ({
+              id: c.id,
+              provider: c.provider,
+              connected: c.connected,
+              syncDirection: c.syncDirection,
+              lastSyncedAt: c.lastSyncedAt,
+            })),
+          },
+          upcomingLoad: next7Days.length,
+          conflicts: conflicts.length,
+          conflictDetails: conflicts,
+        })
+      }
+
+      case 'get_waitlist_summary': {
+        const schedState = useSchedulingStore.getState()
+        const waitlist = schedState.waitlist
+        const eventTypeIdFilter = input.event_type_id as string | undefined
+
+        const filtered = eventTypeIdFilter
+          ? waitlist.filter((w) => w.eventTypeId === eventTypeIdFilter)
+          : waitlist
+
+        const byStatus: Record<string, number> = {}
+        for (const w of filtered) {
+          byStatus[w.status] = (byStatus[w.status] ?? 0) + 1
+        }
+
+        const byEventType: Record<string, number> = {}
+        for (const w of filtered) {
+          byEventType[w.eventTypeId] = (byEventType[w.eventTypeId] ?? 0) + 1
+        }
+
+        return JSON.stringify({
+          success: true,
+          total: filtered.length,
+          byStatus,
+          byEventType,
+          entries: filtered.slice(0, 20).map((w) => ({
+            id: w.id,
+            eventTypeId: w.eventTypeId,
+            date: w.date,
+            name: w.name,
+            status: w.status,
+          })),
+        })
       }
 
       // ── Databases ──────────────────────────────────────────────
@@ -1276,7 +1505,7 @@ const AGENT_TOOL_MAP: Partial<Record<AgentType, string[]>> = {
   designer: ['create_page', 'add_block'],
   developer: ['create_issue', 'create_page', 'list_issues', 'create_cycle', 'get_workspace_stats'],
   reviewer: ['create_issue', 'list_issues', 'get_workspace_stats'],
-  coordinator: ['create_issue', 'create_booking', 'cancel_booking', 'list_bookings', 'create_event_type', 'send_notification', 'get_workspace_stats', 'get_upcoming_deadlines'],
+  coordinator: ['create_issue', 'create_booking', 'cancel_booking', 'list_bookings', 'create_event_type', 'send_notification', 'get_workspace_stats', 'get_upcoming_deadlines', 'analyze_bookings', 'get_availability_summary', 'get_no_show_stats', 'review_calendar_health', 'get_waitlist_summary'],
   sales: ['add_contact', 'create_booking', 'create_template', 'create_invoice', 'list_bookings', 'get_workspace_stats'],
   marketing: ['create_page', 'add_block', 'create_template', 'send_notification', 'get_workspace_stats'],
   finance: ['create_invoice', 'create_expense', 'analyze_expenses', 'get_invoice_summary', 'get_account_balance', 'review_cash_flow', 'get_payroll_summary', 'create_tax_filing', 'analyze_tax_document', 'suggest_deductions', 'create_database', 'add_table', 'add_row', 'get_workspace_stats', 'get_upcoming_deadlines'],

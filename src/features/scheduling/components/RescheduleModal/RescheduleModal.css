@@ -79,7 +79,7 @@
 .reschedule-modal__date-input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px var(--color-primary-ring, rgba(79, 70, 229, 0.1));
 }
 
 .reschedule-modal__textarea {
@@ -98,7 +98,7 @@
 .reschedule-modal__textarea:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px var(--color-primary-ring, rgba(79, 70, 229, 0.1));
 }
 
 /* ─── Actions ────────────────────────────────────────────── */
@@ -118,4 +118,11 @@
 [data-theme="dark"] .reschedule-modal__date-input,
 [data-theme="dark"] .reschedule-modal__textarea {
   background-color: var(--bg-secondary);
+}
+
+/* ─── Tablet ─────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .reschedule-modal {
+    max-width: 480px;
+  }
 }

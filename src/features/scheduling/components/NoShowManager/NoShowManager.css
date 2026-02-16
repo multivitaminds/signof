@@ -189,3 +189,18 @@
   border-color: var(--border-color, #334155);
   color: var(--text-primary, #F1F5F9);
 }
+
+/* ─── Tablet ─────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .no-show-manager__stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .no-show-manager__row {
+    flex-wrap: wrap;
+  }
+
+  .no-show-manager__info {
+    min-width: 120px;
+  }
+}

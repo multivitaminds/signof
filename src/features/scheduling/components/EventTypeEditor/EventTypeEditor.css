@@ -86,7 +86,7 @@
 .event-type-editor__textarea:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .event-type-editor__input--small {
@@ -430,7 +430,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--bg-primary);
   transition: transform 150ms ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
@@ -463,4 +463,36 @@
 
 [data-theme="dark"] .event-type-editor__toggle--on {
   background: var(--color-primary, #4F46E5);
+}
+
+[data-theme="dark"] .event-type-editor__input,
+[data-theme="dark"] .event-type-editor__textarea {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .event-type-editor__preview-card {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .event-type-editor__preview-calendar-placeholder {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .event-type-editor__chip {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .event-type-editor__chip--active {
+  background: var(--color-primary);
+}
+
+/* ─── Tablet ─────────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .event-type-editor {
+    max-width: 580px;
+  }
+
+  .event-type-editor__row {
+    grid-template-columns: 1fr;
+  }
 }

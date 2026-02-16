@@ -109,7 +109,7 @@
   top: 2px;
   width: 16px;
   height: 16px;
-  background-color: #fff;
+  background-color: var(--bg-primary);
   border-radius: var(--radius-full);
   transition: transform var(--motion-fast) var(--ease-out);
 }
@@ -125,4 +125,28 @@
 .event-type-card__toggle input:focus-visible + .event-type-card__toggle-slider {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+/* ─── Tablet ─────────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .event-type-card__body {
+    padding: var(--space-sm) var(--space-md);
+  }
+}
+
+/* ─── Dark mode ──────────────────────────────────────────────── */
+[data-theme="dark"] .event-type-card {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .event-type-card__duration {
+  background-color: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .event-type-card__toggle-slider {
+  background-color: var(--color-gray-600, #4B5563);
+}
+
+[data-theme="dark"] .event-type-card__toggle input:checked + .event-type-card__toggle-slider {
+  background-color: var(--color-primary);
 }

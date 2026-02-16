@@ -145,7 +145,7 @@
 
 .share-booking__button-color-btn--selected {
   border-color: var(--text-primary, #111827);
-  box-shadow: 0 0 0 2px var(--bg-primary, #fff), 0 0 0 3px var(--text-primary, #111827);
+  box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 3px var(--text-primary);
 }
 
 .share-booking__button-preview {
@@ -163,7 +163,7 @@
 .share-booking__button-demo {
   display: inline-block;
   padding: 12px 24px;
-  color: #fff;
+  color: var(--color-text-on-primary, #fff);
   text-decoration: none;
   border-radius: var(--radius-md, 8px);
   font-size: var(--text-sm, 0.875rem);
@@ -182,4 +182,15 @@
 [data-theme="dark"] .share-booking__url-input,
 [data-theme="dark"] .share-booking__code-textarea {
   background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .share-booking__tab:hover {
+  color: var(--text-primary);
+}
+
+/* ─── Tablet ─────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .share-booking {
+    max-width: 480px;
+  }
 }

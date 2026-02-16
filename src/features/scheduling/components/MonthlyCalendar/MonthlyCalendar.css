@@ -64,7 +64,7 @@
 
 .monthly-calendar__cell--today .monthly-calendar__day {
   background-color: var(--color-primary);
-  color: #fff;
+  color: var(--color-text-on-primary, #fff);
   border-radius: var(--radius-full);
   width: 28px;
   height: 28px;
@@ -99,4 +99,28 @@
   height: 6px;
   border-radius: var(--radius-full);
   background-color: var(--color-primary);
+}
+
+/* ─── Dark mode ──────────────────────────────────────────── */
+[data-theme="dark"] .monthly-calendar {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .monthly-calendar__header {
+  background-color: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .monthly-calendar__cell:hover {
+  background-color: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .monthly-calendar__cell--selected {
+  background-color: rgba(79, 70, 229, 0.15);
+}
+
+/* ─── Tablet ─────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .monthly-calendar__cell {
+    min-height: 60px;
+  }
 }
