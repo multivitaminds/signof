@@ -187,11 +187,17 @@
   color: var(--text-primary, #111827);
 }
 
+.topbar__profile-menu-item--focused {
+  background: var(--bg-secondary, #F3F4F6);
+  color: var(--text-primary, #111827);
+}
+
 .topbar__profile-menu-item--danger {
   color: var(--color-danger, #DC2626);
 }
 
-.topbar__profile-menu-item--danger:hover {
+.topbar__profile-menu-item--danger:hover,
+.topbar__profile-menu-item--danger.topbar__profile-menu-item--focused {
   background: rgba(220, 38, 38, 0.06);
   color: var(--color-danger, #DC2626);
 }
@@ -204,6 +210,14 @@
 @media (max-width: 767px) {
   .topbar__hamburger {
     display: flex;
+  }
+
+  .topbar__profile-menu {
+    position: fixed;
+    top: 56px;
+    right: var(--space-3, 12px);
+    left: var(--space-3, 12px);
+    width: auto;
   }
 }
 
@@ -240,11 +254,13 @@
   color: var(--text-secondary, #94A3B8);
 }
 
-[data-theme="dark"] .topbar__profile-menu-item:hover {
+[data-theme="dark"] .topbar__profile-menu-item:hover,
+[data-theme="dark"] .topbar__profile-menu-item--focused {
   background: var(--bg-secondary, #1A1A2E);
   color: var(--text-primary, #F1F5F9);
 }
 
-[data-theme="dark"] .topbar__profile-menu-item--danger:hover {
+[data-theme="dark"] .topbar__profile-menu-item--danger:hover,
+[data-theme="dark"] .topbar__profile-menu-item--danger.topbar__profile-menu-item--focused {
   background: rgba(220, 38, 38, 0.12);
 }

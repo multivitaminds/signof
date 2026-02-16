@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, act, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import CommandPalette from './CommandPalette'
@@ -206,51 +206,59 @@ describe('CommandPalette', () => {
     expect(useAppStore.getState().commandPaletteOpen).toBe(true)
   })
 
-  it('shows tax document results when searching', async () => {
-    const user = userEvent.setup()
+  it('shows tax document results when searching', () => {
+    vi.useFakeTimers()
     useAppStore.setState({ commandPaletteOpen: true })
     renderPalette()
 
     const input = screen.getByPlaceholderText(PLACEHOLDER)
-    await user.type(input, 'AcmeCorp')
+    fireEvent.change(input, { target: { value: 'AcmeCorp' } })
+    act(() => { vi.advanceTimersByTime(200) })
 
     // The description confirms the tax document result was found
     expect(screen.getByText(/W2 · Acme Corporation · 2025/)).toBeInTheDocument()
+    vi.useRealTimers()
   })
 
-  it('shows invoice results when searching', async () => {
-    const user = userEvent.setup()
+  it('shows invoice results when searching', () => {
+    vi.useFakeTimers()
     useAppStore.setState({ commandPaletteOpen: true })
     renderPalette()
 
     const input = screen.getByPlaceholderText(PLACEHOLDER)
-    await user.type(input, 'INV-0001')
+    fireEvent.change(input, { target: { value: 'INV-0001' } })
+    act(() => { vi.advanceTimersByTime(200) })
 
     expect(screen.getByText(/INV-0001/)).toBeInTheDocument()
+    vi.useRealTimers()
   })
 
-  it('shows agent run results when searching', async () => {
-    const user = userEvent.setup()
+  it('shows agent run results when searching', () => {
+    vi.useFakeTimers()
     useAppStore.setState({ commandPaletteOpen: true })
     renderPalette()
 
     const input = screen.getByPlaceholderText(PLACEHOLDER)
-    await user.type(input, 'researcher')
+    fireEvent.change(input, { target: { value: 'researcher' } })
+    act(() => { vi.advanceTimersByTime(200) })
 
     // Description contains agent type, confirming the result was found
     expect(screen.getByText('researcher agent · completed')).toBeInTheDocument()
+    vi.useRealTimers()
   })
 
-  it('shows type badges on content results', async () => {
-    const user = userEvent.setup()
+  it('shows type badges on content results', () => {
+    vi.useFakeTimers()
     useAppStore.setState({ commandPaletteOpen: true })
     renderPalette()
 
     const input = screen.getByPlaceholderText(PLACEHOLDER)
-    await user.type(input, 'Acme')
+    fireEvent.change(input, { target: { value: 'Acme' } })
+    act(() => { vi.advanceTimersByTime(200) })
 
     // Should show badge labels for content results
     const badges = document.querySelectorAll('.command-palette__badge')
     expect(badges.length).toBeGreaterThan(0)
+    vi.useRealTimers()
   })
 })

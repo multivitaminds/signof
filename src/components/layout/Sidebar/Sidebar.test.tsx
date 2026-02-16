@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import Sidebar from './Sidebar'
@@ -126,5 +126,66 @@ describe('Sidebar', () => {
 
     await user.click(screen.getByLabelText('Unpin sidebar'))
     expect(useAppStore.getState().sidebarExpanded).toBe(false)
+  })
+
+  it('expands on hover when unpinned', () => {
+    vi.useFakeTimers()
+    useAppStore.setState({ sidebarExpanded: false })
+    renderSidebar()
+
+    // Sidebar should be collapsed
+    expect(screen.queryByText('Workspace')).not.toBeInTheDocument()
+
+    // Hover to expand
+    const sidebar = screen.getByRole('complementary')
+    fireEvent.mouseEnter(sidebar)
+
+    // Should now show expanded content
+    expect(screen.getByText('Workspace')).toBeInTheDocument()
+    expect(screen.getByText('Orchestree')).toBeInTheDocument()
+
+    vi.useRealTimers()
+  })
+
+  it('collapses after mouse leave when unpinned (300ms delay)', () => {
+    vi.useFakeTimers()
+    useAppStore.setState({ sidebarExpanded: false })
+    renderSidebar()
+
+    const sidebar = screen.getByRole('complementary')
+
+    // Hover to expand
+    fireEvent.mouseEnter(sidebar)
+    expect(screen.getByText('Workspace')).toBeInTheDocument()
+
+    // Mouse leave triggers delayed collapse
+    fireEvent.mouseLeave(sidebar)
+
+    // Still expanded immediately (300ms delay hasn't elapsed)
+    expect(screen.getByText('Workspace')).toBeInTheDocument()
+
+    // Advance past the 300ms delay
+    act(() => { vi.advanceTimersByTime(350) })
+
+    // Now collapsed
+    expect(screen.queryByText('Workspace')).not.toBeInTheDocument()
+
+    vi.useRealTimers()
+  })
+
+  it('does not collapse on mouse leave when pinned', () => {
+    vi.useFakeTimers()
+    useAppStore.setState({ sidebarExpanded: true })
+    renderSidebar()
+
+    const sidebar = screen.getByRole('complementary')
+    fireEvent.mouseLeave(sidebar)
+
+    act(() => { vi.advanceTimersByTime(500) })
+
+    // Still expanded because sidebar is pinned
+    expect(screen.getByText('Workspace')).toBeInTheDocument()
+
+    vi.useRealTimers()
   })
 })

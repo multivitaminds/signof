@@ -100,7 +100,19 @@ function TaxCopilotPanel() {
       onMouseEnter={handleMouseEnter}
     >
       {collapsed && (
-        <div className="tax-copilot-panel__collapsed-strip">
+        <div
+          className="tax-copilot-panel__collapsed-strip"
+          role="button"
+          tabIndex={0}
+          onClick={handleMouseEnter}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              handleMouseEnter()
+            }
+          }}
+          aria-label="Expand Tax Copilot"
+        >
           <Sparkles size={18} />
           <span>Tax Copilot</span>
         </div>

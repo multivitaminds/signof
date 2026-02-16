@@ -91,9 +91,11 @@ export default function CommandPalette() {
   const invoices = useInvoiceStore((s) => s.invoices)
   const agentRuns = useAIAgentStore((s) => s.runs)
   const [query, setQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  const debounceRef = useRef<number | null>(null)
 
   const handleVoiceTranscript = useCallback((text: string) => {
     setQuery(text)
@@ -292,9 +294,21 @@ export default function CommandPalette() {
     [closeCommandPalette, navigateAndTrack, theme, setTheme, compactMode, setCompactMode, toggleSidebar, toggleShortcutHelp]
   )
 
+  // Debounce content search (150ms) while keeping command matches instant
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = window.setTimeout(() => {
+      setDebouncedQuery(query)
+    }, 150)
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [query])
+
   // Detect ">" prefix for commands-only mode
   const commandsOnly = query.startsWith('>')
   const effectiveQuery = commandsOnly ? query.slice(1).trim() : query.trim()
+  const effectiveDebouncedQuery = commandsOnly ? debouncedQuery.slice(1).trim() : debouncedQuery.trim()
 
   // Build filtered + scored results
   const filteredItems = useMemo(() => {
@@ -332,11 +346,18 @@ export default function CommandPalette() {
       return scored
     }
 
+    // Content search uses debounced query to avoid re-computing on every keystroke
+    const contentQuery = effectiveDebouncedQuery
+    const MAX_PER_CATEGORY = 5
+
     // Search documents (when query length >= 2)
-    if (effectiveQuery.length >= 2) {
+    if (contentQuery.length >= 2) {
+      let docCount = 0
       for (const doc of documents) {
-        const match = fuzzyMatch(effectiveQuery, doc.name)
+        if (docCount >= MAX_PER_CATEGORY) break
+        const match = fuzzyMatch(contentQuery, doc.name)
         if (match) {
+          docCount++
           scored.push({
             id: `doc-${doc.id}`,
             label: doc.name,
@@ -351,10 +372,13 @@ export default function CommandPalette() {
     }
 
     // Search pages (when query length >= 2)
-    if (effectiveQuery.length >= 2) {
+    if (contentQuery.length >= 2) {
+      let pageCount = 0
       for (const page of workspacePages) {
-        const match = fuzzyMatch(effectiveQuery, page.title || 'Untitled')
+        if (pageCount >= MAX_PER_CATEGORY) break
+        const match = fuzzyMatch(contentQuery, page.title || 'Untitled')
         if (match) {
+          pageCount++
           scored.push({
             id: `page-${page.id}`,
             label: page.title || 'Untitled',
@@ -369,10 +393,13 @@ export default function CommandPalette() {
     }
 
     // Search projects (when query length >= 2)
-    if (effectiveQuery.length >= 2) {
+    if (contentQuery.length >= 2) {
+      let projCount = 0
       for (const project of projects) {
-        const match = fuzzyMatch(effectiveQuery, project.name)
+        if (projCount >= MAX_PER_CATEGORY) break
+        const match = fuzzyMatch(contentQuery, project.name)
         if (match) {
+          projCount++
           const issueCount = projectIssues.filter((i) => i.projectId === project.id).length
           scored.push({
             id: `proj-${project.id}`,
@@ -387,10 +414,12 @@ export default function CommandPalette() {
       }
 
       for (const issue of projectIssues) {
-        const titleMatch = fuzzyMatch(effectiveQuery, issue.title)
-        const idMatch = fuzzyMatch(effectiveQuery, issue.identifier)
+        if (projCount >= MAX_PER_CATEGORY) break
+        const titleMatch = fuzzyMatch(contentQuery, issue.title)
+        const idMatch = fuzzyMatch(contentQuery, issue.identifier)
         const bestScore = Math.max(titleMatch?.score ?? -1, idMatch?.score ?? -1)
         if (bestScore >= 0) {
+          projCount++
           const project = projects.find((p) => p.id === issue.projectId)
           scored.push({
             id: `issue-${issue.id}`,
@@ -406,10 +435,13 @@ export default function CommandPalette() {
     }
 
     // Search event types (when query length >= 2)
-    if (effectiveQuery.length >= 2) {
+    if (contentQuery.length >= 2) {
+      let eventCount = 0
       for (const et of eventTypes) {
-        const match = fuzzyMatch(effectiveQuery, et.name)
+        if (eventCount >= MAX_PER_CATEGORY) break
+        const match = fuzzyMatch(contentQuery, et.name)
         if (match) {
+          eventCount++
           scored.push({
             id: `event-${et.id}`,
             label: et.name,
@@ -424,10 +456,13 @@ export default function CommandPalette() {
     }
 
     // Search databases (when query length >= 2)
-    if (effectiveQuery.length >= 2) {
+    if (contentQuery.length >= 2) {
+      let dbCount = 0
       for (const db of databases) {
-        const match = fuzzyMatch(effectiveQuery, db.name)
+        if (dbCount >= MAX_PER_CATEGORY) break
+        const match = fuzzyMatch(contentQuery, db.name)
         if (match) {
+          dbCount++
           scored.push({
             id: `db-${db.id}`,
             label: db.name,
@@ -442,12 +477,15 @@ export default function CommandPalette() {
     }
 
     // Search tax documents (when query length >= 2)
-    if (effectiveQuery.length >= 2) {
+    if (contentQuery.length >= 2) {
+      let taxCount = 0
       for (const td of taxDocuments) {
-        const nameMatch = fuzzyMatch(effectiveQuery, td.fileName)
-        const employerMatch = fuzzyMatch(effectiveQuery, td.employerName)
+        if (taxCount >= MAX_PER_CATEGORY) break
+        const nameMatch = fuzzyMatch(contentQuery, td.fileName)
+        const employerMatch = fuzzyMatch(contentQuery, td.employerName)
         const bestScore = Math.max(nameMatch?.score ?? -1, employerMatch?.score ?? -1)
         if (bestScore >= 0) {
+          taxCount++
           scored.push({
             id: `taxdoc-${td.id}`,
             label: td.fileName,
@@ -461,10 +499,12 @@ export default function CommandPalette() {
       }
 
       for (const filing of taxFilings) {
-        const nameMatch = fuzzyMatch(effectiveQuery, `${filing.firstName} ${filing.lastName}`)
-        const yearMatch = fuzzyMatch(effectiveQuery, filing.taxYear)
+        if (taxCount >= MAX_PER_CATEGORY) break
+        const nameMatch = fuzzyMatch(contentQuery, `${filing.firstName} ${filing.lastName}`)
+        const yearMatch = fuzzyMatch(contentQuery, filing.taxYear)
         const bestScore = Math.max(nameMatch?.score ?? -1, yearMatch?.score ?? -1)
         if (bestScore >= 0) {
+          taxCount++
           scored.push({
             id: `taxfiling-${filing.id}`,
             label: `${filing.firstName} ${filing.lastName} — ${filing.taxYear}`,
@@ -479,12 +519,15 @@ export default function CommandPalette() {
     }
 
     // Search invoices (when query length >= 2)
-    if (effectiveQuery.length >= 2) {
+    if (contentQuery.length >= 2) {
+      let invCount = 0
       for (const inv of invoices) {
-        const numMatch = fuzzyMatch(effectiveQuery, inv.invoiceNumber)
-        const custMatch = fuzzyMatch(effectiveQuery, inv.customerName)
+        if (invCount >= MAX_PER_CATEGORY) break
+        const numMatch = fuzzyMatch(contentQuery, inv.invoiceNumber)
+        const custMatch = fuzzyMatch(contentQuery, inv.customerName)
         const bestScore = Math.max(numMatch?.score ?? -1, custMatch?.score ?? -1)
         if (bestScore >= 0) {
+          invCount++
           scored.push({
             id: `inv-${inv.id}`,
             label: `${inv.invoiceNumber} — ${inv.customerName}`,
@@ -499,12 +542,15 @@ export default function CommandPalette() {
     }
 
     // Search agent runs (when query length >= 2)
-    if (effectiveQuery.length >= 2) {
+    if (contentQuery.length >= 2) {
+      let agentCount = 0
       for (const run of agentRuns) {
-        const taskMatch = fuzzyMatch(effectiveQuery, run.task)
-        const typeMatch = fuzzyMatch(effectiveQuery, run.agentType)
+        if (agentCount >= MAX_PER_CATEGORY) break
+        const taskMatch = fuzzyMatch(contentQuery, run.task)
+        const typeMatch = fuzzyMatch(contentQuery, run.agentType)
         const bestScore = Math.max(taskMatch?.score ?? -1, typeMatch?.score ?? -1)
         if (bestScore >= 0) {
+          agentCount++
           scored.push({
             id: `agent-${run.id}`,
             label: run.task,
@@ -522,7 +568,7 @@ export default function CommandPalette() {
     scored.sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
 
     return scored
-  }, [effectiveQuery, commandsOnly, commands, documents, workspacePages, projects, projectIssues, eventTypes, databases, taxDocuments, taxFilings, invoices, agentRuns, recentItems, navigateAndTrack])
+  }, [effectiveQuery, effectiveDebouncedQuery, commandsOnly, commands, documents, workspacePages, projects, projectIssues, eventTypes, databases, taxDocuments, taxFilings, invoices, agentRuns, recentItems, navigateAndTrack])
 
   // Get matched indices per item for highlighting
   const getMatchIndices = useCallback(

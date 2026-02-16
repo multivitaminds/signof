@@ -355,11 +355,28 @@
   background-color: rgba(255, 255, 255, 0.04);
 }
 
+[data-theme="dark"] .accounting-copilot-panel__collapsed-strip {
+  color: #A5B4FC;
+}
+
 /* ─── Responsive ──────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {
   .accounting-copilot-panel {
     width: 100%;
+  }
+
+  .accounting-copilot-panel--collapsed {
+    width: 100%;
+    height: 48px;
+    top: auto;
+  }
+
+  .accounting-copilot-panel__collapsed-strip {
+    writing-mode: horizontal-tb;
+    flex-direction: row;
+    height: auto;
+    padding: var(--space-3) var(--space-4);
   }
 }
 

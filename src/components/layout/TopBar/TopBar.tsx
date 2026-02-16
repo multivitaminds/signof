@@ -33,12 +33,16 @@ export default function TopBar() {
   const navigate = useNavigate()
 
   const [profileMenuOpen, setProfileMenuOpen] = useState(false)
+  const [profileMenuIndex, setProfileMenuIndex] = useState(-1)
   const profileRef = useRef<HTMLDivElement>(null)
 
   const ThemeIcon = THEME_ICON[theme]
 
   const handleProfileClick = useCallback(() => {
-    setProfileMenuOpen((prev) => !prev)
+    setProfileMenuOpen((prev) => {
+      if (!prev) setProfileMenuIndex(-1)
+      return !prev
+    })
   }, [])
 
   const handleProfileMenuSelect = useCallback(
@@ -47,6 +51,37 @@ export default function TopBar() {
       setProfileMenuOpen(false)
     },
     [navigate]
+  )
+
+  const handleProfileKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!profileMenuOpen) return
+      switch (e.key) {
+        case 'Escape':
+          e.preventDefault()
+          setProfileMenuOpen(false)
+          break
+        case 'ArrowDown':
+          e.preventDefault()
+          setProfileMenuIndex((prev) =>
+            prev < PROFILE_MENU_ITEMS.length - 1 ? prev + 1 : 0
+          )
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          setProfileMenuIndex((prev) =>
+            prev > 0 ? prev - 1 : PROFILE_MENU_ITEMS.length - 1
+          )
+          break
+        case 'Enter': {
+          e.preventDefault()
+          const item = PROFILE_MENU_ITEMS[profileMenuIndex]
+          if (item) handleProfileMenuSelect(item.path)
+        }
+          break
+      }
+    },
+    [profileMenuOpen, profileMenuIndex, handleProfileMenuSelect]
   )
 
   useEffect(() => {
@@ -109,7 +144,7 @@ export default function TopBar() {
         <NotificationCenter />
 
         {/* User Menu */}
-        <div className="topbar__profile-wrapper" ref={profileRef}>
+        <div className="topbar__profile-wrapper" ref={profileRef} onKeyDown={handleProfileKeyDown}>
           <button
             className="topbar__user-btn"
             onClick={handleProfileClick}
@@ -134,14 +169,16 @@ export default function TopBar() {
                 </div>
               </div>
               <div className="topbar__profile-menu-divider" />
-              {PROFILE_MENU_ITEMS.map((item) => {
+              {PROFILE_MENU_ITEMS.map((item, index) => {
                 const Icon = item.icon
                 return (
                   <button
                     key={item.id}
-                    className={`topbar__profile-menu-item ${item.id === 'logout' ? 'topbar__profile-menu-item--danger' : ''}`}
+                    className={`topbar__profile-menu-item ${item.id === 'logout' ? 'topbar__profile-menu-item--danger' : ''} ${profileMenuIndex === index ? 'topbar__profile-menu-item--focused' : ''}`}
                     role="menuitem"
+                    tabIndex={-1}
                     onClick={() => handleProfileMenuSelect(item.path)}
+                    onMouseEnter={() => setProfileMenuIndex(index)}
                   >
                     <Icon size={16} />
                     <span>{item.label}</span>

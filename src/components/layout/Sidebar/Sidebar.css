@@ -639,6 +639,14 @@
   color: #94A3B8;
 }
 
+[data-theme="light"] .sidebar__favorites::-webkit-scrollbar-thumb {
+  background: rgba(10, 37, 64, 0.08);
+}
+
+[data-theme="light"] .sidebar__favorites::-webkit-scrollbar-thumb:hover {
+  background: rgba(10, 37, 64, 0.15);
+}
+
 [data-theme="light"] .sidebar__favorite-item--drag-over {
   border-top-color: #4F46E5;
 }

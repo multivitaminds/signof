@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AccountingCopilotPanel from './AccountingCopilotPanel'
 import type { CopilotMessage } from '../../stores/useAccountingCopilotStore'
@@ -193,5 +193,60 @@ describe('AccountingCopilotPanel', () => {
     render(<AccountingCopilotPanel />)
     const panel = screen.getByLabelText('Accounting Copilot')
     expect(panel.className).not.toContain('accounting-copilot-panel--open')
+  })
+
+  it('collapses to strip on mouse leave when idle', () => {
+    mockIsOpen = true
+    mockMessages = []
+    mockIsTyping = false
+    render(<AccountingCopilotPanel />)
+
+    const panel = screen.getByLabelText('Accounting Copilot')
+    fireEvent.mouseLeave(panel)
+
+    // Should show collapsed strip
+    expect(screen.getByLabelText('Expand Accounting Copilot')).toBeInTheDocument()
+  })
+
+  it('expands from collapsed strip on mouse enter', () => {
+    mockIsOpen = true
+    render(<AccountingCopilotPanel />)
+
+    const panel = screen.getByLabelText('Accounting Copilot')
+    fireEvent.mouseLeave(panel)
+    expect(screen.getByLabelText('Expand Accounting Copilot')).toBeInTheDocument()
+
+    fireEvent.mouseEnter(panel)
+    // Should show full panel content again
+    expect(screen.getByText('Accounting Copilot')).toBeInTheDocument()
+    expect(screen.getByLabelText('Close panel')).toBeInTheDocument()
+  })
+
+  it('expands collapsed strip on Enter key', () => {
+    mockIsOpen = true
+    render(<AccountingCopilotPanel />)
+
+    const panel = screen.getByLabelText('Accounting Copilot')
+    fireEvent.mouseLeave(panel)
+
+    const strip = screen.getByLabelText('Expand Accounting Copilot')
+    fireEvent.keyDown(strip, { key: 'Enter' })
+
+    expect(screen.getByLabelText('Close panel')).toBeInTheDocument()
+  })
+
+  it('does not collapse when messages exist', () => {
+    mockIsOpen = true
+    mockMessages = [
+      { id: '1', role: 'user', content: 'Test', timestamp: '2026-01-01T00:00:00Z' },
+    ]
+    render(<AccountingCopilotPanel />)
+
+    const panel = screen.getByLabelText('Accounting Copilot')
+    fireEvent.mouseLeave(panel)
+
+    // Should NOT collapse because messages exist
+    expect(screen.queryByLabelText('Expand Accounting Copilot')).not.toBeInTheDocument()
+    expect(screen.getByText('Test')).toBeInTheDocument()
   })
 })

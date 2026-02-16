@@ -91,7 +91,19 @@ function AccountingCopilotPanel() {
       onMouseEnter={handleMouseEnter}
     >
       {collapsed && (
-        <div className="accounting-copilot-panel__collapsed-strip">
+        <div
+          className="accounting-copilot-panel__collapsed-strip"
+          role="button"
+          tabIndex={0}
+          onClick={handleMouseEnter}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              handleMouseEnter()
+            }
+          }}
+          aria-label="Expand Accounting Copilot"
+        >
           <Sparkles size={18} />
           <span>Accounting Copilot</span>
         </div>
