@@ -212,6 +212,16 @@
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  .payroll-page__section {
+    padding: var(--space-4);
+  }
+
+  .payroll-page__table-wrapper {
+    overflow-x: auto;
+  }
+}
+
 @media (max-width: 767px) {
   .payroll-page__header {
     flex-direction: column;
@@ -226,4 +236,56 @@
   .payroll-page__actions .btn-secondary {
     flex: 1;
   }
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .payroll-page__section {
+  background-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .payroll-page__table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme="dark"] .payroll-page__divider {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .payroll-page__badge--success {
+  background-color: rgba(16, 185, 129, 0.12);
+}
+
+[data-theme="dark"] .payroll-page__badge--warning {
+  background-color: rgba(245, 158, 11, 0.12);
+}
+
+[data-theme="dark"] .payroll-page__badge--danger {
+  background-color: rgba(239, 68, 68, 0.12);
+}
+
+[data-theme="dark"] .payroll-page__badge--info {
+  background-color: rgba(124, 92, 252, 0.12);
+}
+
+[data-theme="dark"] .payroll-page__badge--muted {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .payroll-page__icon-btn {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .payroll-page__icon-btn:hover {
+  background-color: rgba(124, 92, 252, 0.12);
+}
+
+[data-theme="dark"] .payroll-page__icon-btn--danger:hover {
+  background-color: rgba(239, 68, 68, 0.12);
+}
+
+[data-theme="dark"] .payroll-page__view-btn:hover {
+  background-color: var(--color-primary);
+  color: #fff;
 }

@@ -147,3 +147,51 @@
     padding: var(--space-4);
   }
 }
+
+/* ─── Tablet ─────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .accounting-layout__header {
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .accounting-layout__tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .accounting-layout__tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .accounting-layout__content {
+    padding: var(--space-5);
+  }
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .accounting-layout__header {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme="dark"] .accounting-layout__year-dropdown {
+  background-color: rgba(124, 92, 252, 0.12);
+}
+
+[data-theme="dark"] .accounting-layout__year-dropdown:focus {
+  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.25);
+}
+
+[data-theme="dark"] .accounting-layout__tab:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .accounting-layout__tab--active {
+  background-color: rgba(124, 92, 252, 0.12);
+}
+
+[data-theme="dark"] .accounting-layout__tab--active:hover {
+  background-color: rgba(124, 92, 252, 0.12);
+}

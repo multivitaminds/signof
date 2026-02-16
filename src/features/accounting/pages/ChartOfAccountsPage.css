@@ -258,6 +258,21 @@
   }
 }
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  .chart-of-accounts__table-wrapper {
+    overflow-x: auto;
+  }
+
+  .chart-of-accounts__filters {
+    flex-wrap: wrap;
+  }
+
+  .chart-of-accounts__filter-tab {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+  }
+}
+
 @media (max-width: 480px) {
   .chart-of-accounts__filters {
     gap: var(--space-1);
@@ -267,4 +282,56 @@
     padding: var(--space-1) var(--space-3);
     font-size: var(--text-xs);
   }
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .chart-of-accounts__table-wrapper {
+  background-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .chart-of-accounts__table thead tr {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .chart-of-accounts__table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme="dark"] .chart-of-accounts__filter-tab {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .chart-of-accounts__filter-tab--active {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+[data-theme="dark"] .chart-of-accounts__filter-tab--active:hover {
+  color: #fff;
+}
+
+[data-theme="dark"] .chart-of-accounts__action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .chart-of-accounts__action-btn--danger:hover {
+  background-color: rgba(239, 68, 68, 0.12);
+}
+
+[data-theme="dark"] .chart-of-accounts__close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .chart-of-accounts__field input,
+[data-theme="dark"] .chart-of-accounts__field select,
+[data-theme="dark"] .chart-of-accounts__field textarea {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .chart-of-accounts__field input:focus,
+[data-theme="dark"] .chart-of-accounts__field select:focus,
+[data-theme="dark"] .chart-of-accounts__field textarea:focus {
+  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.25);
 }

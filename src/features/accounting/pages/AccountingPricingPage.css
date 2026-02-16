@@ -126,8 +126,8 @@
 }
 
 .acct-pricing__card-cta:hover:not(:disabled) {
-  background: #4338CA;
-  border-color: #4338CA;
+  background: var(--color-primary-hover, #4338CA);
+  border-color: var(--color-primary-hover, #4338CA);
 }
 
 .acct-pricing__card-cta--current {
@@ -249,21 +249,43 @@
 }
 
 .acct-pricing__modal-confirm:hover {
-  background: #4338CA;
+  background: var(--color-primary-hover, #4338CA);
 }
 
 /* ─── Dark mode ─── */
 
 [data-theme="dark"] .acct-pricing__card {
-  background: var(--bg-secondary, #1A1A2E);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .acct-pricing__card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .acct-pricing__card--current {
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+[data-theme="dark"] .acct-pricing__card-cta--current {
+  background: transparent;
 }
 
 [data-theme="dark"] .acct-pricing__modal {
   background: var(--bg-secondary, #1A1A2E);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .acct-pricing__modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
 }
 
 [data-theme="dark"] .acct-pricing__modal-cancel:hover {
   background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .acct-pricing__feature-icon--check {
+  color: var(--color-success);
 }
 
 /* ─── Responsive ─── */

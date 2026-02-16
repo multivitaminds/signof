@@ -203,18 +203,18 @@
 }
 
 .contacts-page__type-badge--customer {
-  background-color: #dbeafe;
-  color: #1d4ed8;
+  background-color: var(--color-info-light, #dbeafe);
+  color: var(--color-info-dark, #1d4ed8);
 }
 
 .contacts-page__type-badge--vendor {
-  background-color: #ffedd5;
-  color: #c2410c;
+  background-color: var(--color-warning-light, #ffedd5);
+  color: var(--color-warning-dark, #c2410c);
 }
 
 .contacts-page__type-badge--both {
-  background-color: #ede9fe;
-  color: #6d28d9;
+  background-color: var(--color-purple-light, #ede9fe);
+  color: var(--color-purple-dark, #6d28d9);
 }
 
 [data-theme="dark"] .contacts-page__type-badge--customer {
@@ -449,13 +449,13 @@
 }
 
 .contacts-page__invoice-status--sent {
-  background-color: #dbeafe;
-  color: #1d4ed8;
+  background-color: var(--color-info-light, #dbeafe);
+  color: var(--color-info-dark, #1d4ed8);
 }
 
 .contacts-page__invoice-status--viewed {
-  background-color: #e0e7ff;
-  color: #4338ca;
+  background-color: var(--color-purple-light, #e0e7ff);
+  color: var(--color-primary-hover, #4338ca);
 }
 
 .contacts-page__invoice-status--paid {
@@ -506,9 +506,78 @@
   }
 }
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  .contacts-page__search {
+    width: 220px;
+  }
+
+  .contacts-page__card-header {
+    flex-wrap: wrap;
+  }
+
+  .contacts-page__card-detail {
+    padding-left: var(--space-5);
+  }
+}
+
 @media (max-width: 480px) {
   .contacts-page__header {
     flex-direction: column;
     align-items: stretch;
   }
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .contacts-page__card {
+  background-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .contacts-page__card:hover {
+  border-color: rgba(124, 92, 252, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .contacts-page__card--expanded {
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .contacts-page__filter-pills {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .contacts-page__filter-pill--active {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .contacts-page__search-input {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .contacts-page__detail-table-row {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .contacts-page__card-detail {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .contacts-page__invoice-status--sent {
+  background-color: rgba(59, 130, 246, 0.12);
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .contacts-page__invoice-status--viewed {
+  background-color: rgba(99, 91, 255, 0.12);
+  color: #c4b5fd;
+}
+
+[data-theme="dark"] .contacts-page__action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .contacts-page__delete-yes {
+  color: #fff;
 }

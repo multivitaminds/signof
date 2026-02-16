@@ -394,6 +394,24 @@
   }
 }
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  .accounting-dashboard__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .accounting-dashboard__cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .accounting-dashboard__card {
+    padding: var(--space-4);
+  }
+
+  .accounting-dashboard__section {
+    padding: var(--space-4);
+  }
+}
+
 @media (max-width: 480px) {
   .accounting-dashboard__cards {
     grid-template-columns: 1fr;
@@ -406,4 +424,41 @@
   .accounting-dashboard__chart-bar {
     width: 12px;
   }
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .accounting-dashboard__card {
+  background-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .accounting-dashboard__card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .accounting-dashboard__section {
+  background-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .accounting-dashboard__txn-row:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .accounting-dashboard__action-btn {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .accounting-dashboard__action-btn:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .accounting-dashboard__action-icon {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .accounting-dashboard__upgrade-banner {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }

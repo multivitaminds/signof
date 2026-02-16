@@ -122,3 +122,55 @@
   padding-top: var(--space-2);
   border-top: 1px solid var(--border-color);
 }
+
+/* ─── Dark Mode ───────────────────────────────────────────────────── */
+
+[data-theme="dark"] .contact-form__input,
+[data-theme="dark"] .contact-form__textarea {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .contact-form__input:focus,
+[data-theme="dark"] .contact-form__textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+
+[data-theme="dark"] .contact-form__segmented {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .contact-form__segment--active {
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .contact-form__actions {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Tablet ──────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .contact-form {
+    max-width: 460px;
+  }
+
+  .contact-form__body {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+}
+
+/* ─── Mobile ──────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .contact-form {
+    max-width: 100%;
+  }
+
+  .contact-form__body {
+    padding: var(--space-4);
+  }
+}

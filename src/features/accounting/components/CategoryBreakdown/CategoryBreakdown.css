@@ -65,6 +65,35 @@
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
+/* ─── Dark Mode ───────────────────────────────────────────────────── */
+
+[data-theme="dark"] .category-breakdown {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .category-breakdown__bar-track {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Tablet ──────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .category-breakdown {
+    padding: var(--space-4);
+  }
+
+  .category-breakdown__label {
+    width: 130px;
+  }
+
+  .category-breakdown__amount {
+    width: 90px;
+  }
+}
+
+/* ─── Mobile ──────────────────────────────────────────────────────── */
+
 @media (max-width: 767px) {
   .category-breakdown__label {
     width: 100px;

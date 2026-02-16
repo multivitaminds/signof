@@ -218,7 +218,70 @@
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
-@media (max-width: 480px) {
+/* ─── Dark Mode ───────────────────────────────────────────────────── */
+
+[data-theme="dark"] .transaction-form__type-selector {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .transaction-form__type-btn--active {
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .transaction-form__input,
+[data-theme="dark"] .transaction-form__select {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .transaction-form__input:focus,
+[data-theme="dark"] .transaction-form__select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+
+[data-theme="dark"] .transaction-form__journal-header {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .transaction-form__remove-line:hover:not(:disabled) {
+  color: var(--color-danger);
+}
+
+[data-theme="dark"] .transaction-form__add-line {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .transaction-form__add-line:hover {
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .transaction-form__journal-totals {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .transaction-form__actions {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Tablet ──────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .transaction-form {
+    max-width: 560px;
+  }
+
+  .transaction-form__journal-header,
+  .transaction-form__journal-row,
+  .transaction-form__journal-totals {
+    grid-template-columns: 1.5fr 1fr 1fr 32px;
+  }
+}
+
+/* ─── Mobile ──────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
   .transaction-form__row {
     grid-template-columns: 1fr;
   }

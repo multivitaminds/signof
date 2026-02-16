@@ -118,6 +118,54 @@
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
+/* ─── Dark Mode ───────────────────────────────────────────────────── */
+
+[data-theme="dark"] .employee-form {
+  background-color: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .employee-form__header {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .employee-form__close:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .employee-form__input {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .employee-form__input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+
+[data-theme="dark"] .employee-form__footer {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Tablet ──────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .employee-form {
+    max-width: 560px;
+  }
+
+  .employee-form__body {
+    padding: var(--space-4) var(--space-5);
+    gap: var(--space-4);
+  }
+
+  .employee-form__header {
+    padding: var(--space-4) var(--space-5);
+  }
+}
+
+/* ─── Mobile ──────────────────────────────────────────────────────── */
+
 @media (max-width: 767px) {
   .employee-form__grid {
     grid-template-columns: 1fr;

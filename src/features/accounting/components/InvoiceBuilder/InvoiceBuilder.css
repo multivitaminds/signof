@@ -289,6 +289,84 @@
 
 /* ─── Responsive ────────────────────────────────────────────────── */
 
+/* ─── Dark Mode ───────────────────────────────────────────────────── */
+
+[data-theme="dark"] .invoice-builder__modal {
+  background-color: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .invoice-builder__close:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .invoice-builder__input,
+[data-theme="dark"] .invoice-builder__select,
+[data-theme="dark"] .invoice-builder__textarea {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .invoice-builder__input:focus,
+[data-theme="dark"] .invoice-builder__select:focus,
+[data-theme="dark"] .invoice-builder__textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25);
+}
+
+[data-theme="dark"] .invoice-builder__input[readOnly] {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme="dark"] .invoice-builder__items-table th {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .invoice-builder__remove-btn:hover:not(:disabled) {
+  background-color: rgba(220, 38, 38, 0.12);
+}
+
+[data-theme="dark"] .invoice-builder__add-line-btn {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .invoice-builder__add-line-btn:hover {
+  background-color: rgba(79, 70, 229, 0.1);
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .invoice-builder__totals {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .invoice-builder__total-row--total {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .invoice-builder__header,
+[data-theme="dark"] .invoice-builder__footer {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Tablet ──────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .invoice-builder__modal {
+    max-width: 700px;
+  }
+
+  .invoice-builder__body {
+    padding: var(--space-4, 1rem);
+    gap: var(--space-4, 1rem);
+  }
+
+  .invoice-builder__totals {
+    width: 280px;
+  }
+}
+
+/* ─── Mobile ──────────────────────────────────────────────────────── */
+
 @media (max-width: 767px) {
   .invoice-builder__meta {
     grid-template-columns: 1fr;

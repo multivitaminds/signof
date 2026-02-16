@@ -237,6 +237,25 @@
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  .expense-list__summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .expense-list__filters {
+    flex-wrap: wrap;
+  }
+
+  .expense-list__select,
+  .expense-list__input {
+    min-width: 140px;
+  }
+
+  .expense-list__table-wrapper {
+    overflow-x: auto;
+  }
+}
+
 @media (max-width: 767px) {
   .expense-list__filters {
     flex-direction: column;
@@ -257,4 +276,50 @@
     flex-direction: column;
     align-items: stretch;
   }
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .expense-list__summary-card {
+  background-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .expense-list__summary-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .expense-list__table-wrapper {
+  background-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .expense-list__table thead th {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .expense-list__row:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme="dark"] .expense-list__select,
+[data-theme="dark"] .expense-list__input {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .expense-list__select:focus,
+[data-theme="dark"] .expense-list__input:focus {
+  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.25);
+}
+
+[data-theme="dark"] .expense-list__category-badge {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .expense-list__action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .expense-list__action-btn--danger:hover {
+  background-color: rgba(239, 68, 68, 0.12);
 }

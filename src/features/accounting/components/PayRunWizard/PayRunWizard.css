@@ -52,13 +52,13 @@
 .pay-run-wizard__step--active .pay-run-wizard__step-number {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
-  color: #ffffff;
+  color: #fff;
 }
 
 .pay-run-wizard__step--done .pay-run-wizard__step-number {
   background-color: var(--color-success-dark);
   border-color: var(--color-success-dark);
-  color: #ffffff;
+  color: #fff;
 }
 
 .pay-run-wizard__step-label {
@@ -338,6 +338,92 @@
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
+
+/* ─── Dark Mode ───────────────────────────────────────────────────── */
+
+[data-theme="dark"] .pay-run-wizard {
+  background-color: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .pay-run-wizard__steps {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .pay-run-wizard__employee-row:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .pay-run-wizard__select-all {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .pay-run-wizard__date-input {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .pay-run-wizard__date-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+
+[data-theme="dark"] .pay-run-wizard__table th {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .pay-run-wizard__table td {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .pay-run-wizard__totals-row {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .pay-run-wizard__summary {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .pay-run-wizard__summary-row--highlight {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .pay-run-wizard__spinner {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-top-color: var(--color-primary);
+}
+
+[data-theme="dark"] .pay-run-wizard__checkmark {
+  background-color: rgba(5, 150, 105, 0.12);
+}
+
+[data-theme="dark"] .pay-run-wizard__footer {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Tablet ──────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .pay-run-wizard {
+    max-width: 580px;
+  }
+
+  .pay-run-wizard__steps {
+    gap: var(--space-5);
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .pay-run-wizard__body {
+    padding: var(--space-3) var(--space-5);
+  }
+
+  .pay-run-wizard__footer {
+    padding: var(--space-3) var(--space-5);
+  }
+}
+
+/* ─── Mobile ──────────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {
   .pay-run-wizard {

@@ -129,3 +129,62 @@
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
+
+/* ─── Dark Mode ───────────────────────────────────────────────────── */
+
+[data-theme="dark"] .cash-flow__row td {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .cash-flow__subtotal td {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .cash-flow__net-change {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .cash-flow__net-change--positive {
+  background-color: rgba(5, 150, 105, 0.12);
+  border-color: var(--color-success);
+}
+
+[data-theme="dark"] .cash-flow__net-change--negative {
+  background-color: rgba(220, 38, 38, 0.12);
+  border-color: var(--color-danger);
+}
+
+[data-theme="dark"] .cash-flow__balances {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .cash-flow__balance-row--ending {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Tablet ──────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .cash-flow {
+    gap: var(--space-5);
+  }
+
+  .cash-flow__net-change {
+    padding: var(--space-3);
+  }
+
+  .cash-flow__balances {
+    padding: var(--space-3);
+  }
+}
+
+/* ─── Mobile ──────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .cash-flow__net-change {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+}

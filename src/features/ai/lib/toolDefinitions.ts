@@ -7,6 +7,8 @@ import { useContactStore } from '../../documents/stores/useContactStore'
 import { useDatabaseStore } from '../../databases/stores/useDatabaseStore'
 import { useInvoiceStore } from '../../accounting/stores/useInvoiceStore'
 import { useExpenseStore } from '../../accounting/stores/useExpenseStore'
+import { useAccountingStore } from '../../accounting/stores/useAccountingStore'
+import { usePayrollStore } from '../../accounting/stores/usePayrollStore'
 import { useTaxFilingStore } from '../../tax/stores/useTaxFilingStore'
 import { useTaxDocumentStore } from '../../tax/stores/useTaxDocumentStore'
 import { useTaxInterviewStore } from '../../tax/stores/useTaxInterviewStore'
@@ -265,6 +267,65 @@ export const ORCHESTREE_TOOLS: ToolDefinition[] = [
         },
       },
       required: ['amount', 'vendorName'],
+    },
+  },
+
+  {
+    name: 'analyze_expenses',
+    description: 'Analyze expense data by category, vendor, or date range. Returns expense breakdown and trends.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        category: { type: 'string', description: 'Filter by expense category (e.g., "software", "rent", "utilities")' },
+        date_range: { type: 'string', description: 'Date range to analyze (e.g., "2026-01", "2026-Q1")' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'get_invoice_summary',
+    description: 'Get a summary of invoices by status with outstanding and overdue totals.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        status: { type: 'string', description: 'Filter by invoice status', enum: ['draft', 'sent', 'partially_paid', 'paid', 'overdue', 'void'] },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'get_account_balance',
+    description: 'Get the balance for a specific general ledger account or all accounts of a type.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        account_id: { type: 'string', description: 'The account ID to look up' },
+        account_type: { type: 'string', description: 'Filter by account type', enum: ['asset', 'liability', 'equity', 'revenue', 'expense'] },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'review_cash_flow',
+    description: 'Analyze cash inflows and outflows over a date range. Returns net cash flow and transaction breakdown.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        start_date: { type: 'string', description: 'Start date (YYYY-MM-DD)' },
+        end_date: { type: 'string', description: 'End date (YYYY-MM-DD)' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'get_payroll_summary',
+    description: 'Get a summary of payroll including employee headcount, latest pay run status, and total costs.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        pay_period: { type: 'string', description: 'Pay period to summarize (e.g., "2026-01")' },
+      },
+      required: [],
     },
   },
 
@@ -697,6 +758,162 @@ export function executeTool(
         return JSON.stringify({ success: true, amount: expAmount, vendorName: input.vendorName })
       }
 
+      case 'analyze_expenses': {
+        const expenses = useExpenseStore.getState().expenses
+        const category = input.category as string | undefined
+        const filtered = category
+          ? expenses.filter((e) => e.categoryId === category)
+          : expenses
+
+        const totalByCategory: Record<string, number> = {}
+        for (const exp of filtered) {
+          totalByCategory[exp.categoryId] = (totalByCategory[exp.categoryId] ?? 0) + exp.amount
+        }
+
+        const vendorTotals: Record<string, number> = {}
+        for (const exp of filtered) {
+          vendorTotals[exp.vendorName] = (vendorTotals[exp.vendorName] ?? 0) + exp.amount
+        }
+
+        const total = filtered.reduce((sum, e) => sum + e.amount, 0)
+        const recurringCount = filtered.filter((e) => e.recurring).length
+
+        return JSON.stringify({
+          success: true,
+          count: filtered.length,
+          total,
+          byCategory: totalByCategory,
+          topVendors: Object.entries(vendorTotals)
+            .sort(([, a], [, b]) => b - a)
+            .slice(0, 5)
+            .map(([name, amount]) => ({ name, amount })),
+          recurringCount,
+        })
+      }
+
+      case 'get_invoice_summary': {
+        const invoiceState = useInvoiceStore.getState()
+        const status = input.status as string | undefined
+        const invoices = status
+          ? invoiceState.getInvoicesByStatus(status as 'draft')
+          : invoiceState.invoices
+
+        const byStatus: Record<string, number> = {}
+        for (const inv of invoices) {
+          byStatus[inv.status] = (byStatus[inv.status] ?? 0) + 1
+        }
+
+        return JSON.stringify({
+          success: true,
+          count: invoices.length,
+          byStatus,
+          outstandingTotal: invoiceState.getOutstandingTotal(),
+          overdueTotal: invoiceState.getOverdueTotal(),
+          invoices: invoices.slice(0, 10).map((inv) => ({
+            invoiceNumber: inv.invoiceNumber,
+            customerName: inv.customerName,
+            total: inv.total,
+            balance: inv.balance,
+            status: inv.status,
+            dueDate: inv.dueDate,
+          })),
+        })
+      }
+
+      case 'get_account_balance': {
+        const acctState = useAccountingStore.getState()
+        const accountId = input.account_id as string | undefined
+        const accountType = input.account_type as string | undefined
+
+        if (accountId) {
+          const account = acctState.getAccountById(accountId)
+          if (!account) {
+            return JSON.stringify({ success: false, error: `Account not found: ${accountId}` })
+          }
+          return JSON.stringify({
+            success: true,
+            account: { id: account.id, name: account.name, type: account.type, balance: account.balance },
+          })
+        }
+
+        const accounts = accountType
+          ? acctState.getAccountsByType(accountType as 'asset')
+          : acctState.accounts
+
+        const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0)
+        return JSON.stringify({
+          success: true,
+          count: accounts.length,
+          totalBalance,
+          accounts: accounts.map((a) => ({ id: a.id, name: a.name, type: a.type, balance: a.balance })),
+        })
+      }
+
+      case 'review_cash_flow': {
+        const acctState = useAccountingStore.getState()
+        const startDate = input.start_date as string | undefined
+        const endDate = input.end_date as string | undefined
+
+        const transactions = (startDate && endDate)
+          ? acctState.getTransactionsByDateRange(startDate, endDate)
+          : acctState.transactions
+
+        let totalInflows = 0
+        let totalOutflows = 0
+
+        for (const txn of transactions) {
+          if (txn.type === 'income') {
+            for (const line of txn.lines) {
+              totalInflows += line.debit
+            }
+          } else if (txn.type === 'expense') {
+            for (const line of txn.lines) {
+              totalOutflows += line.debit
+            }
+          }
+        }
+
+        return JSON.stringify({
+          success: true,
+          transactionCount: transactions.length,
+          totalInflows,
+          totalOutflows,
+          netCashFlow: totalInflows - totalOutflows,
+          dateRange: { start: startDate ?? 'all', end: endDate ?? 'all' },
+        })
+      }
+
+      case 'get_payroll_summary': {
+        const prState = usePayrollStore.getState()
+        const activeEmployees = prState.employees.filter((e) => e.status === 'active')
+        const totalAnnualPayroll = activeEmployees.reduce((sum, e) => sum + e.payRate, 0)
+
+        const latestPayRun = prState.payRuns.length > 0
+          ? prState.payRuns[prState.payRuns.length - 1]
+          : null
+
+        return JSON.stringify({
+          success: true,
+          employeeCount: prState.employees.length,
+          activeCount: activeEmployees.length,
+          totalAnnualPayroll,
+          latestPayRun: latestPayRun
+            ? {
+                payDate: latestPayRun.payDate,
+                status: latestPayRun.status,
+                totalGross: latestPayRun.totalGross,
+                totalNet: latestPayRun.totalNet,
+                employeeCount: latestPayRun.employeeCount,
+              }
+            : null,
+          employees: activeEmployees.map((e) => ({
+            name: `${e.firstName} ${e.lastName}`,
+            title: e.title,
+            payRate: e.payRate,
+          })),
+        })
+      }
+
       // ── Tax ────────────────────────────────────────────────────
       case 'create_tax_filing': {
         const taxYear = (input.taxYear as string) || '2025'
@@ -1062,7 +1279,7 @@ const AGENT_TOOL_MAP: Partial<Record<AgentType, string[]>> = {
   coordinator: ['create_issue', 'create_booking', 'cancel_booking', 'list_bookings', 'create_event_type', 'send_notification', 'get_workspace_stats', 'get_upcoming_deadlines'],
   sales: ['add_contact', 'create_booking', 'create_template', 'create_invoice', 'list_bookings', 'get_workspace_stats'],
   marketing: ['create_page', 'add_block', 'create_template', 'send_notification', 'get_workspace_stats'],
-  finance: ['create_invoice', 'create_expense', 'create_tax_filing', 'analyze_tax_document', 'suggest_deductions', 'create_database', 'add_table', 'add_row', 'get_workspace_stats', 'get_upcoming_deadlines'],
+  finance: ['create_invoice', 'create_expense', 'analyze_expenses', 'get_invoice_summary', 'get_account_balance', 'review_cash_flow', 'get_payroll_summary', 'create_tax_filing', 'analyze_tax_document', 'suggest_deductions', 'create_database', 'add_table', 'add_row', 'get_workspace_stats', 'get_upcoming_deadlines'],
   legal: ['create_page', 'create_template', 'search_pages', 'get_workspace_stats'],
   compliance: ['get_workspace_stats', 'get_upcoming_deadlines', 'create_tax_filing', 'review_filing', 'list_issues'],
   hr: ['create_page', 'create_template', 'add_contact', 'create_booking', 'send_notification', 'create_expense'],

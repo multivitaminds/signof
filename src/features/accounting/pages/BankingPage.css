@@ -278,7 +278,7 @@
 }
 
 .banking__type-badge--expense {
-  background-color: #fef2f2;
+  background-color: var(--color-danger-light, #fef2f2);
   color: var(--color-danger, #dc2626);
 }
 
@@ -288,8 +288,8 @@
 }
 
 .banking__type-badge--journal {
-  background-color: #f5f3ff;
-  color: #7c3aed;
+  background-color: var(--color-info-light, #f5f3ff);
+  color: var(--color-info-dark, #7c3aed);
 }
 
 /* ─── Reconcile Button ───────────────────────────────────────────── */
@@ -352,11 +352,45 @@
 }
 
 .banking__action-btn--danger:hover {
-  background-color: #fef2f2;
+  background-color: var(--color-danger-light, #fef2f2);
   color: var(--color-danger, #dc2626);
 }
 
-/* ─── Dark Mode Badge Overrides ──────────────────────────────────── */
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .banking__account-selector {
+  background-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .banking__select {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .banking__select:focus {
+  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.25);
+}
+
+[data-theme="dark"] .banking__input {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .banking__input:focus {
+  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.25);
+}
+
+[data-theme="dark"] .banking__table-wrapper {
+  background-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .banking__table thead {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .banking__row:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
 
 [data-theme="dark"] .banking__type-badge--expense {
   background-color: rgba(220, 38, 38, 0.15);
@@ -366,11 +400,46 @@
   background-color: rgba(124, 58, 237, 0.15);
 }
 
+[data-theme="dark"] .banking__reconcile-btn {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .banking__reconcile-btn--active {
+  color: #fff;
+}
+
+[data-theme="dark"] .banking__reconcile-btn--active:hover {
+  color: #fff;
+}
+
+[data-theme="dark"] .banking__action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
 [data-theme="dark"] .banking__action-btn--danger:hover {
   background-color: rgba(220, 38, 38, 0.15);
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .banking__account-selector {
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .banking__account-dropdown {
+    min-width: 180px;
+  }
+
+  .banking__filters {
+    flex-wrap: wrap;
+  }
+
+  .banking__table-wrapper {
+    overflow-x: auto;
+  }
+}
 
 @media (max-width: 767px) {
   .banking__header {
