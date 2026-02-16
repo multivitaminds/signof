@@ -120,11 +120,11 @@ describe('Sidebar', () => {
     expect(screen.queryByLabelText('Resize sidebar')).not.toBeInTheDocument()
   })
 
-  it('toggles sidebar on collapse button click', async () => {
+  it('toggles sidebar on pin/unpin button click', async () => {
     const user = userEvent.setup()
     renderSidebar()
 
-    await user.click(screen.getByLabelText('Collapse sidebar'))
+    await user.click(screen.getByLabelText('Unpin sidebar'))
     expect(useAppStore.getState().sidebarExpanded).toBe(false)
   })
 })

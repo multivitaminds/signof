@@ -16,7 +16,7 @@
 .workspace-layout__content {
   flex: 1;
   overflow-y: auto;
-  padding: var(--space-6, 2rem) var(--space-8, 4rem);
+  padding: var(--space-3, 0.75rem) var(--space-5, 1.5rem);
 }
 
 /* ─── Sidebar Sections (Favorites, Recent) ────────────────────────── */

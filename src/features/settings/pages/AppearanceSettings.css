@@ -1,7 +1,7 @@
 .appearance-settings {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6, 2rem);
+  gap: var(--space-5, 1.5rem);
 }
 
 .appearance-settings__title {
@@ -14,7 +14,7 @@
 .appearance-settings__subtitle {
   color: var(--text-secondary, #6B7280);
   font-size: var(--text-sm, 0.875rem);
-  margin: -1rem 0 0;
+  margin: -0.75rem 0 0;
 }
 
 .appearance-settings__section {
@@ -194,6 +194,13 @@
   color: var(--text-secondary, #6B7280);
   border-radius: var(--radius-sm, 6px);
   border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: all 100ms ease;
+}
+
+.appearance-settings__preview-sidebar-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-primary, #111827);
 }
 
 .appearance-settings__preview-sidebar[data-density="compact"] .appearance-settings__preview-sidebar-item {

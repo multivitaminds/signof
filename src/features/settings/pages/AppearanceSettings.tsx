@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useAppearanceStore } from '../stores/useAppearanceStore'
 import type { Theme } from '../../../types'
 import type { SidebarDensity, FontSize } from '../types'
@@ -58,6 +58,9 @@ export default function AppearanceSettings() {
   const handleFontSizeChange = useCallback((size: FontSize) => {
     setFontSize(size)
   }, [setFontSize])
+
+  const [previewActiveItem, setPreviewActiveItem] = useState('Dashboard')
+  const PREVIEW_ITEMS = ['Dashboard', 'Documents', 'Projects'] as const
 
   return (
     <div className="appearance-settings">
@@ -145,11 +148,19 @@ export default function AppearanceSettings() {
         <h3 className="appearance-settings__section-title">Preview</h3>
         <div className="appearance-settings__preview" data-testid="appearance-preview">
           <div className="appearance-settings__preview-sidebar" data-density={sidebarDensity}>
-            <div className="appearance-settings__preview-sidebar-item appearance-settings__preview-sidebar-item--active" style={{ borderLeftColor: accentColor }}>
-              Dashboard
-            </div>
-            <div className="appearance-settings__preview-sidebar-item">Documents</div>
-            <div className="appearance-settings__preview-sidebar-item">Projects</div>
+            {PREVIEW_ITEMS.map((item) => (
+              <div
+                key={item}
+                className={`appearance-settings__preview-sidebar-item ${previewActiveItem === item ? 'appearance-settings__preview-sidebar-item--active' : ''}`}
+                style={previewActiveItem === item ? { borderLeftColor: accentColor } : undefined}
+                onClick={() => setPreviewActiveItem(item)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setPreviewActiveItem(item) }}
+              >
+                {item}
+              </div>
+            ))}
           </div>
           <div className="appearance-settings__preview-content">
             <div className="appearance-settings__preview-heading" data-font-size={fontSize}>

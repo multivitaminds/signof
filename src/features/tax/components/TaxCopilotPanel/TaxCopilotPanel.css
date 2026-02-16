@@ -13,7 +13,9 @@
   border-left: 1px solid var(--border-color);
   box-shadow: var(--shadow-xl);
   transform: translateX(100%);
-  transition: transform var(--motion-normal) var(--ease-out);
+  transition:
+    transform var(--motion-normal) var(--ease-out),
+    width var(--motion-normal) var(--ease-out);
 }
 
 .tax-copilot-panel--open {
@@ -307,6 +309,28 @@
 .tax-copilot-panel__send:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+/* ─── Collapsed State ─────────────────────────────────────────────── */
+
+.tax-copilot-panel--collapsed {
+  width: 48px;
+  cursor: pointer;
+}
+
+.tax-copilot-panel__collapsed-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-2);
+  color: var(--color-primary);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  height: 100%;
 }
 
 /* ─── Dark Mode ───────────────────────────────────────────────────── */

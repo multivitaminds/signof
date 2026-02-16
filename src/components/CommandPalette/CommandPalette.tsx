@@ -21,6 +21,7 @@ import {
   Clock,
   Receipt,
   Code2,
+  Bot,
 } from 'lucide-react'
 import { useAppStore } from '../../stores/useAppStore'
 import { useTheme } from '../../hooks/useTheme'
@@ -29,6 +30,10 @@ import { useWorkspaceStore } from '../../features/workspace/stores/useWorkspaceS
 import { useProjectStore } from '../../features/projects/stores/useProjectStore'
 import { useSchedulingStore } from '../../features/scheduling/stores/useSchedulingStore'
 import { useDatabaseStore } from '../../features/databases/stores/useDatabaseStore'
+import { useTaxDocumentStore } from '../../features/tax/stores/useTaxDocumentStore'
+import { useTaxFilingStore } from '../../features/tax/stores/useTaxFilingStore'
+import { useInvoiceStore } from '../../features/accounting/stores/useInvoiceStore'
+import useAIAgentStore from '../../features/ai/stores/useAIAgentStore'
 import { fuzzyMatch, highlightMatches } from '../../lib/fuzzyMatch'
 import VoiceInputButton from '../../features/ai/components/VoiceInputButton/VoiceInputButton'
 import './CommandPalette.css'
@@ -39,7 +44,7 @@ interface CommandItem {
   description?: string
   icon: React.ComponentType<{ size?: number; className?: string }>
   action: () => void
-  category: 'navigation' | 'action' | 'recent' | 'document' | 'page' | 'project' | 'event' | 'database'
+  category: 'navigation' | 'action' | 'recent' | 'document' | 'page' | 'project' | 'event' | 'database' | 'tax_document' | 'invoice' | 'agent_run'
   shortcut?: string
   score?: number
 }
@@ -81,6 +86,10 @@ export default function CommandPalette() {
   const eventTypes = useSchedulingStore((s) => s.eventTypes)
   const databasesArr = useDatabaseStore((s) => s.databases)
   const databases = useMemo(() => Object.values(databasesArr), [databasesArr])
+  const taxDocuments = useTaxDocumentStore((s) => s.documents)
+  const taxFilings = useTaxFilingStore((s) => s.filings)
+  const invoices = useInvoiceStore((s) => s.invoices)
+  const agentRuns = useAIAgentStore((s) => s.runs)
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -283,12 +292,15 @@ export default function CommandPalette() {
     [closeCommandPalette, navigateAndTrack, theme, setTheme, compactMode, setCompactMode, toggleSidebar, toggleShortcutHelp]
   )
 
+  // Detect ">" prefix for commands-only mode
+  const commandsOnly = query.startsWith('>')
+  const effectiveQuery = commandsOnly ? query.slice(1).trim() : query.trim()
+
   // Build filtered + scored results
   const filteredItems = useMemo(() => {
-    const trimmed = query.trim()
-
     // Empty query: show recent items (if any) + all commands
-    if (!trimmed) {
+    if (!effectiveQuery) {
+      if (commandsOnly) return commands
       const recents: CommandItem[] = recentItems.slice(0, 5).map((r) => ({
         id: `recent-${r.path}`,
         label: r.label,
@@ -303,8 +315,8 @@ export default function CommandPalette() {
     const scored: CommandItem[] = []
 
     for (const cmd of commands) {
-      const labelMatch = fuzzyMatch(trimmed, cmd.label)
-      const descMatch = cmd.description ? fuzzyMatch(trimmed, cmd.description) : null
+      const labelMatch = fuzzyMatch(effectiveQuery, cmd.label)
+      const descMatch = cmd.description ? fuzzyMatch(effectiveQuery, cmd.description) : null
       const bestScore = Math.max(labelMatch?.score ?? -1, descMatch?.score ?? -1)
       if (bestScore >= 0) {
         scored.push({
@@ -314,10 +326,16 @@ export default function CommandPalette() {
       }
     }
 
+    // Skip content search in commands-only mode
+    if (commandsOnly) {
+      scored.sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+      return scored
+    }
+
     // Search documents (when query length >= 2)
-    if (trimmed.length >= 2) {
+    if (effectiveQuery.length >= 2) {
       for (const doc of documents) {
-        const match = fuzzyMatch(trimmed, doc.name)
+        const match = fuzzyMatch(effectiveQuery, doc.name)
         if (match) {
           scored.push({
             id: `doc-${doc.id}`,
@@ -333,9 +351,9 @@ export default function CommandPalette() {
     }
 
     // Search pages (when query length >= 2)
-    if (trimmed.length >= 2) {
+    if (effectiveQuery.length >= 2) {
       for (const page of workspacePages) {
-        const match = fuzzyMatch(trimmed, page.title || 'Untitled')
+        const match = fuzzyMatch(effectiveQuery, page.title || 'Untitled')
         if (match) {
           scored.push({
             id: `page-${page.id}`,
@@ -351,9 +369,9 @@ export default function CommandPalette() {
     }
 
     // Search projects (when query length >= 2)
-    if (trimmed.length >= 2) {
+    if (effectiveQuery.length >= 2) {
       for (const project of projects) {
-        const match = fuzzyMatch(trimmed, project.name)
+        const match = fuzzyMatch(effectiveQuery, project.name)
         if (match) {
           const issueCount = projectIssues.filter((i) => i.projectId === project.id).length
           scored.push({
@@ -369,8 +387,8 @@ export default function CommandPalette() {
       }
 
       for (const issue of projectIssues) {
-        const titleMatch = fuzzyMatch(trimmed, issue.title)
-        const idMatch = fuzzyMatch(trimmed, issue.identifier)
+        const titleMatch = fuzzyMatch(effectiveQuery, issue.title)
+        const idMatch = fuzzyMatch(effectiveQuery, issue.identifier)
         const bestScore = Math.max(titleMatch?.score ?? -1, idMatch?.score ?? -1)
         if (bestScore >= 0) {
           const project = projects.find((p) => p.id === issue.projectId)
@@ -388,9 +406,9 @@ export default function CommandPalette() {
     }
 
     // Search event types (when query length >= 2)
-    if (trimmed.length >= 2) {
+    if (effectiveQuery.length >= 2) {
       for (const et of eventTypes) {
-        const match = fuzzyMatch(trimmed, et.name)
+        const match = fuzzyMatch(effectiveQuery, et.name)
         if (match) {
           scored.push({
             id: `event-${et.id}`,
@@ -406,9 +424,9 @@ export default function CommandPalette() {
     }
 
     // Search databases (when query length >= 2)
-    if (trimmed.length >= 2) {
+    if (effectiveQuery.length >= 2) {
       for (const db of databases) {
-        const match = fuzzyMatch(trimmed, db.name)
+        const match = fuzzyMatch(effectiveQuery, db.name)
         if (match) {
           scored.push({
             id: `db-${db.id}`,
@@ -423,20 +441,97 @@ export default function CommandPalette() {
       }
     }
 
+    // Search tax documents (when query length >= 2)
+    if (effectiveQuery.length >= 2) {
+      for (const td of taxDocuments) {
+        const nameMatch = fuzzyMatch(effectiveQuery, td.fileName)
+        const employerMatch = fuzzyMatch(effectiveQuery, td.employerName)
+        const bestScore = Math.max(nameMatch?.score ?? -1, employerMatch?.score ?? -1)
+        if (bestScore >= 0) {
+          scored.push({
+            id: `taxdoc-${td.id}`,
+            label: td.fileName,
+            description: `${td.formType} · ${td.employerName} · ${td.taxYear}`,
+            icon: Receipt,
+            action: () => navigateAndTrack('/tax', td.fileName),
+            category: 'tax_document',
+            score: bestScore,
+          })
+        }
+      }
+
+      for (const filing of taxFilings) {
+        const nameMatch = fuzzyMatch(effectiveQuery, `${filing.firstName} ${filing.lastName}`)
+        const yearMatch = fuzzyMatch(effectiveQuery, filing.taxYear)
+        const bestScore = Math.max(nameMatch?.score ?? -1, yearMatch?.score ?? -1)
+        if (bestScore >= 0) {
+          scored.push({
+            id: `taxfiling-${filing.id}`,
+            label: `${filing.firstName} ${filing.lastName} — ${filing.taxYear}`,
+            description: `Tax filing · ${filing.state} · ${filing.filingStatus}`,
+            icon: Receipt,
+            action: () => navigateAndTrack('/tax', `${filing.firstName} ${filing.lastName}`),
+            category: 'tax_document',
+            score: bestScore,
+          })
+        }
+      }
+    }
+
+    // Search invoices (when query length >= 2)
+    if (effectiveQuery.length >= 2) {
+      for (const inv of invoices) {
+        const numMatch = fuzzyMatch(effectiveQuery, inv.invoiceNumber)
+        const custMatch = fuzzyMatch(effectiveQuery, inv.customerName)
+        const bestScore = Math.max(numMatch?.score ?? -1, custMatch?.score ?? -1)
+        if (bestScore >= 0) {
+          scored.push({
+            id: `inv-${inv.id}`,
+            label: `${inv.invoiceNumber} — ${inv.customerName}`,
+            description: `Invoice · ${inv.status} · $${inv.total.toLocaleString()}`,
+            icon: Receipt,
+            action: () => navigateAndTrack('/accounting', inv.invoiceNumber),
+            category: 'invoice',
+            score: bestScore,
+          })
+        }
+      }
+    }
+
+    // Search agent runs (when query length >= 2)
+    if (effectiveQuery.length >= 2) {
+      for (const run of agentRuns) {
+        const taskMatch = fuzzyMatch(effectiveQuery, run.task)
+        const typeMatch = fuzzyMatch(effectiveQuery, run.agentType)
+        const bestScore = Math.max(taskMatch?.score ?? -1, typeMatch?.score ?? -1)
+        if (bestScore >= 0) {
+          scored.push({
+            id: `agent-${run.id}`,
+            label: run.task,
+            description: `${run.agentType} agent · ${run.status}`,
+            icon: Bot,
+            action: () => navigateAndTrack('/copilot', run.task),
+            category: 'agent_run',
+            score: bestScore,
+          })
+        }
+      }
+    }
+
     // Sort by score descending
     scored.sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
 
     return scored
-  }, [query, commands, documents, workspacePages, projects, projectIssues, eventTypes, databases, recentItems, navigateAndTrack])
+  }, [effectiveQuery, commandsOnly, commands, documents, workspacePages, projects, projectIssues, eventTypes, databases, taxDocuments, taxFilings, invoices, agentRuns, recentItems, navigateAndTrack])
 
   // Get matched indices per item for highlighting
   const getMatchIndices = useCallback(
     (label: string): number[] => {
-      if (!query.trim()) return []
-      const result = fuzzyMatch(query.trim(), label)
+      if (!effectiveQuery) return []
+      const result = fuzzyMatch(effectiveQuery, label)
       return result?.matchedIndices ?? []
     },
-    [query]
+    [effectiveQuery]
   )
 
   // Group by category
@@ -450,6 +545,9 @@ export default function CommandPalette() {
       project: [] as CommandItem[],
       event: [] as CommandItem[],
       database: [] as CommandItem[],
+      tax_document: [] as CommandItem[],
+      invoice: [] as CommandItem[],
+      agent_run: [] as CommandItem[],
     }
     filteredItems.forEach((cmd) => {
       groups[cmd.category].push(cmd)
@@ -457,17 +555,12 @@ export default function CommandPalette() {
     return groups
   }, [filteredItems])
 
-  // Keyboard shortcuts: Cmd+K opens SearchOverlay, not CommandPalette
+  // Keyboard shortcut: Cmd+K opens unified command palette
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
-        const store = useAppStore.getState()
-        // Close command palette if open, open search overlay
-        if (store.commandPaletteOpen) {
-          store.closeCommandPalette()
-        }
-        store.toggleSearchOverlay()
+        useAppStore.getState().toggleCommandPalette()
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -526,6 +619,18 @@ export default function CommandPalette() {
 
   if (!commandPaletteOpen) return null
 
+  // Content categories that get type badges (not actions/navigation/recent)
+  const BADGE_LABELS: Partial<Record<CommandItem['category'], string>> = {
+    document: 'Document',
+    page: 'Page',
+    project: 'Project',
+    event: 'Event',
+    database: 'Database',
+    tax_document: 'Tax',
+    invoice: 'Invoice',
+    agent_run: 'Agent',
+  }
+
   let itemIndex = -1
 
   const renderGroup = (
@@ -541,6 +646,7 @@ export default function CommandPalette() {
           const currentIndex = itemIndex
           const Icon = cmd.icon
           const indices = getMatchIndices(cmd.label)
+          const badgeLabel = BADGE_LABELS[cmd.category]
           return (
             <button
               key={cmd.id}
@@ -560,6 +666,11 @@ export default function CommandPalette() {
                     <HighlightedText text={cmd.label} indices={indices} />
                   ) : (
                     cmd.label
+                  )}
+                  {badgeLabel && (
+                    <span className={`command-palette__badge command-palette__badge--${cmd.category}`}>
+                      {badgeLabel}
+                    </span>
                   )}
                 </span>
                 {cmd.description && (
@@ -600,7 +711,7 @@ export default function CommandPalette() {
             ref={inputRef}
             type="text"
             className="command-palette__input"
-            placeholder="Type a command or search..."
+            placeholder="Type a command or search... (> for commands)"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -629,6 +740,9 @@ export default function CommandPalette() {
               {renderGroup('Projects', groupedCommands.project)}
               {renderGroup('Events', groupedCommands.event)}
               {renderGroup('Databases', groupedCommands.database)}
+              {renderGroup('Tax', groupedCommands.tax_document)}
+              {renderGroup('Invoices', groupedCommands.invoice)}
+              {renderGroup('Agent Runs', groupedCommands.agent_run)}
               {renderGroup('Navigation', groupedCommands.navigation)}
             </>
           )}
@@ -644,6 +758,9 @@ export default function CommandPalette() {
           </span>
           <span className="command-palette__hint">
             <kbd>esc</kbd> to close
+          </span>
+          <span className="command-palette__hint">
+            <kbd>&gt;</kbd> commands only
           </span>
         </div>
       </div>

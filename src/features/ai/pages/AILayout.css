@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-lg);
+  padding: var(--space-md) 0;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -26,7 +26,7 @@
 .ai-layout__tabs {
   display: flex;
   gap: var(--space-xs);
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-sm) 0;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -61,5 +61,5 @@
 .ai-layout__content {
   flex: 1;
   overflow-y: auto;
-  padding: var(--space-lg);
+  padding: var(--space-md) 0;
 }

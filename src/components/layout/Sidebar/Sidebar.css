@@ -18,7 +18,7 @@
 }
 
 .sidebar--expanded {
-  width: 240px;
+  width: var(--sidebar-width, 256px);
 }
 
 .sidebar--collapsed {
@@ -237,6 +237,9 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   padding-bottom: 8px;
   margin-bottom: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  flex-shrink: 0;
 }
 
 .sidebar__section-toggle {
@@ -324,6 +327,24 @@
 .sidebar__favorite-remove:hover {
   background: rgba(220, 38, 38, 0.2);
   color: #F87171;
+}
+
+/* ─── Favorites scrollbar ────────────────────────────────────── */
+.sidebar__favorites::-webkit-scrollbar {
+  width: 3px;
+}
+
+.sidebar__favorites::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar__favorites::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+}
+
+.sidebar__favorites::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 
 /* ─── Badge ──────────────────────────────────────────────────── */

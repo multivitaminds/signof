@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { CreditCard } from 'lucide-react'
 import { useBillingStore } from '../stores/useBillingStore'
 import { PLANS, PLAN_ORDER, type PricingPlan } from '../lib/planData'
 import { MODULE_ADD_ONS } from '../lib/addOnData'
@@ -441,7 +442,7 @@ export default function BillingSettings() {
         <div className="billing__payment-card">
           <div className="billing__payment-info">
             <div className="billing__payment-icon">
-              <span aria-label="Credit card">&#128179;</span>
+              <CreditCard size={22} />
             </div>
             <div className="billing__payment-details">
               <span className="billing__payment-brand">

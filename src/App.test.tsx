@@ -178,16 +178,16 @@ describe('Orchestree App', () => {
   it('toggles sidebar with [ keyboard shortcut', () => {
     renderWithRouter()
 
-    // Sidebar starts expanded — collapse button visible
-    expect(screen.getByLabelText('Collapse sidebar')).toBeInTheDocument()
+    // Sidebar starts expanded (pinned) — unpin button visible
+    expect(screen.getByLabelText('Unpin sidebar')).toBeInTheDocument()
 
-    // Press [ to toggle
+    // Press [ to toggle (unpin)
     fireEvent.keyDown(document, { key: '[' })
-    expect(screen.getByLabelText('Expand sidebar')).toBeInTheDocument()
+    expect(screen.getByLabelText('Pin sidebar open')).toBeInTheDocument()
 
-    // Press [ again to re-expand
+    // Press [ again to re-expand (pin)
     fireEvent.keyDown(document, { key: '[' })
-    expect(screen.getByLabelText('Collapse sidebar')).toBeInTheDocument()
+    expect(screen.getByLabelText('Unpin sidebar')).toBeInTheDocument()
   })
 
   it('has a hamburger menu button', () => {

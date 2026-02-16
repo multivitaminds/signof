@@ -8,7 +8,6 @@ import CommandPalette from '../CommandPalette/CommandPalette'
 import KeyboardShortcutHelp from '../KeyboardShortcutHelp/KeyboardShortcutHelp'
 import AccountModeBanner from '../AccountModeBanner/AccountModeBanner'
 import OfflineBanner from '../OfflineBanner/OfflineBanner'
-import SearchOverlay from '../../features/search/components/SearchOverlay/SearchOverlay'
 import AIChatSidebar from '../../features/ai/components/AIChatSidebar/AIChatSidebar'
 import useAIChatStore from '../../features/ai/stores/useAIChatStore'
 import { useTheme } from '../../hooks/useTheme'
@@ -43,8 +42,6 @@ export default function AppLayout() {
   const mobileSidebarOpen = useAppStore((s) => s.mobileSidebarOpen)
   const closeMobileSidebar = useAppStore((s) => s.closeMobileSidebar)
   const addRecentItem = useAppStore((s) => s.addRecentItem)
-  const searchOverlayOpen = useAppStore((s) => s.searchOverlayOpen)
-  const closeSearchOverlay = useAppStore((s) => s.closeSearchOverlay)
   const setAIChatContext = useAIChatStore((s) => s.setContextLabel)
   const setAIChatRoute = useAIChatStore((s) => s.setCurrentRoute)
 
@@ -125,7 +122,6 @@ export default function AppLayout() {
       {isMobile && <MobileNav />}
       <CommandPalette />
       <KeyboardShortcutHelp />
-      <SearchOverlay isOpen={searchOverlayOpen} onClose={closeSearchOverlay} />
       <AIChatSidebar />
       {/* ARIA live region for toast announcements */}
       <div

@@ -24,6 +24,7 @@ function AccountingCopilotPanel() {
   const lastAnalysis = useAccountingCopilotStore((s) => s.lastAnalysis)
 
   const [inputValue, setInputValue] = useState('')
+  const [collapsed, setCollapsed] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Auto-scroll when new messages arrive or typing starts
@@ -71,13 +72,33 @@ function AccountingCopilotPanel() {
     forecastCashFlow()
   }, [forecastCashFlow])
 
+  const handleMouseLeave = useCallback(() => {
+    if (isOpen && messages.length === 0 && !isTyping && !inputValue.trim()) {
+      setCollapsed(true)
+    }
+  }, [isOpen, messages.length, isTyping, inputValue])
+
+  const handleMouseEnter = useCallback(() => {
+    setCollapsed(false)
+  }, [])
+
   return (
     <aside
-      className={`accounting-copilot-panel${isOpen ? ' accounting-copilot-panel--open' : ''}`}
+      className={`accounting-copilot-panel${isOpen ? ' accounting-copilot-panel--open' : ''}${collapsed ? ' accounting-copilot-panel--collapsed' : ''}`}
       aria-label="Accounting Copilot"
       aria-hidden={!isOpen}
+      onMouseLeave={handleMouseLeave}
+      onMouseEnter={handleMouseEnter}
     >
-      {/* Header */}
+      {collapsed && (
+        <div className="accounting-copilot-panel__collapsed-strip">
+          <Sparkles size={18} />
+          <span>Accounting Copilot</span>
+        </div>
+      )}
+      {!collapsed && (
+        <>
+          {/* Header */}
       <div className="accounting-copilot-panel__header">
         <div className="accounting-copilot-panel__header-title">
           <Sparkles size={18} />
@@ -191,6 +212,8 @@ function AccountingCopilotPanel() {
           <Send size={16} />
         </button>
       </div>
+        </>
+      )}
     </aside>
   )
 }

@@ -27,8 +27,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border: none;
   border-radius: var(--radius-md, 8px);
   background: transparent;
@@ -64,6 +64,11 @@
   justify-content: center;
 }
 
+.topbar__profile-wrapper {
+  position: relative;
+  margin-left: var(--space-2, 8px);
+}
+
 .topbar__user-btn {
   display: flex;
   align-items: center;
@@ -72,12 +77,11 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  margin-left: var(--space-2, 8px);
 }
 
 .topbar__avatar {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--radius-full, 9999px);
   background: var(--orchestree-navy, #1A1A2E);
   color: white;
@@ -90,6 +94,106 @@
 .topbar__user-btn:hover .topbar__avatar {
   transform: scale(1.05);
   box-shadow: 0 2px 8px rgba(26, 26, 46, 0.2);
+}
+
+/* ─── Profile Dropdown Menu ─────────────────────────────── */
+
+.topbar__profile-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 60;
+  padding: var(--space-1, 4px);
+  animation: topbar-menu-fade-in 120ms ease-out;
+}
+
+@keyframes topbar-menu-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.topbar__profile-menu-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+  padding: var(--space-3, 12px) var(--space-3, 12px) var(--space-2, 8px);
+}
+
+.topbar__profile-menu-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--orchestree-navy, #1A1A2E);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.topbar__profile-menu-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar__profile-menu-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar__profile-menu-email {
+  font-size: 0.75rem;
+  color: var(--text-muted, #9CA3AF);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar__profile-menu-divider {
+  height: 1px;
+  background: var(--border-color, #E5E7EB);
+  margin: var(--space-1, 4px) var(--space-2, 8px);
+}
+
+.topbar__profile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+  width: 100%;
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  color: var(--text-secondary, #6B7280);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 100ms ease;
+}
+
+.topbar__profile-menu-item:hover {
+  background: var(--bg-secondary, #F3F4F6);
+  color: var(--text-primary, #111827);
+}
+
+.topbar__profile-menu-item--danger {
+  color: var(--color-danger, #DC2626);
+}
+
+.topbar__profile-menu-item--danger:hover {
+  background: rgba(220, 38, 38, 0.06);
+  color: var(--color-danger, #DC2626);
 }
 
 /* Hamburger — hidden on desktop */
@@ -116,4 +220,31 @@
 [data-theme="dark"] .topbar__icon-btn:hover {
   background: var(--bg-secondary, #1A1A2E);
   color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .topbar__profile-menu {
+  background: var(--bg-primary, #0F0F1A);
+  border-color: var(--border-color, #334155);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .topbar__profile-menu-name {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .topbar__profile-menu-divider {
+  background: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .topbar__profile-menu-item {
+  color: var(--text-secondary, #94A3B8);
+}
+
+[data-theme="dark"] .topbar__profile-menu-item:hover {
+  background: var(--bg-secondary, #1A1A2E);
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .topbar__profile-menu-item--danger:hover {
+  background: rgba(220, 38, 38, 0.12);
 }

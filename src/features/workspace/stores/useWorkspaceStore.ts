@@ -40,7 +40,7 @@ function createSampleData(): { pages: Record<string, Page>; blocks: Record<strin
   const page1: Page = {
     id: 'page-getting-started',
     title: 'Getting Started',
-    icon: '🚀',
+    icon: 'rocket',
     coverUrl: '',
     parentId: null,
     blockIds: [b1.id, b2.id, b3.id],
@@ -66,7 +66,7 @@ function createSampleData(): { pages: Record<string, Page>; blocks: Record<strin
   const page2: Page = {
     id: 'page-meeting-notes',
     title: 'Meeting Notes',
-    icon: '📝',
+    icon: 'file-text',
     coverUrl: '',
     parentId: null,
     blockIds: [b4.id, b5.id, b6.id, b7.id],
@@ -88,7 +88,7 @@ function createSampleData(): { pages: Record<string, Page>; blocks: Record<strin
   const page3: Page = {
     id: 'page-project-ideas',
     title: 'Project Ideas',
-    icon: '💡',
+    icon: 'lightbulb',
     coverUrl: '',
     parentId: 'page-getting-started',
     blockIds: [b8.id, b9.id],

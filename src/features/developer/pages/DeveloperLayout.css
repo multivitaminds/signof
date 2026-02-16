@@ -145,7 +145,7 @@
 
 .developer-layout__content {
   flex: 1;
-  padding: var(--space-6);
+  padding: var(--space-3) var(--space-5);
   max-width: 960px;
   overflow-y: auto;
 }

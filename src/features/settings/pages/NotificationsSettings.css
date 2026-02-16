@@ -1,7 +1,7 @@
 .notif-settings {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6, 2rem);
+  gap: var(--space-5, 1.5rem);
 }
 
 .notif-settings__title {

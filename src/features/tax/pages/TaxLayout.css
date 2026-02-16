@@ -11,8 +11,8 @@
 .tax-layout__header {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-5) var(--space-6);
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
   background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
 }
@@ -42,10 +42,10 @@
   padding: var(--space-1) var(--space-6) var(--space-1) var(--space-3);
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
-  color: var(--color-primary);
-  background-color: var(--color-primary-light);
-  border: 1px solid transparent;
-  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition:
     border-color var(--motion-fast) var(--ease-out),
@@ -53,20 +53,20 @@
 }
 
 .tax-layout__year-dropdown:hover {
-  border-color: var(--color-primary);
+  border-color: var(--color-gray-400);
 }
 
 .tax-layout__year-dropdown:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.12);
 }
 
 .tax-layout__year-chevron {
   position: absolute;
   right: 10px;
   pointer-events: none;
-  color: var(--color-primary);
+  color: var(--text-secondary);
 }
 
 /* ─── Tab Navigation ──────────────────────────────────────────────── */
@@ -110,7 +110,7 @@
 
 .tax-layout__content {
   flex: 1;
-  padding: var(--space-6);
+  padding: var(--space-5) 0;
   max-width: var(--content-max-width);
   width: 100%;
   margin: 0 auto;
@@ -119,26 +119,42 @@
 /* ─── Dark Mode ───────────────────────────────────────────────────── */
 
 [data-theme="dark"] .tax-layout__year-dropdown {
-  background-color: rgba(79, 70, 229, 0.12);
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .tax-layout__year-dropdown:hover {
+  border-color: var(--text-muted);
 }
 
 [data-theme="dark"] .tax-layout__year-dropdown:focus {
-  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.2);
+}
+
+[data-theme="dark"] .tax-layout__year-chevron {
+  color: var(--text-secondary);
 }
 
 [data-theme="dark"] .tax-layout__tab--active {
-  background-color: rgba(79, 70, 229, 0.12);
+  background-color: rgba(124, 92, 252, 0.12);
 }
 
 [data-theme="dark"] .tax-layout__tab--active:hover {
-  background-color: rgba(79, 70, 229, 0.12);
+  background-color: rgba(124, 92, 252, 0.16);
 }
 
 /* ─── Responsive ──────────────────────────────────────────────────── */
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  .tax-layout__content {
+    padding: var(--space-4) 0;
+  }
+}
+
 @media (max-width: 767px) {
   .tax-layout__header {
-    padding: var(--space-4);
+    padding: var(--space-3) 0;
   }
 
   .tax-layout__header-left {
@@ -162,6 +178,6 @@
   }
 
   .tax-layout__content {
-    padding: var(--space-4);
+    padding: var(--space-3) 0;
   }
 }

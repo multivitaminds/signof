@@ -1,4 +1,6 @@
-import { Search, User, Sun, Moon, Monitor, Menu, Wand2 } from 'lucide-react'
+import { useState, useCallback, useRef, useEffect } from 'react'
+import { Search, User, Sun, Moon, Monitor, Menu, Wand2, Settings, HelpCircle, LogOut } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../../../stores/useAppStore'
 import { useTheme } from '../../../hooks/useTheme'
 import useAIChatStore from '../../../features/ai/stores/useAIChatStore'
@@ -18,12 +20,45 @@ const THEME_LABEL = {
   system: 'System theme',
 } as const
 
+const PROFILE_MENU_ITEMS = [
+  { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
+  { id: 'help', label: 'Help & Support', icon: HelpCircle, path: '/settings' },
+  { id: 'logout', label: 'Sign Out', icon: LogOut, path: '/' },
+] as const
+
 export default function TopBar() {
   const { openCommandPalette, openMobileSidebar } = useAppStore()
   const { theme, cycleTheme } = useTheme()
   const toggleAIChat = useAIChatStore((s) => s.toggleOpen)
+  const navigate = useNavigate()
+
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false)
+  const profileRef = useRef<HTMLDivElement>(null)
 
   const ThemeIcon = THEME_ICON[theme]
+
+  const handleProfileClick = useCallback(() => {
+    setProfileMenuOpen((prev) => !prev)
+  }, [])
+
+  const handleProfileMenuSelect = useCallback(
+    (path: string) => {
+      navigate(path)
+      setProfileMenuOpen(false)
+    },
+    [navigate]
+  )
+
+  useEffect(() => {
+    if (!profileMenuOpen) return
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [profileMenuOpen])
 
   return (
     <header className="topbar">
@@ -47,7 +82,7 @@ export default function TopBar() {
           aria-label="Search"
           title="Search (⌘K)"
         >
-          <Search size={20} />
+          <Search size={22} />
         </button>
 
         {/* AI Chat Toggle */}
@@ -57,7 +92,7 @@ export default function TopBar() {
           aria-label="Toggle AI assistant"
           title="AI Assistant"
         >
-          <Wand2 size={20} />
+          <Wand2 size={22} />
         </button>
 
         {/* Theme Toggle */}
@@ -67,22 +102,55 @@ export default function TopBar() {
           aria-label={THEME_LABEL[theme]}
           title={THEME_LABEL[theme]}
         >
-          <ThemeIcon size={20} />
+          <ThemeIcon size={22} />
         </button>
 
         {/* Notifications */}
         <NotificationCenter />
 
         {/* User Menu */}
-        <button
-          className="topbar__user-btn"
-          aria-label="User menu"
-          title="Account"
-        >
-          <div className="topbar__avatar">
-            <User size={18} />
-          </div>
-        </button>
+        <div className="topbar__profile-wrapper" ref={profileRef}>
+          <button
+            className="topbar__user-btn"
+            onClick={handleProfileClick}
+            aria-label="User menu"
+            aria-expanded={profileMenuOpen}
+            aria-haspopup="true"
+            title="Account"
+          >
+            <div className="topbar__avatar">
+              <User size={18} />
+            </div>
+          </button>
+          {profileMenuOpen && (
+            <div className="topbar__profile-menu" role="menu">
+              <div className="topbar__profile-menu-header">
+                <div className="topbar__profile-menu-avatar">
+                  <User size={20} />
+                </div>
+                <div className="topbar__profile-menu-info">
+                  <span className="topbar__profile-menu-name">Demo User</span>
+                  <span className="topbar__profile-menu-email">user@orchestree.io</span>
+                </div>
+              </div>
+              <div className="topbar__profile-menu-divider" />
+              {PROFILE_MENU_ITEMS.map((item) => {
+                const Icon = item.icon
+                return (
+                  <button
+                    key={item.id}
+                    className={`topbar__profile-menu-item ${item.id === 'logout' ? 'topbar__profile-menu-item--danger' : ''}`}
+                    role="menuitem"
+                    onClick={() => handleProfileMenuSelect(item.path)}
+                  >
+                    <Icon size={16} />
+                    <span>{item.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </header>
   )

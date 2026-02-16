@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useMemo } from 'react'
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
   Home,
@@ -118,9 +118,36 @@ export default function Sidebar() {
   const [favoritesCollapsed, setFavoritesCollapsed] = useState(false)
   const [newMenuOpen, setNewMenuOpen] = useState(false)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+  const [isHovering, setIsHovering] = useState(false)
   const dragIndexRef = useRef<number | null>(null)
   const resizingRef = useRef(false)
   const newMenuRef = useRef<HTMLDivElement>(null)
+  const hoverTimerRef = useRef<number | null>(null)
+
+  // Sidebar is effectively expanded when pinned open OR hovered
+  const effectiveExpanded = sidebarExpanded || isHovering
+
+  const handleSidebarMouseEnter = useCallback(() => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current)
+      hoverTimerRef.current = null
+    }
+    setIsHovering(true)
+  }, [])
+
+  const handleSidebarMouseLeave = useCallback(() => {
+    if (sidebarExpanded) return // pinned open, don't auto-collapse
+    hoverTimerRef.current = window.setTimeout(() => {
+      setIsHovering(false)
+    }, 300)
+  }, [sidebarExpanded])
+
+  // Cleanup hover timer on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current)
+    }
+  }, [])
 
   const NAV_ITEMS: NavItem[] = [
     { path: '/', label: 'Home', icon: Home },
@@ -195,7 +222,7 @@ export default function Sidebar() {
   // Resize handle
   const handleResizeStart = useCallback(
     (e: React.MouseEvent) => {
-      if (!sidebarExpanded) return
+      if (!effectiveExpanded) return
       e.preventDefault()
       resizingRef.current = true
 
@@ -218,20 +245,22 @@ export default function Sidebar() {
       document.addEventListener('mousemove', handleMouseMove)
       document.addEventListener('mouseup', handleMouseUp)
     },
-    [sidebarExpanded, setSidebarWidth]
+    [effectiveExpanded, setSidebarWidth]
   )
 
   const mobileClass = mobileSidebarOpen ? ' sidebar--mobile-open' : ''
-  const expandedWidth = sidebarExpanded ? `${sidebarWidth}px` : undefined
+  const expandedWidth = effectiveExpanded ? `${sidebarWidth}px` : undefined
 
   return (
     <aside
-      className={`sidebar ${sidebarExpanded ? 'sidebar--expanded' : 'sidebar--collapsed'}${mobileClass}`}
-      style={sidebarExpanded ? { width: expandedWidth } : undefined}
+      className={`sidebar ${effectiveExpanded ? 'sidebar--expanded' : 'sidebar--collapsed'}${mobileClass}`}
+      style={effectiveExpanded ? { width: expandedWidth } : undefined}
+      onMouseEnter={handleSidebarMouseEnter}
+      onMouseLeave={handleSidebarMouseLeave}
     >
       {/* Header */}
       <div className="sidebar__header">
-        {sidebarExpanded ? (
+        {effectiveExpanded ? (
           <div className="sidebar__brand">
             <span className="sidebar__logo">Orchestree</span>
             <span className="sidebar__logo-check">&#10003;</span>
@@ -244,7 +273,8 @@ export default function Sidebar() {
         <button
           className="sidebar__toggle"
           onClick={toggleSidebar}
-          aria-label={sidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+          aria-label={sidebarExpanded ? 'Unpin sidebar' : 'Pin sidebar open'}
+          title={sidebarExpanded ? 'Unpin sidebar' : 'Pin sidebar open'}
         >
           {sidebarExpanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
         </button>
@@ -258,7 +288,7 @@ export default function Sidebar() {
           aria-label="Search or run command"
         >
           <Search size={18} />
-          {sidebarExpanded && (
+          {effectiveExpanded && (
             <>
               <span className="sidebar__search-text">Search</span>
               <kbd className="sidebar__search-kbd">&#8984;K</kbd>
@@ -268,7 +298,7 @@ export default function Sidebar() {
       </div>
 
       {/* Quick Actions */}
-      {sidebarExpanded && (
+      {effectiveExpanded && (
         <div className="sidebar__actions" ref={newMenuRef} onBlur={handleNewMenuBlur}>
           <button className="sidebar__action-btn" onClick={toggleNewMenu} aria-label="Create new">
             <Plus size={16} />
@@ -296,7 +326,7 @@ export default function Sidebar() {
       )}
 
       {/* Favorites */}
-      {sidebarExpanded && (
+      {effectiveExpanded && (
         <div className="sidebar__favorites">
           <button
             className="sidebar__section-toggle"
@@ -355,7 +385,7 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="sidebar__nav">
-        {sidebarExpanded && (
+        {effectiveExpanded && (
           <div className="sidebar__section-label">Workspace</div>
         )}
         <ul className="sidebar__nav-list">
@@ -369,14 +399,14 @@ export default function Sidebar() {
                 <NavLink
                   to={item.path}
                   className={`sidebar__nav-link ${isActive ? 'sidebar__nav-link--active' : ''}`}
-                  title={!sidebarExpanded ? item.label : undefined}
+                  title={!effectiveExpanded ? item.label : undefined}
                   onClick={handleNavClick}
                 >
                   <Icon size={20} className="sidebar__nav-icon" />
-                  {sidebarExpanded && (
+                  {effectiveExpanded && (
                     <span className="sidebar__nav-label">{item.label}</span>
                   )}
-                  {item.badge !== undefined && item.badge > 0 && sidebarExpanded && (
+                  {item.badge !== undefined && item.badge > 0 && effectiveExpanded && (
                     <span className="sidebar__badge">{item.badge}</span>
                   )}
                 </NavLink>
@@ -384,7 +414,7 @@ export default function Sidebar() {
             )
           })}
         </ul>
-        {sidebarExpanded && workspacePages.length > 0 && (
+        {effectiveExpanded && workspacePages.length > 0 && (
           <div className="sidebar__page-tree">
             <PageTree
               pages={workspacePages}
@@ -408,18 +438,18 @@ export default function Sidebar() {
         <NavLink
           to="/settings"
           className={`sidebar__nav-link ${location.pathname.startsWith('/settings') ? 'sidebar__nav-link--active' : ''}`}
-          title={!sidebarExpanded ? 'Settings' : undefined}
+          title={!effectiveExpanded ? 'Settings' : undefined}
           onClick={handleNavClick}
         >
           <Settings size={20} className="sidebar__nav-icon" />
-          {sidebarExpanded && (
+          {effectiveExpanded && (
             <span className="sidebar__nav-label">Settings</span>
           )}
         </NavLink>
       </div>
 
       {/* Resize handle */}
-      {sidebarExpanded && (
+      {effectiveExpanded && (
         <div
           className="sidebar__resize-handle"
           onMouseDown={handleResizeStart}

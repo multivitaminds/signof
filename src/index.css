@@ -156,7 +156,7 @@
 
   /* ─── Component Tokens ─────────────────────────────────── */
   --header-height: 56px;
-  --sidebar-width: 240px;
+  --sidebar-width: 256px;
   --sidebar-width-collapsed: 64px;
   --content-max-width: 1200px;
 

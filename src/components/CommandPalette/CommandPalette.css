@@ -216,6 +216,60 @@
   font-family: var(--font-sans);
 }
 
+/* Type badges */
+.command-palette__badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+}
+
+.command-palette__badge--document {
+  background: rgba(79, 70, 229, 0.12);
+  color: #4F46E5;
+}
+
+.command-palette__badge--page {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3B82F6;
+}
+
+.command-palette__badge--project {
+  background: rgba(139, 92, 246, 0.12);
+  color: #8B5CF6;
+}
+
+.command-palette__badge--event {
+  background: rgba(5, 150, 105, 0.12);
+  color: #059669;
+}
+
+.command-palette__badge--database {
+  background: rgba(217, 119, 6, 0.12);
+  color: #D97706;
+}
+
+.command-palette__badge--tax_document {
+  background: rgba(220, 38, 38, 0.12);
+  color: #DC2626;
+}
+
+.command-palette__badge--invoice {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0EA5E9;
+}
+
+.command-palette__badge--agent_run {
+  background: rgba(233, 69, 96, 0.12);
+  color: #E94560;
+}
+
 /* Dark mode */
 [data-theme="dark"] .command-palette {
   background: var(--orchestree-dark, #1E1E36);
@@ -257,6 +311,46 @@
 [data-theme="dark"] .command-palette__hint kbd {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .command-palette__badge--document {
+  background: rgba(129, 140, 248, 0.2);
+  color: #818CF8;
+}
+
+[data-theme="dark"] .command-palette__badge--page {
+  background: rgba(96, 165, 250, 0.2);
+  color: #60A5FA;
+}
+
+[data-theme="dark"] .command-palette__badge--project {
+  background: rgba(167, 139, 250, 0.2);
+  color: #A78BFA;
+}
+
+[data-theme="dark"] .command-palette__badge--event {
+  background: rgba(52, 211, 153, 0.2);
+  color: #34D399;
+}
+
+[data-theme="dark"] .command-palette__badge--database {
+  background: rgba(251, 191, 36, 0.2);
+  color: #FBBF24;
+}
+
+[data-theme="dark"] .command-palette__badge--tax_document {
+  background: rgba(248, 113, 113, 0.2);
+  color: #F87171;
+}
+
+[data-theme="dark"] .command-palette__badge--invoice {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38BDF8;
+}
+
+[data-theme="dark"] .command-palette__badge--agent_run {
+  background: rgba(233, 69, 96, 0.2);
+  color: #F87171;
 }
 
 /* Scrollbar */

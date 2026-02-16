@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Bot, Zap, Check, X, RefreshCw, Info, Server } from 'lucide-react'
+import { Bot, Zap, Check, RefreshCw, Info, Server, ChevronRight, ExternalLink, Key, Terminal } from 'lucide-react'
 import useLLMConfigStore, { PROVIDER_MODELS } from '../../ai/stores/useLLMConfigStore'
 import type { LLMProvider } from '../../ai/types'
 import './AISettings.css'
@@ -14,6 +14,18 @@ const PROVIDER_LABELS: Record<LLMProvider, string> = {
   groq: 'Groq',
   openrouter: 'OpenRouter',
   xai: 'xAI',
+}
+
+const PROVIDER_ENV_VARS: Record<LLMProvider, string> = {
+  anthropic: 'ANTHROPIC_API_KEY',
+  openai: 'OPENAI_API_KEY',
+  google: 'GOOGLE_API_KEY',
+  minimax: 'MINIMAX_API_KEY',
+  deepseek: 'DEEPSEEK_API_KEY',
+  mistral: 'MISTRAL_API_KEY',
+  groq: 'GROQ_API_KEY',
+  openrouter: 'OPENROUTER_API_KEY',
+  xai: 'XAI_API_KEY',
 }
 
 const ALL_PROVIDERS: LLMProvider[] = [
@@ -33,6 +45,7 @@ export default function AISettings() {
   const setModel = useLLMConfigStore((s) => s.setModel)
 
   const [isTesting, setIsTesting] = useState(false)
+  const [expandedProvider, setExpandedProvider] = useState<LLMProvider | null>(null)
 
   useEffect(() => {
     if (connectionStatus === 'unknown') {
@@ -57,6 +70,10 @@ export default function AISettings() {
   const isProviderAvailable = useCallback((p: LLMProvider) => {
     return availableProviders.some((ap) => ap.provider === p && ap.available)
   }, [availableProviders])
+
+  const handleProviderCardClick = useCallback((p: LLMProvider) => {
+    setExpandedProvider((prev) => prev === p ? null : p)
+  }, [])
 
   const modelsForProvider = PROVIDER_MODELS[provider] ?? []
   const isLive = mode === 'live'
@@ -96,24 +113,78 @@ export default function AISettings() {
           {ALL_PROVIDERS.map((p) => {
             const available = isProviderAvailable(p)
             const modelCount = PROVIDER_MODELS[p].length
+            const isExpanded = expandedProvider === p
             return (
-              <div key={p} className="ai-settings__provider-card">
-                <div className="ai-settings__provider-icon">
-                  <Server size={16} />
-                </div>
-                <div className="ai-settings__provider-info">
-                  <p className="ai-settings__provider-name">{PROVIDER_LABELS[p]}</p>
-                  <p className="ai-settings__provider-models">
-                    {modelCount} model{modelCount !== 1 ? 's' : ''}
-                  </p>
-                </div>
-                <span className={`ai-settings__provider-badge ai-settings__provider-badge--${available ? 'connected' : 'not-configured'}`}>
-                  {available ? (
-                    <><Check size={10} /> Connected</>
-                  ) : (
-                    <><X size={10} /> Not configured</>
-                  )}
-                </span>
+              <div key={p} className={`ai-settings__provider-card ${isExpanded ? 'ai-settings__provider-card--expanded' : ''}`}>
+                <button
+                  className="ai-settings__provider-card-btn"
+                  onClick={() => handleProviderCardClick(p)}
+                  aria-expanded={isExpanded}
+                >
+                  <div className="ai-settings__provider-icon">
+                    <Server size={16} />
+                  </div>
+                  <div className="ai-settings__provider-info">
+                    <p className="ai-settings__provider-name">{PROVIDER_LABELS[p]}</p>
+                    <p className="ai-settings__provider-models">
+                      {modelCount} model{modelCount !== 1 ? 's' : ''}
+                    </p>
+                  </div>
+                  <span className={`ai-settings__provider-badge ai-settings__provider-badge--${available ? 'connected' : 'not-configured'}`}>
+                    {available ? (
+                      <><Check size={10} /> Connected</>
+                    ) : (
+                      <><ChevronRight size={12} className={`ai-settings__provider-chevron ${isExpanded ? 'ai-settings__provider-chevron--open' : ''}`} /> Configure</>
+                    )}
+                  </span>
+                </button>
+                {isExpanded && !available && (
+                  <div className="ai-settings__provider-setup">
+                    <div className="ai-settings__setup-step">
+                      <div className="ai-settings__setup-step-num">1</div>
+                      <div className="ai-settings__setup-step-content">
+                        <p className="ai-settings__setup-step-title">Get API key</p>
+                        <p className="ai-settings__setup-step-desc">
+                          Visit {PROVIDER_LABELS[p]} dashboard to create an API key
+                        </p>
+                        <button className="ai-settings__setup-link" type="button">
+                          <ExternalLink size={12} /> Open {PROVIDER_LABELS[p]}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="ai-settings__setup-step">
+                      <div className="ai-settings__setup-step-num">2</div>
+                      <div className="ai-settings__setup-step-content">
+                        <p className="ai-settings__setup-step-title">Add to environment</p>
+                        <code className="ai-settings__setup-code">
+                          <Key size={12} /> {PROVIDER_ENV_VARS[p]}=sk-...
+                        </code>
+                      </div>
+                    </div>
+                    <div className="ai-settings__setup-step">
+                      <div className="ai-settings__setup-step-num">3</div>
+                      <div className="ai-settings__setup-step-content">
+                        <p className="ai-settings__setup-step-title">Test connection</p>
+                        <p className="ai-settings__setup-step-desc">
+                          <Terminal size={12} /> Restart the server and test from the Connection section below
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {isExpanded && available && (
+                  <div className="ai-settings__provider-setup">
+                    <div className="ai-settings__setup-connected">
+                      <Check size={16} />
+                      <div>
+                        <p className="ai-settings__setup-step-title">Connected</p>
+                        <p className="ai-settings__setup-step-desc">
+                          {modelCount} model{modelCount !== 1 ? 's' : ''} available. Select this provider in Active Configuration below.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )
           })}
