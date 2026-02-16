@@ -7,6 +7,8 @@ import { useWorkspaceStore } from '../stores/useWorkspaceStore'
 import { getIconComponent, isEmojiIcon } from '../../../lib/iconMap'
 import PageTree from '../components/PageTree/PageTree'
 import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
+import WorkspaceCopilotButton from '../components/WorkspaceCopilotButton/WorkspaceCopilotButton'
+import WorkspaceCopilotPanel from '../components/WorkspaceCopilotPanel/WorkspaceCopilotPanel'
 import './WorkspaceLayout.css'
 
 export default function WorkspaceLayout() {
@@ -128,6 +130,8 @@ export default function WorkspaceLayout() {
         <Outlet />
       </main>
       <AIFeatureWidget featureKey="workspace" />
+      <WorkspaceCopilotButton />
+      <WorkspaceCopilotPanel />
     </div>
   )
 }

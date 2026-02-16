@@ -9,6 +9,8 @@ import {
 } from 'lucide-react'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { DemoVideoSection } from '../../../components/ui/DemoVideo'
+import DeveloperCopilotButton from '../components/DeveloperCopilotButton/DeveloperCopilotButton'
+import DeveloperCopilotPanel from '../components/DeveloperCopilotPanel/DeveloperCopilotPanel'
 import './DeveloperLayout.css'
 
 type DeveloperTab =
@@ -110,6 +112,8 @@ function DeveloperLayout() {
       <main className="developer-layout__content">
         <ActivePage />
       </main>
+      <DeveloperCopilotButton />
+      <DeveloperCopilotPanel />
     </div>
   )
 }

@@ -4,6 +4,8 @@ import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { useDocumentStore } from '../../../stores/useDocumentStore'
 import { DocumentStatus, STATUS_LABELS } from '../../../types'
 import type { Document } from '../../../types'
+import DocumentCopilotButton from '../components/DocumentCopilotButton/DocumentCopilotButton'
+import DocumentCopilotPanel from '../components/DocumentCopilotPanel/DocumentCopilotPanel'
 import './DocumentsPage.css'
 
 type ViewMode = 'grid' | 'list'
@@ -314,6 +316,8 @@ export default function DocumentsHubPage() {
           })}
         </div>
       )}
+      <DocumentCopilotButton />
+      <DocumentCopilotPanel />
     </div>
   )
 }

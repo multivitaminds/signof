@@ -2,6 +2,8 @@ import { Outlet } from 'react-router-dom'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { DemoVideoSection } from '../../../components/ui/DemoVideo'
 import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
+import ProjectCopilotButton from '../components/ProjectCopilotButton/ProjectCopilotButton'
+import ProjectCopilotPanel from '../components/ProjectCopilotPanel/ProjectCopilotPanel'
 import './ProjectsLayout.css'
 
 export default function ProjectsLayout() {
@@ -19,6 +21,8 @@ export default function ProjectsLayout() {
         <Outlet />
       </div>
       <AIFeatureWidget featureKey="projects" />
+      <ProjectCopilotButton />
+      <ProjectCopilotPanel />
     </div>
   )
 }

@@ -16,6 +16,8 @@ import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { DemoVideoSection } from '../../../components/ui/DemoVideo'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
+import InboxCopilotButton from '../components/InboxCopilotButton/InboxCopilotButton'
+import InboxCopilotPanel from '../components/InboxCopilotPanel/InboxCopilotPanel'
 import './InboxPage.css'
 
 /* ------------------------------------------------------------------ */
@@ -775,6 +777,8 @@ export default function InboxPage() {
         </div>
       </div>
       <AIFeatureWidget featureKey="inbox" />
+      <InboxCopilotButton />
+      <InboxCopilotPanel />
     </div>
   )
 }
