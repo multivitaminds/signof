@@ -13,7 +13,9 @@
   border-left: 1px solid var(--border-color);
   box-shadow: var(--shadow-xl);
   transform: translateX(100%);
-  transition: transform var(--motion-normal) var(--ease-out);
+  transition:
+    transform var(--motion-normal) var(--ease-out),
+    width var(--motion-normal) var(--ease-out);
 }
 
 .scheduling-copilot-panel--open {
@@ -309,6 +311,28 @@
   outline-offset: 2px;
 }
 
+/* ─── Collapsed State ─────────────────────────────────────────────── */
+
+.scheduling-copilot-panel--collapsed {
+  width: 48px;
+  cursor: pointer;
+}
+
+.scheduling-copilot-panel__collapsed-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-2);
+  color: var(--color-primary);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  height: 100%;
+}
+
 /* ─── Dark Mode ───────────────────────────────────────────────────── */
 
 [data-theme="dark"] .scheduling-copilot-panel {
@@ -331,11 +355,28 @@
   background-color: rgba(255, 255, 255, 0.04);
 }
 
+[data-theme="dark"] .scheduling-copilot-panel__collapsed-strip {
+  color: #A5B4FC;
+}
+
 /* ─── Responsive ──────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {
   .scheduling-copilot-panel {
     width: 100%;
+  }
+
+  .scheduling-copilot-panel--collapsed {
+    width: 100%;
+    height: 48px;
+    top: auto;
+  }
+
+  .scheduling-copilot-panel__collapsed-strip {
+    writing-mode: horizontal-tb;
+    flex-direction: row;
+    height: auto;
+    padding: var(--space-3) var(--space-4);
   }
 }
 

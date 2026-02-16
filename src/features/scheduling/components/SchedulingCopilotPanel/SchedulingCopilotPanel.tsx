@@ -24,12 +24,32 @@ function SchedulingCopilotPanel() {
   const lastAnalysis = useSchedulingCopilotStore((s) => s.lastAnalysis)
 
   const [inputValue, setInputValue] = useState('')
+  const [collapsed, setCollapsed] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   // Auto-scroll when new messages arrive or typing starts
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages.length, isTyping])
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + 'px'
+    }
+  }, [inputValue])
+
+  const handleMouseLeave = useCallback(() => {
+    if (isOpen && messages.length === 0 && !isTyping && !inputValue.trim()) {
+      setCollapsed(true)
+    }
+  }, [isOpen, messages.length, isTyping, inputValue])
+
+  const handleMouseEnter = useCallback(() => {
+    setCollapsed(false)
+  }, [])
 
   const handleSend = useCallback(() => {
     const trimmed = inputValue.trim()
@@ -73,10 +93,32 @@ function SchedulingCopilotPanel() {
 
   return (
     <aside
-      className={`scheduling-copilot-panel${isOpen ? ' scheduling-copilot-panel--open' : ''}`}
+      className={`scheduling-copilot-panel${isOpen ? ' scheduling-copilot-panel--open' : ''}${collapsed ? ' scheduling-copilot-panel--collapsed' : ''}`}
       aria-label="Calendar Copilot"
       aria-hidden={!isOpen}
+      onMouseLeave={handleMouseLeave}
+      onMouseEnter={handleMouseEnter}
     >
+      {collapsed && (
+        <div
+          className="scheduling-copilot-panel__collapsed-strip"
+          role="button"
+          tabIndex={0}
+          onClick={handleMouseEnter}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              handleMouseEnter()
+            }
+          }}
+          aria-label="Expand Calendar Copilot"
+        >
+          <Sparkles size={18} />
+          <span>Calendar Copilot</span>
+        </div>
+      )}
+      {!collapsed && (
+        <>
       {/* Header */}
       <div className="scheduling-copilot-panel__header">
         <div className="scheduling-copilot-panel__header-title">
@@ -173,6 +215,7 @@ function SchedulingCopilotPanel() {
       {/* Input Area */}
       <div className="scheduling-copilot-panel__input-area">
         <textarea
+          ref={textareaRef}
           className="scheduling-copilot-panel__input"
           value={inputValue}
           onChange={handleInputChange}
@@ -191,6 +234,8 @@ function SchedulingCopilotPanel() {
           <Send size={16} />
         </button>
       </div>
+        </>
+      )}
     </aside>
   )
 }

@@ -55,24 +55,24 @@ test.describe('App Navigation', () => {
     await expect(page).toHaveURL('/')
   })
 
-  test('Cmd+K opens search overlay and Escape closes it', async ({ page }) => {
+  test('Cmd+K opens command palette and Escape closes it', async ({ page }) => {
     await page.goto('/')
     await page.waitForSelector('.sidebar')
 
-    // Open search overlay with Cmd+K
+    // Open command palette with Cmd+K
     await page.keyboard.press('Meta+k')
 
-    // The search overlay should be visible (it has an input)
-    const searchInput = page.locator('.search-overlay__input')
-    await expect(searchInput).toBeVisible({ timeout: 3000 })
+    // The command palette should be visible
+    const paletteInput = page.locator('.command-palette__input')
+    await expect(paletteInput).toBeVisible({ timeout: 3000 })
 
     // Can type in the search input
-    await searchInput.fill('documents')
-    await expect(searchInput).toHaveValue('documents')
+    await paletteInput.fill('documents')
+    await expect(paletteInput).toHaveValue('documents')
 
     // Close with Escape
     await page.keyboard.press('Escape')
-    await expect(searchInput).not.toBeVisible()
+    await expect(paletteInput).not.toBeVisible()
   })
 
   test('sidebar collapse/expand toggle works', async ({ page }) => {
