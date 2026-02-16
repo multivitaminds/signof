@@ -1,0 +1,98 @@
+/* ─── BottomSheet ─────────────────────────────────────────────────── */
+
+.bottom-sheet__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: bottom-sheet-fade-in var(--motion-fast) var(--ease-out);
+}
+
+@keyframes bottom-sheet-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.bottom-sheet {
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  background-color: var(--bg-primary);
+  border-top-left-radius: var(--radius-xl);
+  border-top-right-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  animation: bottom-sheet-slide-up var(--motion-normal) var(--ease-out);
+  transition: transform var(--motion-fast) var(--ease-out);
+  overflow: hidden;
+}
+
+.bottom-sheet--dragging {
+  transition: none;
+}
+
+@keyframes bottom-sheet-slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.bottom-sheet__handle-area {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3) 0 var(--space-1);
+  cursor: grab;
+  touch-action: none;
+}
+
+.bottom-sheet__handle {
+  width: 40px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background-color: var(--border-color);
+}
+
+.bottom-sheet__title {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0 var(--space-5) var(--space-3);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.bottom-sheet__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-5) var(--space-6);
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────────── */
+
+[data-theme="dark"] .bottom-sheet__overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .bottom-sheet {
+  box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .bottom-sheet__handle {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .bottom-sheet {
+    max-width: 100%;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+
+  .bottom-sheet__content {
+    padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
+  }
+}

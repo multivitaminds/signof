@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import type { ReactNode, ErrorInfo } from 'react'
 import { AlertTriangle } from 'lucide-react'
+import { reportError } from '../../lib/performanceReporter'
 import './ErrorBoundary.css'
 
 interface ErrorBoundaryProps {
@@ -32,6 +33,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     console.error('[ErrorBoundary] Caught error:', error)
     console.error('[ErrorBoundary] Component stack:', errorInfo.componentStack)
+    reportError(error, { componentStack: errorInfo.componentStack ?? '' })
     this.props.onError?.(error, errorInfo)
   }
 
