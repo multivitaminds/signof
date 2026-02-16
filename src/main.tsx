@@ -100,7 +100,12 @@ const SdkPage = lazy(() => import('./features/developer/pages/SdkPage'))
 const SandboxPage = lazy(() => import('./features/developer/pages/SandboxPage'))
 const ApiKeysPage = lazy(() => import('./features/developer/pages/ApiKeysPage'))
 
+import { initCrossModuleListeners } from './lib/crossModuleListeners'
+
 import './index.css'
+
+// Wire up cross-module event listeners (document signed → activity feed, etc.)
+initCrossModuleListeners()
 
 const root = document.getElementById('root')
 

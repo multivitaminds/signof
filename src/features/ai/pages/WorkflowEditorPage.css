@@ -1,3 +1,5 @@
+/* --- Workflow Editor Layout ------------------------------------------------ */
+
 .wf-editor {
   display: flex;
   flex-direction: column;
@@ -13,17 +15,25 @@
   color: var(--text-muted);
 }
 
+/* --- Body (palette + canvas + params) -------------------------------------- */
+
 .wf-editor__body {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
+/* --- Palette Sidebar ------------------------------------------------------- */
+
 .wf-editor__palette {
-  width: 260px;
+  width: 240px;
+  min-width: 240px;
   border-right: 1px solid var(--border-color);
   background: var(--bg-primary);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .wf-editor__palette-header {
@@ -44,73 +54,279 @@
   cursor: pointer;
   font-size: 1.1rem;
   padding: 0 4px;
+  line-height: 1;
 }
+
+.wf-editor__close-btn:hover {
+  color: var(--text-primary);
+}
+
+/* --- Canvas ---------------------------------------------------------------- */
 
 .wf-editor__canvas {
   flex: 1;
   position: relative;
   background: var(--bg-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: auto;
 }
 
-.wf-editor__canvas-inner {
+.wf-editor__canvas-scroll {
+  position: relative;
+  width: 3000px;
+  height: 3000px;
+  background-image:
+    radial-gradient(circle, var(--border-color) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* --- SVG Connection Layer -------------------------------------------------- */
+
+.wf-editor__svg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.wf-editor__connection-path {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 2;
+  pointer-events: all;
+  cursor: pointer;
+  transition: stroke 0.15s, stroke-width 0.15s;
+}
+
+.wf-editor__connection-path:hover {
+  stroke-width: 3.5;
+  stroke: var(--color-danger, #dc2626);
+}
+
+.wf-editor__connection-path--idle {
+  stroke: var(--color-primary);
+}
+
+.wf-editor__connection-path--running {
+  stroke: #3b82f6;
+  stroke-dasharray: 8 4;
+  animation: wf-dash-flow 1s linear infinite;
+}
+
+.wf-editor__connection-path--completed {
+  stroke: #059669;
+}
+
+.wf-editor__connection-path--error {
+  stroke: #dc2626;
+}
+
+.wf-editor__pending-line {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+@keyframes wf-dash-flow {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
+/* --- Node Wrapper (absolute positioning) ----------------------------------- */
+
+.wf-editor__node-wrapper {
+  position: absolute;
+  z-index: 10;
+  user-select: none;
+}
+
+.wf-editor__node-wrapper--dragging {
+  z-index: 20;
+  opacity: 0.85;
+}
+
+/* --- Empty State ----------------------------------------------------------- */
+
+.wf-editor__empty-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
+  pointer-events: none;
+  z-index: 1;
 }
 
-.wf-editor__canvas-text {
-  color: var(--text-muted);
-  font-size: 0.85rem;
+.wf-editor__empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-sm);
+  opacity: 0.4;
 }
+
+.wf-editor__empty-text {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+.wf-editor__empty-hint {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-top: var(--space-xs);
+  opacity: 0.7;
+}
+
+/* --- Toggle Palette Button ------------------------------------------------- */
 
 .wf-editor__toggle-palette {
   position: absolute;
   top: var(--space-sm);
   left: var(--space-sm);
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
   background: var(--bg-primary);
   color: var(--text-primary);
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 30;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.15s;
 }
+
+.wf-editor__toggle-palette:hover {
+  background: var(--bg-secondary);
+}
+
+/* --- Parameter Panel ------------------------------------------------------- */
 
 .wf-editor__params {
   width: 280px;
+  min-width: 280px;
   border-left: 1px solid var(--border-color);
   background: var(--bg-primary);
   overflow-y: auto;
+}
+
+/* --- Status Bar ------------------------------------------------------------ */
+
+.wf-editor__status-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
-}
-
-.wf-editor__placeholder {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  padding: var(--space-md);
-}
-
-.wf-editor__back {
-  padding: var(--space-sm) var(--space-md);
+  gap: var(--space-lg);
+  padding: var(--space-xs) var(--space-md);
   border-top: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
-.wf-editor__back-btn {
+.wf-editor__status-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.wf-editor__status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.wf-editor__status-dot--draft {
+  background: #6b7280;
+}
+
+.wf-editor__status-dot--active {
+  background: #059669;
+}
+
+.wf-editor__status-dot--paused {
+  background: #f59e0b;
+}
+
+.wf-editor__status-dot--error {
+  background: #dc2626;
+}
+
+.wf-editor__status-spacer {
+  flex: 1;
+}
+
+.wf-editor__status-back {
   background: none;
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  font-size: 0.78rem;
-  padding: 4px 0;
+  font-size: 0.72rem;
+  padding: 2px 0;
 }
 
-.wf-editor__back-btn:hover {
+.wf-editor__status-back:hover {
   color: var(--color-primary);
+}
+
+/* --- Dark Mode ------------------------------------------------------------- */
+
+[data-theme="dark"] .wf-editor__canvas-scroll {
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+}
+
+[data-theme="dark"] .wf-editor__connection-path {
+  stroke: #7c5cfc;
+}
+
+[data-theme="dark"] .wf-editor__connection-path:hover {
+  stroke: #f87171;
+}
+
+[data-theme="dark"] .wf-editor__pending-line {
+  stroke: #7c5cfc;
+}
+
+[data-theme="dark"] .wf-editor__connection-path--running {
+  stroke: #60a5fa;
+}
+
+[data-theme="dark"] .wf-editor__connection-path--completed {
+  stroke: #34d399;
+}
+
+[data-theme="dark"] .wf-editor__connection-path--error {
+  stroke: #f87171;
+}
+
+/* --- Responsive ------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .wf-editor__palette {
+    display: none !important;
+  }
+
+  .wf-editor__toggle-palette {
+    display: flex !important;
+  }
+
+  .wf-editor__params {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    box-shadow: var(--shadow-lg);
+  }
 }

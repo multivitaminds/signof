@@ -15,6 +15,7 @@ import {
   X,
 } from 'lucide-react'
 import { useInboxStore } from '../../../features/inbox/stores/useInboxStore'
+import { useSwipeGesture } from '../../../hooks/useSwipeGesture'
 import './MobileNav.css'
 
 interface TabItem {
@@ -88,6 +89,10 @@ export default function MobileNav() {
     setMoreOpen(false)
   }, [])
 
+  const swipeRef = useSwipeGesture<HTMLDivElement>({
+    onSwipeDown: handleBackdropClick,
+  })
+
   return (
     <>
       {/* More sheet backdrop */}
@@ -101,6 +106,7 @@ export default function MobileNav() {
 
       {/* Slide-up more sheet */}
       <div
+        ref={swipeRef}
         className={`mobile-nav__more-sheet ${moreOpen ? 'mobile-nav__more-sheet--open' : ''}`}
         role="dialog"
         aria-label="More navigation options"

@@ -14,14 +14,9 @@ import {
 import { useTeamStore } from '../stores/useTeamStore'
 import { TeamRole, ROLE_LABELS, MemberStatus, InviteStatus } from '../types/team'
 import type { TeamRole as TeamRoleType, TeamMember } from '../types/team'
+import Avatar from '../../../components/ui/Avatar'
+import Input from '../../../components/ui/Input'
 import './MembersSettings.css'
-
-const ROLE_AVATAR_COLORS: Record<TeamRoleType, string> = {
-  owner: '#7C3AED',
-  admin: '#2563EB',
-  member: '#059669',
-  guest: '#6B7280',
-}
 
 const ROLE_BADGE_CLASSES: Record<TeamRoleType, string> = {
   owner: 'members-settings__role-badge--owner',
@@ -51,15 +46,6 @@ function getRelativeTime(isoString: string): string {
   const diffDays = Math.floor(diffHr / 24)
   if (diffDays < 30) return `${diffDays}d ago`
   return formatDate(isoString)
-}
-
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
 }
 
 export default function MembersSettings() {
@@ -200,14 +186,14 @@ export default function MembersSettings() {
 
       {/* Search */}
       <div className="members-settings__search">
-        <Search size={16} className="members-settings__search-icon" />
-        <input
-          className="members-settings__search-input"
-          type="text"
+        <Input
+          leftIcon={<Search size={16} />}
           placeholder="Search members by name, email, or role..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           aria-label="Search members"
+          fullWidth
+          size="md"
         />
       </div>
 
@@ -232,12 +218,7 @@ export default function MembersSettings() {
             >
               {/* Avatar + Info */}
               <div className="members-settings__col-member">
-                <div
-                  className="members-settings__avatar"
-                  style={{ backgroundColor: ROLE_AVATAR_COLORS[member.role] }}
-                >
-                  {getInitials(member.name)}
-                </div>
+                <Avatar name={member.name} size="sm" className="members-settings__avatar" />
                 <div className="members-settings__info">
                   <span className="members-settings__name">{member.name}</span>
                   <span className="members-settings__email">{member.email}</span>

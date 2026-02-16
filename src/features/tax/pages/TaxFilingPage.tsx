@@ -8,6 +8,9 @@ import { FILING_STATUS_LABELS, FILING_STATE_LABELS, FilingState, STANDARD_DEDUCT
 import type { TaxFiling, FilingStatus, TaxBanditConfig } from '../types'
 import FilingWizard from '../components/FilingWizard/FilingWizard'
 import TaxBanditSettings from '../components/TaxBanditSettings/TaxBanditSettings'
+import FilingConfirmation from '../components/FilingConfirmation/FilingConfirmation'
+import FiledStateCard from '../components/FiledStateCard/FiledStateCard'
+import PreFilingChecklist from '../components/PreFilingChecklist/PreFilingChecklist'
 import './TaxFilingPage.css'
 
 const WIZARD_STEPS = [
@@ -249,104 +252,16 @@ function TaxFilingPage() {
   // ─── Confirmation View ────────────────────────────────────────────────
   if (confirmation) {
     return (
-      <div className="tax-filing__confirmation">
-        <div className="tax-filing__confirmation-card">
-          <div className="tax-filing__confirmation-icon tax-filing__confirmation-icon--success">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-
-          <h2 className="tax-filing__confirmation-title">
-            {confirmation.isAmendment ? 'Amendment Filed!' : 'Filing Submitted!'}
-          </h2>
-          <p className="tax-filing__confirmation-desc">
-            {confirmation.isAmendment
-              ? `Your amended ${activeTaxYear} tax return has been submitted for processing.`
-              : `Your ${activeTaxYear} tax return has been submitted to the IRS.`}
-          </p>
-
-          <div className="tax-filing__confirmation-ref">
-            <span className="tax-filing__confirmation-ref-label">Reference Number</span>
-            <span className="tax-filing__confirmation-ref-value">{confirmation.referenceNumber}</span>
-          </div>
-
-          {submissionId && (
-            <div className="tax-filing__confirmation-ref">
-              <span className="tax-filing__confirmation-ref-label">TaxBandit Submission ID</span>
-              <span className="tax-filing__confirmation-ref-value">{submissionId}</span>
-            </div>
-          )}
-
-          <div className="tax-filing__confirmation-details">
-            <div className="tax-filing__confirmation-row">
-              <span>Filed At</span>
-              <span>
-                {new Date(confirmation.filedAt).toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                  hour: 'numeric',
-                  minute: '2-digit',
-                })}
-              </span>
-            </div>
-            <div className="tax-filing__confirmation-row">
-              <span>Filing Status</span>
-              <span className="tax-filing__confirmation-status">
-                {FILING_STATE_LABELS[filing.state]}
-              </span>
-            </div>
-            {confirmation.isAmendment && (
-              <div className="tax-filing__confirmation-row">
-                <span>Amendment Reason</span>
-                <span>{confirmation.amendmentReason}</span>
-              </div>
-            )}
-            <div className="tax-filing__confirmation-row tax-filing__confirmation-row--highlight">
-              <span>{confirmation.estimatedRefund !== null ? 'Estimated Refund' : 'Estimated Tax Owed'}</span>
-              <span
-                className={
-                  confirmation.estimatedRefund !== null
-                    ? 'tax-filing__amount--refund'
-                    : 'tax-filing__amount--owed'
-                }
-              >
-                ${(confirmation.estimatedRefund ?? confirmation.estimatedOwed ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-              </span>
-            </div>
-          </div>
-
-          <div className="tax-filing__confirmation-actions">
-            {connected && !returnPdfUrl && (
-              <button
-                className="btn-primary"
-                onClick={handleDownloadPdf}
-                type="button"
-              >
-                Download Return PDF
-              </button>
-            )}
-            {returnPdfUrl && (
-              <a
-                href={returnPdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary"
-              >
-                View Return PDF
-              </a>
-            )}
-            <button
-              className="btn-secondary"
-              onClick={handleStartAmendment}
-              type="button"
-            >
-              File Amendment (1040-X)
-            </button>
-          </div>
-        </div>
-      </div>
+      <FilingConfirmation
+        filing={filing}
+        confirmation={confirmation}
+        activeTaxYear={activeTaxYear}
+        submissionId={submissionId}
+        returnPdfUrl={returnPdfUrl}
+        isConnected={connected}
+        onDownloadPdf={handleDownloadPdf}
+        onStartAmendment={handleStartAmendment}
+      />
     )
   }
 
@@ -358,92 +273,15 @@ function TaxFilingPage() {
 
   if (isFiled && !isAmendmentMode) {
     return (
-      <div className="tax-filing__filed">
-        <div className="tax-filing__filed-card">
-          <div
-            className={`tax-filing__filed-icon ${
-              filing.state === FilingState.Accepted
-                ? 'tax-filing__filed-icon--success'
-                : filing.state === FilingState.Rejected
-                  ? 'tax-filing__filed-icon--danger'
-                  : 'tax-filing__filed-icon--primary'
-            }`}
-          >
-            {filing.state === FilingState.Accepted ? (
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            ) : filing.state === FilingState.Rejected ? '!' : '...'}
-          </div>
-          <h2 className="tax-filing__filed-title">
-            {filing.state === FilingState.Accepted
-              ? 'Filing Accepted!'
-              : filing.state === FilingState.Rejected
-                ? 'Filing Rejected'
-                : 'Filing Submitted'}
-          </h2>
-          <p className="tax-filing__filed-desc">
-            {filing.state === FilingState.Accepted
-              ? `Your ${activeTaxYear} tax return has been accepted by the IRS.`
-              : filing.state === FilingState.Rejected
-                ? 'There was an issue with your filing. Please review and resubmit.'
-                : 'Your filing is being processed. This may take a few moments.'}
-          </p>
-          {filing.filedAt && (
-            <p className="tax-filing__filed-date">
-              Filed on{' '}
-              {new Date(filing.filedAt).toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-              })}
-            </p>
-          )}
-          <div className="tax-filing__filed-summary">
-            <div className="tax-filing__filed-row">
-              <span>Total Income</span>
-              <span>${filing.totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-            </div>
-            <div className="tax-filing__filed-row">
-              <span>Federal Tax</span>
-              <span>${filing.federalTax.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-            </div>
-            <div className="tax-filing__filed-row tax-filing__filed-row--highlight">
-              <span>{filing.refundOrOwed < 0 ? 'Refund' : 'Amount Owed'}</span>
-              <span
-                className={
-                  filing.refundOrOwed < 0
-                    ? 'tax-filing__amount--refund'
-                    : 'tax-filing__amount--owed'
-                }
-              >
-                ${Math.abs(filing.refundOrOwed).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-              </span>
-            </div>
-          </div>
-
-          {transmissionError && filing.state === FilingState.Rejected && (
-            <div className="tax-filing__transmission-error">
-              <strong>IRS Rejection Details</strong>
-              <p>{transmissionError}</p>
-            </div>
-          )}
-
-          <div className="tax-filing__filed-actions">
-            <button
-              className="btn-secondary"
-              onClick={handleStartAmendment}
-              type="button"
-            >
-              File Amendment (1040-X)
-            </button>
-          </div>
-        </div>
-      </div>
+      <FiledStateCard
+        filing={filing}
+        activeTaxYear={activeTaxYear}
+        transmissionError={transmissionError}
+        onStartAmendment={handleStartAmendment}
+      />
     )
   }
+
 
   return (
     <div className="tax-filing">
@@ -456,60 +294,13 @@ function TaxFilingPage() {
       />
 
       {/* ─── Pre-Filing Checklist ───────────────────────────── */}
-      <div className="tax-filing__checklist">
-        <button
-          className="tax-filing__checklist-toggle"
-          onClick={handleToggleChecklist}
-          type="button"
-          aria-expanded={showChecklist}
-        >
-          <div className="tax-filing__checklist-toggle-left">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              {showChecklist ? (
-                <polyline points="6 9 12 15 18 9" />
-              ) : (
-                <polyline points="9 18 15 12 9 6" />
-              )}
-            </svg>
-            <span className="tax-filing__checklist-title">Pre-Filing Checklist</span>
-          </div>
-          <div className="tax-filing__checklist-progress-mini">
-            <span className="tax-filing__checklist-progress-text">
-              {checklistProgress()}%
-            </span>
-            <div className="tax-filing__checklist-progress-bar-mini">
-              <div
-                className="tax-filing__checklist-progress-fill-mini"
-                style={{ width: `${checklistProgress()}%` }}
-              />
-            </div>
-          </div>
-        </button>
-
-        {showChecklist && (
-          <div className="tax-filing__checklist-items">
-            {checklist.map((item) => (
-              <label
-                key={item.id}
-                className={`tax-filing__checklist-item ${
-                  item.completed ? 'tax-filing__checklist-item--completed' : ''
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={item.completed}
-                  onChange={() => toggleChecklistItem(item.id)}
-                  className="tax-filing__checklist-checkbox"
-                />
-                <div className="tax-filing__checklist-item-info">
-                  <span className="tax-filing__checklist-item-label">{item.label}</span>
-                  <span className="tax-filing__checklist-item-desc">{item.description}</span>
-                </div>
-              </label>
-            ))}
-          </div>
-        )}
-      </div>
+      <PreFilingChecklist
+        checklist={checklist}
+        progress={checklistProgress()}
+        showChecklist={showChecklist}
+        onToggle={handleToggleChecklist}
+        onToggleItem={toggleChecklistItem}
+      />
 
       {/* ─── Amendment Banner ──────────────────────────────── */}
       {isAmendmentMode && (

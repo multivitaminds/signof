@@ -7,7 +7,7 @@ import {
   Bell, CheckCheck, Trash2, FileSignature, AtSign,
   MessageSquare, UserPlus, ArrowRightLeft, Clock, Settings2,
   Search, Plus, X, ChevronDown, Check, Archive, Calendar,
-  FolderOpen, Layout, Settings, ExternalLink, ChevronRight,
+  FolderOpen, Layout, Settings, ChevronRight,
 } from 'lucide-react'
 import { useInboxStore } from '../stores/useInboxStore'
 import { NotificationType, NotificationCategory, TYPE_TO_CATEGORY } from '../types'
@@ -18,6 +18,8 @@ import EmptyState from '../../../components/EmptyState/EmptyState'
 import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
 import InboxCopilotButton from '../components/InboxCopilotButton/InboxCopilotButton'
 import InboxCopilotPanel from '../components/InboxCopilotPanel/InboxCopilotPanel'
+import NotificationItem from '../components/NotificationItem/NotificationItem'
+import NotificationDetail from '../components/NotificationDetail/NotificationDetail'
 import './InboxPage.css'
 
 /* ------------------------------------------------------------------ */
@@ -113,29 +115,6 @@ const CATEGORY_BADGE_LABEL: Record<string, string> = {
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                           */
 /* ------------------------------------------------------------------ */
-
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 1) return 'just now'
-  if (mins < 60) return `${mins}m ago`
-  const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
-  const days = Math.floor(hrs / 24)
-  if (days < 7) return `${days}d ago`
-  return `${Math.floor(days / 7)}w ago`
-}
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  })
-}
 
 function getDateGroup(dateStr: string): string {
   const date = new Date(dateStr)
@@ -604,103 +583,25 @@ export default function InboxPage() {
                       <span className="inbox-page__group-count">{group.items.length}</span>
                       <span className="inbox-page__group-line" />
                     </button>
-                    {!isCollapsed && group.items.map((notif) => {
-                      const Icon = ICON_MAP[notif.type] ?? Bell
-                      const borderColor = PRIORITY_COLOR[notif.type] ?? '#94A3B8'
-                      const isDismissing = dismissingIds.has(notif.id)
-                      const isSelected = selectedIds.has(notif.id)
-                      const isActive = selectedNotifId === notif.id
-                      const sourceCount = notif.sourceId ? sourceGroupCounts.get(notif.sourceId) ?? 0 : 0
-
-                      return (
-                        <div
-                          key={notif.id}
-                          className={[
-                            'inbox-page__item',
-                            !notif.read ? 'inbox-page__item--unread' : '',
-                            isDismissing ? 'inbox-page__item--dismissing' : '',
-                            isSelected ? 'inbox-page__item--selected' : '',
-                            isActive ? 'inbox-page__item--active' : '',
-                          ].filter(Boolean).join(' ')}
-                          style={{ '--priority-color': borderColor } as React.CSSProperties}
-                          onClick={() => handleClick(notif)}
-                        >
-                          <div className="inbox-page__item-priority" />
-
-                          <button
-                            className={`inbox-page__item-checkbox ${isSelected ? 'inbox-page__item-checkbox--checked' : ''}`}
-                            onClick={(e) => handleSelectToggle(e, notif.id)}
-                            aria-label={isSelected ? 'Deselect notification' : 'Select notification'}
-                          >
-                            {isSelected && <Check size={12} />}
-                          </button>
-
-                          <button
-                            className="inbox-page__read-toggle"
-                            onClick={(e) => handleToggleRead(e, notif.id)}
-                            aria-label={notif.read ? 'Mark as unread' : 'Mark as read'}
-                            title={notif.read ? 'Mark as unread' : 'Mark as read'}
-                          >
-                            <span className={`inbox-page__read-dot ${!notif.read ? 'inbox-page__read-dot--unread' : ''}`} />
-                          </button>
-
-                          <div className="inbox-page__item-icon">
-                            <Icon size={18} />
-                          </div>
-                          <div className="inbox-page__item-content">
-                            <div className="inbox-page__item-header">
-                              <span className="inbox-page__item-title">{notif.title}</span>
-                              <span className="inbox-page__item-time">{timeAgo(notif.createdAt)}</span>
-                            </div>
-                            <p className="inbox-page__item-message">{notif.message}</p>
-                            <div className="inbox-page__item-meta">
-                              {notif.actorName && (
-                                <span className="inbox-page__item-actor">{notif.actorName}</span>
-                              )}
-                              <span
-                                className="inbox-page__item-category-badge"
-                                data-category={notif.category}
-                              >
-                                {CATEGORY_BADGE_LABEL[notif.category] ?? notif.category}
-                              </span>
-                              {sourceCount > 1 && (
-                                <span className="inbox-page__item-source-count">
-                                  +{sourceCount - 1} related
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          <div className="inbox-page__item-actions">
-                            {notif.actionLabel && (
-                              <button
-                                className="inbox-page__item-action-btn"
-                                onClick={(e) => handleActionClick(e, notif)}
-                                title={notif.actionLabel}
-                              >
-                                <ExternalLink size={12} />
-                                <span>{notif.actionLabel}</span>
-                              </button>
-                            )}
-                            <button
-                              className="inbox-page__item-archive"
-                              onClick={(e) => handleArchive(e, notif.id)}
-                              aria-label="Archive notification"
-                              title="Archive"
-                            >
-                              <Archive size={14} />
-                            </button>
-                            <button
-                              className="inbox-page__item-delete"
-                              onClick={(e) => handleDelete(e, notif.id)}
-                              aria-label="Delete notification"
-                              title="Delete notification"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        </div>
-                      )
-                    })}
+                    {!isCollapsed && group.items.map((notif) => (
+                      <NotificationItem
+                        key={notif.id}
+                        notif={notif}
+                        iconMap={ICON_MAP}
+                        priorityColor={PRIORITY_COLOR}
+                        categoryBadgeLabel={CATEGORY_BADGE_LABEL}
+                        sourceCount={notif.sourceId ? sourceGroupCounts.get(notif.sourceId) ?? 0 : 0}
+                        isDismissing={dismissingIds.has(notif.id)}
+                        isSelected={selectedIds.has(notif.id)}
+                        isActive={selectedNotifId === notif.id}
+                        onClick={handleClick}
+                        onSelectToggle={handleSelectToggle}
+                        onToggleRead={handleToggleRead}
+                        onArchive={handleArchive}
+                        onDelete={handleDelete}
+                        onActionClick={handleActionClick}
+                      />
+                    ))}
                   </div>
                 )
               })}
@@ -711,63 +612,15 @@ export default function InboxPage() {
         {/* Detail pane */}
         <div className="inbox-page__detail-pane">
           {selectedNotification ? (
-            <div className="inbox-page__detail">
-              <div className="inbox-page__detail-header">
-                <div className="inbox-page__detail-icon" style={{ '--priority-color': PRIORITY_COLOR[selectedNotification.type] ?? '#94A3B8' } as React.CSSProperties}>
-                  {(() => {
-                    const DetailIcon = ICON_MAP[selectedNotification.type] ?? Bell
-                    return <DetailIcon size={24} />
-                  })()}
-                </div>
-                <div>
-                  <h2 className="inbox-page__detail-title">{selectedNotification.title}</h2>
-                  <span className="inbox-page__detail-time">{formatDate(selectedNotification.createdAt)}</span>
-                </div>
-              </div>
-              <div className="inbox-page__detail-body">
-                <p className="inbox-page__detail-message">{selectedNotification.message}</p>
-                {selectedNotification.actorName && (
-                  <div className="inbox-page__detail-actor">
-                    <span className="inbox-page__detail-actor-label">From:</span>
-                    <span className="inbox-page__detail-actor-name">{selectedNotification.actorName}</span>
-                  </div>
-                )}
-                <div className="inbox-page__detail-category">
-                  <span className="inbox-page__detail-category-label">Category:</span>
-                  <span
-                    className="inbox-page__item-category-badge"
-                    data-category={selectedNotification.category}
-                  >
-                    {CATEGORY_BADGE_LABEL[selectedNotification.category] ?? selectedNotification.category}
-                  </span>
-                </div>
-              </div>
-              {selectedNotification.actionLabel && selectedNotification.actionUrl && (
-                <div className="inbox-page__detail-actions">
-                  <button
-                    className="inbox-page__detail-action-btn"
-                    onClick={() => handleDetailAction(selectedNotification)}
-                  >
-                    <ExternalLink size={14} />
-                    {selectedNotification.actionLabel}
-                  </button>
-                </div>
-              )}
-              <div className="inbox-page__detail-footer">
-                <button
-                  className="inbox-page__detail-footer-btn"
-                  onClick={() => { archiveNotification(selectedNotification.id); setSelectedNotifId(null) }}
-                >
-                  <Archive size={14} /> Archive
-                </button>
-                <button
-                  className="inbox-page__detail-footer-btn inbox-page__detail-footer-btn--danger"
-                  onClick={() => { deleteNotification(selectedNotification.id); setSelectedNotifId(null) }}
-                >
-                  <Trash2 size={14} /> Delete
-                </button>
-              </div>
-            </div>
+            <NotificationDetail
+              notification={selectedNotification}
+              iconMap={ICON_MAP}
+              priorityColor={PRIORITY_COLOR}
+              categoryBadgeLabel={CATEGORY_BADGE_LABEL}
+              onDetailAction={handleDetailAction}
+              onArchive={(id) => { archiveNotification(id); setSelectedNotifId(null) }}
+              onDelete={(id) => { deleteNotification(id); setSelectedNotifId(null) }}
+            />
           ) : (
             <div className="inbox-page__detail-empty">
               <Bell size={32} />

@@ -9,9 +9,7 @@ import {
   Check,
   Users,
   Building2,
-  Palette,
   Layers,
-  CheckCircle2,
   Mail,
   X,
   Rocket,
@@ -32,13 +30,11 @@ import {
   Workflow,
   FileText,
   Code,
-  Sun,
-  Moon,
-  Monitor,
-  BookOpenCheck,
 } from 'lucide-react'
 import type { OnboardingData } from '../types'
 import { clearAllSampleData } from '../../../lib/clearSampleData'
+import OnboardingAppearanceStep from '../components/OnboardingAppearanceStep/OnboardingAppearanceStep'
+import OnboardingSummaryStep from '../components/OnboardingSummaryStep/OnboardingSummaryStep'
 import './OnboardingPage.css'
 
 const WORKSPACE_ICONS = [
@@ -577,191 +573,29 @@ export default function OnboardingPage() {
 
       case 6:
         return (
-          <div className="onboarding__step" key="step-appearance">
-            <div className="onboarding__illustration">
-              <Palette size={48} className="onboarding__step-icon" />
-            </div>
-            <h1 className="onboarding__title">Choose your look</h1>
-            <p className="onboarding__subtitle">
-              Pick a theme and accent color. You can change these anytime.
-            </p>
-            <div className="onboarding__theme-grid">
-              <button
-                type="button"
-                className={`onboarding__theme-card ${data.theme === 'light' ? 'onboarding__theme-card--selected' : ''}`}
-                onClick={() => updateField('theme', 'light')}
-              >
-                <div className="onboarding__theme-preview onboarding__theme-preview--light">
-                  <div className="onboarding__theme-sidebar" />
-                  <div className="onboarding__theme-content">
-                    <div className="onboarding__theme-bar" />
-                    <div className="onboarding__theme-lines">
-                      <div className="onboarding__theme-line" />
-                      <div className="onboarding__theme-line onboarding__theme-line--short" />
-                      <div className="onboarding__theme-line" />
-                    </div>
-                  </div>
-                </div>
-                <Sun size={16} />
-                <span>Light</span>
-                {data.theme === 'light' && <Check size={14} className="onboarding__theme-check" />}
-              </button>
-
-              <button
-                type="button"
-                className={`onboarding__theme-card ${data.theme === 'dark' ? 'onboarding__theme-card--selected' : ''}`}
-                onClick={() => updateField('theme', 'dark')}
-              >
-                <div className="onboarding__theme-preview onboarding__theme-preview--dark">
-                  <div className="onboarding__theme-sidebar" />
-                  <div className="onboarding__theme-content">
-                    <div className="onboarding__theme-bar" />
-                    <div className="onboarding__theme-lines">
-                      <div className="onboarding__theme-line" />
-                      <div className="onboarding__theme-line onboarding__theme-line--short" />
-                      <div className="onboarding__theme-line" />
-                    </div>
-                  </div>
-                </div>
-                <Moon size={16} />
-                <span>Dark</span>
-                {data.theme === 'dark' && <Check size={14} className="onboarding__theme-check" />}
-              </button>
-
-              <button
-                type="button"
-                className={`onboarding__theme-card ${data.theme === 'system' ? 'onboarding__theme-card--selected' : ''}`}
-                onClick={() => updateField('theme', 'system')}
-              >
-                <div className="onboarding__theme-preview onboarding__theme-preview--system">
-                  <div className="onboarding__theme-sidebar" />
-                  <div className="onboarding__theme-content">
-                    <div className="onboarding__theme-bar" />
-                    <div className="onboarding__theme-lines">
-                      <div className="onboarding__theme-line" />
-                      <div className="onboarding__theme-line onboarding__theme-line--short" />
-                      <div className="onboarding__theme-line" />
-                    </div>
-                  </div>
-                </div>
-                <Monitor size={16} />
-                <span>System</span>
-                {data.theme === 'system' && <Check size={14} className="onboarding__theme-check" />}
-              </button>
-            </div>
-
-            {/* Accent color picker */}
-            <div className="onboarding__field" style={{ marginTop: 'var(--space-4, 1rem)' }}>
-              <label className="onboarding__label">Accent color</label>
-              <div className="onboarding__accent-grid">
-                {ACCENT_COLORS.map((color) => (
-                  <button
-                    key={color.value}
-                    type="button"
-                    className={`onboarding__accent-option ${accentColor === color.value ? 'onboarding__accent-option--selected' : ''}`}
-                    onClick={() => setAccentColor(color.value)}
-                    aria-label={`Select ${color.label} accent color`}
-                    style={{ '--accent-swatch': color.value } as React.CSSProperties}
-                  >
-                    <span className="onboarding__accent-swatch" />
-                    <span className="onboarding__accent-label">{color.label}</span>
-                    {accentColor === color.value && (
-                      <Check size={12} className="onboarding__accent-check" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+          <OnboardingAppearanceStep
+            theme={data.theme}
+            accentColor={accentColor}
+            accentColors={ACCENT_COLORS}
+            onThemeChange={(theme) => updateField('theme', theme)}
+            onAccentChange={setAccentColor}
+          />
         )
 
       case 7:
         return (
-          <div className="onboarding__step onboarding__step--ready" key="step-ready">
-            <div className="onboarding__confetti" aria-hidden="true">
-              {Array.from({ length: 30 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="onboarding__confetti-piece"
-                  style={{
-                    '--confetti-left': `${Math.random() * 100}%`,
-                    '--confetti-delay': `${Math.random() * 2}s`,
-                    '--confetti-duration': `${2 + Math.random() * 2}s`,
-                    '--confetti-rotation': `${Math.random() * 360}deg`,
-                  } as React.CSSProperties}
-                />
-              ))}
-            </div>
-            <div className="onboarding__illustration">
-              <CheckCircle2 size={48} className="onboarding__step-icon onboarding__step-icon--success" />
-            </div>
-            <h1 className="onboarding__title">You&apos;re all set!</h1>
-            <p className="onboarding__subtitle">
-              Your workspace is ready. Here&apos;s a summary of your setup:
-            </p>
-            <div className="onboarding__summary">
-              <div className="onboarding__summary-row">
-                <span className="onboarding__summary-label">Workspace</span>
-                <span className="onboarding__summary-value">
-                  {data.workspaceIcon} {data.workspaceName}
-                </span>
-              </div>
-              <div className="onboarding__summary-row">
-                <span className="onboarding__summary-label">Role</span>
-                <span className="onboarding__summary-value">{data.role}</span>
-              </div>
-              <div className="onboarding__summary-row">
-                <span className="onboarding__summary-label">Team size</span>
-                <span className="onboarding__summary-value">{data.teamSize}</span>
-              </div>
-              <div className="onboarding__summary-row">
-                <span className="onboarding__summary-label">Use cases</span>
-                <span className="onboarding__summary-value">
-                  {data.useCases.join(', ')}
-                </span>
-              </div>
-              {data.inviteEmails.length > 0 && (
-                <div className="onboarding__summary-row">
-                  <span className="onboarding__summary-label">Invites</span>
-                  <span className="onboarding__summary-value">
-                    {data.inviteEmails.length} teammate{data.inviteEmails.length !== 1 ? 's' : ''}
-                  </span>
-                </div>
-              )}
-              <div className="onboarding__summary-row">
-                <span className="onboarding__summary-label">Theme</span>
-                <span className="onboarding__summary-value onboarding__summary-value--capitalize">
-                  {data.theme}
-                </span>
-              </div>
-              <div className="onboarding__summary-row">
-                <span className="onboarding__summary-label">Accent</span>
-                <span className="onboarding__summary-value">
-                  <span
-                    className="onboarding__summary-color-dot"
-                    style={{ backgroundColor: accentColor }}
-                  />
-                  {ACCENT_COLORS.find((c) => c.value === accentColor)?.label ?? 'Custom'}
-                </span>
-              </div>
-            </div>
-            <div className="onboarding__ready-actions">
-              <button
-                type="button"
-                className="onboarding__tour-link"
-                onClick={() => {
-                  syncToStore()
-                  clearAllSampleData()
-                  completeOnboarding(data)
-                  completeRegistration()
-                  navigate('/?tour=1')
-                }}
-              >
-                <BookOpenCheck size={16} />
-                Take a tour
-              </button>
-            </div>
-          </div>
+          <OnboardingSummaryStep
+            data={data}
+            accentColor={accentColor}
+            accentColors={ACCENT_COLORS}
+            onLaunchWithTour={() => {
+              syncToStore()
+              clearAllSampleData()
+              completeOnboarding(data)
+              completeRegistration()
+              navigate('/?tour=1')
+            }}
+          />
         )
 
       default:
