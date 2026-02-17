@@ -107,6 +107,10 @@ const useOnboardingTourStore = create<OnboardingTourState>()(
     {
       name: 'orchestree-tour-storage',
       partialize: (state) => ({ completedTours: state.completedTours }),
+      merge: (persisted, current) => ({
+        ...current,
+        completedTours: (persisted as { completedTours?: string[] })?.completedTours ?? current.completedTours,
+      }),
     }
   )
 )
