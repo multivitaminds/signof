@@ -3,6 +3,7 @@ import { useFleetStore } from '../stores/useFleetStore'
 import { FleetAgentStatus } from '../types'
 import type { TaskQueueItem } from '../types'
 import type { AgentCapabilityManifest, AgentDomain } from '../../ai/types'
+import { TFIDFIndex } from './tfidfScorer'
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -20,40 +21,47 @@ interface ScoredCandidate {
   activeInstanceId: string | null
 }
 
+// ─── TF-IDF Index (lazy singleton) ──────────────────────────────────
+
+let tfidfIndex: TFIDFIndex | null = null
+
+function getOrBuildIndex(): TFIDFIndex {
+  if (tfidfIndex && tfidfIndex.size > 0) return tfidfIndex
+
+  tfidfIndex = new TFIDFIndex()
+  const allAgents = getAll()
+  for (const agent of allAgents) {
+    const text = [
+      agent.displayName,
+      agent.description,
+      agent.capabilities.domains.join(' '),
+      agent.capabilities.inputTypes.join(' '),
+      agent.capabilities.tools.join(' '),
+    ].join(' ')
+    tfidfIndex.addDocument(agent.agentTypeId, text)
+  }
+  return tfidfIndex
+}
+
+export function resetTFIDFIndex(): void {
+  tfidfIndex = null
+}
+
 // ─── Scoring ────────────────────────────────────────────────────────
 
 function scoreCandidate(
   manifest: AgentCapabilityManifest,
   task: TaskQueueItem,
 ): number {
-  let score = 0
-  const lower = task.description.toLowerCase()
+  // TF-IDF base score
+  const index = getOrBuildIndex()
+  const results = index.search(task.description, 50)
+  const tfidfMatch = results.find((r) => r.id === manifest.agentTypeId)
+  let score = tfidfMatch ? tfidfMatch.score * 100 : 0 // Scale up TF-IDF score
 
-  // Keyword match on display name
-  const nameWords = manifest.displayName.toLowerCase().split(/\s+/)
-  for (const word of nameWords) {
-    if (word.length > 2 && lower.includes(word)) score += 5
-  }
-
-  // Keyword match on description
-  const descWords = manifest.description.toLowerCase().split(/\s+/)
-  for (const word of descWords) {
-    if (word.length > 3 && lower.includes(word)) score += 2
-  }
-
-  // Domain match
+  // Domain match bonus
   if (task.domain && manifest.domain === task.domain) {
     score += 10
-  }
-
-  // Input type match
-  for (const inputType of manifest.capabilities.inputTypes) {
-    if (lower.includes(inputType.toLowerCase())) score += 3
-  }
-
-  // Capability domain tag match
-  for (const tag of manifest.capabilities.domains) {
-    if (lower.includes(tag.toLowerCase())) score += 2
   }
 
   // Cost tier preference — prefer cheaper agents for normal/low priority

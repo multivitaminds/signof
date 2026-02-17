@@ -75,9 +75,9 @@ export function reconcile(): void {
         fleetStore.startTask(task.id)
       } else {
         // Spawn new agent for this task
-        const instanceId = spawnAgent(result.agentTypeId, task.description)
-        if (instanceId) {
-          fleetStore.routeTask(task.id, instanceId)
+        const spawnResult = spawnAgent(result.agentTypeId, task.description)
+        if (spawnResult.instanceId) {
+          fleetStore.routeTask(task.id, spawnResult.instanceId)
           fleetStore.startTask(task.id)
         }
       }
@@ -98,119 +98,129 @@ export function spawnAgent(
     connectorIds?: string[]
     intervalMs?: number
   },
-): string | null {
-  const manifest = getAgent(registryId)
-  if (!manifest) {
-    useFleetStore.getState().addAlert(
-      AlertSeverity.Warning,
-      `Cannot spawn agent: registry ID "${registryId}" not found`,
-    )
-    return null
-  }
-
-  // Check concurrency limits
-  const existingCount = Object.values(useFleetStore.getState().activeInstances)
-    .filter((i) => i.registryId === registryId && i.status !== FleetAgentStatus.Retiring)
-    .length
-  if (existingCount >= manifest.constraints.maxConcurrency) {
-    useFleetStore.getState().addAlert(
-      AlertSeverity.Info,
-      `Agent "${manifest.displayName}" at max concurrency (${manifest.constraints.maxConcurrency})`,
-    )
-    return null
-  }
-
-  // Deploy via runtime store — create a MarketplaceAgent-compatible object
-  const marketplaceAgent = {
-    id: Date.now(),
-    name: manifest.displayName,
-    description: manifest.description,
-    integrations: manifest.capabilities.connectors.join(', ') || 'none',
-    autonomy: opts?.autonomyMode ?? 'full_auto',
-    price: manifest.constraints.costTier,
-  }
-
-  const runtimeAgentId = useAgentRuntimeStore.getState().deployAgent(
-    marketplaceAgent,
-    (opts?.autonomyMode ?? 'full_auto') as AutonomyMode,
-    opts?.connectorIds ?? [],
-  )
-
-  // Push the task as a goal
-  useAgentRuntimeStore.getState().pushGoal(runtimeAgentId, task, 1)
-
-  // Start the autonomous loop
-  const intervalMs = opts?.intervalMs ?? getIntervalForProfile(manifest.constraints.latencyProfile)
-  startAutonomousLoop(runtimeAgentId, intervalMs)
-
-  // Create fleet instance
-  const instanceId = rid()
-  const now = new Date().toISOString()
-  const instance: FleetAgentInstance = {
-    instanceId,
-    registryId,
-    runtimeAgentId,
-    domain: manifest.domain,
-    status: FleetAgentStatus.Spawning,
-    currentTask: task,
-    spawnedAt: now,
-    lastHeartbeat: now,
-    tokensConsumed: 0,
-    costUsd: 0,
-    cycleCount: 0,
-    errorCount: 0,
-  }
-
-  useFleetStore.getState().addInstance(instance)
-
-  // Emit event
-  eventBus.emit(EVENT_TYPES.FLEET_AGENT_SPAWNED, {
-    instanceId,
-    registryId,
-    displayName: manifest.displayName,
-    domain: manifest.domain,
-    task,
-  })
-
-  // Transition to working after spawn
-  setTimeout(() => {
-    const current = useFleetStore.getState().activeInstances[instanceId]
-    if (current && current.status === FleetAgentStatus.Spawning) {
-      useFleetStore.getState().updateInstanceStatus(instanceId, FleetAgentStatus.Working)
+): { success: boolean; instanceId?: string; error?: string } {
+  try {
+    const manifest = getAgent(registryId)
+    if (!manifest) {
+      useFleetStore.getState().addAlert(
+        AlertSeverity.Warning,
+        `Cannot spawn agent: registry ID "${registryId}" not found`,
+      )
+      return { success: false, error: `Registry ID "${registryId}" not found` }
     }
-  }, 500)
 
-  return instanceId
+    // Check concurrency limits
+    const existingCount = Object.values(useFleetStore.getState().activeInstances)
+      .filter((i) => i.registryId === registryId && i.status !== FleetAgentStatus.Retiring)
+      .length
+    if (existingCount >= manifest.constraints.maxConcurrency) {
+      useFleetStore.getState().addAlert(
+        AlertSeverity.Info,
+        `Agent "${manifest.displayName}" at max concurrency (${manifest.constraints.maxConcurrency})`,
+      )
+      return { success: false, error: `Agent "${manifest.displayName}" at max concurrency (${manifest.constraints.maxConcurrency})` }
+    }
+
+    // Deploy via runtime store — create a MarketplaceAgent-compatible object
+    const marketplaceAgent = {
+      id: Date.now(),
+      name: manifest.displayName,
+      description: manifest.description,
+      integrations: manifest.capabilities.connectors.join(', ') || 'none',
+      autonomy: opts?.autonomyMode ?? 'full_auto',
+      price: manifest.constraints.costTier,
+    }
+
+    const runtimeAgentId = useAgentRuntimeStore.getState().deployAgent(
+      marketplaceAgent,
+      (opts?.autonomyMode ?? 'full_auto') as AutonomyMode,
+      opts?.connectorIds ?? [],
+    )
+
+    // Push the task as a goal
+    useAgentRuntimeStore.getState().pushGoal(runtimeAgentId, task, 1)
+
+    // Start the autonomous loop
+    const intervalMs = opts?.intervalMs ?? getIntervalForProfile(manifest.constraints.latencyProfile)
+    startAutonomousLoop(runtimeAgentId, intervalMs)
+
+    // Create fleet instance
+    const instanceId = rid()
+    const now = new Date().toISOString()
+    const instance: FleetAgentInstance = {
+      instanceId,
+      registryId,
+      runtimeAgentId,
+      domain: manifest.domain,
+      status: FleetAgentStatus.Spawning,
+      currentTask: task,
+      spawnedAt: now,
+      lastHeartbeat: now,
+      tokensConsumed: 0,
+      costUsd: 0,
+      cycleCount: 0,
+      errorCount: 0,
+    }
+
+    useFleetStore.getState().addInstance(instance)
+
+    // Emit event
+    eventBus.emit(EVENT_TYPES.FLEET_AGENT_SPAWNED, {
+      instanceId,
+      registryId,
+      displayName: manifest.displayName,
+      domain: manifest.domain,
+      task,
+    })
+
+    // Transition to working after spawn
+    setTimeout(() => {
+      const current = useFleetStore.getState().activeInstances[instanceId]
+      if (current && current.status === FleetAgentStatus.Spawning) {
+        useFleetStore.getState().updateInstanceStatus(instanceId, FleetAgentStatus.Working)
+      }
+    }, 500)
+
+    return { success: true, instanceId }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error'
+    return { success: false, error: message }
+  }
 }
 
 // ─── Retire Agent ───────────────────────────────────────────────────
 
-export function retireAgent(instanceId: string): boolean {
-  const instance = useFleetStore.getState().activeInstances[instanceId]
-  if (!instance) return false
+export function retireAgent(instanceId: string): { success: boolean; error?: string } {
+  try {
+    const instance = useFleetStore.getState().activeInstances[instanceId]
+    if (!instance) return { success: false, error: 'Instance not found' }
 
-  // Mark as retiring
-  useFleetStore.getState().updateInstanceStatus(instanceId, FleetAgentStatus.Retiring)
+    // Mark as retiring
+    useFleetStore.getState().updateInstanceStatus(instanceId, FleetAgentStatus.Retiring)
 
-  // Stop autonomous loop
-  stopAutonomousLoop(instance.runtimeAgentId)
+    // Stop autonomous loop
+    stopAutonomousLoop(instance.runtimeAgentId)
 
-  // Retire in runtime store
-  useAgentRuntimeStore.getState().retireAgent(instance.runtimeAgentId)
+    // Retire in runtime store
+    useAgentRuntimeStore.getState().retireAgent(instance.runtimeAgentId)
 
-  // Remove from fleet after short delay
-  setTimeout(() => {
-    useFleetStore.getState().removeInstance(instanceId)
-  }, 1000)
+    // Remove from fleet after short delay
+    setTimeout(() => {
+      useFleetStore.getState().removeInstance(instanceId)
+    }, 1000)
 
-  // Emit event
-  eventBus.emit(EVENT_TYPES.FLEET_AGENT_RETIRED, {
-    instanceId,
-    registryId: instance.registryId,
-    domain: instance.domain,
-  })
+    // Emit event
+    eventBus.emit(EVENT_TYPES.FLEET_AGENT_RETIRED, {
+      instanceId,
+      registryId: instance.registryId,
+      domain: instance.domain,
+    })
 
-  return true
+    return { success: true }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error'
+    return { success: false, error: message }
+  }
 }
 
 // ─── Submit Task ────────────────────────────────────────────────────
@@ -220,34 +230,39 @@ export function submitTask(
   domain?: AgentDomain,
   priority?: TaskQueueItem['priority'],
   source?: TaskQueueItem['source'],
-): string {
-  const taskId = useFleetStore.getState().enqueueTask(
-    description,
-    domain ?? null,
-    priority ?? TaskPriority.Normal,
-    source ?? TaskSource.User,
-  )
+): { success: boolean; taskId?: string; error?: string } {
+  try {
+    const taskId = useFleetStore.getState().enqueueTask(
+      description,
+      domain ?? null,
+      priority ?? TaskPriority.Normal,
+      source ?? TaskSource.User,
+    )
 
-  // Try immediate routing
-  const task = useFleetStore.getState().taskQueue.find((t) => t.id === taskId)
-  if (task) {
-    const result = routeTask(task)
-    if (result.matched && result.agentTypeId) {
-      if (result.instanceId) {
-        useFleetStore.getState().routeTask(taskId, result.instanceId)
-        useFleetStore.getState().updateInstanceTask(result.instanceId, description)
-        useFleetStore.getState().startTask(taskId)
-      } else {
-        const instanceId = spawnAgent(result.agentTypeId, description)
-        if (instanceId) {
-          useFleetStore.getState().routeTask(taskId, instanceId)
+    // Try immediate routing
+    const task = useFleetStore.getState().taskQueue.find((t) => t.id === taskId)
+    if (task) {
+      const result = routeTask(task)
+      if (result.matched && result.agentTypeId) {
+        if (result.instanceId) {
+          useFleetStore.getState().routeTask(taskId, result.instanceId)
+          useFleetStore.getState().updateInstanceTask(result.instanceId, description)
           useFleetStore.getState().startTask(taskId)
+        } else {
+          const spawnResult = spawnAgent(result.agentTypeId, description)
+          if (spawnResult.instanceId) {
+            useFleetStore.getState().routeTask(taskId, spawnResult.instanceId)
+            useFleetStore.getState().startTask(taskId)
+          }
         }
       }
     }
-  }
 
-  return taskId
+    return { success: true, taskId }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error'
+    return { success: false, error: message }
+  }
 }
 
 // ─── Handle Channel Message ─────────────────────────────────────────
@@ -258,14 +273,14 @@ export function handleChannelMessage(
   _channelType: string,
 ): string | null {
   // Route to communication domain agents by default
-  const taskId = submitTask(
+  const result = submitTask(
     message,
     'communication' as AgentDomain,
     TaskPriority.High,
     TaskSource.Channel,
   )
 
-  return taskId
+  return result.taskId ?? null
 }
 
 // ─── Fleet Status ───────────────────────────────────────────────────

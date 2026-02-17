@@ -91,6 +91,7 @@ export interface ConnectorState {
   setConnectorStatus: (id: string, status: ConnectorDefinition['status']) => void
   getConnectedConnectors: () => ConnectorDefinition[]
   mockExecute: (connectorId: string, actionId: string, params: Record<string, unknown>) => string
+  execute: (connectorId: string, actionId: string, params: Record<string, unknown>) => Promise<string>
 }
 
 const useConnectorStore = create<ConnectorState>()(
@@ -143,6 +144,30 @@ const useConnectorStore = create<ConnectorState>()(
           result: `Mock result for ${action.name}`,
           timestamp: new Date().toISOString(),
         })
+      },
+
+      execute: async (connectorId, actionId, params) => {
+        const connector = get().connectors.find((c) => c.id === connectorId)
+        if (!connector) {
+          return JSON.stringify({ success: false, error: `Connector not found: ${connectorId}` })
+        }
+        if (connector.status !== 'connected') {
+          // Fall back to mock for disconnected connectors
+          return get().mockExecute(connectorId, actionId, params)
+        }
+
+        try {
+          const { getAdapter } = await import('../lib/connectorRuntime')
+          const adapter = getAdapter(connectorId)
+          const result = await adapter.execute(actionId, params)
+          if (result.success) {
+            return JSON.stringify(result.data)
+          }
+          // Fall back to mock on adapter failure
+          return get().mockExecute(connectorId, actionId, params)
+        } catch {
+          return get().mockExecute(connectorId, actionId, params)
+        }
       },
     }),
     {

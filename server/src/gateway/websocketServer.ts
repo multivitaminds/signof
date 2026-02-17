@@ -5,17 +5,31 @@ import type { Server } from 'http';
 import { handleChatMessage } from './messageHandler.js';
 import type { IncomingMessage } from './messageHandler.js';
 import { createSession, closeSession } from './sessionStore.js';
+import { logger } from '../lib/logger.js';
 
 interface WSMessage {
   event: string;
   data: Record<string, unknown>;
 }
 
+interface WsRateTracker {
+  count: number;
+  resetAt: number;
+}
+
+// Module-level reference for connection count queries
+let wssInstance: WebSocketServer | null = null;
+
 // Store current soul config in memory (updated via soul.update events)
 let currentSoulConfig: Record<string, unknown> | null = null;
 
 export function getCurrentSoulConfig(): Record<string, unknown> | null {
   return currentSoulConfig;
+}
+
+export function getWSConnectionCount(): number {
+  if (!wssInstance) return 0;
+  return wssInstance.clients.size;
 }
 
 function send(ws: WebSocket, event: string, data: unknown): void {
@@ -43,8 +57,14 @@ function parseMessage(raw: Buffer | ArrayBuffer | Buffer[]): WSMessage | null {
   }
 }
 
+const WS_CHAT_RATE_LIMIT = 10; // max chat.message events per minute
+const WS_CHAT_RATE_WINDOW = 60_000; // 1 minute
+
 export function createWebSocketServer(httpServer: Server): WebSocketServer {
   const wss = new WebSocketServer({ server: httpServer });
+  wssInstance = wss;
+  const authenticatedClients = new Set<WebSocket>();
+  const chatRateLimits = new Map<WebSocket, WsRateTracker>();
 
   // Heartbeat: 30s ping to keep connections alive
   const heartbeat = setInterval(() => {
@@ -60,8 +80,23 @@ export function createWebSocketServer(httpServer: Server): WebSocketServer {
   });
 
   wss.on('connection', (ws) => {
+    const apiKey = process.env.ORCHESTREE_API_KEY;
+
     // Send current gateway status on connect
     send(ws, 'gateway.status', { status: 'online', timestamp: Date.now() });
+
+    // Dev mode: if no API key configured, auto-authenticate
+    if (!apiKey) {
+      authenticatedClients.add(ws);
+    }
+
+    // Auth timeout: close connection if not authenticated within 5 seconds
+    const authTimer = !apiKey ? null : setTimeout(() => {
+      if (!authenticatedClients.has(ws)) {
+        send(ws, 'error', { message: 'Authentication timeout' });
+        ws.close(4001, 'Authentication timeout');
+      }
+    }, 5000);
 
     ws.on('message', (raw) => {
       const msg = parseMessage(raw);
@@ -70,19 +105,56 @@ export function createWebSocketServer(httpServer: Server): WebSocketServer {
         return;
       }
 
+      // Handle auth event
+      if (msg.event === 'auth') {
+        const token = (msg.data as Record<string, unknown>).token as string | undefined;
+        if (!apiKey || token === apiKey) {
+          authenticatedClients.add(ws);
+          if (authTimer) clearTimeout(authTimer);
+          send(ws, 'auth.success', { authenticated: true });
+        } else {
+          send(ws, 'error', { message: 'Invalid API key' });
+          ws.close(4003, 'Invalid API key');
+        }
+        return;
+      }
+
+      // Reject non-auth messages from unauthenticated clients
+      if (!authenticatedClients.has(ws)) {
+        send(ws, 'error', { message: 'Not authenticated. Send auth event first.' });
+        return;
+      }
+
+      // Rate limit chat.message events
+      if (msg.event === 'chat.message') {
+        const now = Date.now();
+        let tracker = chatRateLimits.get(ws);
+        if (!tracker || now >= tracker.resetAt) {
+          tracker = { count: 0, resetAt: now + WS_CHAT_RATE_WINDOW };
+          chatRateLimits.set(ws, tracker);
+        }
+        tracker.count++;
+        if (tracker.count > WS_CHAT_RATE_LIMIT) {
+          send(ws, 'error', { message: 'Rate limit exceeded for chat messages. Max 10 per minute.' });
+          return;
+        }
+      }
+
       handleEvent(ws, msg.event, msg.data).catch((err: unknown) => {
         const message = err instanceof Error ? err.message : 'Unknown error';
-        console.error(`[ws error] ${msg.event}:`, message);
+        logger.error('WebSocket event error', { event: msg.event, error: message });
         send(ws, 'error', { message });
       });
     });
 
     ws.on('close', () => {
-      // Client disconnected — nothing to clean up for now
+      authenticatedClients.delete(ws);
+      chatRateLimits.delete(ws);
+      if (authTimer) clearTimeout(authTimer);
     });
   });
 
-  console.log('[ws] WebSocket server attached');
+  logger.info('WebSocket server attached');
   return wss;
 }
 

@@ -15,6 +15,7 @@ const LIFECYCLE_COLORS: Record<string, string> = {
   [AgentLifecycle.Acting]: '#f59e0b',
   [AgentLifecycle.Waiting]: '#6b7280',
   [AgentLifecycle.Healing]: '#dc2626',
+  [AgentLifecycle.Paused]: '#d97706',
   [AgentLifecycle.Retired]: '#374151',
 }
 

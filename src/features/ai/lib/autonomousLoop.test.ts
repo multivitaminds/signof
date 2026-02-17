@@ -22,6 +22,7 @@ const {
   mockGetRepairsByAgent,
   mockGetConnector,
   mockMockExecute,
+  mockExecute,
   mockSyncChat,
   mockExecuteTool,
   mockTriggerWorkflow,
@@ -54,6 +55,7 @@ const {
   mockGetRepairsByAgent: vi.fn().mockReturnValue([]),
   mockGetConnector: vi.fn().mockReturnValue(undefined),
   mockMockExecute: vi.fn().mockReturnValue('{"success":true,"result":"mock"}'),
+  mockExecute: vi.fn().mockResolvedValue('{"success":true,"result":"mock"}'),
   mockSyncChat: vi.fn().mockResolvedValue(null),
   mockExecuteTool: vi.fn().mockReturnValue('{"success":true}'),
   mockTriggerWorkflow: vi.fn(),
@@ -183,6 +185,7 @@ vi.mock('../stores/useConnectorStore', () => {
     getState: vi.fn().mockReturnValue({
       getConnector: mockGetConnector,
       mockExecute: mockMockExecute,
+      execute: mockExecute,
     }),
   }
   return { default: mockStore }
@@ -420,7 +423,7 @@ describe('autonomousLoop', () => {
       expect(mockExecuteTool).toHaveBeenCalledWith('create_page', { title: 'Hello' })
     })
 
-    it('executes connector actions via mockExecute', async () => {
+    it('executes connector actions via execute', async () => {
       const plan = JSON.stringify([
         { type: 'connector', connectorId: 'gmail', actionId: 'gmail-send', params: { to: 'a@b.com' }, description: 'Send email' },
       ])
@@ -429,7 +432,7 @@ describe('autonomousLoop', () => {
       startAutonomousLoop('test-agent', 100)
       await vi.advanceTimersByTimeAsync(500)
 
-      expect(mockMockExecute).toHaveBeenCalledWith('gmail', 'gmail-send', { to: 'a@b.com' })
+      expect(mockExecute).toHaveBeenCalledWith('gmail', 'gmail-send', { to: 'a@b.com' })
     })
 
     it('executes workflow actions via triggerWorkflowFromAgent', async () => {

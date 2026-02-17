@@ -2,6 +2,7 @@
 
 import type { ToolDefinition, ChatRequest } from '../providers/index.js';
 import type { LLMProvider } from '../providers/index.js';
+import { getSkillHandler } from '../skills/index.js';
 
 interface SkillDef {
   id: string;
@@ -33,8 +34,19 @@ export async function executeToolCall(
   provider: LLMProvider,
   systemPrompt: string,
 ): Promise<string> {
-  const userInput = typeof input.input === 'string' ? input.input : JSON.stringify(input);
+  // Try real handler first
+  const handler = getSkillHandler(name);
+  if (handler) {
+    try {
+      return await handler.execute(input);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Skill execution failed';
+      return `Error executing ${name}: ${message}`;
+    }
+  }
 
+  // Fallback: re-prompt LLM (original behavior)
+  const userInput = typeof input.input === 'string' ? input.input : JSON.stringify(input);
   const request: ChatRequest = {
     messages: [
       {

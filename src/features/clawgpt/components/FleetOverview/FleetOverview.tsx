@@ -5,8 +5,17 @@ function formatCost(usd: number): string {
   return `$${usd.toFixed(2)}`
 }
 
+function formatTimeAgo(iso: string | null): string {
+  if (!iso) return ''
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
+  if (diff < 60) return `${diff}s ago`
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+  return `${Math.floor(diff / 3600)}h ago`
+}
+
 export default function FleetOverview() {
   const fleetMetrics = useFleetStore((s) => s.fleetMetrics)
+  const lastRefreshedAt = useFleetStore((s) => s.lastRefreshedAt)
 
   const stats = [
     { label: 'Total Registered', value: fleetMetrics.totalRegistered, variant: '' },
@@ -29,6 +38,9 @@ export default function FleetOverview() {
           </span>
         </div>
       ))}
+      {lastRefreshedAt && (
+        <span className="fleet-overview__updated">Updated {formatTimeAgo(lastRefreshedAt)}</span>
+      )}
     </div>
   )
 }

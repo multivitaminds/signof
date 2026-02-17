@@ -10,6 +10,7 @@ const ERROR_PATTERNS: Array<{ pattern: RegExp; type: string }> = [
   { pattern: /auth|unauthorized|forbidden|401|403|token|credential/i, type: 'auth' },
   { pattern: /validation|invalid|required|missing|schema|type error/i, type: 'validation' },
   { pattern: /rate.?limit|429|too many requests|throttl/i, type: 'rate-limit' },
+  { pattern: /provider.?error|provider.?unavailable|model.?not.?available|provider.?down/i, type: 'provider' },
   { pattern: /schema|mismatch|unexpected.?field|unknown.?property/i, type: 'schema-mismatch' },
   { pattern: /not.?found|404|does.?not.?exist/i, type: 'not-found' },
   { pattern: /permission|denied|access/i, type: 'permission' },
@@ -46,6 +47,8 @@ function getRepairStrategy(errorType: string): string {
       return 'Verify resource exists. Check ID/path. Create resource if appropriate.'
     case 'permission':
       return 'Check connector permissions. Request elevated access if needed.'
+    case 'provider':
+      return 'Mark provider as degraded. Switch to fallback provider if available.'
     case 'server-error':
       return 'Retry after brief delay. If persistent, use fallback connector or alternative approach.'
     default:
@@ -169,6 +172,18 @@ export async function attemptRepair(
           updated.status = RepairStatus.Failed
           updated.repairAction = 'Authentication refresh required — user action needed'
         }
+        break
+      }
+
+      case 'provider': {
+        // Mark current provider as degraded and suggest fallback
+        const providerConnectorId = record.context?.connectorId
+        if (providerConnectorId) {
+          useConnectorStore.getState().setConnectorStatus(providerConnectorId, 'error')
+        }
+        updated.status = RepairStatus.Resolved
+        updated.resolvedAt = new Date().toISOString()
+        updated.repairAction = 'Marked provider as degraded — agent should use fallback provider on next cycle'
         break
       }
 

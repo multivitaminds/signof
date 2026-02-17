@@ -45,6 +45,13 @@
   color: var(--color-primary);
 }
 
+.fleet-overview__updated {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  grid-column: 1 / -1;
+  text-align: right;
+}
+
 [data-theme="dark"] .fleet-overview__stat {
   background: var(--bg-secondary);
 }

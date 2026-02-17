@@ -75,6 +75,7 @@ export async function handleChatMessage(msg: IncomingMessage): Promise<{
   content: string;
   toolCalls?: string[];
   agentId?: string | null;
+  usage?: { inputTokens: number; outputTokens: number };
 }> {
   const providerResult = getDefaultProvider();
   if (!providerResult) {
@@ -159,6 +160,7 @@ export async function handleChatMessage(msg: IncomingMessage): Promise<{
     return {
       content: followUp.content,
       toolCalls: executedToolCalls,
+      usage: followUp.usage,
     };
   }
 
@@ -172,5 +174,5 @@ export async function handleChatMessage(msg: IncomingMessage): Promise<{
     senderName: msg.soulConfig?.name ?? 'Assistant',
   });
 
-  return { content: response.content };
+  return { content: response.content, usage: response.usage };
 }

@@ -14,6 +14,8 @@ interface GatewayState {
   totalMessagesToday: number
   uptimeSince: string | null
   fleetMetrics: FleetMetrics | null
+  reconnectAttempts: number
+  maxReconnectAttempts: number
 
   startGateway: () => void
   stopGateway: () => void
@@ -36,6 +38,8 @@ export const useGatewayStore = create<GatewayState>()(
       totalMessagesToday: 0,
       uptimeSince: null,
       fleetMetrics: null,
+      reconnectAttempts: 0,
+      maxReconnectAttempts: 10,
 
       startGateway: () => {
         // Import dynamically to avoid circular dependency

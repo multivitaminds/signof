@@ -20,6 +20,7 @@ interface FleetState {
   taskQueue: TaskQueueItem[]
   fleetMetrics: FleetMetrics
   alerts: FleetAlert[]
+  lastRefreshedAt: string | null
 
   // Instance management
   addInstance: (instance: FleetAgentInstance) => void
@@ -68,6 +69,7 @@ export const useFleetStore = create<FleetState>()((_set, get) => ({
     avgTaskDurationMs: 0,
   },
   alerts: [],
+  lastRefreshedAt: null,
 
   addInstance: (instance) => {
     _set((s) => ({
@@ -327,6 +329,7 @@ export const useFleetStore = create<FleetState>()((_set, get) => ({
   refreshMetrics: (totalRegistered) => {
     const instances = Object.values(get().activeInstances)
     _set((s) => ({
+      lastRefreshedAt: new Date().toISOString(),
       fleetMetrics: {
         ...s.fleetMetrics,
         totalRegistered,

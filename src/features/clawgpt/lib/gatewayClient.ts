@@ -7,6 +7,7 @@ import type { SoulConfig, BrainMessage, Session, ChannelType } from '../types'
 
 let wsManager: WebSocketManager | null = null
 let cleanupHandlers: Array<() => void> = []
+let isFirstConnect = true
 
 export function connectGateway(): void {
   if (wsManager?.isConnected) return
@@ -19,12 +20,38 @@ export function connectGateway(): void {
     reconnectInterval: 3000,
     maxReconnectAttempts: 10,
     onOpen: () => {
+      // Send auth event if API key is configured
+      const apiKey = localStorage.getItem('orchestree_api_key')
+      if (apiKey) {
+        wsManager?.send('auth', { token: apiKey })
+      }
+
+      // On reconnect, mark stale 'sending' messages as 'failed'
+      if (!isFirstConnect) {
+        const msgStore = useMessageStore.getState()
+        const staleMessages = msgStore.messages.filter(
+          (m) => m.status === MessageStatus.Sending
+        )
+        if (staleMessages.length > 0) {
+          useMessageStore.setState((s) => ({
+            messages: s.messages.map((m) =>
+              m.status === MessageStatus.Sending
+                ? { ...m, status: MessageStatus.Failed }
+                : m
+            ),
+          }))
+        }
+      }
+
       useGatewayStore.setState({
         gatewayStatus: GatewayStatus.Online,
         uptimeSince: new Date().toISOString(),
+        reconnectAttempts: 0,
       })
       eventBus.emit(EVENT_TYPES.BRAIN_GATEWAY_STATUS, GatewayStatus.Online)
       loadSessionsFromServer()
+
+      isFirstConnect = false
     },
     onClose: () => {
       useGatewayStore.setState({
@@ -32,6 +59,14 @@ export function connectGateway(): void {
         uptimeSince: null,
       })
       eventBus.emit(EVENT_TYPES.BRAIN_GATEWAY_STATUS, GatewayStatus.Offline)
+    },
+    onReconnecting: (attempt: number, maxAttempts: number) => {
+      useGatewayStore.setState({
+        gatewayStatus: GatewayStatus.Degraded,
+        reconnectAttempts: attempt,
+        maxReconnectAttempts: maxAttempts,
+      })
+      eventBus.emit(EVENT_TYPES.BRAIN_GATEWAY_STATUS, GatewayStatus.Degraded)
     },
     onError: () => {
       useGatewayStore.setState({ gatewayStatus: GatewayStatus.Degraded })
@@ -162,16 +197,25 @@ export function isGatewayConnected(): boolean {
   return wsManager?.isConnected ?? false
 }
 
+function getAuthHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {}
+  const apiKey = localStorage.getItem('orchestree_api_key')
+  if (apiKey) {
+    headers['Authorization'] = `Bearer ${apiKey}`
+  }
+  return headers
+}
+
 async function loadSessionsFromServer(): Promise<void> {
   try {
-    const res = await fetch('/api/sessions')
+    const res = await fetch('/api/sessions', { headers: getAuthHeaders() })
     const data = (await res.json()) as { sessions: Session[] }
     if (data.sessions?.length > 0) {
       useGatewayStore.setState({ activeSessions: data.sessions })
     }
     // Load messages for each session
     for (const session of data.sessions ?? []) {
-      const msgRes = await fetch(`/api/sessions/${session.id}/messages`)
+      const msgRes = await fetch(`/api/sessions/${session.id}/messages`, { headers: getAuthHeaders() })
       const msgData = (await msgRes.json()) as { messages: BrainMessage[] }
       if (msgData.messages?.length > 0) {
         useMessageStore.setState((s) => ({

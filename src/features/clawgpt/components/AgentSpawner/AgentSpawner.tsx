@@ -8,6 +8,7 @@ interface AgentSpawnerProps {
   onClose: () => void
   onSpawn: (registryId: string, task: string) => void
   preselectedRegistryId?: string
+  isSpawning?: boolean
 }
 
 const DOMAIN_TABS: Array<{ value: AgentDomain | 'all'; label: string }> = [
@@ -27,7 +28,7 @@ const DOMAIN_TABS: Array<{ value: AgentDomain | 'all'; label: string }> = [
   { value: 'cross-module', label: 'Cross-Module' },
 ]
 
-export default function AgentSpawner({ isOpen, onClose, onSpawn, preselectedRegistryId }: AgentSpawnerProps) {
+export default function AgentSpawner({ isOpen, onClose, onSpawn, preselectedRegistryId, isSpawning }: AgentSpawnerProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [domainFilter, setDomainFilter] = useState<AgentDomain | 'all'>('all')
   const [selectedId, setSelectedId] = useState<string | null>(preselectedRegistryId ?? null)
@@ -202,9 +203,9 @@ export default function AgentSpawner({ isOpen, onClose, onSpawn, preselectedRegi
           <button
             className="agent-spawner__spawn-btn btn--primary"
             onClick={handleSpawn}
-            disabled={!effectiveSelectedId || !taskDescription.trim()}
+            disabled={!effectiveSelectedId || !taskDescription.trim() || isSpawning}
           >
-            Spawn Agent
+            {isSpawning ? 'Spawning...' : 'Spawn Agent'}
           </button>
         </div>
       </div>

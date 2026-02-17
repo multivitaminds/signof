@@ -22,8 +22,34 @@ export const EVENT_TYPES = {
 
 export type EventType = (typeof EVENT_TYPES)[keyof typeof EVENT_TYPES]
 
+// ─── Cross-Tab BroadcastChannel ────────────────────────────────────
+
+const CHANNEL_NAME = 'orchestree-eventbus'
+
+interface CrossTabMessage {
+  event: EventType
+  args: unknown[]
+}
+
 class EventBus {
   private handlers = new Map<string, Set<EventHandler>>()
+  private channel: BroadcastChannel | null = null
+  private receivingFromTab = false
+
+  constructor() {
+    if (typeof BroadcastChannel !== 'undefined') {
+      this.channel = new BroadcastChannel(CHANNEL_NAME)
+      this.channel.onmessage = (e: MessageEvent<CrossTabMessage>) => {
+        // Emit locally but guard against re-broadcasting
+        this.receivingFromTab = true
+        try {
+          this.handlers.get(e.data.event)?.forEach((h) => h(...e.data.args))
+        } finally {
+          this.receivingFromTab = false
+        }
+      }
+    }
+  }
 
   on(event: EventType, handler: EventHandler): () => void {
     if (!this.handlers.has(event)) this.handlers.set(event, new Set())
@@ -33,6 +59,15 @@ class EventBus {
 
   emit(event: EventType, ...args: unknown[]): void {
     this.handlers.get(event)?.forEach((h) => h(...args))
+
+    // Broadcast to other tabs unless this event originated from another tab
+    if (!this.receivingFromTab && this.channel) {
+      try {
+        this.channel.postMessage({ event, args } satisfies CrossTabMessage)
+      } catch {
+        // Serialization failure (e.g. non-cloneable args) — skip cross-tab
+      }
+    }
   }
 }
 

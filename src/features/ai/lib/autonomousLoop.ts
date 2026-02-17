@@ -19,7 +19,11 @@ import { countTokens } from './tokenCount'
 import { emitCycleStart, emitCycleEnd, emitAgentError } from '../../clawgpt/lib/fleetTelemetry'
 
 const DEFAULT_CYCLE_INTERVAL_MS = 30_000
+const MAX_CONSECUTIVE_FAILURES = 5
+const BACKOFF_BASE_MS = 1_000
+const BACKOFF_MAX_MS = 30_000
 const activeLoops = new Map<string, AbortController>()
+const consecutiveFailures = new Map<string, number>()
 
 // ─── Start Autonomous Loop ─────────────────────────────────────────
 
@@ -42,6 +46,7 @@ export function stopAutonomousLoop(agentId: string): void {
     controller.abort()
     activeLoops.delete(agentId)
   }
+  consecutiveFailures.delete(agentId)
 }
 
 export function isLoopRunning(agentId: string): boolean {
@@ -64,7 +69,7 @@ async function runLoop(
 
   while (!signal.aborted) {
     const currentAgent = useAgentRuntimeStore.getState().getAgent(agentId)
-    if (!currentAgent || currentAgent.lifecycle === 'retired') {
+    if (!currentAgent || currentAgent.lifecycle === 'retired' || currentAgent.lifecycle === 'paused') {
       break
     }
 
@@ -108,12 +113,34 @@ async function runLoop(
       addStep(agentId, 'reflect', 'Cycle completed successfully', Date.now() - reflectStart)
       emitCycleEnd(agentId, 'reflect', Date.now() - reflectStart)
 
+      // Reset consecutive failure counter on success
+      consecutiveFailures.set(agentId, 0)
+
     } catch (error: unknown) {
       // 6. HEAL — self-healing on error
       useAgentRuntimeStore.getState().setLifecycle(agentId, AgentLifecycle.Healing)
       useAgentRuntimeStore.getState().incrementErrorCount(agentId)
       emitAgentError(agentId, 'cycle_error', error instanceof Error ? error.message : String(error))
       await heal(agentId, error)
+
+      // Track consecutive failures for graceful degradation
+      const failures = (consecutiveFailures.get(agentId) ?? 0) + 1
+      consecutiveFailures.set(agentId, failures)
+
+      if (failures >= MAX_CONSECUTIVE_FAILURES) {
+        // Pause agent after too many consecutive failures
+        useAgentRuntimeStore.getState().setLifecycle(agentId, AgentLifecycle.Paused)
+        addStep(agentId, 'reflect', `Paused after ${failures} consecutive failures — manual restart required`, 0)
+        emitAgentError(agentId, 'auto_paused', `Agent paused after ${failures} consecutive LLM failures`)
+        activeLoops.delete(agentId)
+        consecutiveFailures.delete(agentId)
+        return
+      }
+
+      // Exponential backoff between retries
+      const backoffMs = Math.min(BACKOFF_BASE_MS * 2 ** (failures - 1), BACKOFF_MAX_MS)
+      addStep(agentId, 'reflect', `Backing off ${Math.round(backoffMs / 1000)}s after failure ${failures}/${MAX_CONSECUTIVE_FAILURES}`, 0)
+      await sleep(backoffMs, signal)
     }
 
     // 7. WAIT — configurable interval
@@ -176,7 +203,7 @@ async function reason(agentId: string, observations: string): Promise<string> {
   useCostTrackingStore.getState().recordUsage(
     agentId, 'llm', 'reason',
     { inputTokens, outputTokens, totalTokens: inputTokens + outputTokens },
-    (inputTokens * 0.003 + outputTokens * 0.015) / 1000,
+    (inputTokens * 0.003 + outputTokens * 0.015) / 1000, // TODO: Use real pricing from server response
   )
 
   return result ?? 'No reasoning available — LLM may be in demo mode.'
@@ -236,7 +263,7 @@ Respond ONLY with the JSON array, no markdown fences or explanation.`
   useCostTrackingStore.getState().recordUsage(
     agentId, 'llm', 'plan',
     { inputTokens: planInputTokens, outputTokens: planOutputTokens, totalTokens: planInputTokens + planOutputTokens },
-    (planInputTokens * 0.003 + planOutputTokens * 0.015) / 1000,
+    (planInputTokens * 0.003 + planOutputTokens * 0.015) / 1000, // TODO: Use real pricing from server response
   )
 
   if (!result) {
@@ -327,7 +354,7 @@ async function act(agentId: string, plan: string): Promise<string> {
       switch (action.type) {
         case 'connector': {
           if (action.connectorId && action.actionId) {
-            const result = useConnectorStore.getState().mockExecute(
+            const result = await useConnectorStore.getState().execute(
               action.connectorId,
               action.actionId,
               action.params,

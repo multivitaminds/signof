@@ -162,6 +162,38 @@ export async function streamChat(
   }
 }
 
+// ─── Discriminated Result Types ─────────────────────────────────────
+
+export type LLMErrorType = 'server_down' | 'provider_error' | 'rate_limited' | 'timeout'
+
+export interface LLMSuccessResult {
+  status: 'success'
+  content: string | null
+  usage: { inputTokens: number; outputTokens: number } | null
+}
+
+export interface LLMErrorResult {
+  status: 'error'
+  errorType: LLMErrorType
+  message: string
+}
+
+export type LLMResult = LLMSuccessResult | LLMErrorResult
+
+function classifyHttpError(statusCode: number, message: string): LLMErrorType {
+  if (statusCode === 429) return 'rate_limited'
+  if (statusCode === 503 || statusCode === 502) return 'server_down'
+  if (statusCode >= 500) return 'provider_error'
+  if (message.includes('timeout') || message.includes('aborted')) return 'timeout'
+  return 'provider_error'
+}
+
+function classifyNetworkError(err: unknown): LLMErrorType {
+  const msg = err instanceof Error ? err.message.toLowerCase() : ''
+  if (msg.includes('timeout') || msg.includes('aborted')) return 'timeout'
+  return 'server_down'
+}
+
 // ─── syncChat ───────────────────────────────────────────────────────
 
 export async function syncChat(options: StreamChatOptions): Promise<string | null> {
@@ -189,6 +221,91 @@ export async function syncChat(options: StreamChatOptions): Promise<string | nul
     return data.text ?? null
   } catch {
     return null
+  }
+}
+
+// ─── syncChatSafe — returns discriminated result ────────────────────
+
+export async function syncChatSafe(options: StreamChatOptions): Promise<LLMResult> {
+  const config = getConfigFromStore()
+  const provider = options.provider ?? config.provider
+  const model = options.model ?? config.model
+
+  let response: Response
+  try {
+    response = await fetch('/api/chat/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: options.messages,
+        systemPrompt: options.systemPrompt,
+        provider,
+        model,
+        maxTokens: options.maxTokens,
+        tools: options.tools,
+      }),
+    })
+  } catch (err: unknown) {
+    return {
+      status: 'error',
+      errorType: classifyNetworkError(err),
+      message: err instanceof Error ? err.message : 'Network error',
+    }
+  }
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => '')
+    return {
+      status: 'error',
+      errorType: classifyHttpError(response.status, errorText),
+      message: `HTTP ${response.status}: ${errorText.slice(0, 200)}`,
+    }
+  }
+
+  const data: { text?: string } = await response.json()
+  return {
+    status: 'success',
+    content: data.text ?? null,
+    usage: null,
+  }
+}
+
+// ─── streamChatSafe — returns discriminated result ──────────────────
+
+export async function streamChatSafe(
+  options: StreamChatOptions,
+  callbacks: Omit<StreamChatCallbacks, 'onError'>,
+  signal?: AbortSignal,
+): Promise<LLMResult> {
+  let collectedText = ''
+  let error: LLMResult | null = null
+
+  await streamChat(
+    options,
+    {
+      onText: (text) => {
+        collectedText += text
+        callbacks.onText(text)
+      },
+      onToolUse: callbacks.onToolUse,
+      onError: (errMsg) => {
+        let errorType: LLMErrorType = 'provider_error'
+        if (errMsg === 'demo_mode' || errMsg.includes('503')) errorType = 'server_down'
+        else if (errMsg.includes('429')) errorType = 'rate_limited'
+        else if (errMsg === 'aborted' || errMsg.includes('timeout')) errorType = 'timeout'
+        error = { status: 'error', errorType, message: errMsg }
+      },
+      onDone: callbacks.onDone,
+    },
+    signal,
+  )
+
+  if (error) return error
+
+  return {
+    status: 'success',
+    content: collectedText || null,
+    usage: null,
   }
 }
 

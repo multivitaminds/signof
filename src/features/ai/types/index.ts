@@ -428,6 +428,7 @@ export const AgentLifecycle = {
   Acting: 'acting',
   Waiting: 'waiting',
   Healing: 'healing',
+  Paused: 'paused',
   Retired: 'retired',
 } as const
 

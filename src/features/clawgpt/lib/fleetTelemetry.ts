@@ -28,6 +28,47 @@ export interface FleetTelemetryEvent {
   timestamp: string
 }
 
+// ─── Batch Buffer for Server Persistence ────────────────────────────
+
+const FLUSH_INTERVAL_MS = 10_000
+let buffer: FleetTelemetryEvent[] = []
+let flushTimer: ReturnType<typeof setInterval> | null = null
+
+function flushBuffer(): void {
+  if (buffer.length === 0) return
+
+  const batch = buffer
+  buffer = []
+
+  // Fire-and-forget POST to the server
+  fetch('/api/telemetry/batch', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ events: batch }),
+  }).catch(() => {
+    // On failure, put events back for next flush attempt
+    buffer = batch.concat(buffer)
+  })
+}
+
+function ensureFlushTimer(): void {
+  if (flushTimer !== null) return
+  flushTimer = setInterval(flushBuffer, FLUSH_INTERVAL_MS)
+
+  // Flush on page unload
+  if (typeof window !== 'undefined') {
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden' && buffer.length > 0) {
+        const payload = JSON.stringify({ events: buffer })
+        buffer = []
+        if (typeof navigator.sendBeacon === 'function') {
+          navigator.sendBeacon('/api/telemetry/batch', new Blob([payload], { type: 'application/json' }))
+        }
+      }
+    })
+  }
+}
+
 // ─── Emit ───────────────────────────────────────────────────────────
 
 export function emitAgentEvent(
@@ -42,6 +83,10 @@ export function emitAgentEvent(
     timestamp: new Date().toISOString(),
   }
   eventBus.emit(EVENT_TYPES.FLEET_TELEMETRY, event)
+
+  // Buffer for server persistence
+  buffer.push(event)
+  ensureFlushTimer()
 }
 
 // ─── Convenience Emitters ───────────────────────────────────────────

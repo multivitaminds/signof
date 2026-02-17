@@ -83,11 +83,16 @@ vi.mock('../components/ActivityFeed/ActivityFeed', () => ({
   default: () => <div data-testid="activity-feed">ActivityFeed</div>,
 }))
 
+vi.mock('../components/ErrorBoundary/ErrorBoundary', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}))
+
 vi.mock('../lib/agentKernel', () => ({
   spawnAgent: vi.fn(),
   retireAgent: vi.fn(),
   submitTask: vi.fn(),
   startReconciliation: vi.fn(),
+  reconcile: vi.fn(),
 }))
 
 vi.mock('../../ai/lib/agentRegistry', () => ({

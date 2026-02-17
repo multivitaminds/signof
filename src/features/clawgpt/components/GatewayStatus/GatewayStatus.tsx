@@ -17,7 +17,7 @@ function formatUptime(since: string | null): string {
 }
 
 export default function GatewayStatus() {
-  const { gatewayStatus, uptimeSince, startGateway, stopGateway } =
+  const { gatewayStatus, uptimeSince, reconnectAttempts, maxReconnectAttempts, startGateway, stopGateway } =
     useGatewayStore()
 
   const isOnline = gatewayStatus === GatewayStatusType.Online
@@ -33,7 +33,9 @@ export default function GatewayStatus() {
   }, [isOnline, isDegraded, startGateway, stopGateway])
 
   const statusLabel = isConnecting && !isOnline
-    ? 'Connecting...'
+    ? reconnectAttempts > 0
+      ? `Reconnecting... (${reconnectAttempts}/${maxReconnectAttempts})`
+      : 'Connecting...'
     : gatewayStatus.charAt(0).toUpperCase() + gatewayStatus.slice(1)
 
   return (

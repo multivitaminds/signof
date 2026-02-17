@@ -36,9 +36,36 @@
   margin: 0;
 }
 
+.brain-dashboard__section-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.brain-dashboard__refresh-btn {
+  font-size: 0.875rem;
+  padding: var(--space-xs) var(--space-md);
+}
+
 .brain-dashboard__spawn-btn {
   font-size: 0.875rem;
   padding: var(--space-xs) var(--space-md);
+}
+
+.brain-dashboard__error {
+  position: fixed;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: color-mix(in srgb, var(--color-danger) 15%, var(--bg-secondary));
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  z-index: 100;
 }
 
 .brain-dashboard__alerts {

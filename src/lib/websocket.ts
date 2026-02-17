@@ -7,6 +7,7 @@ interface WebSocketConfig {
   onOpen?: () => void
   onClose?: () => void
   onError?: (error: Event) => void
+  onReconnecting?: (attempt: number, maxAttempts: number) => void
 }
 
 export class WebSocketManager {
@@ -43,9 +44,11 @@ export class WebSocketManager {
       this.config.onClose?.()
       if (!this.intentionalClose && this.reconnectCount < (this.config.maxReconnectAttempts ?? 10)) {
         this.reconnectCount++
+        const delay = Math.min(1000 * Math.pow(2, this.reconnectCount - 1), 30000) + Math.random() * 1000
+        this.config.onReconnecting?.(this.reconnectCount, this.config.maxReconnectAttempts ?? 10)
         this.reconnectTimer = window.setTimeout(() => {
           this.connect()
-        }, this.config.reconnectInterval ?? 3000)
+        }, delay)
       }
     }
 
@@ -92,6 +95,10 @@ export class WebSocketManager {
     return () => {
       this.handlers.get(event)?.delete(handler)
     }
+  }
+
+  get reconnectAttempts(): number {
+    return this.reconnectCount
   }
 
   get isConnected(): boolean {

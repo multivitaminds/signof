@@ -2,6 +2,7 @@ import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { getProvider, getDefaultProvider, getAllProviders } from '../providers/index.js';
 import type { ChatRequest } from '../providers/index.js';
+import { logger } from '../lib/logger.js';
 
 const router = Router();
 
@@ -51,7 +52,7 @@ router.post('/chat', (req: Request, res: Response) => {
   const resolved = resolveProvider(body.provider);
 
   if ('error' in resolved) {
-    res.status(resolved.status).json({ error: resolved.error });
+    res.status(resolved.status as number).json({ error: resolved.error });
     return;
   }
 
@@ -98,7 +99,7 @@ router.post('/chat', (req: Request, res: Response) => {
     .catch((err: unknown) => {
       if (controller.signal.aborted) return;
       const message = err instanceof Error ? err.message : 'Unknown streaming error';
-      console.error('[stream error]', message);
+      logger.error('Chat stream error', { error: message });
       if (!res.writableEnded) {
         res.write(`data: ${JSON.stringify({ type: 'error', error: message })}\n\n`);
         res.end();
@@ -117,7 +118,7 @@ router.post('/chat/sync', async (req: Request, res: Response) => {
   const resolved = resolveProvider(body.provider);
 
   if ('error' in resolved) {
-    res.status(resolved.status).json({ error: resolved.error });
+    res.status(resolved.status as number).json({ error: resolved.error });
     return;
   }
 
@@ -136,7 +137,7 @@ router.post('/chat/sync', async (req: Request, res: Response) => {
     res.json(result);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    console.error('[sync error]', message);
+    logger.error('Chat sync error', { error: message });
     res.status(500).json({ error: message });
   }
 });
