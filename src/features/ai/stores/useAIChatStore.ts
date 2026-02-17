@@ -193,6 +193,10 @@ const useAIChatStore = create<AIChatState>()(
         messages: state.messages,
         contextLabel: state.contextLabel,
       }),
+      merge: (persisted, current) => ({
+        ...current,
+        ...(persisted as { messages?: AIChatMessage[]; contextLabel?: string }),
+      }),
     }
   )
 )
