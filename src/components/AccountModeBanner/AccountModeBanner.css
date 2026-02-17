@@ -37,14 +37,14 @@
 /* ─── Demo Mode ───────────────────────────────────────── */
 
 .account-mode-banner--demo {
-  background: #D97706;
+  background: var(--color-warning, #D97706);
   color: #fff;
 }
 
 /* ─── Live Mode ───────────────────────────────────────── */
 
 .account-mode-banner--live {
-  background: #059669;
+  background: var(--color-success, #059669);
   color: #fff;
 }
 

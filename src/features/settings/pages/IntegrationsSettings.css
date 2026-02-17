@@ -101,3 +101,38 @@
   font-size: 0.6875rem;
   color: var(--text-muted, #9CA3AF);
 }
+
+/* ─── Dark mode ──────────────────────────────────── */
+
+[data-theme="dark"] .integrations-settings__title {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .integrations-settings__subtitle {
+  color: var(--text-secondary, #94A3B8);
+}
+
+[data-theme="dark"] .integrations-settings__card {
+  border-color: var(--border-color, #334155);
+  background: var(--bg-secondary, #1A1A2E);
+}
+
+[data-theme="dark"] .integrations-settings__card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .integrations-settings__card--connected {
+  background: rgba(5, 150, 105, 0.06);
+}
+
+[data-theme="dark"] .integrations-settings__card-icon {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .integrations-settings__card-name {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .integrations-settings__card-desc {
+  color: var(--text-secondary, #94A3B8);
+}

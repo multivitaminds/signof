@@ -133,3 +133,28 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.agent-chat__send-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ─── Dark mode ─────────────────────────────────────────────── */
+[data-theme="dark"] .agent-chat {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .agent-chat__header {
+  background-color: var(--bg-tertiary);
+  border-bottom-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .agent-chat__input-row {
+  background-color: var(--bg-tertiary);
+  border-top-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .agent-chat__input {
+  border-color: var(--border-color, #334155);
+}

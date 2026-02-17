@@ -24,6 +24,11 @@
   background: var(--bg-tertiary, #E5E7EB);
 }
 
+.role-permissions__toggle:focus-visible {
+  outline: 2px solid var(--color-primary, #4F46E5);
+  outline-offset: -2px;
+}
+
 .role-permissions__toggle-left {
   display: flex;
   align-items: center;
@@ -101,4 +106,40 @@
 
 [data-theme="dark"] .role-permissions__icon--x {
   color: var(--color-gray-600, #4B5563);
+}
+
+[data-theme="dark"] .role-permissions__toggle {
+  background: var(--bg-tertiary, #2D2D44);
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .role-permissions__toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .role-permissions__header {
+  background: var(--bg-tertiary, #2D2D44);
+  border-bottom-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .role-permissions__row {
+  border-bottom-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .role-permissions__row:hover {
+  background: var(--bg-secondary, #1A1A2E);
+}
+
+[data-theme="dark"] .role-permissions__label-col {
+  color: var(--text-primary, #F1F5F9);
+}
+
+/* ─── Responsive ────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .role-permissions__header,
+  .role-permissions__row {
+    grid-template-columns: 1fr repeat(4, 56px);
+    font-size: var(--text-xs, 0.75rem);
+    padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  }
 }

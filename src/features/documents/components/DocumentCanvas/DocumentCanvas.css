@@ -110,3 +110,13 @@
   transform: translateX(-50%);
   cursor: s-resize;
 }
+
+/* ─── Dark mode ──────────────────────────────────── */
+
+[data-theme="dark"] .document-canvas__field:hover {
+  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.4);
+}
+
+[data-theme="dark"] .document-canvas__field--selected {
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.5);
+}

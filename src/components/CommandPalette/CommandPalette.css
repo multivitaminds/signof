@@ -371,6 +371,14 @@
   background: var(--text-muted, #9CA3AF);
 }
 
+[data-theme="dark"] .command-palette__results::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .command-palette__results::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 /* ─── Responsive ────────────────────────────────────────────── */
 @media (max-width: 767px) {
   .command-palette__overlay {

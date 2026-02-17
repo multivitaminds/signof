@@ -132,7 +132,7 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
-  z-index: 40;
+  z-index: var(--z-dropdown, 10);
   padding: var(--space-xs);
   display: flex;
   flex-direction: column;
@@ -243,4 +243,28 @@
 .filter-bar__save-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.filter-bar__trigger:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.filter-bar__save-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ─── Dark mode ─────────────────────────────────────────────── */
+[data-theme="dark"] .filter-bar__dropdown {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .filter-bar__option:hover {
+  background: var(--bg-tertiary, #2D2D44);
+}
+
+[data-theme="dark"] .filter-bar__option-label {
+  color: var(--text-primary, #F1F5F9);
 }

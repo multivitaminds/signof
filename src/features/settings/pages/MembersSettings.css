@@ -512,3 +512,95 @@
   align-items: center;
   gap: var(--space-2, 0.5rem);
 }
+
+/* ─── Dark mode ─────────────────────────────────────────────── */
+[data-theme="dark"] .members-settings__title {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .members-settings__table {
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .members-settings__table-header {
+  background: var(--bg-tertiary, #2D2D44);
+  border-bottom-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .members-settings__table-body {
+  background: var(--bg-secondary, #1A1A2E);
+}
+
+[data-theme="dark"] .members-settings__row {
+  border-bottom-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .members-settings__row:hover {
+  background: var(--bg-tertiary, #2D2D44);
+}
+
+[data-theme="dark"] .members-settings__name {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .members-settings__actions-menu {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .members-settings__action-item {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .members-settings__action-item:hover {
+  background: var(--bg-tertiary, #2D2D44);
+}
+
+[data-theme="dark"] .members-settings__invites-section {
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .members-settings__section-title {
+  background: var(--bg-tertiary, #2D2D44);
+  border-bottom-color: var(--border-color, #334155);
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .members-settings__invites-list {
+  background: var(--bg-secondary, #1A1A2E);
+}
+
+[data-theme="dark"] .members-settings__invite-row {
+  border-bottom-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .members-settings__invite-email {
+  color: var(--text-primary, #F1F5F9);
+}
+
+/* ─── Responsive ────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .members-settings__header {
+    flex-direction: column;
+    gap: var(--space-3, 0.75rem);
+  }
+
+  .members-settings__table-header {
+    display: none;
+  }
+
+  .members-settings__row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2, 0.5rem);
+    padding: var(--space-3, 0.75rem);
+  }
+
+  .members-settings__col-member {
+    width: 100%;
+  }
+
+  .members-settings__col-actions {
+    justify-content: flex-start;
+  }
+}

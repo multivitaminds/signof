@@ -8,7 +8,7 @@
   border-bottom: 1px solid var(--border-color, #E5E7EB);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: var(--z-sticky, 20);
 }
 
 .topbar__left {
@@ -107,7 +107,7 @@
   border: 1px solid var(--border-color, #E5E7EB);
   border-radius: var(--radius-lg, 12px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
-  z-index: 60;
+  z-index: var(--z-popover, 60);
   padding: var(--space-1, 4px);
   animation: topbar-menu-fade-in 120ms ease-out;
 }

@@ -8,7 +8,7 @@
   flex-direction: column;
   gap: var(--space-3);
   cursor: pointer;
-  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+  transition: box-shadow var(--motion-fast, 150ms), border-color var(--motion-fast, 150ms);
 }
 
 .agent-card:hover {
@@ -90,7 +90,7 @@
 .agent-card__progress-fill {
   height: 100%;
   border-radius: var(--radius-full);
-  transition: width var(--transition-smooth);
+  transition: width var(--motion-smooth, 300ms);
 }
 
 .agent-card__actions {
@@ -109,10 +109,20 @@
   border-radius: var(--radius-sm);
   background: none;
   color: var(--text-secondary);
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  transition: background-color var(--motion-fast, 150ms), color var(--motion-fast, 150ms);
 }
 
 .agent-card__action-btn:hover {
   background-color: var(--bg-tertiary);
   color: var(--text-primary);
+}
+
+/* ─── Dark mode ─────────────────────────────────────────────── */
+[data-theme="dark"] .agent-card {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .agent-card--selected {
+  background-color: var(--bg-tertiary);
 }

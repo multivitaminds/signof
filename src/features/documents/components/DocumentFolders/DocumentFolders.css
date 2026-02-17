@@ -58,17 +58,19 @@
 }
 
 .document-folders__delete {
-  visibility: hidden;
+  opacity: 0;
   background: none;
   color: var(--text-muted);
   padding: 0 var(--space-1);
   font-size: var(--text-xs);
   border-radius: var(--radius-sm);
   flex-shrink: 0;
+  transition: opacity var(--motion-fast, 150ms) ease;
 }
 
-.document-folders__item:hover .document-folders__delete {
-  visibility: visible;
+.document-folders__item:hover .document-folders__delete,
+.document-folders__delete:focus-visible {
+  opacity: 1;
 }
 
 .document-folders__delete:hover {
@@ -125,6 +127,11 @@
 .document-folders__color-option--selected {
   border-color: var(--text-primary);
   box-shadow: 0 0 0 2px var(--bg-primary);
+}
+
+.document-folders__color-option:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .document-folders__new-actions {

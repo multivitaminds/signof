@@ -230,11 +230,11 @@
 }
 
 [data-theme="dark"] .mobile-nav__tab--active {
-  color: #A5B4FC;
+  color: var(--color-primary-light, #A5B4FC);
 }
 
 [data-theme="dark"] .mobile-nav__tab-indicator {
-  background: #A5B4FC;
+  background: var(--color-primary-light, #A5B4FC);
 }
 
 [data-theme="dark"] .mobile-nav__tab-dot {
@@ -273,6 +273,6 @@
 }
 
 [data-theme="dark"] .mobile-nav__more-item--active {
-  color: #A5B4FC;
+  color: var(--color-primary-light, #A5B4FC);
   background: rgba(79, 70, 229, 0.15);
 }

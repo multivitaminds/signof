@@ -40,7 +40,7 @@
   padding: var(--space-3);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  transition: background-color var(--motion-fast, 150ms);
   position: relative;
 }
 
@@ -99,7 +99,7 @@
 }
 
 .contact-list__delete {
-  display: none;
+  opacity: 0;
   position: absolute;
   right: var(--space-2);
   top: 50%;
@@ -110,10 +110,12 @@
   padding: var(--space-1);
   border-radius: var(--radius-sm);
   line-height: 1;
+  transition: opacity var(--motion-fast, 150ms) ease;
 }
 
-.contact-list__item:hover .contact-list__delete {
-  display: block;
+.contact-list__item:hover .contact-list__delete,
+.contact-list__delete:focus-visible {
+  opacity: 1;
 }
 
 .contact-list__delete:hover {

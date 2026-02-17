@@ -49,6 +49,16 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
+.recent-items__tab:focus-visible {
+  outline: 2px solid var(--color-primary, #4F46E5);
+  outline-offset: -2px;
+}
+
+.recent-items__item:focus-visible {
+  outline: 2px solid var(--color-primary, #4F46E5);
+  outline-offset: 2px;
+}
+
 /* ─── List ──────────────────────────────────────────────────── */
 .recent-items__list {
   display: flex;
