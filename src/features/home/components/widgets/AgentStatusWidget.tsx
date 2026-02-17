@@ -15,10 +15,10 @@ export default function AgentStatusWidget() {
     const active = instances.length
     const idle = instances.filter((i) => i.status === FleetAgentStatus.Idle).length
     const working = instances.filter((i) => i.status === FleetAgentStatus.Working).length
-    const lastCompleted = [...taskQueue]
+    const completedTasks = [...taskQueue]
       .filter((t) => t.status === 'completed')
       .sort((a, b) => (b.completedAt ?? '').localeCompare(a.completedAt ?? ''))
-      [0]
+    const lastCompleted = completedTasks[0]
     return { active, idle, working, lastCompleted }
   }, [activeInstances, taskQueue])
 

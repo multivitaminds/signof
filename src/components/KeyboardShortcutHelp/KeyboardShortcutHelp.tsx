@@ -121,7 +121,8 @@ export default function KeyboardShortcutHelp() {
     )
 
     return [...fromRegistry, ...fromFallback]
-  }, [shortcutHelpOpen]) // Re-read when modal opens
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Re-read registry when modal opens
+  }, [shortcutHelpOpen])
 
   // Filter shortcuts based on search query
   const filteredShortcuts = useMemo(() => {

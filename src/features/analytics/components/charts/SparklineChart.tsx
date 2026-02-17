@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import './SparklineChart.css'
 
 interface SparklineChartProps {
@@ -13,6 +14,8 @@ export default function SparklineChart({
   width = 120,
   height = 32,
 }: SparklineChartProps) {
+  const gradientId = `sparkline-grad-${useId().replace(/:/g, '')}`
+
   if (data.length < 2) {
     return <svg className="sparkline" width={width} height={height} aria-label="Sparkline chart" role="img" />
   }
@@ -34,8 +37,6 @@ export default function SparklineChart({
   const firstX = padding
   const lastX = padding + ((data.length - 1) / (data.length - 1)) * (width - padding * 2)
   const fillPoints = `${firstX},${height} ${polyline} ${lastX},${height}`
-
-  const gradientId = `sparkline-grad-${Math.random().toString(36).slice(2, 8)}`
 
   return (
     <svg

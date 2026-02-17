@@ -4,8 +4,8 @@ import { useKeyboardShortcuts } from './useKeyboardShortcuts'
 import {
   registerShortcut,
   unregisterShortcut,
-  ShortcutCategory,
 } from '../lib/shortcutRegistry'
+import type { ShortcutCategory } from '../lib/shortcutRegistry'
 import type { ShortcutConfig } from './useKeyboardShortcuts'
 
 export interface ModuleShortcutConfig {

@@ -41,40 +41,43 @@ export default function DonutChart({ segments, size = 200 }: DonutChartProps) {
   const radius = 70
   const strokeWidth = 24
 
-  let cumulativeAngle = -90 // Start from top
+  const pathData = segments.reduce<{ elements: React.ReactNode[]; cumAngle: number }>(
+    (acc, seg, i) => {
+      const angle = (seg.value / total) * 360
+      const startAngle = acc.cumAngle
+      const endAngle = acc.cumAngle + angle
 
-  const paths = segments.map((seg, i) => {
-    const angle = (seg.value / total) * 360
-    const startAngle = cumulativeAngle
-    const endAngle = cumulativeAngle + angle
-    cumulativeAngle = endAngle
+      const startRad = (startAngle * Math.PI) / 180
+      const endRad = (endAngle * Math.PI) / 180
 
-    const startRad = (startAngle * Math.PI) / 180
-    const endRad = (endAngle * Math.PI) / 180
+      const x1 = cx + radius * Math.cos(startRad)
+      const y1 = cy + radius * Math.sin(startRad)
+      const x2 = cx + radius * Math.cos(endRad)
+      const y2 = cy + radius * Math.sin(endRad)
 
-    const x1 = cx + radius * Math.cos(startRad)
-    const y1 = cy + radius * Math.sin(startRad)
-    const x2 = cx + radius * Math.cos(endRad)
-    const y2 = cy + radius * Math.sin(endRad)
+      const largeArc = angle > 180 ? 1 : 0
 
-    const largeArc = angle > 180 ? 1 : 0
+      const d = `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`
 
-    const d = `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`
+      acc.elements.push(
+        <path
+          key={seg.label}
+          d={d}
+          fill="none"
+          stroke={seg.color}
+          strokeWidth={hoveredIndex === i ? strokeWidth + 4 : strokeWidth}
+          strokeLinecap="butt"
+          className={`donut-chart__segment ${hoveredIndex === i ? 'donut-chart__segment--hovered' : ''}`}
+          onMouseEnter={() => handleMouseEnter(i)}
+          onMouseLeave={handleMouseLeave}
+        />
+      )
 
-    return (
-      <path
-        key={seg.label}
-        d={d}
-        fill="none"
-        stroke={seg.color}
-        strokeWidth={hoveredIndex === i ? strokeWidth + 4 : strokeWidth}
-        strokeLinecap="butt"
-        className={`donut-chart__segment ${hoveredIndex === i ? 'donut-chart__segment--hovered' : ''}`}
-        onMouseEnter={() => handleMouseEnter(i)}
-        onMouseLeave={handleMouseLeave}
-      />
-    )
-  })
+      return { elements: acc.elements, cumAngle: endAngle }
+    },
+    { elements: [], cumAngle: -90 }
+  )
+  const paths = pathData.elements
 
   return (
     <div className="donut-chart">

@@ -76,9 +76,10 @@ export default function QuickActionPalette({ isOpen, onClose }: Props) {
     ).length
   }, [query])
 
-  // Focus input when opened
+  // Focus input and reset state when opened
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional reset on open
       setQuery('')
       setSelectedIndex(0)
       setTimeout(() => inputRef.current?.focus(), 0)
@@ -87,6 +88,7 @@ export default function QuickActionPalette({ isOpen, onClose }: Props) {
 
   // Reset selection when results change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Reset index when list changes
     setSelectedIndex(0)
   }, [displayItems.length, query])
 

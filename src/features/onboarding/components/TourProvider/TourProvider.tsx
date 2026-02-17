@@ -82,7 +82,6 @@ export default function TourProvider() {
 
   useEffect(() => {
     if (!isActive || !currentStep) return
-    updatePosition()
 
     const observer = new ResizeObserver(updatePosition)
     observer.observe(document.body)
@@ -90,6 +89,7 @@ export default function TourProvider() {
     window.addEventListener('scroll', updatePosition, true)
     window.addEventListener('resize', updatePosition)
 
+    // ResizeObserver fires immediately on observe, triggering updatePosition
     return () => {
       observer.disconnect()
       window.removeEventListener('scroll', updatePosition, true)

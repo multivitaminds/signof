@@ -22,6 +22,7 @@ export default function AnalyticsDashboardPage() {
 
   // Call getMetrics directly from the store instance to avoid infinite re-render loops.
   // Using it via a Zustand selector would return a new array reference each time.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Re-compute when timeRange changes
   const metrics = useMemo(() => useAnalyticsStore.getState().getMetrics(), [timeRange])
 
   const handleTimeRangeChange = useCallback(

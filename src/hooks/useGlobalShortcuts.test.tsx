@@ -7,10 +7,10 @@ import { getAllShortcuts, clearRegistry } from '../lib/shortcutRegistry'
 
 // Mock react-router-dom navigation
 const mockNavigate = vi.fn()
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom')
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal()
   return {
-    ...actual,
+    ...(actual as Record<string, unknown>),
     useNavigate: () => mockNavigate,
   }
 })

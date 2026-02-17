@@ -36,9 +36,13 @@ function formatShortcut(shortcut: string): string {
     .toUpperCase()
 }
 
-export default function QuickActionItem({ action, query, isSelected, onExecute, onMouseEnter }: Props) {
-  const Icon = resolveIcon(action.icon)
+function renderIcon(iconName: string): React.ReactNode {
+  const Icon = resolveIcon(iconName)
+  if (!Icon) return null
+  return <Icon size={18} />
+}
 
+export default function QuickActionItem({ action, query, isSelected, onExecute, onMouseEnter }: Props) {
   const labelMatch = query ? fuzzyMatch(query, action.label) : null
   const segments = labelMatch
     ? highlightMatches(action.label, labelMatch.matchedIndices)
@@ -58,7 +62,7 @@ export default function QuickActionItem({ action, query, isSelected, onExecute, 
       type="button"
     >
       <div className="quick-action-item__icon">
-        {Icon ? <Icon size={18} /> : null}
+        {renderIcon(action.icon)}
       </div>
       <div className="quick-action-item__content">
         <span className="quick-action-item__label">

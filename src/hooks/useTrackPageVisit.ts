@@ -19,5 +19,5 @@ export function useTrackPageVisit(item?: TrackableItem) {
     if (item) {
       trackRecent({ ...item, path: location.pathname })
     }
-  }, [item?.id, location.pathname, trackRecent])
+  }, [item, location.pathname, trackRecent])
 }

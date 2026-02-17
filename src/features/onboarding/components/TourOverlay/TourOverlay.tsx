@@ -34,14 +34,13 @@ export default function TourOverlay({ targetSelector, onClickOutside }: TourOver
   }, [targetSelector])
 
   useEffect(() => {
-    updateRect()
-
     const observer = new ResizeObserver(updateRect)
     observer.observe(document.body)
 
     window.addEventListener('scroll', updateRect, true)
     window.addEventListener('resize', updateRect)
 
+    // Use ResizeObserver callback for initial measurement
     return () => {
       observer.disconnect()
       window.removeEventListener('scroll', updateRect, true)
