@@ -3,6 +3,12 @@ import {
   getNumericValue,
   extractionToW2Employee,
   extractionTo1099NecRecipient,
+  extractionTo1099MiscRecipient,
+  extractionTo1099IntRecipient,
+  extractionTo1099DivRecipient,
+  extractionTo1099RRecipient,
+  extractionTo1099KRecipient,
+  extractionTo1098Recipient,
   filingToBusinessData,
 } from './extractionToPayload'
 import type { ExtractionField, TaxFiling, ExtractionConfidence } from '../types'
@@ -256,5 +262,219 @@ describe('filingToBusinessData', () => {
     const result = filingToBusinessData(filing)
     expect(result.businessName).toBe('Alex     Smith')
     expect(result.contactName).toBe('Alex     Smith')
+  })
+})
+
+describe('extractionTo1099MiscRecipient', () => {
+  const miscFields: ExtractionField[] = [
+    makeField('Rents (Box 1)', '12000.00'),
+    makeField('Royalties (Box 2)', '3000.00'),
+    makeField('Other Income (Box 3)', '2000.00'),
+    makeField('Federal Income Tax Withheld', '500.00'),
+  ]
+
+  it('maps extraction fields to 1099-MISC recipient input', () => {
+    const result = extractionTo1099MiscRecipient(miscFields, makeFiling())
+    expect(result.rents).toBe(12000)
+    expect(result.royalties).toBe(3000)
+    expect(result.otherIncome).toBe(2000)
+    expect(result.federalTaxWithheld).toBe(500)
+  })
+
+  it('uses filing data for personal info', () => {
+    const result = extractionTo1099MiscRecipient(miscFields, makeFiling())
+    expect(result.tin).toBe('123456789')
+    expect(result.name).toBe('Jane Doe')
+    expect(result.address1).toBe('100 Main St')
+    expect(result.city).toBe('Springfield')
+  })
+
+  it('falls back to filing otherIncome when extraction is empty', () => {
+    const result = extractionTo1099MiscRecipient([], makeFiling({ otherIncome: 7500 }))
+    expect(result.otherIncome).toBe(7500)
+  })
+
+  it('returns correct structure shape', () => {
+    const result = extractionTo1099MiscRecipient([], makeFiling())
+    expect(result).toHaveProperty('tin')
+    expect(result).toHaveProperty('name')
+    expect(result).toHaveProperty('address1')
+    expect(result).toHaveProperty('city')
+    expect(result).toHaveProperty('state')
+    expect(result).toHaveProperty('zip')
+  })
+})
+
+describe('extractionTo1099IntRecipient', () => {
+  const intFields: ExtractionField[] = [
+    makeField('Interest Income (Box 1)', '1500.00'),
+    makeField('Early Withdrawal Penalty (Box 2)', '75.00'),
+    makeField('Interest on U.S. Bonds (Box 3)', '500.00'),
+    makeField('Federal Income Tax Withheld (Box 4)', '280.00'),
+  ]
+
+  it('maps extraction fields to 1099-INT recipient input', () => {
+    const result = extractionTo1099IntRecipient(intFields, makeFiling())
+    expect(result.interestIncome).toBe(1500)
+    expect(result.earlyWithdrawalPenalty).toBe(75)
+    expect(result.interestOnUSBonds).toBe(500)
+    expect(result.federalTaxWithheld).toBe(280)
+  })
+
+  it('uses filing data for personal info', () => {
+    const result = extractionTo1099IntRecipient(intFields, makeFiling())
+    expect(result.tin).toBe('123456789')
+    expect(result.name).toBe('Jane Doe')
+    expect(result.address1).toBe('100 Main St')
+  })
+
+  it('falls back to filing otherIncome when extraction has no interest', () => {
+    const result = extractionTo1099IntRecipient([], makeFiling({ otherIncome: 3000 }))
+    expect(result.interestIncome).toBe(3000)
+  })
+
+  it('handles empty extraction array', () => {
+    const result = extractionTo1099IntRecipient([], makeFiling())
+    expect(result.earlyWithdrawalPenalty).toBeUndefined()
+    expect(result.interestOnUSBonds).toBeUndefined()
+    expect(result.federalTaxWithheld).toBeUndefined()
+  })
+})
+
+describe('extractionTo1099DivRecipient', () => {
+  const divFields: ExtractionField[] = [
+    makeField('Ordinary Dividends (Box 1a)', '5000.00'),
+    makeField('Qualified Dividends (Box 1b)', '3000.00'),
+    makeField('Capital Gain Distributions (Box 2a)', '1200.00'),
+    makeField('Federal Income Tax Withheld (Box 4)', '700.00'),
+  ]
+
+  it('maps extraction fields to 1099-DIV recipient input', () => {
+    const result = extractionTo1099DivRecipient(divFields, makeFiling())
+    expect(result.ordinaryDividends).toBe(5000)
+    expect(result.qualifiedDividends).toBe(3000)
+    expect(result.capitalGainDistributions).toBe(1200)
+    expect(result.federalTaxWithheld).toBe(700)
+  })
+
+  it('uses filing data for personal info', () => {
+    const result = extractionTo1099DivRecipient(divFields, makeFiling())
+    expect(result.tin).toBe('123456789')
+    expect(result.name).toBe('Jane Doe')
+  })
+
+  it('falls back to filing otherIncome for ordinary dividends', () => {
+    const result = extractionTo1099DivRecipient([], makeFiling({ otherIncome: 2500 }))
+    expect(result.ordinaryDividends).toBe(2500)
+  })
+
+  it('handles empty extraction array', () => {
+    const result = extractionTo1099DivRecipient([], makeFiling())
+    expect(result.qualifiedDividends).toBeUndefined()
+    expect(result.capitalGainDistributions).toBeUndefined()
+    expect(result.federalTaxWithheld).toBeUndefined()
+  })
+})
+
+describe('extractionTo1099RRecipient', () => {
+  const rFields: ExtractionField[] = [
+    makeField('Gross Distribution (Box 1)', '50000.00'),
+    makeField('Taxable Amount (Box 2a)', '45000.00'),
+    makeField('Federal Income Tax Withheld (Box 4)', '10000.00'),
+    makeField('Distribution Code (Box 7)', '7'),
+  ]
+
+  it('maps extraction fields to 1099-R recipient input', () => {
+    const result = extractionTo1099RRecipient(rFields, makeFiling())
+    expect(result.grossDistribution).toBe(50000)
+    expect(result.taxableAmount).toBe(45000)
+    expect(result.federalTaxWithheld).toBe(10000)
+    expect(result.distributionCode).toBe('7')
+  })
+
+  it('uses filing data for personal info', () => {
+    const result = extractionTo1099RRecipient(rFields, makeFiling())
+    expect(result.tin).toBe('123456789')
+    expect(result.name).toBe('Jane Doe')
+  })
+
+  it('falls back to filing otherIncome for gross distribution', () => {
+    const result = extractionTo1099RRecipient([], makeFiling({ otherIncome: 20000 }))
+    expect(result.grossDistribution).toBe(20000)
+  })
+
+  it('handles empty extraction array', () => {
+    const result = extractionTo1099RRecipient([], makeFiling())
+    expect(result.taxableAmount).toBeUndefined()
+    expect(result.federalTaxWithheld).toBeUndefined()
+    expect(result.distributionCode).toBeUndefined()
+  })
+})
+
+describe('extractionTo1099KRecipient', () => {
+  const kFields: ExtractionField[] = [
+    makeField('Gross Amount (Box 1a)', '25000.00'),
+    makeField('Card Not Present Transactions (Box 1b)', '18000.00'),
+    makeField('Number of Payment Transactions (Box 2)', '350'),
+    makeField('Federal Income Tax Withheld (Box 4)', '5000.00'),
+  ]
+
+  it('maps extraction fields to 1099-K recipient input', () => {
+    const result = extractionTo1099KRecipient(kFields, makeFiling())
+    expect(result.grossAmount).toBe(25000)
+    expect(result.cardNotPresentTransactions).toBe(18000)
+    expect(result.numberOfPaymentTransactions).toBe(350)
+    expect(result.federalTaxWithheld).toBe(5000)
+  })
+
+  it('uses filing data for personal info', () => {
+    const result = extractionTo1099KRecipient(kFields, makeFiling())
+    expect(result.tin).toBe('123456789')
+    expect(result.name).toBe('Jane Doe')
+  })
+
+  it('falls back to filing otherIncome for gross amount', () => {
+    const result = extractionTo1099KRecipient([], makeFiling({ otherIncome: 15000 }))
+    expect(result.grossAmount).toBe(15000)
+  })
+
+  it('handles empty extraction array', () => {
+    const result = extractionTo1099KRecipient([], makeFiling())
+    expect(result.cardNotPresentTransactions).toBeUndefined()
+    expect(result.numberOfPaymentTransactions).toBeUndefined()
+    expect(result.federalTaxWithheld).toBeUndefined()
+  })
+})
+
+describe('extractionTo1098Recipient', () => {
+  const mortgageFields: ExtractionField[] = [
+    makeField('Mortgage Interest Received (Box 1)', '12000.00'),
+    makeField('Points Paid (Box 2)', '2500.00'),
+    makeField('Mortgage Insurance Premiums (Box 5)', '1200.00'),
+  ]
+
+  it('maps extraction fields to 1098 recipient input', () => {
+    const result = extractionTo1098Recipient(mortgageFields, makeFiling())
+    expect(result.mortgageInterestReceived).toBe(12000)
+    expect(result.pointsPaid).toBe(2500)
+    expect(result.mortgageInsurancePremiums).toBe(1200)
+  })
+
+  it('uses filing data for personal info', () => {
+    const result = extractionTo1098Recipient(mortgageFields, makeFiling())
+    expect(result.tin).toBe('123456789')
+    expect(result.name).toBe('Jane Doe')
+    expect(result.address1).toBe('100 Main St')
+  })
+
+  it('returns 0 for mortgage interest when no fields', () => {
+    const result = extractionTo1098Recipient([], makeFiling())
+    expect(result.mortgageInterestReceived).toBe(0)
+  })
+
+  it('handles empty extraction array', () => {
+    const result = extractionTo1098Recipient([], makeFiling())
+    expect(result.pointsPaid).toBeUndefined()
+    expect(result.mortgageInsurancePremiums).toBeUndefined()
   })
 })

@@ -141,3 +141,241 @@ export function filingToBusinessData(filing: TaxFiling): BusinessData {
     zip: filing.address.zip,
   }
 }
+
+// ─── 1099-MISC Recipient Mapping ─────────────────────────────────────────
+
+/** Input shape matching buildForm1099MiscPayload's recipients array items */
+export interface Misc1099RecipientInput {
+  tin: string
+  name: string
+  address1: string
+  address2?: string
+  city: string
+  state: string
+  zip: string
+  rents?: number
+  royalties?: number
+  otherIncome?: number
+  federalTaxWithheld?: number
+}
+
+/**
+ * Maps 1099-MISC extraction fields to the recipient input shape.
+ * Falls back to TaxFiling data for personal info when extraction is incomplete.
+ */
+export function extractionTo1099MiscRecipient(
+  fields: ExtractionField[],
+  filing: TaxFiling
+): Misc1099RecipientInput {
+  return {
+    tin: filing.ssn.replace(/[^\d]/g, ''),
+    name: `${filing.firstName} ${filing.lastName}`.trim(),
+    address1: filing.address.street,
+    address2: filing.address.apt || undefined,
+    city: filing.address.city,
+    state: filing.address.state,
+    zip: filing.address.zip,
+    rents: getNumericValue(fields, /rents.*box\s*1/i) || undefined,
+    royalties: getNumericValue(fields, /royalties.*box\s*2/i) || undefined,
+    otherIncome: getNumericValue(fields, /other\s*income.*box\s*3/i) || filing.otherIncome || undefined,
+    federalTaxWithheld: getNumericValue(fields, /federal\s*(income\s*)?tax\s*withheld/i) || undefined,
+  }
+}
+
+// ─── 1099-INT Recipient Mapping ──────────────────────────────────────────
+
+/** Input shape matching buildForm1099IntPayload's recipients array items */
+export interface Int1099RecipientInput {
+  tin: string
+  name: string
+  address1: string
+  address2?: string
+  city: string
+  state: string
+  zip: string
+  interestIncome: number
+  earlyWithdrawalPenalty?: number
+  interestOnUSBonds?: number
+  federalTaxWithheld?: number
+}
+
+/**
+ * Maps 1099-INT extraction fields to the recipient input shape.
+ * Falls back to TaxFiling data for personal info when extraction is incomplete.
+ */
+export function extractionTo1099IntRecipient(
+  fields: ExtractionField[],
+  filing: TaxFiling
+): Int1099RecipientInput {
+  return {
+    tin: filing.ssn.replace(/[^\d]/g, ''),
+    name: `${filing.firstName} ${filing.lastName}`.trim(),
+    address1: filing.address.street,
+    address2: filing.address.apt || undefined,
+    city: filing.address.city,
+    state: filing.address.state,
+    zip: filing.address.zip,
+    interestIncome: getNumericValue(fields, /interest\s*income.*box\s*1/i) || filing.otherIncome,
+    earlyWithdrawalPenalty: getNumericValue(fields, /early\s*withdrawal.*box\s*2/i) || undefined,
+    interestOnUSBonds: getNumericValue(fields, /interest.*u\.?s\.?\s*bonds.*box\s*3/i) || undefined,
+    federalTaxWithheld: getNumericValue(fields, /federal\s*(income\s*)?tax\s*withheld.*box\s*4/i) || undefined,
+  }
+}
+
+// ─── 1099-DIV Recipient Mapping ──────────────────────────────────────────
+
+/** Input shape matching buildForm1099DivPayload's recipients array items */
+export interface Div1099RecipientInput {
+  tin: string
+  name: string
+  address1: string
+  address2?: string
+  city: string
+  state: string
+  zip: string
+  ordinaryDividends: number
+  qualifiedDividends?: number
+  capitalGainDistributions?: number
+  federalTaxWithheld?: number
+}
+
+/**
+ * Maps 1099-DIV extraction fields to the recipient input shape.
+ * Falls back to TaxFiling data for personal info when extraction is incomplete.
+ */
+export function extractionTo1099DivRecipient(
+  fields: ExtractionField[],
+  filing: TaxFiling
+): Div1099RecipientInput {
+  return {
+    tin: filing.ssn.replace(/[^\d]/g, ''),
+    name: `${filing.firstName} ${filing.lastName}`.trim(),
+    address1: filing.address.street,
+    address2: filing.address.apt || undefined,
+    city: filing.address.city,
+    state: filing.address.state,
+    zip: filing.address.zip,
+    ordinaryDividends: getNumericValue(fields, /ordinary\s*dividends.*box\s*1a/i) || filing.otherIncome,
+    qualifiedDividends: getNumericValue(fields, /qualified\s*dividends.*box\s*1b/i) || undefined,
+    capitalGainDistributions: getNumericValue(fields, /capital\s*gain.*box\s*2a/i) || undefined,
+    federalTaxWithheld: getNumericValue(fields, /federal\s*(income\s*)?tax\s*withheld.*box\s*4/i) || undefined,
+  }
+}
+
+// ─── 1099-R Recipient Mapping ────────────────────────────────────────────
+
+/** Input shape matching buildForm1099RPayload's recipients array items */
+export interface R1099RecipientInput {
+  tin: string
+  name: string
+  address1: string
+  address2?: string
+  city: string
+  state: string
+  zip: string
+  grossDistribution: number
+  taxableAmount?: number
+  federalTaxWithheld?: number
+  distributionCode?: string
+}
+
+/**
+ * Maps 1099-R extraction fields to the recipient input shape.
+ * Falls back to TaxFiling data for personal info when extraction is incomplete.
+ */
+export function extractionTo1099RRecipient(
+  fields: ExtractionField[],
+  filing: TaxFiling
+): R1099RecipientInput {
+  return {
+    tin: filing.ssn.replace(/[^\d]/g, ''),
+    name: `${filing.firstName} ${filing.lastName}`.trim(),
+    address1: filing.address.street,
+    address2: filing.address.apt || undefined,
+    city: filing.address.city,
+    state: filing.address.state,
+    zip: filing.address.zip,
+    grossDistribution: getNumericValue(fields, /gross\s*distribution.*box\s*1/i) || filing.otherIncome,
+    taxableAmount: getNumericValue(fields, /taxable\s*amount.*box\s*2a/i) || undefined,
+    federalTaxWithheld: getNumericValue(fields, /federal\s*(income\s*)?tax\s*withheld.*box\s*4/i) || undefined,
+    distributionCode: getFieldValue(fields, /distribution\s*code.*box\s*7/i) || undefined,
+  }
+}
+
+// ─── 1099-K Recipient Mapping ────────────────────────────────────────────
+
+/** Input shape matching buildForm1099KPayload's recipients array items */
+export interface K1099RecipientInput {
+  tin: string
+  name: string
+  address1: string
+  address2?: string
+  city: string
+  state: string
+  zip: string
+  grossAmount: number
+  cardNotPresentTransactions?: number
+  numberOfPaymentTransactions?: number
+  federalTaxWithheld?: number
+}
+
+/**
+ * Maps 1099-K extraction fields to the recipient input shape.
+ * Falls back to TaxFiling data for personal info when extraction is incomplete.
+ */
+export function extractionTo1099KRecipient(
+  fields: ExtractionField[],
+  filing: TaxFiling
+): K1099RecipientInput {
+  return {
+    tin: filing.ssn.replace(/[^\d]/g, ''),
+    name: `${filing.firstName} ${filing.lastName}`.trim(),
+    address1: filing.address.street,
+    address2: filing.address.apt || undefined,
+    city: filing.address.city,
+    state: filing.address.state,
+    zip: filing.address.zip,
+    grossAmount: getNumericValue(fields, /gross\s*amount.*box\s*1a/i) || filing.otherIncome,
+    cardNotPresentTransactions: getNumericValue(fields, /card\s*not\s*present.*box\s*1b/i) || undefined,
+    numberOfPaymentTransactions: getNumericValue(fields, /number.*payment.*transactions.*box\s*2/i) || undefined,
+    federalTaxWithheld: getNumericValue(fields, /federal\s*(income\s*)?tax\s*withheld.*box\s*4/i) || undefined,
+  }
+}
+
+// ─── 1098 Recipient Mapping ──────────────────────────────────────────────
+
+/** Input shape matching buildForm1098Payload's recipients array items */
+export interface Mortgage1098RecipientInput {
+  tin: string
+  name: string
+  address1: string
+  address2?: string
+  city: string
+  state: string
+  zip: string
+  mortgageInterestReceived: number
+  pointsPaid?: number
+  mortgageInsurancePremiums?: number
+}
+
+/**
+ * Maps 1098 extraction fields to the recipient input shape.
+ * Falls back to TaxFiling data for personal info when extraction is incomplete.
+ */
+export function extractionTo1098Recipient(
+  fields: ExtractionField[],
+  filing: TaxFiling
+): Mortgage1098RecipientInput {
+  return {
+    tin: filing.ssn.replace(/[^\d]/g, ''),
+    name: `${filing.firstName} ${filing.lastName}`.trim(),
+    address1: filing.address.street,
+    address2: filing.address.apt || undefined,
+    city: filing.address.city,
+    state: filing.address.state,
+    zip: filing.address.zip,
+    mortgageInterestReceived: getNumericValue(fields, /mortgage\s*interest\s*received.*box\s*1/i),
+    pointsPaid: getNumericValue(fields, /points\s*paid.*box\s*2/i) || undefined,
+    mortgageInsurancePremiums: getNumericValue(fields, /mortgage\s*insurance.*box\s*5/i) || undefined,
+  }
+}

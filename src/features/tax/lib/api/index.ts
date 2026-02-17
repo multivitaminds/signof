@@ -23,6 +23,27 @@ export type { Form940Payload } from './form940Service'
 export { createForm1095cService, buildForm1095cPayload } from './form1095cService'
 export type { Form1095cPayload, Form1095cEmployee, Form1095cMonthlyInfo } from './form1095cService'
 
+export { createForm1099IntService, buildForm1099IntPayload } from './form1099IntService'
+export type { Form1099IntPayload, Form1099IntRecipient } from './form1099IntService'
+
+export { createForm1099DivService, buildForm1099DivPayload } from './form1099DivService'
+export type { Form1099DivPayload, Form1099DivRecipient } from './form1099DivService'
+
+export { createForm1099RService, buildForm1099RPayload } from './form1099RService'
+export type { Form1099RPayload, Form1099RRecipient } from './form1099RService'
+
+export { createForm1099KService, buildForm1099KPayload } from './form1099KService'
+export type { Form1099KPayload, Form1099KRecipient } from './form1099KService'
+
+export { createForm1098Service, buildForm1098Payload } from './form1098Service'
+export type { Form1098Payload, Form1098Recipient } from './form1098Service'
+
+export { createForm1098EService, buildForm1098EPayload } from './form1098EService'
+export type { Form1098EPayload, Form1098ERecipient } from './form1098EService'
+
+export { createForm1098TService, buildForm1098TPayload } from './form1098TService'
+export type { Form1098TPayload, Form1098TRecipient } from './form1098TService'
+
 // KYC services
 export { createKycService } from './kycService'
 export type { KycService, TinVerificationResult, AddressValidationResult, CorrectedAddress, AddressInput } from './kycService'

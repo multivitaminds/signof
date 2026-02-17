@@ -20,17 +20,54 @@ import {
   createBusinessService,
   createFormW2Service,
   createForm1099NecService,
+  createForm1099MiscService,
+  createForm1099IntService,
+  createForm1099DivService,
+  createForm1099RService,
+  createForm1099KService,
+  createForm1098Service,
+  createForm1098EService,
+  createForm1098TService,
+  createForm941Service,
+  createForm940Service,
+  createForm1095cService,
   buildFormW2Payload,
   buildForm1099NecPayload,
+  buildForm1099MiscPayload,
+  buildForm1099IntPayload,
+  buildForm1099DivPayload,
+  buildForm1099RPayload,
+  buildForm1099KPayload,
+  buildForm1098Payload,
+  buildForm1098EPayload,
+  buildForm1098TPayload,
   type FormService,
 } from '../lib/api'
 import type { FormW2Payload } from '../lib/api/formW2Service'
 import type { Form1099NecPayload } from '../lib/api/form1099NecService'
+import type { Form1099MiscPayload } from '../lib/api/form1099MiscService'
+import type { Form1099IntPayload } from '../lib/api/form1099IntService'
+import type { Form1099DivPayload } from '../lib/api/form1099DivService'
+import type { Form1099RPayload } from '../lib/api/form1099RService'
+import type { Form1099KPayload } from '../lib/api/form1099KService'
+import type { Form1098Payload } from '../lib/api/form1098Service'
+import type { Form1098EPayload } from '../lib/api/form1098EService'
+import type { Form1098TPayload } from '../lib/api/form1098TService'
+import type { Form941Payload } from '../lib/api/form941Service'
+import type { Form940Payload } from '../lib/api/form940Service'
+import type { Form1095cPayload } from '../lib/api/form1095cService'
 import {
   filingToBusinessData,
   extractionToW2Employee,
   extractionTo1099NecRecipient,
+  extractionTo1099MiscRecipient,
+  extractionTo1099IntRecipient,
+  extractionTo1099DivRecipient,
+  extractionTo1099RRecipient,
+  extractionTo1099KRecipient,
+  extractionTo1098Recipient,
 } from '../lib/extractionToPayload'
+import type { ExtractionField } from '../types'
 import { useTaxDocumentStore } from './useTaxDocumentStore'
 
 // ─── Pre-Filing Checklist ───────────────────────────────────────────────
@@ -169,8 +206,23 @@ function hasCredentials(config: TaxBanditConfig): boolean {
 //
 // Selects the right service factory and payload builder based on form type.
 
+type FormPipelineService =
+  | FormService<FormW2Payload>
+  | FormService<Form1099NecPayload>
+  | FormService<Form1099MiscPayload>
+  | FormService<Form1099IntPayload>
+  | FormService<Form1099DivPayload>
+  | FormService<Form1099RPayload>
+  | FormService<Form1099KPayload>
+  | FormService<Form1098Payload>
+  | FormService<Form1098EPayload>
+  | FormService<Form1098TPayload>
+  | FormService<Form941Payload>
+  | FormService<Form940Payload>
+  | FormService<Form1095cPayload>
+
 interface FormPipeline {
-  service: FormService<FormW2Payload> | FormService<Form1099NecPayload>
+  service: FormPipelineService
   formPath: string
 }
 
@@ -180,15 +232,121 @@ function getFormPipeline(
 ): FormPipeline | null {
   switch (formType) {
     case TaxFormTypeValues.W2:
-      return {
-        service: createFormW2Service(client),
-        formPath: 'FormW2',
-      }
+      return { service: createFormW2Service(client), formPath: 'FormW2' }
     case TaxFormTypeValues.NEC1099:
-      return {
-        service: createForm1099NecService(client),
-        formPath: 'Form1099NEC',
-      }
+      return { service: createForm1099NecService(client), formPath: 'Form1099NEC' }
+    case TaxFormTypeValues.MISC1099:
+      return { service: createForm1099MiscService(client), formPath: 'Form1099MISC' }
+    case TaxFormTypeValues.INT1099:
+      return { service: createForm1099IntService(client), formPath: 'Form1099INT' }
+    case TaxFormTypeValues.DIV1099:
+      return { service: createForm1099DivService(client), formPath: 'Form1099DIV' }
+    case TaxFormTypeValues.R1099:
+      return { service: createForm1099RService(client), formPath: 'Form1099R' }
+    case TaxFormTypeValues.K1099:
+      return { service: createForm1099KService(client), formPath: 'Form1099K' }
+    case TaxFormTypeValues.Mortgage1098:
+      return { service: createForm1098Service(client), formPath: 'Form1098' }
+    case TaxFormTypeValues.E1098:
+      return { service: createForm1098EService(client), formPath: 'Form1098E' }
+    case TaxFormTypeValues.T1098:
+      return { service: createForm1098TService(client), formPath: 'Form1098T' }
+    case TaxFormTypeValues.F941:
+      return { service: createForm941Service(client), formPath: 'Form941' }
+    case TaxFormTypeValues.F940:
+      return { service: createForm940Service(client), formPath: 'Form940' }
+    case TaxFormTypeValues.ACA1095C:
+      return { service: createForm1095cService(client), formPath: 'Form1095C' }
+    default:
+      return null
+  }
+}
+
+function buildPayloadForType(
+  formType: TaxFormType,
+  fields: ExtractionField[],
+  filing: TaxFiling,
+  businessId: string
+): unknown | null {
+  const year = filing.taxYear
+  switch (formType) {
+    case TaxFormTypeValues.W2:
+      return buildFormW2Payload({
+        taxYear: year,
+        businessId,
+        employees: [extractionToW2Employee(fields, filing)],
+      })
+    case TaxFormTypeValues.NEC1099:
+      return buildForm1099NecPayload({
+        taxYear: year,
+        businessId,
+        recipients: [extractionTo1099NecRecipient(fields, filing)],
+      })
+    case TaxFormTypeValues.MISC1099:
+      return buildForm1099MiscPayload({
+        taxYear: year,
+        businessId,
+        recipients: [extractionTo1099MiscRecipient(fields, filing)],
+      })
+    case TaxFormTypeValues.INT1099:
+      return buildForm1099IntPayload({
+        taxYear: year,
+        businessId,
+        recipients: [extractionTo1099IntRecipient(fields, filing)],
+      })
+    case TaxFormTypeValues.DIV1099:
+      return buildForm1099DivPayload({
+        taxYear: year,
+        businessId,
+        recipients: [extractionTo1099DivRecipient(fields, filing)],
+      })
+    case TaxFormTypeValues.R1099:
+      return buildForm1099RPayload({
+        taxYear: year,
+        businessId,
+        recipients: [extractionTo1099RRecipient(fields, filing)],
+      })
+    case TaxFormTypeValues.K1099:
+      return buildForm1099KPayload({
+        taxYear: year,
+        businessId,
+        recipients: [extractionTo1099KRecipient(fields, filing)],
+      })
+    case TaxFormTypeValues.Mortgage1098:
+      return buildForm1098Payload({
+        taxYear: year,
+        businessId,
+        recipients: [extractionTo1098Recipient(fields, filing)],
+      })
+    case TaxFormTypeValues.E1098:
+      return buildForm1098EPayload({
+        taxYear: year,
+        businessId,
+        recipients: [{
+          tin: filing.ssn.replace(/[^\d]/g, ''),
+          name: `${filing.firstName} ${filing.lastName}`.trim(),
+          address1: filing.address.street,
+          address2: filing.address.apt || undefined,
+          city: filing.address.city,
+          state: filing.address.state,
+          zip: filing.address.zip,
+          studentLoanInterest: filing.otherIncome,
+        }],
+      })
+    case TaxFormTypeValues.T1098:
+      return buildForm1098TPayload({
+        taxYear: year,
+        businessId,
+        recipients: [{
+          tin: filing.ssn.replace(/[^\d]/g, ''),
+          name: `${filing.firstName} ${filing.lastName}`.trim(),
+          address1: filing.address.street,
+          address2: filing.address.apt || undefined,
+          city: filing.address.city,
+          state: filing.address.state,
+          zip: filing.address.zip,
+        }],
+      })
     default:
       return null
   }
@@ -582,35 +740,19 @@ export const useTaxFilingStore = create<TaxFilingState>()(
           let tbSubmissionId: string
           let tbRecordId: string
 
-          if (pipeline && effectiveFormType === TaxFormTypeValues.W2) {
-            // W-2 path: use buildFormW2Payload with extraction bridge
-            const employeeInput = extractionToW2Employee(extractionFields, filing)
-            const payload = buildFormW2Payload({
-              taxYear: filing.taxYear,
-              businessId,
-              employees: [employeeInput],
-            })
-            const service = pipeline.service as FormService<FormW2Payload>
-            const result = await service.create(payload)
-            tbSubmissionId = result.submissionId
-            tbRecordId = result.recordId
-          } else if (pipeline && effectiveFormType === TaxFormTypeValues.NEC1099) {
-            // 1099-NEC path: use buildForm1099NecPayload with extraction bridge
-            const recipientInput = extractionTo1099NecRecipient(extractionFields, filing)
-            const payload = buildForm1099NecPayload({
-              taxYear: filing.taxYear,
-              businessId,
-              recipients: [recipientInput],
-            })
-            const service = pipeline.service as FormService<Form1099NecPayload>
+          const payload = buildPayloadForType(effectiveFormType, extractionFields, filing, businessId)
+
+          if (pipeline && payload) {
+            // Use form-specific pipeline with typed payload
+            const service = pipeline.service as FormService<unknown>
             const result = await service.create(payload)
             tbSubmissionId = result.submissionId
             tbRecordId = result.recordId
           } else {
             // Unsupported form type — use generic form service
-            const formPath = TAXBANDITS_FORM_PATHS[effectiveFormType] ?? 'FormW2'
+            const genericFormPath = TAXBANDITS_FORM_PATHS[effectiveFormType] ?? 'FormW2'
             const result = await client.fetch<{ SubmissionId: string; Records: Array<{ RecordId: string }> }>(
-              `${formPath}/Create`,
+              `${genericFormPath}/Create`,
               {
                 method: 'POST',
                 body: {

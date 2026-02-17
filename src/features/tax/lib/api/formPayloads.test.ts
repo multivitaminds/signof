@@ -4,6 +4,13 @@ import { buildFormW2Payload } from './formW2Service'
 import { buildForm941Payload } from './form941Service'
 import { buildForm940Payload } from './form940Service'
 import { buildForm1095cPayload } from './form1095cService'
+import { buildForm1099IntPayload } from './form1099IntService'
+import { buildForm1099DivPayload } from './form1099DivService'
+import { buildForm1099RPayload } from './form1099RService'
+import { buildForm1099KPayload } from './form1099KService'
+import { buildForm1098Payload } from './form1098Service'
+import { buildForm1098EPayload } from './form1098EService'
+import { buildForm1098TPayload } from './form1098TService'
 
 // ─── 1099-NEC Payload Builder ──────────────────────────────────────────────
 
@@ -498,5 +505,556 @@ describe('buildForm1095cPayload', () => {
     expect(individuals).toHaveLength(1)
     expect(individuals![0]!.SSN).toBe('999887777')
     expect(individuals![0]!.IsAllYearCovered).toBe(true)
+  })
+})
+
+// ─── 1099-INT Payload Builder ─────────────────────────────────────────────
+
+describe('buildForm1099IntPayload', () => {
+  it('builds a valid payload with interest income fields', () => {
+    const result = buildForm1099IntPayload({
+      taxYear: '2025',
+      businessId: 'biz-16',
+      recipients: [{
+        tin: '111-22-3333',
+        name: 'John Interest',
+        address1: '200 Bank St',
+        city: 'Boston',
+        state: 'MA',
+        zip: '02101',
+        interestIncome: 1500,
+      }],
+    })
+    expect(result.SubmissionManifest.TaxYear).toBe('2025')
+    expect(result.SubmissionManifest.IsFederalFiling).toBe(true)
+    expect(result.ReturnData[0]!.InterestIncome).toBe(1500)
+    expect(result.ReturnData[0]!.IsFederalTaxWithheld).toBe(false)
+    expect(result.ReturnData[0]!.FederalTaxWithheld).toBe(0)
+  })
+
+  it('strips non-digit characters from TIN', () => {
+    const result = buildForm1099IntPayload({
+      taxYear: '2025',
+      businessId: 'biz-17',
+      recipients: [{
+        tin: '555-66-7777',
+        name: 'Test',
+        address1: '1 St',
+        city: 'NY',
+        state: 'NY',
+        zip: '10001',
+        interestIncome: 100,
+      }],
+    })
+    expect(result.ReturnData[0]!.RecipientTIN).toBe('555667777')
+  })
+
+  it('handles optional fields', () => {
+    const result = buildForm1099IntPayload({
+      taxYear: '2025',
+      businessId: 'biz-18',
+      recipients: [{
+        tin: '111111111',
+        name: 'Test',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        interestIncome: 500,
+        earlyWithdrawalPenalty: 50,
+        interestOnUSBonds: 200,
+      }],
+    })
+    expect(result.ReturnData[0]!.EarlyWithdrawalPenalty).toBe(50)
+    expect(result.ReturnData[0]!.InterestOnUSBonds).toBe(200)
+  })
+
+  it('sets state filing and federal withholding flags', () => {
+    const result = buildForm1099IntPayload({
+      taxYear: '2025',
+      businessId: 'biz-19',
+      recipients: [{
+        tin: '222222222',
+        name: 'State Filer',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        interestIncome: 1000,
+        federalTaxWithheld: 280,
+        stateCode: 'CA',
+        stateIncome: 1000,
+      }],
+    })
+    expect(result.ReturnData[0]!.IsFederalTaxWithheld).toBe(true)
+    expect(result.ReturnData[0]!.FederalTaxWithheld).toBe(280)
+    expect(result.ReturnData[0]!.IsStateFiling).toBe(true)
+  })
+})
+
+// ─── 1099-DIV Payload Builder ─────────────────────────────────────────────
+
+describe('buildForm1099DivPayload', () => {
+  it('builds a valid payload with dividend fields', () => {
+    const result = buildForm1099DivPayload({
+      taxYear: '2025',
+      businessId: 'biz-20',
+      recipients: [{
+        tin: '333-44-5555',
+        name: 'Dividend Earner',
+        address1: '300 Wall St',
+        city: 'New York',
+        state: 'NY',
+        zip: '10005',
+        ordinaryDividends: 5000,
+        qualifiedDividends: 3000,
+      }],
+    })
+    expect(result.SubmissionManifest.TaxYear).toBe('2025')
+    expect(result.ReturnData[0]!.OrdinaryDividends).toBe(5000)
+    expect(result.ReturnData[0]!.QualifiedDividends).toBe(3000)
+  })
+
+  it('strips non-digit characters from TIN', () => {
+    const result = buildForm1099DivPayload({
+      taxYear: '2025',
+      businessId: 'biz-21',
+      recipients: [{
+        tin: '444-55-6666',
+        name: 'Test',
+        address1: '1 St',
+        city: 'NY',
+        state: 'NY',
+        zip: '10001',
+        ordinaryDividends: 100,
+      }],
+    })
+    expect(result.ReturnData[0]!.RecipientTIN).toBe('444556666')
+  })
+
+  it('handles optional capital gains distribution', () => {
+    const result = buildForm1099DivPayload({
+      taxYear: '2025',
+      businessId: 'biz-22',
+      recipients: [{
+        tin: '111111111',
+        name: 'Cap Gain',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        ordinaryDividends: 2000,
+        capitalGainDistributions: 800,
+      }],
+    })
+    expect(result.ReturnData[0]!.CapitalGainDistributions).toBe(800)
+  })
+
+  it('sets state filing flags when stateCode present', () => {
+    const result = buildForm1099DivPayload({
+      taxYear: '2025',
+      businessId: 'biz-23',
+      recipients: [{
+        tin: '222222222',
+        name: 'State Filer',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        ordinaryDividends: 1000,
+        stateCode: 'CA',
+      }],
+    })
+    expect(result.ReturnData[0]!.IsStateFiling).toBe(true)
+  })
+})
+
+// ─── 1099-R Payload Builder ──────────────────────────────────────────────
+
+describe('buildForm1099RPayload', () => {
+  it('builds a valid payload with retirement distribution fields', () => {
+    const result = buildForm1099RPayload({
+      taxYear: '2025',
+      businessId: 'biz-24',
+      recipients: [{
+        tin: '666-77-8888',
+        name: 'Retiree Smith',
+        address1: '400 Sunset Blvd',
+        city: 'Miami',
+        state: 'FL',
+        zip: '33101',
+        grossDistribution: 50000,
+        taxableAmount: 45000,
+      }],
+    })
+    expect(result.ReturnData[0]!.GrossDistribution).toBe(50000)
+    expect(result.ReturnData[0]!.TaxableAmount).toBe(45000)
+  })
+
+  it('strips non-digit characters from TIN', () => {
+    const result = buildForm1099RPayload({
+      taxYear: '2025',
+      businessId: 'biz-25',
+      recipients: [{
+        tin: '777-88-9999',
+        name: 'Test',
+        address1: '1 St',
+        city: 'NY',
+        state: 'NY',
+        zip: '10001',
+        grossDistribution: 1000,
+      }],
+    })
+    expect(result.ReturnData[0]!.RecipientTIN).toBe('777889999')
+  })
+
+  it('handles distribution code and IRA checkbox', () => {
+    const result = buildForm1099RPayload({
+      taxYear: '2025',
+      businessId: 'biz-26',
+      recipients: [{
+        tin: '111111111',
+        name: 'IRA Person',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        grossDistribution: 20000,
+        distributionCode: '7',
+        iraSepSimple: true,
+      }],
+    })
+    expect(result.ReturnData[0]!.DistributionCode).toBe('7')
+    expect(result.ReturnData[0]!.IRASEPSimple).toBe(true)
+  })
+
+  it('sets federal withholding flag correctly', () => {
+    const result = buildForm1099RPayload({
+      taxYear: '2025',
+      businessId: 'biz-27',
+      recipients: [{
+        tin: '222222222',
+        name: 'Withheld Person',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        grossDistribution: 30000,
+        federalTaxWithheld: 6000,
+      }],
+    })
+    expect(result.ReturnData[0]!.IsFederalTaxWithheld).toBe(true)
+    expect(result.ReturnData[0]!.FederalTaxWithheld).toBe(6000)
+  })
+})
+
+// ─── 1099-K Payload Builder ──────────────────────────────────────────────
+
+describe('buildForm1099KPayload', () => {
+  it('builds a valid payload with payment transaction fields', () => {
+    const result = buildForm1099KPayload({
+      taxYear: '2025',
+      businessId: 'biz-28',
+      recipients: [{
+        tin: '888-99-0000',
+        name: 'Online Seller',
+        address1: '500 Market St',
+        city: 'San Francisco',
+        state: 'CA',
+        zip: '94105',
+        grossAmount: 25000,
+        numberOfPaymentTransactions: 350,
+      }],
+    })
+    expect(result.ReturnData[0]!.GrossAmount).toBe(25000)
+    expect(result.ReturnData[0]!.NumberOfPaymentTransactions).toBe(350)
+  })
+
+  it('strips non-digit characters from TIN', () => {
+    const result = buildForm1099KPayload({
+      taxYear: '2025',
+      businessId: 'biz-29',
+      recipients: [{
+        tin: '999-00-1111',
+        name: 'Test',
+        address1: '1 St',
+        city: 'NY',
+        state: 'NY',
+        zip: '10001',
+        grossAmount: 5000,
+      }],
+    })
+    expect(result.ReturnData[0]!.RecipientTIN).toBe('999001111')
+  })
+
+  it('handles optional card not present and merchant code', () => {
+    const result = buildForm1099KPayload({
+      taxYear: '2025',
+      businessId: 'biz-30',
+      recipients: [{
+        tin: '111111111',
+        name: 'E-Commerce',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        grossAmount: 50000,
+        cardNotPresentTransactions: 40000,
+        merchantCategoryCode: '5734',
+      }],
+    })
+    expect(result.ReturnData[0]!.CardNotPresentTransactions).toBe(40000)
+    expect(result.ReturnData[0]!.MerchantCategoryCode).toBe('5734')
+  })
+
+  it('sets state filing flags when stateCode present', () => {
+    const result = buildForm1099KPayload({
+      taxYear: '2025',
+      businessId: 'biz-31',
+      recipients: [{
+        tin: '222222222',
+        name: 'State Filer',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        grossAmount: 10000,
+        stateCode: 'CA',
+        stateIncome: 10000,
+      }],
+    })
+    expect(result.ReturnData[0]!.IsStateFiling).toBe(true)
+    expect(result.ReturnData[0]!.StateCode).toBe('CA')
+  })
+})
+
+// ─── Form 1098 Payload Builder ───────────────────────────────────────────
+
+describe('buildForm1098Payload', () => {
+  it('builds a valid mortgage interest payload', () => {
+    const result = buildForm1098Payload({
+      taxYear: '2025',
+      businessId: 'biz-32',
+      recipients: [{
+        tin: '123-45-6789',
+        name: 'Homeowner Jones',
+        address1: '600 Home Ave',
+        city: 'Chicago',
+        state: 'IL',
+        zip: '60601',
+        mortgageInterestReceived: 12000,
+        pointsPaid: 2500,
+      }],
+    })
+    expect(result.SubmissionManifest.TaxYear).toBe('2025')
+    expect(result.ReturnData[0]!.MortgageInterestReceived).toBe(12000)
+    expect(result.ReturnData[0]!.PointsPaid).toBe(2500)
+  })
+
+  it('strips non-digit characters from TIN', () => {
+    const result = buildForm1098Payload({
+      taxYear: '2025',
+      businessId: 'biz-33',
+      recipients: [{
+        tin: '111-22-3333',
+        name: 'Test',
+        address1: '1 St',
+        city: 'NY',
+        state: 'NY',
+        zip: '10001',
+        mortgageInterestReceived: 8000,
+      }],
+    })
+    expect(result.ReturnData[0]!.RecipientTIN).toBe('111223333')
+  })
+
+  it('handles optional mortgage insurance and property fields', () => {
+    const result = buildForm1098Payload({
+      taxYear: '2025',
+      businessId: 'biz-34',
+      recipients: [{
+        tin: '111111111',
+        name: 'Full Details',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        mortgageInterestReceived: 15000,
+        mortgageInsurancePremiums: 1200,
+        outstandingPrincipal: 350000,
+        propertyAddress: '1 Main St, LA CA 90001',
+      }],
+    })
+    expect(result.ReturnData[0]!.MortgageInsurancePremiums).toBe(1200)
+    expect(result.ReturnData[0]!.OutstandingMortgagePrincipal).toBe(350000)
+    expect(result.ReturnData[0]!.PropertyAddress).toBe('1 Main St, LA CA 90001')
+  })
+
+  it('defaults IsFederalFiling to true', () => {
+    const result = buildForm1098Payload({
+      taxYear: '2025',
+      businessId: 'biz-35',
+      recipients: [{
+        tin: '222222222',
+        name: 'Test',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        mortgageInterestReceived: 5000,
+      }],
+    })
+    expect(result.SubmissionManifest.IsFederalFiling).toBe(true)
+    expect(result.SubmissionManifest.IsStateFiling).toBe(false)
+  })
+})
+
+// ─── Form 1098-E Payload Builder ─────────────────────────────────────────
+
+describe('buildForm1098EPayload', () => {
+  it('builds a valid student loan interest payload', () => {
+    const result = buildForm1098EPayload({
+      taxYear: '2025',
+      businessId: 'biz-36',
+      recipients: [{
+        tin: '444-55-6666',
+        name: 'Student Borrower',
+        address1: '700 Campus Dr',
+        city: 'Cambridge',
+        state: 'MA',
+        zip: '02139',
+        studentLoanInterest: 2500,
+      }],
+    })
+    expect(result.ReturnData[0]!.StudentLoanInterest).toBe(2500)
+  })
+
+  it('strips non-digit characters from TIN', () => {
+    const result = buildForm1098EPayload({
+      taxYear: '2025',
+      businessId: 'biz-37',
+      recipients: [{
+        tin: '555-66-7777',
+        name: 'Test',
+        address1: '1 St',
+        city: 'NY',
+        state: 'NY',
+        zip: '10001',
+        studentLoanInterest: 1000,
+      }],
+    })
+    expect(result.ReturnData[0]!.RecipientTIN).toBe('555667777')
+  })
+
+  it('defaults IsFederalFiling to true and IsStateFiling to false', () => {
+    const result = buildForm1098EPayload({
+      taxYear: '2025',
+      businessId: 'biz-38',
+      recipients: [{
+        tin: '111111111',
+        name: 'Test',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        studentLoanInterest: 500,
+      }],
+    })
+    expect(result.SubmissionManifest.IsFederalFiling).toBe(true)
+    expect(result.SubmissionManifest.IsStateFiling).toBe(false)
+  })
+
+  it('maps the single StudentLoanInterest field', () => {
+    const result = buildForm1098EPayload({
+      taxYear: '2024',
+      businessId: 'biz-39',
+      recipients: [{
+        tin: '222222222',
+        name: 'Single Field',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        studentLoanInterest: 3200,
+      }],
+    })
+    expect(result.ReturnData).toHaveLength(1)
+    expect(result.ReturnData[0]!.StudentLoanInterest).toBe(3200)
+    expect(result.ReturnHeader.Business.BusinessId).toBe('biz-39')
+  })
+})
+
+// ─── Form 1098-T Payload Builder ─────────────────────────────────────────
+
+describe('buildForm1098TPayload', () => {
+  it('builds a valid tuition statement payload', () => {
+    const result = buildForm1098TPayload({
+      taxYear: '2025',
+      businessId: 'biz-40',
+      recipients: [{
+        tin: '777-88-9999',
+        name: 'University Student',
+        address1: '800 College Ave',
+        city: 'Ann Arbor',
+        state: 'MI',
+        zip: '48104',
+        paymentsForTuition: 35000,
+        scholarshipsOrGrants: 10000,
+      }],
+    })
+    expect(result.ReturnData[0]!.PaymentsReceivedForTuition).toBe(35000)
+    expect(result.ReturnData[0]!.ScholarshipsOrGrants).toBe(10000)
+  })
+
+  it('strips non-digit characters from TIN', () => {
+    const result = buildForm1098TPayload({
+      taxYear: '2025',
+      businessId: 'biz-41',
+      recipients: [{
+        tin: '888-99-0000',
+        name: 'Test',
+        address1: '1 St',
+        city: 'NY',
+        state: 'NY',
+        zip: '10001',
+      }],
+    })
+    expect(result.ReturnData[0]!.RecipientTIN).toBe('888990000')
+  })
+
+  it('handles enrollment status flags', () => {
+    const result = buildForm1098TPayload({
+      taxYear: '2025',
+      businessId: 'biz-42',
+      recipients: [{
+        tin: '111111111',
+        name: 'Grad Student',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+        isHalfTime: true,
+        isGraduate: true,
+      }],
+    })
+    expect(result.ReturnData[0]!.IsHalfTime).toBe(true)
+    expect(result.ReturnData[0]!.IsGraduate).toBe(true)
+  })
+
+  it('defaults IsFederalFiling to true', () => {
+    const result = buildForm1098TPayload({
+      taxYear: '2025',
+      businessId: 'biz-43',
+      recipients: [{
+        tin: '222222222',
+        name: 'Test',
+        address1: '1 St',
+        city: 'LA',
+        state: 'CA',
+        zip: '90001',
+      }],
+    })
+    expect(result.SubmissionManifest.IsFederalFiling).toBe(true)
+    expect(result.SubmissionManifest.IsStateFiling).toBe(false)
   })
 })
