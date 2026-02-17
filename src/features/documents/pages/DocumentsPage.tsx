@@ -1,12 +1,25 @@
 import { useState, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { Download, Trash2, Send } from 'lucide-react'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
+import BulkActionBar from '../../../components/ui/BulkActionBar/BulkActionBar'
+import ExportDialog from '../../../components/ui/ExportDialog/ExportDialog'
+import SelectionCheckbox from '../../../components/ui/SelectionCheckbox/SelectionCheckbox'
 import { useDocumentStore } from '../../../stores/useDocumentStore'
 import { DocumentStatus, STATUS_LABELS } from '../../../types'
 import type { Document } from '../../../types'
+import type { BulkActionItem } from '../../../components/ui/BulkActionBar/BulkActionBar'
+import type { ExportColumn } from '../../../lib/exportUtils'
 import DocumentCopilotButton from '../components/DocumentCopilotButton/DocumentCopilotButton'
 import DocumentCopilotPanel from '../components/DocumentCopilotPanel/DocumentCopilotPanel'
 import './DocumentsPage.css'
+
+const EXPORT_COLUMNS: ExportColumn[] = [
+  { key: 'name', label: 'Name' },
+  { key: 'status', label: 'Status' },
+  { key: 'createdAt', label: 'Created' },
+  { key: 'signerCount', label: 'Signers' },
+]
 
 type ViewMode = 'grid' | 'list'
 type SortOption = 'newest' | 'oldest' | 'name-asc'
@@ -62,6 +75,8 @@ export default function DocumentsHubPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('newest')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [showExportDialog, setShowExportDialog] = useState(false)
+  const [exportScope, setExportScope] = useState<'all' | 'selected'>('all')
 
   const filteredDocs = useMemo(() => {
     let result = documents
@@ -119,6 +134,29 @@ export default function DocumentsHubPage() {
     return { signed, total: signers.length }
   }, [])
 
+  const handleOpenExport = useCallback((scope: 'all' | 'selected') => {
+    setExportScope(scope)
+    setShowExportDialog(true)
+  }, [])
+
+  const exportData = useMemo(() => {
+    const docsToExport = exportScope === 'selected'
+      ? filteredDocs.filter(d => selectedIds.has(d.id))
+      : filteredDocs
+    return docsToExport.map(d => ({
+      name: d.name,
+      status: STATUS_LABELS[d.status],
+      createdAt: new Date(d.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      signerCount: String(d.signers.length),
+    }))
+  }, [exportScope, filteredDocs, selectedIds])
+
+  const bulkActions: BulkActionItem[] = useMemo(() => [
+    { label: 'Delete Selected', icon: <Trash2 size={16} />, onClick: handleBulkDelete, variant: 'danger' as const },
+    { label: 'Send Selected', icon: <Send size={16} />, onClick: handleBulkSend },
+    { label: 'Export Selected', icon: <Download size={16} />, onClick: () => handleOpenExport('selected') },
+  ], [handleBulkDelete, handleBulkSend, handleOpenExport])
+
   return (
     <div className="docs-hub">
       {/* Header */}
@@ -154,6 +192,14 @@ export default function DocumentsHubPage() {
                 </svg>
               </button>
             </div>
+            <button
+              className="btn--outline docs-hub__export-btn"
+              onClick={() => handleOpenExport('all')}
+              aria-label="Export documents"
+            >
+              <Download size={16} />
+              Export
+            </button>
             <Link to="/documents/builder" className="btn-primary docs-hub__new-btn">
               New Document
             </Link>
@@ -218,14 +264,11 @@ export default function DocumentsHubPage() {
       </div>
 
       {/* Bulk Actions */}
-      {selectedIds.size > 0 && (
-        <div className="docs-hub__bulk-bar" role="toolbar" aria-label="Bulk actions">
-          <span className="docs-hub__bulk-count">{selectedIds.size} selected</span>
-          <button className="btn-danger docs-hub__bulk-btn" onClick={handleBulkDelete}>Delete</button>
-          <button className="btn-primary docs-hub__bulk-btn" onClick={handleBulkSend}>Send</button>
-          <button className="btn-secondary docs-hub__bulk-btn" onClick={() => setSelectedIds(new Set())}>Cancel</button>
-        </div>
-      )}
+      <BulkActionBar
+        selectedCount={selectedIds.size}
+        onDeselectAll={() => setSelectedIds(new Set())}
+        actions={bulkActions}
+      />
 
       {/* Document Grid/List */}
       {filteredDocs.length === 0 ? (
@@ -260,14 +303,11 @@ export default function DocumentsHubPage() {
                 className={`docs-hub__card ${selectedIds.has(doc.id) ? 'docs-hub__card--selected' : ''}`}
               >
                 <div className="docs-hub__card-header">
-                  <label className="docs-hub__card-check">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.has(doc.id)}
-                      onChange={() => toggleSelect(doc.id)}
-                      aria-label={`Select ${doc.name}`}
-                    />
-                  </label>
+                  <SelectionCheckbox
+                    checked={selectedIds.has(doc.id)}
+                    onChange={() => toggleSelect(doc.id)}
+                    ariaLabel={`Select ${doc.name}`}
+                  />
                   <span className={`docs-hub__badge ${getStatusClass(doc.status)}`}>
                     {STATUS_LABELS[doc.status]}
                   </span>
@@ -318,6 +358,14 @@ export default function DocumentsHubPage() {
       )}
       <DocumentCopilotButton />
       <DocumentCopilotPanel />
+
+      <ExportDialog
+        isOpen={showExportDialog}
+        onClose={() => setShowExportDialog(false)}
+        defaultFilename="documents"
+        data={exportData}
+        columns={EXPORT_COLUMNS}
+      />
     </div>
   )
 }

@@ -1,0 +1,209 @@
+.search-result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+  width: 100%;
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--motion-micro, 100ms) ease-out;
+}
+
+.search-result:hover,
+.search-result--selected {
+  background: var(--bg-secondary, #F3F4F6);
+}
+
+.search-result__icon {
+  flex-shrink: 0;
+  color: var(--text-secondary, #6B7280);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm, 6px);
+  background: var(--bg-tertiary, #F3F4F6);
+}
+
+.search-result--selected .search-result__icon {
+  color: var(--color-primary, #7C5CFC);
+  background: var(--color-primary-light, #EDE9FF);
+}
+
+.search-result__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.search-result__title {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--text-primary, #1F2937);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result__match {
+  background: rgba(124, 92, 252, 0.15);
+  color: var(--color-primary, #7C5CFC);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.search-result__description {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result__badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.search-result__badge--document {
+  background: rgba(79, 70, 229, 0.12);
+  color: #4F46E5;
+}
+
+.search-result__badge--page {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3B82F6;
+}
+
+.search-result__badge--issue {
+  background: rgba(139, 92, 246, 0.12);
+  color: #8B5CF6;
+}
+
+.search-result__badge--event {
+  background: rgba(5, 150, 105, 0.12);
+  color: #059669;
+}
+
+.search-result__badge--database {
+  background: rgba(217, 119, 6, 0.12);
+  color: #D97706;
+}
+
+.search-result__badge--contact {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0EA5E9;
+}
+
+.search-result__badge--invoice {
+  background: rgba(236, 72, 153, 0.12);
+  color: #EC4899;
+}
+
+.search-result__badge--agent {
+  background: rgba(233, 69, 96, 0.12);
+  color: #E94560;
+}
+
+.search-result__badge--tax {
+  background: rgba(220, 38, 38, 0.12);
+  color: #DC2626;
+}
+
+.search-result__badge--setting {
+  background: rgba(107, 114, 128, 0.12);
+  color: #6B7280;
+}
+
+.search-result__time {
+  flex-shrink: 0;
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #9CA3AF);
+  white-space: nowrap;
+}
+
+/* Dark mode */
+[data-theme="dark"] .search-result:hover,
+[data-theme="dark"] .search-result--selected {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .search-result__icon {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .search-result--selected .search-result__icon {
+  background: rgba(124, 92, 252, 0.2);
+}
+
+[data-theme="dark"] .search-result__title {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .search-result__match {
+  background: rgba(124, 92, 252, 0.3);
+  color: #A78BFA;
+}
+
+[data-theme="dark"] .search-result__badge--document {
+  background: rgba(129, 140, 248, 0.2);
+  color: #818CF8;
+}
+
+[data-theme="dark"] .search-result__badge--page {
+  background: rgba(96, 165, 250, 0.2);
+  color: #60A5FA;
+}
+
+[data-theme="dark"] .search-result__badge--issue {
+  background: rgba(167, 139, 250, 0.2);
+  color: #A78BFA;
+}
+
+[data-theme="dark"] .search-result__badge--event {
+  background: rgba(52, 211, 153, 0.2);
+  color: #34D399;
+}
+
+[data-theme="dark"] .search-result__badge--database {
+  background: rgba(251, 191, 36, 0.2);
+  color: #FBBF24;
+}
+
+[data-theme="dark"] .search-result__badge--contact {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38BDF8;
+}
+
+[data-theme="dark"] .search-result__badge--invoice {
+  background: rgba(244, 114, 182, 0.2);
+  color: #F472B6;
+}
+
+[data-theme="dark"] .search-result__badge--agent {
+  background: rgba(233, 69, 96, 0.2);
+  color: #F87171;
+}
+
+[data-theme="dark"] .search-result__badge--tax {
+  background: rgba(248, 113, 113, 0.2);
+  color: #F87171;
+}
+
+[data-theme="dark"] .search-result__badge--setting {
+  background: rgba(148, 163, 184, 0.2);
+  color: #94A3B8;
+}

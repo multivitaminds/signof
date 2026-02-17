@@ -1,0 +1,62 @@
+/* ─── SelectionCheckbox ───────────────────────────────────────────── */
+
+.selection-checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.selection-checkbox__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.selection-checkbox__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-sm, 4px);
+  background: var(--bg-primary, #FFFFFF);
+  color: #FFFFFF;
+  transition: background var(--motion-fast, 150ms) ease,
+              border-color var(--motion-fast, 150ms) ease;
+}
+
+.selection-checkbox__input:checked + .selection-checkbox__indicator,
+.selection-checkbox__input:indeterminate + .selection-checkbox__indicator {
+  background: var(--color-primary, #7C5CFC);
+  border-color: var(--color-primary, #7C5CFC);
+}
+
+.selection-checkbox__input:focus-visible + .selection-checkbox__indicator {
+  outline: 2px solid var(--color-primary, #7C5CFC);
+  outline-offset: 2px;
+}
+
+.selection-checkbox__indicator:hover {
+  border-color: var(--color-primary, #7C5CFC);
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────── */
+
+[data-theme="dark"] .selection-checkbox__indicator {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .selection-checkbox__input:checked + .selection-checkbox__indicator,
+[data-theme="dark"] .selection-checkbox__input:indeterminate + .selection-checkbox__indicator {
+  background: var(--color-primary, #7C5CFC);
+  border-color: var(--color-primary, #7C5CFC);
+}

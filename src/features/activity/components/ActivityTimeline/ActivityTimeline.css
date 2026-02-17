@@ -1,0 +1,111 @@
+.activity-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6, 24px);
+}
+
+/* ─── Date Separator ───────────────────────────────────────────── */
+
+.activity-timeline__date-separator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+}
+
+.activity-timeline__date-label {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-secondary, #64748B);
+  white-space: nowrap;
+}
+
+.activity-timeline__date-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-color, #E2E8F0);
+}
+
+/* ─── Items ────────────────────────────────────────────────────── */
+
+.activity-timeline__items {
+  display: flex;
+  flex-direction: column;
+  padding-left: var(--space-2, 8px);
+}
+
+.activity-timeline__item {
+  display: flex;
+  gap: var(--space-3, 12px);
+  position: relative;
+}
+
+/* ─── Connector (node + vertical line) ─────────────────────────── */
+
+.activity-timeline__connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 16px;
+  padding-top: 14px;
+}
+
+.activity-timeline__node {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full, 9999px);
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.activity-timeline__line {
+  width: 2px;
+  flex: 1;
+  min-height: 8px;
+  background: var(--color-gray-200, #E2E8F0);
+}
+
+.activity-timeline__item:last-child .activity-timeline__line {
+  background: transparent;
+}
+
+/* ─── Card Wrapper ─────────────────────────────────────────────── */
+
+.activity-timeline__card-wrapper {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: var(--space-2, 8px);
+}
+
+/* ─── Empty State ──────────────────────────────────────────────── */
+
+.activity-timeline__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8, 48px) var(--space-4, 16px);
+}
+
+.activity-timeline__empty-text {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted, #94A3B8);
+  margin: 0;
+}
+
+/* ─── Dark Mode ────────────────────────────────────────────────── */
+
+[data-theme="dark"] .activity-timeline__date-label {
+  color: var(--text-secondary, #94A3B8);
+}
+
+[data-theme="dark"] .activity-timeline__date-line {
+  background: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .activity-timeline__line {
+  background: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .activity-timeline__item:last-child .activity-timeline__line {
+  background: transparent;
+}

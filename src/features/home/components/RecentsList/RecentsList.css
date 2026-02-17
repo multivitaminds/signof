@@ -1,0 +1,137 @@
+/* ═══════════════════════════════════════════════════════════════
+   RecentsList — Sidebar recents section
+   ═══════════════════════════════════════════════════════════════ */
+
+.recents-list {
+  padding: 0;
+}
+
+.recents-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 4px 6px;
+}
+
+.recents-list__header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748B;
+}
+
+.recents-list__header-icon {
+  flex-shrink: 0;
+  color: #64748B;
+}
+
+.recents-list__title {
+  white-space: nowrap;
+}
+
+.recents-list__clear {
+  border: none;
+  background: transparent;
+  color: #64748B;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 150ms ease;
+}
+
+.recents-list__clear:hover {
+  background: rgba(220, 38, 38, 0.08);
+  color: #DC2626;
+}
+
+.recents-list__items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.recents-list__item {
+  position: relative;
+}
+
+.recents-list__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #94A3B8;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease;
+  text-align: left;
+}
+
+.recents-list__link:hover {
+  background: rgba(124, 92, 252, 0.08);
+  color: #E2E8F0;
+}
+
+.recents-list__icon {
+  flex-shrink: 0;
+  font-size: 0.875rem;
+  width: 20px;
+  text-align: center;
+}
+
+.recents-list__label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.recents-list__time {
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  color: #475569;
+}
+
+/* ─── Light mode ────────────────────────────────────────────── */
+[data-theme="light"] .recents-list__header-left {
+  color: #94A3B8;
+}
+
+[data-theme="light"] .recents-list__header-icon {
+  color: #94A3B8;
+}
+
+[data-theme="light"] .recents-list__clear {
+  color: #94A3B8;
+}
+
+[data-theme="light"] .recents-list__clear:hover {
+  background: rgba(220, 38, 38, 0.06);
+  color: #DC2626;
+}
+
+[data-theme="light"] .recents-list__link {
+  color: #64748B;
+}
+
+[data-theme="light"] .recents-list__link:hover {
+  background: rgba(10, 37, 64, 0.04);
+  color: #1A1A2E;
+}
+
+[data-theme="light"] .recents-list__time {
+  color: #94A3B8;
+}

@@ -1,62 +1,93 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { Search, ChevronDown, ChevronRight, X } from 'lucide-react'
 import { useAppStore } from '../../stores/useAppStore'
+import {
+  getAllShortcuts,
+  ShortcutCategory,
+} from '../../lib/shortcutRegistry'
+import type { RegisteredShortcut } from '../../lib/shortcutRegistry'
 import './KeyboardShortcutHelp.css'
 
 // ─── Types ─────────────────────────────────────────────────────────────
 
-type ShortcutSection = 'navigation' | 'editor' | 'actions' | 'global'
-
-interface ShortcutItem {
-  keys: string[]
-  label: string
-  section: ShortcutSection
-}
+type SectionId = ShortcutCategory
 
 interface SectionConfig {
-  id: ShortcutSection
+  id: SectionId
   title: string
 }
 
 // ─── Data ──────────────────────────────────────────────────────────────
 
 const SECTIONS: SectionConfig[] = [
-  { id: 'navigation', title: 'Navigation' },
-  { id: 'editor', title: 'Editor' },
-  { id: 'actions', title: 'Actions' },
-  { id: 'global', title: 'Global' },
+  { id: ShortcutCategory.Navigation, title: 'Navigation' },
+  { id: ShortcutCategory.Creation, title: 'Creation' },
+  { id: ShortcutCategory.Actions, title: 'Actions' },
+  { id: ShortcutCategory.View, title: 'View' },
 ]
 
-const SHORTCUTS: ShortcutItem[] = [
-  // Navigation
-  { keys: ['\u2318', 'K'], label: 'Search', section: 'navigation' },
-  { keys: ['\u2318', '/'], label: 'Shortcuts', section: 'navigation' },
-  { keys: ['G', 'H'], label: 'Home', section: 'navigation' },
-  { keys: ['G', 'P'], label: 'Projects', section: 'navigation' },
-  { keys: ['G', 'D'], label: 'Documents', section: 'navigation' },
-  { keys: ['G', 'W'], label: 'Workspace', section: 'navigation' },
-  { keys: ['G', 'S'], label: 'Scheduling', section: 'navigation' },
+// Fallback shortcuts for when registry is empty (e.g. tests that don't
+// initialize useGlobalShortcuts). These are displayed as a baseline.
+interface FallbackShortcut {
+  keys: string[]
+  label: string
+  section: SectionId
+}
 
-  // Editor
-  { keys: ['\u2318', 'B'], label: 'Bold', section: 'editor' },
-  { keys: ['\u2318', 'I'], label: 'Italic', section: 'editor' },
-  { keys: ['\u2318', 'U'], label: 'Underline', section: 'editor' },
-  { keys: ['\u2318', 'E'], label: 'Code', section: 'editor' },
-  { keys: ['\u2318', 'Shift', 'S'], label: 'Strikethrough', section: 'editor' },
-  { keys: ['/'], label: 'Slash commands', section: 'editor' },
-
-  // Actions
-  { keys: ['C'], label: 'New issue', section: 'actions' },
-  { keys: ['N'], label: 'New page', section: 'actions' },
-  { keys: ['\u2318', 'Enter'], label: 'Submit', section: 'actions' },
-  { keys: ['Delete'], label: 'Delete', section: 'actions' },
-  { keys: ['\u2318', 'D'], label: 'Duplicate', section: 'actions' },
-
-  // Global
-  { keys: ['\u2318', 'Shift', 'D'], label: 'Dark mode', section: 'global' },
-  { keys: ['Escape'], label: 'Close modal', section: 'global' },
-  { keys: ['?'], label: 'Help', section: 'global' },
+const FALLBACK_SHORTCUTS: FallbackShortcut[] = [
+  { keys: ['\u2318', 'K'], label: 'Search', section: ShortcutCategory.Navigation },
+  { keys: ['\u2318', '/'], label: 'Shortcuts', section: ShortcutCategory.View },
+  { keys: ['G', 'H'], label: 'Home', section: ShortcutCategory.Navigation },
+  { keys: ['G', 'P'], label: 'Projects', section: ShortcutCategory.Navigation },
+  { keys: ['G', 'D'], label: 'Documents', section: ShortcutCategory.Navigation },
+  { keys: ['G', 'W'], label: 'Workspace', section: ShortcutCategory.Navigation },
+  { keys: ['G', 'S'], label: 'Scheduling', section: ShortcutCategory.Navigation },
+  { keys: ['\u2318', 'B'], label: 'Bold', section: ShortcutCategory.Actions },
+  { keys: ['\u2318', 'I'], label: 'Italic', section: ShortcutCategory.Actions },
+  { keys: ['\u2318', 'U'], label: 'Underline', section: ShortcutCategory.Actions },
+  { keys: ['\u2318', 'E'], label: 'Code', section: ShortcutCategory.Actions },
+  { keys: ['\u2318', 'Shift', 'S'], label: 'Strikethrough', section: ShortcutCategory.Actions },
+  { keys: ['/'], label: 'Slash commands', section: ShortcutCategory.Actions },
+  { keys: ['C'], label: 'New issue', section: ShortcutCategory.Creation },
+  { keys: ['N'], label: 'New page', section: ShortcutCategory.Creation },
+  { keys: ['\u2318', 'Enter'], label: 'Submit', section: ShortcutCategory.Actions },
+  { keys: ['Delete'], label: 'Delete', section: ShortcutCategory.Actions },
+  { keys: ['\u2318', 'D'], label: 'Duplicate', section: ShortcutCategory.Actions },
+  { keys: ['\u2318', 'Shift', 'D'], label: 'Dark mode', section: ShortcutCategory.View },
+  { keys: ['Escape'], label: 'Close modal', section: ShortcutCategory.View },
+  { keys: ['?'], label: 'Help', section: ShortcutCategory.View },
 ]
+
+// ─── Helpers ───────────────────────────────────────────────────────────
+
+function isMac(): boolean {
+  if (typeof navigator !== 'undefined') {
+    if (navigator.platform) {
+      return navigator.platform.toUpperCase().includes('MAC')
+    }
+    return navigator.userAgent.toUpperCase().includes('MAC')
+  }
+  return false
+}
+
+/** Convert a 'mod+k' style key string to display keys array */
+function keysToDisplay(keys: string): string[] {
+  const mac = isMac()
+  return keys.split('+').map((part) => {
+    const lower = part.toLowerCase()
+    if (lower === 'mod') return mac ? '\u2318' : 'Ctrl'
+    if (lower === 'shift') return mac ? '\u21E7' : 'Shift'
+    if (lower === 'alt') return mac ? '\u2325' : 'Alt'
+    if (part.length === 1) return part.toUpperCase()
+    return part
+  })
+}
+
+interface DisplayShortcut {
+  keys: string[]
+  label: string
+  section: SectionId
+}
 
 // ─── Component ─────────────────────────────────────────────────────────
 
@@ -65,24 +96,47 @@ export default function KeyboardShortcutHelp() {
   const closeShortcutHelp = useAppStore((s) => s.closeShortcutHelp)
 
   const [searchQuery, setSearchQuery] = useState('')
-  const [collapsedSections, setCollapsedSections] = useState<Set<ShortcutSection>>(new Set())
+  const [collapsedSections, setCollapsedSections] = useState<Set<SectionId>>(new Set())
   const searchInputRef = useRef<HTMLInputElement>(null)
   const modalRef = useRef<HTMLDivElement>(null)
 
+  // Build display list from registry (with fallback)
+  const allShortcuts: DisplayShortcut[] = useMemo(() => {
+    const registered = getAllShortcuts()
+    if (registered.length === 0) {
+      return FALLBACK_SHORTCUTS
+    }
+
+    // Merge registry shortcuts and fallbacks, preferring registry
+    const fromRegistry: DisplayShortcut[] = registered.map((s: RegisteredShortcut) => ({
+      keys: s.chord ? keysToDisplay(s.chord) : keysToDisplay(s.keys),
+      label: s.label,
+      section: s.category,
+    }))
+
+    // Add fallback shortcuts whose labels aren't already covered by registry
+    const registeredLabels = new Set(fromRegistry.map((s) => s.label.toLowerCase()))
+    const fromFallback = FALLBACK_SHORTCUTS.filter(
+      (f) => !registeredLabels.has(f.label.toLowerCase())
+    )
+
+    return [...fromRegistry, ...fromFallback]
+  }, [shortcutHelpOpen]) // Re-read when modal opens
+
   // Filter shortcuts based on search query
   const filteredShortcuts = useMemo(() => {
-    if (!searchQuery.trim()) return SHORTCUTS
+    if (!searchQuery.trim()) return allShortcuts
     const query = searchQuery.toLowerCase()
-    return SHORTCUTS.filter(
+    return allShortcuts.filter(
       (shortcut) =>
         shortcut.label.toLowerCase().includes(query) ||
         shortcut.keys.some((key) => key.toLowerCase().includes(query))
     )
-  }, [searchQuery])
+  }, [searchQuery, allShortcuts])
 
   // Group filtered shortcuts by section
   const groupedShortcuts = useMemo(() => {
-    const groups = new Map<ShortcutSection, ShortcutItem[]>()
+    const groups = new Map<SectionId, DisplayShortcut[]>()
     for (const section of SECTIONS) {
       const items = filteredShortcuts.filter((s) => s.section === section.id)
       if (items.length > 0) {
@@ -95,7 +149,6 @@ export default function KeyboardShortcutHelp() {
   // Focus search input when modal opens
   useEffect(() => {
     if (!shortcutHelpOpen) return
-    // Delay reset + focus to after animation frame
     const timer = setTimeout(() => {
       setSearchQuery('')
       setCollapsedSections(new Set())
@@ -131,7 +184,7 @@ export default function KeyboardShortcutHelp() {
   )
 
   // Toggle section collapse
-  const toggleSection = useCallback((sectionId: ShortcutSection) => {
+  const toggleSection = useCallback((sectionId: SectionId) => {
     setCollapsedSections((prev) => {
       const next = new Set(prev)
       if (next.has(sectionId)) {
@@ -146,7 +199,6 @@ export default function KeyboardShortcutHelp() {
   // Handle search input change
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
-    // Expand all sections when searching
     setCollapsedSections(new Set())
   }, [])
 

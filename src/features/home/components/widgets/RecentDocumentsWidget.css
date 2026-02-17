@@ -1,0 +1,92 @@
+/* ─── RecentDocumentsWidget ──────────────────────────────────── */
+.recent-docs__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 4px);
+}
+
+.recent-docs__item {
+  border-radius: var(--radius-md, 8px);
+  transition: background var(--motion-fast, 150ms) ease;
+}
+
+.recent-docs__item:hover {
+  background: var(--bg-hover, rgba(124, 92, 252, 0.04));
+}
+
+.recent-docs__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  padding: var(--space-2, 8px) var(--space-2, 8px);
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.recent-docs__name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.recent-docs__badge {
+  display: inline-flex;
+  padding: 2px 8px;
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  border-radius: var(--radius-full, 9999px);
+  flex-shrink: 0;
+}
+
+.recent-docs__badge--draft {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.recent-docs__badge--pending {
+  background: var(--color-warning-light, #FEF3C7);
+  color: var(--color-warning-dark, #D9A620);
+}
+
+.recent-docs__badge--completed {
+  background: var(--color-success-light, #D1FAE5);
+  color: var(--color-success-dark, #05B588);
+}
+
+.recent-docs__badge--voided {
+  background: var(--color-danger-light, #FEE2E2);
+  color: var(--color-danger-dark, #E6442F);
+}
+
+.recent-docs__date {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.recent-docs__empty {
+  color: var(--text-muted);
+  font-size: var(--text-sm, 0.875rem);
+  text-align: center;
+  padding: var(--space-4, 16px) 0;
+  margin: 0;
+}
+
+.recent-docs__view-all {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 4px);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.recent-docs__view-all:hover {
+  text-decoration: underline;
+}

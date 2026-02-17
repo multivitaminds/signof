@@ -1,0 +1,173 @@
+/* ─── BulkActionBar (reusable UI) ────────────────────────────────── */
+
+.bulk-action-bar {
+  position: fixed;
+  bottom: var(--space-6, 2rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-toast, 80);
+  animation: bulk-action-bar--slide-up 200ms ease-out;
+}
+
+@keyframes bulk-action-bar--slide-up {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.bulk-action-bar__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  background: var(--bg-primary, #FFFFFF);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-xl, 16px);
+  box-shadow: var(--shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.12));
+}
+
+/* ─── Count ───────────────────────────────────────────────────── */
+
+.bulk-action-bar__count {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--color-primary, #7C5CFC);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── Divider ─────────────────────────────────────────────────── */
+
+.bulk-action-bar__divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-color, #E2E8F0);
+  flex-shrink: 0;
+}
+
+/* ─── Actions ─────────────────────────────────────────────────── */
+
+.bulk-action-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+}
+
+.bulk-action-bar__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--text-primary, #1E293B);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--motion-fast, 150ms) ease,
+              color var(--motion-fast, 150ms) ease;
+}
+
+.bulk-action-bar__btn:hover {
+  background: var(--bg-secondary, #F8FAFC);
+}
+
+.bulk-action-bar__btn--danger {
+  color: var(--color-danger, #FF4D35);
+}
+
+.bulk-action-bar__btn--danger:hover {
+  background: #FEF2F2;
+}
+
+.bulk-action-bar__btn-icon {
+  display: flex;
+  align-items: center;
+}
+
+/* ─── Deselect ────────────────────────────────────────────────── */
+
+.bulk-action-bar__deselect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  color: var(--text-muted, #717D8C);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--motion-fast, 150ms) ease,
+              color var(--motion-fast, 150ms) ease;
+}
+
+.bulk-action-bar__deselect:hover {
+  background: var(--bg-secondary, #F8FAFC);
+  color: var(--text-primary, #1E293B);
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────── */
+
+[data-theme="dark"] .bulk-action-bar__inner {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .bulk-action-bar__divider {
+  background: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .bulk-action-bar__btn {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .bulk-action-bar__btn:hover {
+  background: var(--bg-tertiary, #2D2D44);
+}
+
+[data-theme="dark"] .bulk-action-bar__btn--danger {
+  color: #F87171;
+}
+
+[data-theme="dark"] .bulk-action-bar__btn--danger:hover {
+  background: #450A0A;
+}
+
+[data-theme="dark"] .bulk-action-bar__deselect:hover {
+  background: var(--bg-tertiary, #2D2D44);
+  color: var(--text-primary, #F1F5F9);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .bulk-action-bar {
+    left: var(--space-4, 1rem);
+    right: var(--space-4, 1rem);
+    transform: none;
+  }
+
+  .bulk-action-bar__inner {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .bulk-action-bar__actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .bulk-action-bar__btn span:not(.bulk-action-bar__btn-icon) {
+    display: none;
+  }
+}

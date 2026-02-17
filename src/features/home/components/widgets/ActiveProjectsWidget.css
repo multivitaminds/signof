@@ -1,0 +1,98 @@
+/* ─── ActiveProjectsWidget ───────────────────────────────────── */
+.active-projects__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 4px);
+}
+
+.active-projects__item {
+  border-radius: var(--radius-md, 8px);
+  transition: background var(--motion-fast, 150ms) ease;
+}
+
+.active-projects__item:hover {
+  background: var(--bg-hover, rgba(124, 92, 252, 0.04));
+}
+
+.active-projects__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  padding: var(--space-2, 8px);
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.active-projects__title {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.active-projects__project {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.active-projects__priority {
+  display: inline-flex;
+  padding: 2px 8px;
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  border-radius: var(--radius-full, 9999px);
+  flex-shrink: 0;
+  text-transform: capitalize;
+}
+
+.active-projects__priority--urgent {
+  background: var(--color-danger-light, #FEE2E2);
+  color: var(--color-danger-dark, #E6442F);
+}
+
+.active-projects__priority--high {
+  background: var(--color-warning-light, #FEF3C7);
+  color: var(--color-warning-dark, #D9A620);
+}
+
+.active-projects__priority--medium {
+  background: var(--color-info-light, #DBEAFE);
+  color: var(--color-info-dark, #2563EB);
+}
+
+.active-projects__priority--low {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.active-projects__priority--none {
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+}
+
+.active-projects__empty {
+  color: var(--text-muted);
+  font-size: var(--text-sm, 0.875rem);
+  text-align: center;
+  padding: var(--space-4, 16px) 0;
+  margin: 0;
+}
+
+.active-projects__view-all {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 4px);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.active-projects__view-all:hover {
+  text-decoration: underline;
+}

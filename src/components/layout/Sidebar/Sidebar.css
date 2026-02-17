@@ -71,6 +71,39 @@
   background-clip: text;
 }
 
+.sidebar__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sidebar__notification-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #64748B;
+  cursor: pointer;
+  transition: all 150ms ease;
+  position: relative;
+}
+
+.sidebar__notification-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #E2E8F0;
+}
+
+.sidebar__notification-btn .notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  pointer-events: none;
+}
+
 .sidebar__toggle {
   display: flex;
   align-items: center;
@@ -347,6 +380,25 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
+/* ─── Recents ────────────────────────────────────────────────── */
+.sidebar__recents {
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .sidebar__recents {
+  border-bottom: 1px solid #E5E7EB;
+}
+
+[data-theme="dark"] .sidebar__recents {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
 /* ─── Badge ──────────────────────────────────────────────────── */
 .sidebar__badge {
   margin-left: auto;
@@ -561,6 +613,16 @@
 
 [data-theme="light"] .sidebar__header {
   border-bottom: 1px solid #E5E7EB;
+}
+
+[data-theme="light"] .sidebar__notification-btn {
+  background: rgba(10, 37, 64, 0.04);
+  color: #64748B;
+}
+
+[data-theme="light"] .sidebar__notification-btn:hover {
+  background: rgba(10, 37, 64, 0.08);
+  color: #1A1A2E;
 }
 
 [data-theme="light"] .sidebar__toggle {

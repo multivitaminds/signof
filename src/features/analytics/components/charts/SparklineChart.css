@@ -1,0 +1,12 @@
+.sparkline {
+  display: block;
+  flex-shrink: 0;
+}
+
+.sparkline__line {
+  vector-effect: non-scaling-stroke;
+}
+
+.sparkline__fill {
+  opacity: 1;
+}

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useCallback, useRef } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from './Sidebar/Sidebar'
 import TopBar from './TopBar/TopBar'
@@ -6,15 +6,21 @@ import MobileNav from './MobileNav/MobileNav'
 import PageTransition from './PageTransition/PageTransition'
 import CommandPalette from '../CommandPalette/CommandPalette'
 import KeyboardShortcutHelp from '../KeyboardShortcutHelp/KeyboardShortcutHelp'
+import SearchOverlay from '../../features/search/components/SearchOverlay/SearchOverlay'
+import QuickActionPalette from '../../features/search/components/QuickActionPalette/QuickActionPalette'
+import { useQuickActionRegistration } from '../../hooks/useQuickActionRegistration'
 import AccountModeBanner from '../AccountModeBanner/AccountModeBanner'
 import OfflineBanner from '../OfflineBanner/OfflineBanner'
 import AIChatSidebar from '../../features/ai/components/AIChatSidebar/AIChatSidebar'
+import TourProvider from '../../features/onboarding/components/TourProvider/TourProvider'
 import useAIChatStore from '../../features/ai/stores/useAIChatStore'
 import { useTheme } from '../../hooks/useTheme'
 import { useFocusOnRouteChange } from '../../hooks/useFocusOnRouteChange'
 import { useIsMobile } from '../../hooks/useMediaQuery'
 import { useAppStore } from '../../stores/useAppStore'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
+import { useGlobalShortcuts } from '../../hooks/useGlobalShortcuts'
+import { useNotificationListener } from '../../features/notifications/hooks/useNotificationListener'
 import './AppLayout.css'
 
 const ROUTE_LABELS: Record<string, string> = {
@@ -44,9 +50,19 @@ export default function AppLayout() {
   const addRecentItem = useAppStore((s) => s.addRecentItem)
   const setAIChatContext = useAIChatStore((s) => s.setContextLabel)
   const setAIChatRoute = useAIChatStore((s) => s.setCurrentRoute)
+  const searchOverlayOpen = useAppStore((s) => s.searchOverlayOpen)
+  const closeSearchOverlay = useAppStore((s) => s.closeSearchOverlay)
+  const quickActionPaletteOpen = useAppStore((s) => s.quickActionPaletteOpen)
+  const closeQuickActionPalette = useAppStore((s) => s.closeQuickActionPalette)
 
   // Focus management for screen readers on route changes
   useFocusOnRouteChange(mainRef)
+
+  // Listen for eventBus events and create notifications
+  useNotificationListener()
+
+  // Register quick actions
+  useQuickActionRegistration()
 
   // Register all keyboard shortcuts
   useKeyboardShortcuts([
@@ -78,6 +94,29 @@ export default function AppLayout() {
     { key: 'g', chord: 'g+t', handler: () => navigate('/tax') },
     { key: 'g', chord: 'g+x', handler: () => navigate('/developer') },
   ])
+
+  // Register enhanced global shortcuts (mod+k, mod+b, mod+1-9, etc.)
+  useGlobalShortcuts()
+
+  const handleCloseSearch = useCallback(() => {
+    closeSearchOverlay()
+  }, [closeSearchOverlay])
+
+  const handleCloseQuickActions = useCallback(() => {
+    closeQuickActionPalette()
+  }, [closeQuickActionPalette])
+
+  // Cmd+Shift+P to open quick actions palette
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'p') {
+        e.preventDefault()
+        useAppStore.getState().toggleQuickActionPalette()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   // Track recent items on navigation
   useEffect(() => {
@@ -120,9 +159,12 @@ export default function AppLayout() {
       </div>
       {/* Mobile bottom nav (hidden on desktop) */}
       {isMobile && <MobileNav />}
+      <SearchOverlay isOpen={searchOverlayOpen} onClose={handleCloseSearch} />
+      <QuickActionPalette isOpen={quickActionPaletteOpen} onClose={handleCloseQuickActions} />
       <CommandPalette />
       <KeyboardShortcutHelp />
       <AIChatSidebar />
+      <TourProvider />
       {/* ARIA live region for toast announcements */}
       <div
         className="app-layout__live-region"

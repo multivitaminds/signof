@@ -1,0 +1,184 @@
+/* ─── ExportDialog ────────────────────────────────────────────────── */
+
+.export-dialog {
+  max-width: 480px;
+  width: 100%;
+}
+
+.export-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4, 1rem) var(--space-5, 1.5rem);
+  border-bottom: 1px solid var(--border-color, #E2E8F0);
+}
+
+.export-dialog__title {
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--text-primary, #1E293B);
+  margin: 0;
+}
+
+.export-dialog__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  color: var(--text-muted, #717D8C);
+  cursor: pointer;
+  transition: background var(--motion-fast, 150ms) ease;
+}
+
+.export-dialog__close:hover {
+  background: var(--bg-secondary, #F8FAFC);
+}
+
+/* ─── Body ────────────────────────────────────────────────────── */
+
+.export-dialog__body {
+  padding: var(--space-5, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+}
+
+.export-dialog__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.export-dialog__label {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--text-secondary, #64748B);
+}
+
+.export-dialog__input {
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #1E293B);
+  background: var(--bg-primary, #FFFFFF);
+  outline: none;
+  transition: border-color var(--motion-fast, 150ms) ease;
+}
+
+.export-dialog__input:focus {
+  border-color: var(--color-primary, #7C5CFC);
+  box-shadow: 0 0 0 3px var(--alpha-focus, rgba(124, 92, 252, 0.16));
+}
+
+/* ─── Format Radio Cards ──────────────────────────────────────── */
+
+.export-dialog__formats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.export-dialog__format-option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3, 0.75rem);
+  cursor: pointer;
+}
+
+.export-dialog__radio {
+  margin-top: 4px;
+  accent-color: var(--color-primary, #7C5CFC);
+  flex-shrink: 0;
+}
+
+.export-dialog__format-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.export-dialog__format-name {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--text-primary, #1E293B);
+}
+
+.export-dialog__format-desc {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #717D8C);
+}
+
+/* ─── Summary ─────────────────────────────────────────────────── */
+
+.export-dialog__summary {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted, #717D8C);
+  margin: 0;
+}
+
+/* ─── Footer ──────────────────────────────────────────────────── */
+
+.export-dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-4, 1rem) var(--space-5, 1.5rem);
+  border-top: 1px solid var(--border-color, #E2E8F0);
+}
+
+.export-dialog__cancel-btn {
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  cursor: pointer;
+}
+
+.export-dialog__export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  cursor: pointer;
+}
+
+.export-dialog__export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Dark Mode ──────────────────────────────────────────────── */
+
+[data-theme="dark"] .export-dialog__title {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .export-dialog__close:hover {
+  background: var(--bg-tertiary, #2D2D44);
+}
+
+[data-theme="dark"] .export-dialog__input {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .export-dialog__format-name {
+  color: var(--text-primary, #F1F5F9);
+}
+
+[data-theme="dark"] .export-dialog__header {
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .export-dialog__footer {
+  border-color: var(--border-color, #334155);
+}

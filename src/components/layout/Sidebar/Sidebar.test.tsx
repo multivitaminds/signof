@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import { useAppStore } from '../../../stores/useAppStore'
+import { useFavoritesStore } from '../../../stores/useFavoritesStore'
 
 vi.mock('../../../features/workspace/stores/useWorkspaceStore', () => ({
   useWorkspaceStore: (selector: (s: Record<string, unknown>) => unknown) =>
@@ -10,6 +11,23 @@ vi.mock('../../../features/workspace/stores/useWorkspaceStore', () => ({
 }))
 
 vi.mock('../../../features/workspace/components/PageTree/PageTree', () => ({
+  default: () => null,
+}))
+
+vi.mock('../../../features/home/components/RecentsList/RecentsList', () => ({
+  default: () => <div data-testid="recents-list">Recents Mock</div>,
+}))
+
+vi.mock('../../../features/notifications/stores/useNotificationStore', () => ({
+  useNotificationStore: (selector: (s: Record<string, unknown>) => unknown) =>
+    selector({ notifications: [], getUnreadCount: () => 0 }),
+}))
+
+vi.mock('../../../features/notifications/components/NotificationBadge/NotificationBadge', () => ({
+  default: () => null,
+}))
+
+vi.mock('../../../features/notifications/components/NotificationCenter/NotificationCenter', () => ({
   default: () => null,
 }))
 
@@ -29,6 +47,7 @@ describe('Sidebar', () => {
       mobileSidebarOpen: false,
       favorites: [],
     })
+    useFavoritesStore.setState({ favorites: [], recents: [] })
   })
 
   it('renders the brand logo', () => {

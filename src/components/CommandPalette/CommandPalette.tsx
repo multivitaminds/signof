@@ -601,10 +601,10 @@ export default function CommandPalette() {
     return groups
   }, [filteredItems])
 
-  // Keyboard shortcut: Cmd+K opens unified command palette
+  // Keyboard shortcut: Cmd+Shift+P opens command palette
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'p') {
         e.preventDefault()
         useAppStore.getState().toggleCommandPalette()
       }

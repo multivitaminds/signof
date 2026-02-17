@@ -39,6 +39,18 @@ interface AppState {
   openShortcutHelp: () => void
   closeShortcutHelp: () => void
   toggleShortcutHelp: () => void
+
+  // Global search overlay
+  searchOverlayOpen: boolean
+  openSearchOverlay: () => void
+  closeSearchOverlay: () => void
+  toggleSearchOverlay: () => void
+
+  // Quick action palette
+  quickActionPaletteOpen: boolean
+  openQuickActionPalette: () => void
+  closeQuickActionPalette: () => void
+  toggleQuickActionPalette: () => void
 }
 
 export const useAppStore = create<AppState>()(
@@ -103,6 +115,20 @@ export const useAppStore = create<AppState>()(
       closeShortcutHelp: () => set({ shortcutHelpOpen: false }),
       toggleShortcutHelp: () =>
         set((state) => ({ shortcutHelpOpen: !state.shortcutHelpOpen })),
+
+      // Global search overlay
+      searchOverlayOpen: false,
+      openSearchOverlay: () => set({ searchOverlayOpen: true }),
+      closeSearchOverlay: () => set({ searchOverlayOpen: false }),
+      toggleSearchOverlay: () =>
+        set((state) => ({ searchOverlayOpen: !state.searchOverlayOpen })),
+
+      // Quick action palette
+      quickActionPaletteOpen: false,
+      openQuickActionPalette: () => set({ quickActionPaletteOpen: true }),
+      closeQuickActionPalette: () => set({ quickActionPaletteOpen: false }),
+      toggleQuickActionPalette: () =>
+        set((state) => ({ quickActionPaletteOpen: !state.quickActionPaletteOpen })),
     }),
     {
       name: 'orchestree-app-storage',

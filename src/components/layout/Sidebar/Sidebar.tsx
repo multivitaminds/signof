@@ -27,13 +27,21 @@ import {
   Brain,
   Star,
   ChevronDown,
+  Bell,
+  BarChart3,
 } from 'lucide-react'
 import { useAppStore } from '../../../stores/useAppStore'
 import { useDocumentStore } from '../../../stores/useDocumentStore'
+import { useFavoritesStore } from '../../../stores/useFavoritesStore'
 import { useWorkspaceStore } from '../../../features/workspace/stores/useWorkspaceStore'
 import { useProjectStore } from '../../../features/projects/stores/useProjectStore'
 import { useInboxStore } from '../../../features/inbox/stores/useInboxStore'
+import { useNotificationStore } from '../../../features/notifications/stores/useNotificationStore'
+import NotificationBadge from '../../../features/notifications/components/NotificationBadge/NotificationBadge'
+import NotificationCenter from '../../../features/notifications/components/NotificationCenter/NotificationCenter'
 import PageTree from '../../../features/workspace/components/PageTree/PageTree'
+import RecentsList from '../../../features/home/components/RecentsList/RecentsList'
+import ShortcutHint from '../../ui/ShortcutHint/ShortcutHint'
 import { ACTIVE_STATUSES } from '../../../types'
 import type { FavoriteItem } from '../../../types'
 import './Sidebar.css'
@@ -43,6 +51,8 @@ interface NavItem {
   label: string
   icon: React.ComponentType<{ size?: number; className?: string }>
   badge?: number
+  dataTour?: string
+  shortcutKey?: string
 }
 
 const NEW_MENU_ITEMS = [
@@ -90,6 +100,9 @@ export default function Sidebar() {
     [inboxNotifications]
   )
 
+  // Pull favorites from dedicated favorites store
+  const dedicatedFavorites = useFavoritesStore((s) => s.favorites)
+
   // Merge workspace favorited pages into the favorites list
   const workspaceFavorites = useMemo(() => {
     const favPages: FavoriteItem[] = Object.values(pagesMap)
@@ -105,16 +118,35 @@ export default function Sidebar() {
   }, [pagesMap])
 
   const allFavorites = useMemo(() => {
-    // Merge: app store favorites first, then workspace page favorites (deduplicated)
+    // Merge: app store favorites first, then dedicated store, then workspace page favorites (deduplicated)
     const existingPaths = new Set(favorites.map((f) => f.path))
     const combined = [...favorites]
+    // Add dedicated favorites store items
+    for (const df of dedicatedFavorites) {
+      const asFav: FavoriteItem = { id: df.id, path: df.path, label: df.title, icon: df.icon }
+      if (!existingPaths.has(asFav.path)) {
+        existingPaths.add(asFav.path)
+        combined.push(asFav)
+      }
+    }
     for (const wf of workspaceFavorites) {
       if (!existingPaths.has(wf.path)) {
         combined.push(wf)
       }
     }
     return combined
-  }, [favorites, workspaceFavorites])
+  }, [favorites, dedicatedFavorites, workspaceFavorites])
+
+  const notificationUnreadCount = useNotificationStore((s) => s.getUnreadCount())
+  const [notificationCenterOpen, setNotificationCenterOpen] = useState(false)
+
+  const toggleNotificationCenter = useCallback(() => {
+    setNotificationCenterOpen((prev) => !prev)
+  }, [])
+
+  const closeNotificationCenter = useCallback(() => {
+    setNotificationCenterOpen(false)
+  }, [])
 
   const [favoritesCollapsed, setFavoritesCollapsed] = useState(false)
   const [newMenuOpen, setNewMenuOpen] = useState(false)
@@ -151,17 +183,18 @@ export default function Sidebar() {
   }, [])
 
   const NAV_ITEMS: NavItem[] = [
-    { path: '/', label: 'Home', icon: Home },
-    { path: '/pages', label: 'Pages', icon: FileText },
-    { path: '/projects', label: 'Projects', icon: FolderKanban, badge: openIssueCount || undefined },
-    { path: '/documents', label: 'Documents', icon: FileSignature, badge: pendingCount || undefined },
-    { path: '/calendar', label: 'Calendar', icon: Calendar },
-    { path: '/data', label: 'Databases', icon: Database },
-    { path: '/inbox', label: 'Inbox', icon: Inbox, badge: unreadCount || undefined },
-    { path: '/copilot', label: 'Copilot', icon: Sparkles },
+    { path: '/', label: 'Home', icon: Home, shortcutKey: 'mod+1' },
+    { path: '/pages', label: 'Pages', icon: FileText, shortcutKey: 'mod+2' },
+    { path: '/projects', label: 'Projects', icon: FolderKanban, badge: openIssueCount || undefined, shortcutKey: 'mod+3' },
+    { path: '/documents', label: 'Documents', icon: FileSignature, badge: pendingCount || undefined, shortcutKey: 'mod+4' },
+    { path: '/calendar', label: 'Calendar', icon: Calendar, shortcutKey: 'mod+5' },
+    { path: '/data', label: 'Databases', icon: Database, shortcutKey: 'mod+6' },
+    { path: '/inbox', label: 'Inbox', icon: Inbox, badge: unreadCount || undefined, shortcutKey: 'mod+7' },
+    { path: '/copilot', label: 'Copilot', icon: Sparkles, dataTour: 'copilot', shortcutKey: 'mod+8' },
     { path: '/tax', label: 'Tax', icon: Receipt },
     { path: '/accounting', label: 'Accounting', icon: Calculator },
     { path: '/brain', label: 'Command Center', icon: Brain },
+    { path: '/analytics', label: 'Analytics', icon: BarChart3 },
     { path: '/playground', label: 'Playground', icon: MessageSquare },
     { path: '/developer', label: 'Developer', icon: Code2 },
   ]
@@ -259,6 +292,7 @@ export default function Sidebar() {
       style={effectiveExpanded ? { width: expandedWidth } : undefined}
       onMouseEnter={handleSidebarMouseEnter}
       onMouseLeave={handleSidebarMouseLeave}
+      data-tour="sidebar"
     >
       {/* Header */}
       <div className="sidebar__header">
@@ -272,18 +306,31 @@ export default function Sidebar() {
             <span className="sidebar__logo-mini">S&#10003;</span>
           </div>
         )}
-        <button
-          className="sidebar__toggle"
-          onClick={toggleSidebar}
-          aria-label={sidebarExpanded ? 'Unpin sidebar' : 'Pin sidebar open'}
-          title={sidebarExpanded ? 'Unpin sidebar' : 'Pin sidebar open'}
-        >
-          {sidebarExpanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-        </button>
+        <div className="sidebar__header-actions">
+          <button
+            className="sidebar__notification-btn"
+            onClick={toggleNotificationCenter}
+            aria-label="Toggle notifications"
+            title="Notifications"
+          >
+            <Bell size={18} />
+            {notificationUnreadCount > 0 && (
+              <NotificationBadge count={notificationUnreadCount} onClick={toggleNotificationCenter} />
+            )}
+          </button>
+          <button
+            className="sidebar__toggle"
+            onClick={toggleSidebar}
+            aria-label={sidebarExpanded ? 'Unpin sidebar' : 'Pin sidebar open'}
+            title={sidebarExpanded ? 'Unpin sidebar' : 'Pin sidebar open'}
+          >
+            {sidebarExpanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+          </button>
+        </div>
       </div>
 
       {/* Search */}
-      <div className="sidebar__search">
+      <div className="sidebar__search" data-tour="search">
         <button
           className="sidebar__search-btn"
           onClick={handleSearchClick}
@@ -385,8 +432,15 @@ export default function Sidebar() {
         </div>
       )}
 
+      {/* Recents */}
+      {effectiveExpanded && (
+        <div className="sidebar__recents">
+          <RecentsList />
+        </div>
+      )}
+
       {/* Navigation */}
-      <nav className="sidebar__nav">
+      <nav className="sidebar__nav" data-tour="modules">
         {effectiveExpanded && (
           <div className="sidebar__section-label">Workspace</div>
         )}
@@ -397,7 +451,7 @@ export default function Sidebar() {
               (item.path !== '/' && location.pathname.startsWith(item.path))
 
             return (
-              <li key={item.path} className="sidebar__nav-item">
+              <li key={item.path} className="sidebar__nav-item" data-tour={item.dataTour}>
                 <NavLink
                   to={item.path}
                   className={`sidebar__nav-link ${isActive ? 'sidebar__nav-link--active' : ''}`}
@@ -410,6 +464,9 @@ export default function Sidebar() {
                   )}
                   {item.badge !== undefined && item.badge > 0 && effectiveExpanded && (
                     <span className="sidebar__badge">{item.badge}</span>
+                  )}
+                  {item.shortcutKey && !item.badge && effectiveExpanded && (
+                    <ShortcutHint keys={item.shortcutKey} />
                   )}
                 </NavLink>
               </li>
@@ -436,7 +493,7 @@ export default function Sidebar() {
       <div className="sidebar__divider" />
 
       {/* Settings at bottom */}
-      <div className="sidebar__footer">
+      <div className="sidebar__footer" data-tour="settings">
         <NavLink
           to="/settings"
           className={`sidebar__nav-link ${location.pathname.startsWith('/settings') ? 'sidebar__nav-link--active' : ''}`}
@@ -446,6 +503,9 @@ export default function Sidebar() {
           <Settings size={20} className="sidebar__nav-icon" />
           {effectiveExpanded && (
             <span className="sidebar__nav-label">Settings</span>
+          )}
+          {effectiveExpanded && (
+            <ShortcutHint keys="mod+9" />
           )}
         </NavLink>
       </div>
@@ -459,6 +519,9 @@ export default function Sidebar() {
           aria-label="Resize sidebar"
         />
       )}
+
+      {/* Notification Center */}
+      <NotificationCenter open={notificationCenterOpen} onClose={closeNotificationCenter} />
     </aside>
   )
 }

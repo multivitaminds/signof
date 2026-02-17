@@ -197,11 +197,11 @@ describe('CommandPalette', () => {
     expect(screen.queryByText('Agent Runs')).not.toBeInTheDocument()
   })
 
-  it('Cmd+K opens the command palette', () => {
+  it('Cmd+Shift+P opens the command palette', () => {
     renderPalette()
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
 
-    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'p', metaKey: true, shiftKey: true }))
 
     expect(useAppStore.getState().commandPaletteOpen).toBe(true)
   })

@@ -1,0 +1,62 @@
+/* ─── DashboardGrid ──────────────────────────────────────────── */
+.dashboard-grid {
+  width: 100%;
+}
+
+.dashboard-grid__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4, 16px);
+}
+
+.dashboard-grid__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.dashboard-grid__customize-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  font-size: var(--text-sm, 0.875rem);
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+}
+
+.dashboard-grid__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4, 16px);
+}
+
+.dashboard-grid__cell--full {
+  grid-column: 1 / -1;
+}
+
+.dashboard-grid__empty {
+  text-align: center;
+  padding: var(--space-8, 64px) var(--space-4, 16px);
+  color: var(--text-muted);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+/* ─── Dark mode ─────────────────────────────────────────────── */
+[data-theme="dark"] .dashboard-grid__title {
+  color: var(--text-primary);
+}
+
+/* ─── Responsive ────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .dashboard-grid__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-grid__header {
+    flex-wrap: wrap;
+    gap: var(--space-2, 8px);
+  }
+}

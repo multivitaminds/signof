@@ -179,11 +179,12 @@ describe('DocumentsHubPage', () => {
     const checkboxes = screen.getAllByRole('checkbox')
     await user.click(checkboxes[0]!)
 
-    expect(screen.getByText('1 selected')).toBeInTheDocument()
+    expect(screen.getByText('1 item selected')).toBeInTheDocument()
     const bulkBar = screen.getByRole('toolbar', { name: 'Bulk actions' })
     expect(bulkBar).toBeInTheDocument()
-    expect(bulkBar.querySelector('.btn-danger')).toHaveTextContent('Delete')
-    expect(bulkBar.querySelector('.btn-primary')).toHaveTextContent('Send')
+    expect(screen.getByRole('button', { name: 'Delete Selected' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Send Selected' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Export Selected' })).toBeInTheDocument()
   })
 
   it('sorts documents by selected option', async () => {

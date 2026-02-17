@@ -1,0 +1,163 @@
+.activity-feed-widget {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary, #FFFFFF);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-lg, 12px);
+  overflow: hidden;
+}
+
+/* ─── Header ───────────────────────────────────────────────────── */
+
+.activity-feed-widget__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+  border-bottom: 1px solid var(--border-color, #E2E8F0);
+}
+
+.activity-feed-widget__title {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary, #1A1A2E);
+  margin: 0;
+}
+
+.activity-feed-widget__badge {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-medium, 500);
+  color: var(--color-primary, #4F46E5);
+  background: var(--color-primary-light, #EEF2FF);
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 9999px);
+}
+
+/* ─── List ─────────────────────────────────────────────────────── */
+
+.activity-feed-widget__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.activity-feed-widget__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  padding: var(--space-2, 8px) var(--space-4, 16px);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background var(--motion-fast, 150ms) ease-out;
+}
+
+.activity-feed-widget__item:hover {
+  background: var(--bg-secondary, #F8FAFC);
+}
+
+.activity-feed-widget__item + .activity-feed-widget__item {
+  border-top: 1px solid var(--border-color, #E2E8F0);
+}
+
+.activity-feed-widget__icon {
+  font-size: 0.875rem;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.activity-feed-widget__text {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-secondary, #64748B);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activity-feed-widget__user {
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-primary, #1A1A2E);
+}
+
+.activity-feed-widget__target {
+  font-weight: var(--font-medium, 500);
+}
+
+.activity-feed-widget__time {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #94A3B8);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.activity-feed-widget__empty {
+  padding: var(--space-4, 16px);
+  text-align: center;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-muted, #94A3B8);
+  margin: 0;
+}
+
+/* ─── View All ─────────────────────────────────────────────────── */
+
+.activity-feed-widget__view-all {
+  padding: var(--space-2, 8px) var(--space-4, 16px);
+  border: none;
+  border-top: 1px solid var(--border-color, #E2E8F0);
+  background: transparent;
+  color: var(--color-primary, #4F46E5);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-medium, 500);
+  cursor: pointer;
+  text-align: center;
+  transition: background var(--motion-fast, 150ms) ease-out;
+}
+
+.activity-feed-widget__view-all:hover {
+  background: var(--color-primary-light, #EEF2FF);
+}
+
+/* ─── Dark Mode ────────────────────────────────────────────────── */
+
+[data-theme="dark"] .activity-feed-widget {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .activity-feed-widget__header {
+  border-bottom-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .activity-feed-widget__title {
+  color: var(--text-primary, #F8FAFC);
+}
+
+[data-theme="dark"] .activity-feed-widget__badge {
+  background: rgba(79, 70, 229, 0.15);
+  color: #818CF8;
+}
+
+[data-theme="dark"] .activity-feed-widget__item:hover {
+  background: var(--bg-tertiary, #2D2D44);
+}
+
+[data-theme="dark"] .activity-feed-widget__item + .activity-feed-widget__item {
+  border-top-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .activity-feed-widget__user {
+  color: var(--text-primary, #F8FAFC);
+}
+
+[data-theme="dark"] .activity-feed-widget__view-all {
+  border-top-color: var(--border-color, #334155);
+  color: #818CF8;
+}
+
+[data-theme="dark"] .activity-feed-widget__view-all:hover {
+  background: rgba(79, 70, 229, 0.1);
+}

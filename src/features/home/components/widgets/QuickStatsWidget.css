@@ -1,0 +1,75 @@
+/* ─── QuickStatsWidget ───────────────────────────────────────── */
+.quick-stats-widget {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3, 12px);
+}
+
+.quick-stats-widget__card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+}
+
+.quick-stats-widget__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.quick-stats-widget__info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.quick-stats-widget__value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.quick-stats-widget__label {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quick-stats-widget__trend {
+  flex-shrink: 0;
+}
+
+.quick-stats-widget__trend--up {
+  color: var(--color-success);
+}
+
+.quick-stats-widget__trend--down {
+  color: var(--color-danger);
+}
+
+/* ─── Dark mode ─────────────────────────────────────────────── */
+[data-theme="dark"] .quick-stats-widget__icon {
+  background: var(--bg-tertiary, #1E1E36);
+}
+
+/* ─── Responsive ────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .quick-stats-widget {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .quick-stats-widget {
+    grid-template-columns: 1fr;
+  }
+}

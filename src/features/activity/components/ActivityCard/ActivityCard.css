@@ -1,0 +1,119 @@
+.activity-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3, 12px);
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+  background: var(--bg-primary, #FFFFFF);
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-left: 3px solid var(--activity-card-accent, var(--border-color, #E2E8F0));
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: all var(--motion-fast, 150ms) ease-out;
+}
+
+.activity-card:hover {
+  background: var(--bg-secondary, #F8FAFC);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+/* ─── Icon ─────────────────────────────────────────────────────── */
+
+.activity-card__icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--bg-secondary, #F8FAFC);
+  border: 2px solid var(--border-color, #E2E8F0);
+  flex-shrink: 0;
+}
+
+.activity-card__emoji {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* ─── Body ─────────────────────────────────────────────────────── */
+
+.activity-card__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.activity-card__action {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #1A1A2E);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.activity-card__user {
+  font-weight: var(--font-semibold, 600);
+}
+
+.activity-card__verb {
+  color: var(--text-secondary, #64748B);
+}
+
+.activity-card__target {
+  font-weight: var(--font-medium, 500);
+  color: var(--color-primary, #4F46E5);
+}
+
+.activity-card__target:hover {
+  text-decoration: underline;
+}
+
+.activity-card__description {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #94A3B8);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Time ─────────────────────────────────────────────────────── */
+
+.activity-card__time {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted, #94A3B8);
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+/* ─── Dark Mode ────────────────────────────────────────────────── */
+
+[data-theme="dark"] .activity-card {
+  background: var(--bg-secondary, #1A1A2E);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .activity-card:hover {
+  background: var(--bg-tertiary, #2D2D44);
+}
+
+[data-theme="dark"] .activity-card__icon {
+  background: var(--bg-tertiary, #2D2D44);
+  border-color: var(--border-color, #334155);
+}
+
+[data-theme="dark"] .activity-card__action {
+  color: var(--text-primary, #F8FAFC);
+}
+
+[data-theme="dark"] .activity-card__verb {
+  color: var(--text-secondary, #94A3B8);
+}
+
+[data-theme="dark"] .activity-card__target {
+  color: var(--color-primary, #818CF8);
+}

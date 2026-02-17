@@ -21,3 +21,10 @@ export { default as ModuleHeader } from './ModuleHeader'
 
 export { default as DemoVideo, DemoVideoSection } from './DemoVideo'
 export type { DemoVideoData } from './DemoVideo'
+
+export { default as SelectionCheckbox } from './SelectionCheckbox/SelectionCheckbox'
+
+export { default as BulkActionBar } from './BulkActionBar/BulkActionBar'
+export type { BulkActionItem } from './BulkActionBar/BulkActionBar'
+
+export { default as ExportDialog } from './ExportDialog/ExportDialog'

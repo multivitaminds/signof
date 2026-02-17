@@ -90,6 +90,8 @@ const AccountingPricingPage = lazy(() => import('./features/accounting/pages/Acc
 const DocumentAnalyticsPage = lazy(() => import('./features/documents/components/DocumentAnalytics/DocumentAnalytics'))
 const DocumentBuilderPage = lazy(() => import('./features/documents/pages/DocumentBuilderPage'))
 
+const ActivityPage = lazy(() => import('./features/activity/pages/ActivityPage'))
+
 const PlaygroundLayout = lazy(() => import('./features/playground/pages/PlaygroundLayout'))
 
 const BrainTreeLayout = lazy(() => import('./features/clawgpt/pages/BrainTreeLayout'))
@@ -101,6 +103,8 @@ const SoulPage = lazy(() => import('./features/clawgpt/pages/SoulPage'))
 const DevicesPage = lazy(() => import('./features/clawgpt/pages/DevicesPage'))
 const FleetPage = lazy(() => import('./features/clawgpt/pages/FleetPage'))
 const RegistryPage = lazy(() => import('./features/clawgpt/pages/RegistryPage'))
+
+const AnalyticsDashboardPage = lazy(() => import('./features/analytics/pages/AnalyticsDashboardPage'))
 
 const DeveloperLayout = lazy(() => import('./features/developer/pages/DeveloperLayout'))
 const ApiDocsPage = lazy(() => import('./features/developer/pages/ApiDocsPage'))
@@ -233,6 +237,13 @@ createRoot(root).render(
             </ModuleErrorBoundary>
           } />
 
+          {/* Activity */}
+          <Route path="activity" element={
+            <ModuleErrorBoundary moduleName="Activity">
+              <Suspense fallback={TableFallback}><ActivityPage /></Suspense>
+            </ModuleErrorBoundary>
+          } />
+
           {/* Copilot */}
           <Route path="copilot" element={
             <ModuleErrorBoundary moduleName="Copilot">
@@ -300,6 +311,13 @@ createRoot(root).render(
             <Route path="payroll" element={<Suspense fallback={TableFallback}><PayrollPage /></Suspense>} />
             <Route path="pricing" element={<Suspense fallback={CardFallback}><AccountingPricingPage /></Suspense>} />
           </Route>
+
+          {/* Analytics */}
+          <Route path="analytics" element={
+            <ModuleErrorBoundary moduleName="Analytics">
+              <Suspense fallback={CardFallback}><AnalyticsDashboardPage /></Suspense>
+            </ModuleErrorBoundary>
+          } />
 
           {/* Playground (OpenClaw) */}
           <Route path="playground" element={
