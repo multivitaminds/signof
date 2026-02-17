@@ -1,0 +1,154 @@
+.fleet-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.fleet-grid__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.fleet-grid__sort-label {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.fleet-grid__sort-select {
+  font-size: var(--text-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.fleet-grid__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+
+.fleet-grid__card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  cursor: pointer;
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.fleet-grid__card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+.fleet-grid__card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.fleet-grid__card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.fleet-grid__status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.fleet-grid__status-dot--working,
+.fleet-grid__status-dot--idle {
+  background-color: var(--color-success);
+  box-shadow: 0 0 6px var(--color-success);
+}
+
+.fleet-grid__status-dot--spawning,
+.fleet-grid__status-dot--waiting_approval {
+  background-color: var(--color-warning);
+  box-shadow: 0 0 6px var(--color-warning);
+  animation: fleet-dot-pulse 1.5s infinite ease-in-out;
+}
+
+.fleet-grid__status-dot--error {
+  background-color: var(--color-danger);
+  box-shadow: 0 0 6px var(--color-danger);
+}
+
+.fleet-grid__status-dot--retiring {
+  background-color: var(--color-gray-400);
+}
+
+@keyframes fleet-dot-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.fleet-grid__agent-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.fleet-grid__domain-badge {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #fff;
+  white-space: nowrap;
+}
+
+.fleet-grid__task {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-normal);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fleet-grid__task--none {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.fleet-grid__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.fleet-grid__empty {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+[data-theme="dark"] .fleet-grid__card {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .fleet-grid__sort-select {
+  background: var(--bg-secondary);
+}

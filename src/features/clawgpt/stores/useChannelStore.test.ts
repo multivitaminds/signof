@@ -2,6 +2,11 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { useChannelStore } from './useChannelStore'
 import type { Channel, ChannelConfig } from '../types'
 
+// Mock the dynamic import used by connectChannel
+vi.mock('../lib/channelValidator', () => ({
+  validateChannelConfig: vi.fn(() => ({ valid: true, errors: [] })),
+}))
+
 const DISCONNECTED_CHANNELS: Channel[] = [
   { id: 'ch-1', name: 'Test Slack', type: 'slack', status: 'disconnected', config: { autoReply: true, replyDelay: 500, maxConcurrentSessions: 10, businessHoursOnly: false, language: 'en', authType: 'oauth2' } as ChannelConfig, unreadCount: 0, lastActivity: null, icon: 'slack', description: 'Test Slack', authType: 'oauth2', capabilities: ['text'], assignedAgentId: null },
   { id: 'ch-2', name: 'Test Email', type: 'email', status: 'connected', config: { autoReply: true, replyDelay: 500, maxConcurrentSessions: 10, businessHoursOnly: false, language: 'en', authType: 'smtp' } as ChannelConfig, unreadCount: 3, lastActivity: '2025-06-15T10:00:00Z', icon: 'mail', description: 'Test Email', authType: 'smtp', capabilities: ['text', 'media'], assignedAgentId: null },
@@ -12,6 +17,7 @@ describe('useChannelStore', () => {
   beforeEach(() => {
     useChannelStore.setState({
       channels: DISCONNECTED_CHANNELS.map((ch) => ({ ...ch, config: { ...ch.config } })),
+      validationErrors: {},
     })
   })
 
@@ -21,17 +27,24 @@ describe('useChannelStore', () => {
   })
 
   describe('connectChannel', () => {
-    it('sets channel status to connected and updates lastActivity', () => {
-      useChannelStore.getState().connectChannel('ch-1')
-      const channel = useChannelStore.getState().channels.find((c) => c.id === 'ch-1')
+    it('auto-connects web_chat channel immediately', () => {
+      useChannelStore.getState().connectChannel('ch-3')
+      const channel = useChannelStore.getState().channels.find((c) => c.id === 'ch-3')
       expect(channel!.status).toBe('connected')
       expect(channel!.lastActivity).toBeTruthy()
     })
 
-    it('does not affect other channels', () => {
+    it('sets connecting state for non-webchat channels', () => {
       useChannelStore.getState().connectChannel('ch-1')
-      const ch3 = useChannelStore.getState().channels.find((c) => c.id === 'ch-3')
-      expect(ch3!.status).toBe('paused')
+      // Synchronously it should be 'connecting'
+      const channel = useChannelStore.getState().channels.find((c) => c.id === 'ch-1')
+      expect(channel!.status).toBe('connecting')
+    })
+
+    it('does not affect other channels', () => {
+      useChannelStore.getState().connectChannel('ch-3')
+      const ch2 = useChannelStore.getState().channels.find((c) => c.id === 'ch-2')
+      expect(ch2!.status).toBe('connected')
     })
   })
 
@@ -97,8 +110,8 @@ describe('useChannelStore', () => {
       expect(connected[0]!.id).toBe('ch-2')
     })
 
-    it('updates when channels connect', () => {
-      useChannelStore.getState().connectChannel('ch-1')
+    it('updates when webchat channels connect', () => {
+      useChannelStore.getState().connectChannel('ch-3')
       const connected = useChannelStore.getState().getConnectedChannels()
       expect(connected).toHaveLength(2)
     })
@@ -122,6 +135,19 @@ describe('useChannelStore', () => {
       useChannelStore.getState().updateUnreadCount('ch-1', 42)
       const channel = useChannelStore.getState().channels.find((c) => c.id === 'ch-1')
       expect(channel!.unreadCount).toBe(42)
+    })
+  })
+
+  describe('validationErrors', () => {
+    it('sets validation errors for a channel', () => {
+      useChannelStore.getState().setValidationErrors('ch-1', ['Missing bot token'])
+      expect(useChannelStore.getState().validationErrors['ch-1']).toEqual(['Missing bot token'])
+    })
+
+    it('clears validation errors for a channel', () => {
+      useChannelStore.getState().setValidationErrors('ch-1', ['Error'])
+      useChannelStore.getState().clearValidationErrors('ch-1')
+      expect(useChannelStore.getState().validationErrors['ch-1']).toEqual([])
     })
   })
 })

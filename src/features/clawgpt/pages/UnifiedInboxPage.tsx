@@ -1,13 +1,14 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useGatewayStore } from '../stores/useGatewayStore'
 import { useMessageStore } from '../stores/useMessageStore'
+import { GatewayStatus } from '../types'
 import SessionPanel from '../components/SessionPanel/SessionPanel'
 import MessageThread from '../components/MessageThread/MessageThread'
 import MessageComposer from '../components/MessageComposer/MessageComposer'
 import './UnifiedInboxPage.css'
 
 export default function UnifiedInboxPage() {
-  const { activeSessions } = useGatewayStore()
+  const { activeSessions, gatewayStatus } = useGatewayStore()
   const { messages, sendMessage, markRead, activeSessionId, setActiveSession } = useMessageStore()
   const [showDetails, setShowDetails] = useState(true)
 
@@ -65,6 +66,8 @@ export default function UnifiedInboxPage() {
     ? messages.filter((m) => m.sessionId === activeSessionId).length
     : 0
 
+  const isGatewayOffline = gatewayStatus === GatewayStatus.Offline
+
   return (
     <div className="unified-inbox">
       <div className="unified-inbox__sessions">
@@ -81,6 +84,9 @@ export default function UnifiedInboxPage() {
             <div className="unified-inbox__messages-header">
               <h3 className="unified-inbox__contact-name">{selectedSession.contactName}</h3>
               <span className="unified-inbox__channel-type">{selectedSession.channelType}</span>
+              {isGatewayOffline && (
+                <span className="unified-inbox__offline-badge">Gateway Offline</span>
+              )}
               <button
                 className="btn--ghost unified-inbox__toggle-details"
                 onClick={handleToggleDetails}

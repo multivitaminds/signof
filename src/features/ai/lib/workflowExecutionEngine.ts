@@ -340,6 +340,35 @@ export async function executeNode(
         }
       }
 
+      case 'registry_agent': {
+        const registryId = node.data.registryId as string
+        const task = (node.data.task as string) || 'Execute workflow step'
+        if (!registryId) {
+          return { success: false, output: null, error: 'Missing registryId in registry_agent node' }
+        }
+        try {
+          const { spawnAgent } = await import('../../clawgpt/lib/agentKernel')
+          const instanceId = spawnAgent(registryId, task, {
+            autonomyMode: (node.data.autonomyMode as string) as 'full_auto' | 'suggest' | 'ask_first' ?? 'full_auto',
+          })
+          if (!instanceId) {
+            return { success: false, output: null, error: `Failed to spawn registry agent: ${registryId}` }
+          }
+          return {
+            success: true,
+            output: {
+              instanceId,
+              registryId,
+              task,
+              status: 'spawned',
+            },
+          }
+        } catch (err: unknown) {
+          const msg = err instanceof Error ? err.message : 'Failed to spawn registry agent'
+          return { success: false, output: null, error: msg }
+        }
+      }
+
       // ── Logic Nodes ─────────────────────────────────────────────
       case 'if_else': {
         const ctx = { data: inputData as Record<string, unknown>, ...Object.fromEntries(context.variables) }

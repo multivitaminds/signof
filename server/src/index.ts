@@ -2,7 +2,10 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import chatRoutes from './routes/chat.js';
+import sessionsRoutes from './routes/sessions.js';
+import channelsRoutes from './routes/channels.js';
 import { getAllProviders } from './providers/index.js';
+import { createWebSocketServer } from './gateway/websocketServer.js';
 
 const app = express();
 const PORT = parseInt(process.env.PORT ?? '3001', 10);
@@ -13,6 +16,8 @@ app.use(express.json({ limit: '10mb' }));
 
 // Routes
 app.use('/api', chatRoutes);
+app.use('/api', sessionsRoutes);
+app.use('/api', channelsRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
@@ -36,7 +41,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   const providers = getAllProviders();
   const available: string[] = [];
   for (const [key, provider] of providers) {
@@ -46,3 +51,6 @@ app.listen(PORT, () => {
   console.log(`Orchestree server running on http://localhost:${PORT}`);
   console.log(`Available providers: ${available.length > 0 ? available.join(', ') : 'none (set API keys in .env)'}`);
 });
+
+// Attach WebSocket server to the HTTP server
+createWebSocketServer(server);

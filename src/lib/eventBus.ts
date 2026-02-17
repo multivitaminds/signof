@@ -8,6 +8,16 @@ export const EVENT_TYPES = {
   TAX_FILED: 'tax:filed',
   DATABASE_CREATED: 'database:created',
   PAGE_CREATED: 'page:created',
+  BRAIN_MESSAGE_RECEIVED: 'brain:message_received',
+  BRAIN_SESSION_CREATED: 'brain:session_created',
+  BRAIN_SKILL_EXECUTED: 'brain:skill_executed',
+  BRAIN_GATEWAY_STATUS: 'brain:gateway_status',
+  FLEET_AGENT_SPAWNED: 'fleet:agent_spawned',
+  FLEET_AGENT_RETIRED: 'fleet:agent_retired',
+  FLEET_TASK_COMPLETED: 'fleet:task_completed',
+  FLEET_TASK_FAILED: 'fleet:task_failed',
+  FLEET_ALERT: 'fleet:alert',
+  FLEET_TELEMETRY: 'fleet:telemetry',
 } as const
 
 export type EventType = (typeof EVENT_TYPES)[keyof typeof EVENT_TYPES]

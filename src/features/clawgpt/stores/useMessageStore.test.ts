@@ -2,6 +2,11 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { useMessageStore } from './useMessageStore'
 import type { BrainMessage } from '../types'
 
+// Mock the dynamic imports used by sendMessage
+vi.mock('../lib/gatewayClient', () => ({
+  sendChatMessage: vi.fn(),
+}))
+
 const SAMPLE_MESSAGES: BrainMessage[] = [
   {
     id: 'msg-1',
@@ -64,17 +69,17 @@ describe('useMessageStore', () => {
   })
 
   describe('sendMessage', () => {
-    it('creates an outbound message with sent status', () => {
+    it('creates an outbound message with sending status', () => {
       useMessageStore.getState().sendMessage('session-1', 'ch-slack', 'slack', 'Testing reply')
       const state = useMessageStore.getState()
       expect(state.messages).toHaveLength(4)
       const sent = state.messages[3]!
       expect(sent.direction).toBe('outbound')
       expect(sent.content).toBe('Testing reply')
-      expect(sent.status).toBe('sent')
+      expect(sent.status).toBe('sending')
       expect(sent.sessionId).toBe('session-1')
       expect(sent.channelId).toBe('ch-slack')
-      expect(sent.senderName).toBe('Atlas')
+      expect(sent.senderName).toBe('You')
       expect(sent.senderAvatar).toBeNull()
       expect(sent.toolCalls).toBeNull()
       expect(sent.agentId).toBeNull()
@@ -197,6 +202,53 @@ describe('useMessageStore', () => {
       useMessageStore.getState().markRead('session-1')
       useMessageStore.getState().markRead('session-2')
       expect(useMessageStore.getState().getUnreadCount()).toBe(0)
+    })
+  })
+
+  describe('updateMessageStatus', () => {
+    it('updates the status of a message by id', () => {
+      useMessageStore.getState().updateMessageStatus('msg-1', 'delivered')
+      const msg = useMessageStore.getState().messages.find((m) => m.id === 'msg-1')
+      expect(msg!.status).toBe('delivered')
+    })
+  })
+
+  describe('loadMessages', () => {
+    it('adds new messages without duplicating existing ones', () => {
+      const newMessages: BrainMessage[] = [
+        {
+          id: 'msg-1', // existing id — should be skipped
+          sessionId: 'session-1',
+          channelId: 'ch-slack',
+          channelType: 'slack',
+          direction: 'inbound',
+          content: 'Duplicate',
+          timestamp: '2025-06-15T09:00:00Z',
+          senderName: 'Alice',
+          senderAvatar: null,
+          toolCalls: null,
+          agentId: null,
+          status: 'read',
+        },
+        {
+          id: 'msg-new',
+          sessionId: 'session-1',
+          channelId: 'ch-slack',
+          channelType: 'slack',
+          direction: 'inbound',
+          content: 'Brand new',
+          timestamp: '2025-06-15T12:00:00Z',
+          senderName: 'Carol',
+          senderAvatar: null,
+          toolCalls: null,
+          agentId: null,
+          status: 'delivered',
+        },
+      ]
+      useMessageStore.getState().loadMessages(newMessages)
+      const state = useMessageStore.getState()
+      expect(state.messages).toHaveLength(4) // 3 original + 1 new
+      expect(state.messages.find((m) => m.id === 'msg-new')).toBeTruthy()
     })
   })
 })

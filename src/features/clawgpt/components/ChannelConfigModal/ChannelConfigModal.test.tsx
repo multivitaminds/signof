@@ -3,6 +3,11 @@ import userEvent from '@testing-library/user-event'
 import ChannelConfigModal from './ChannelConfigModal'
 import type { Channel, ChannelConfigField } from '../../types'
 
+// Mock the channelValidator used by handleTest
+vi.mock('../../lib/channelValidator', () => ({
+  testChannelConnection: vi.fn(() => Promise.resolve({ valid: true, errors: [] })),
+}))
+
 const mockChannel: Channel = {
   id: 'ch-1',
   type: 'slack',
@@ -41,7 +46,6 @@ describe('ChannelConfigModal', () => {
     configFields: mockFields,
     onSave: vi.fn(),
     onCancel: vi.fn(),
-    onTest: vi.fn(),
   }
 
   beforeEach(() => {
@@ -93,21 +97,20 @@ describe('ChannelConfigModal', () => {
     expect(defaultProps.onCancel).toHaveBeenCalledOnce()
   })
 
-  it('renders Test Connection button when onTest provided', () => {
+  it('always renders Test Connection button', () => {
     render(<ChannelConfigModal {...defaultProps} />)
     expect(screen.getByText('Test Connection')).toBeInTheDocument()
   })
 
-  it('hides Test Connection button when onTest not provided', () => {
-    render(<ChannelConfigModal {...defaultProps} onTest={undefined} />)
-    expect(screen.queryByText('Test Connection')).not.toBeInTheDocument()
-  })
+  it('shows Testing... state when Test Connection is clicked', async () => {
+    const { testChannelConnection } = await import('../../lib/channelValidator')
+    const mockedTest = vi.mocked(testChannelConnection)
+    // Make it hang so we can see the "Testing..." state
+    mockedTest.mockImplementation(() => new Promise(() => {}))
 
-  it('calls onTest and shows loading state', async () => {
     const user = userEvent.setup()
     render(<ChannelConfigModal {...defaultProps} />)
     await user.click(screen.getByText('Test Connection'))
-    expect(defaultProps.onTest).toHaveBeenCalledOnce()
     expect(screen.getByText('Testing...')).toBeInTheDocument()
   })
 })

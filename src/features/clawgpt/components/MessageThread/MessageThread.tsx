@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import type { BrainMessage } from '../../types'
+import { MessageStatus } from '../../types'
 import './MessageThread.css'
 
 interface MessageThreadProps {
@@ -41,8 +42,29 @@ function ToolCallBlock({ calls }: { calls: string[] }) {
   )
 }
 
+function TypingIndicator() {
+  return (
+    <div className="message-thread__bubble message-thread__bubble--inbound message-thread__bubble--typing">
+      <span className="message-thread__sender">Atlas</span>
+      <div className="message-thread__typing-dots">
+        <span className="message-thread__typing-dot" />
+        <span className="message-thread__typing-dot" />
+        <span className="message-thread__typing-dot" />
+      </div>
+    </div>
+  )
+}
+
 export default function MessageThread({ messages, sessionId }: MessageThreadProps) {
   const filtered = messages.filter((m) => m.sessionId === sessionId)
+  const bottomRef = useRef<HTMLDivElement>(null)
+
+  const lastMessage = filtered.length > 0 ? filtered[filtered.length - 1] : null
+  const isWaitingForResponse = lastMessage?.status === MessageStatus.Sending
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [filtered.length, isWaitingForResponse])
 
   if (filtered.length === 0) {
     return (
@@ -56,10 +78,11 @@ export default function MessageThread({ messages, sessionId }: MessageThreadProp
     <div className="message-thread" role="log" aria-label="Message thread">
       {filtered.map((msg) => {
         const isOutbound = msg.direction === 'outbound'
+        const isSending = msg.status === MessageStatus.Sending
         return (
           <div
             key={msg.id}
-            className={`message-thread__bubble message-thread__bubble--${msg.direction}`}
+            className={`message-thread__bubble message-thread__bubble--${msg.direction}${isSending ? ' message-thread__bubble--sending' : ''}`}
           >
             <span className="message-thread__sender">{msg.senderName}</span>
             <div className="message-thread__content">{msg.content}</div>
@@ -69,12 +92,16 @@ export default function MessageThread({ messages, sessionId }: MessageThreadProp
             <div className="message-thread__footer">
               <span className="message-thread__time">{formatTime(msg.timestamp)}</span>
               {isOutbound && (
-                <span className="message-thread__status">{msg.status}</span>
+                <span className={`message-thread__status message-thread__status--${msg.status}`}>
+                  {msg.status}
+                </span>
               )}
             </div>
           </div>
         )
       })}
+      {isWaitingForResponse && <TypingIndicator />}
+      <div ref={bottomRef} />
     </div>
   )
 }

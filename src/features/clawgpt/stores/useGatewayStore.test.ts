@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useGatewayStore } from './useGatewayStore'
 
+// Mock the dynamic import of gatewayClient
+vi.mock('../lib/gatewayClient', () => ({
+  connectGateway: vi.fn(),
+  disconnectGateway: vi.fn(),
+}))
+
 describe('useGatewayStore', () => {
   beforeEach(() => {
     useGatewayStore.setState({
@@ -20,10 +26,10 @@ describe('useGatewayStore', () => {
   })
 
   describe('startGateway', () => {
-    it('sets status to online and records uptime', () => {
+    it('sets status to degraded (connecting) and records uptime', () => {
       useGatewayStore.getState().startGateway()
       const state = useGatewayStore.getState()
-      expect(state.gatewayStatus).toBe('online')
+      expect(state.gatewayStatus).toBe('degraded')
       expect(state.uptimeSince).toBeTruthy()
     })
   })
@@ -35,6 +41,24 @@ describe('useGatewayStore', () => {
       const state = useGatewayStore.getState()
       expect(state.gatewayStatus).toBe('offline')
       expect(state.uptimeSince).toBeNull()
+    })
+  })
+
+  describe('setGatewayStatus', () => {
+    it('updates status to online', () => {
+      useGatewayStore.getState().setGatewayStatus('online')
+      expect(useGatewayStore.getState().gatewayStatus).toBe('online')
+    })
+
+    it('records uptimeSince when going online', () => {
+      useGatewayStore.getState().setGatewayStatus('online')
+      expect(useGatewayStore.getState().uptimeSince).toBeTruthy()
+    })
+
+    it('clears uptimeSince when going offline', () => {
+      useGatewayStore.getState().setGatewayStatus('online')
+      useGatewayStore.getState().setGatewayStatus('offline')
+      expect(useGatewayStore.getState().uptimeSince).toBeNull()
     })
   })
 
@@ -86,6 +110,14 @@ describe('useGatewayStore', () => {
       const session = useGatewayStore.getState().activeSessions.find((s) => s.id === id)
       expect(session!.lastMessage).toBe('Hello')
       expect(session!.contactName).toBe('Updated User')
+    })
+  })
+
+  describe('loadSessions', () => {
+    it('replaces active sessions', () => {
+      useGatewayStore.getState().createSession('ch-slack', 'slack', 'User A')
+      useGatewayStore.getState().loadSessions([])
+      expect(useGatewayStore.getState().activeSessions).toHaveLength(0)
     })
   })
 

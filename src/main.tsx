@@ -99,6 +99,8 @@ const UnifiedInboxPage = lazy(() => import('./features/clawgpt/pages/UnifiedInbo
 const SkillsPage = lazy(() => import('./features/clawgpt/pages/SkillsPage'))
 const SoulPage = lazy(() => import('./features/clawgpt/pages/SoulPage'))
 const DevicesPage = lazy(() => import('./features/clawgpt/pages/DevicesPage'))
+const FleetPage = lazy(() => import('./features/clawgpt/pages/FleetPage'))
+const RegistryPage = lazy(() => import('./features/clawgpt/pages/RegistryPage'))
 
 const DeveloperLayout = lazy(() => import('./features/developer/pages/DeveloperLayout'))
 const ApiDocsPage = lazy(() => import('./features/developer/pages/ApiDocsPage'))
@@ -261,6 +263,8 @@ createRoot(root).render(
             <Route path="skills" element={<Suspense fallback={CardFallback}><SkillsPage /></Suspense>} />
             <Route path="soul" element={<Suspense fallback={EditorFallback}><SoulPage /></Suspense>} />
             <Route path="devices" element={<Suspense fallback={CardFallback}><DevicesPage /></Suspense>} />
+            <Route path="fleet" element={<Suspense fallback={CardFallback}><FleetPage /></Suspense>} />
+            <Route path="registry" element={<Suspense fallback={CardFallback}><RegistryPage /></Suspense>} />
           </Route>
 
           {/* Tax E-Filing (TaxBandit) */}

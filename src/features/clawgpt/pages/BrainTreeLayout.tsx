@@ -8,7 +8,7 @@ export default function BrainTreeLayout() {
     <div className="clawgpt-layout">
       <ModuleHeader
         title="Command Center"
-        subtitle="Manage your messaging channels, AI skills, and automations in one place"
+        subtitle="Agent Operating System — 540+ autonomous agents, fleet management, and multi-channel intelligence"
       />
 
       <DemoVideoSection videos={[
@@ -65,6 +65,22 @@ export default function BrainTreeLayout() {
           }
         >
           Devices
+        </NavLink>
+        <NavLink
+          to="/brain/fleet"
+          className={({ isActive }) =>
+            `clawgpt-layout__tab${isActive ? ' clawgpt-layout__tab--active' : ''}`
+          }
+        >
+          Fleet
+        </NavLink>
+        <NavLink
+          to="/brain/registry"
+          className={({ isActive }) =>
+            `clawgpt-layout__tab${isActive ? ' clawgpt-layout__tab--active' : ''}`
+          }
+        >
+          Registry
         </NavLink>
       </nav>
 

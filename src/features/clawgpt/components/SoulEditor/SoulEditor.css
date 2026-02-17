@@ -165,3 +165,33 @@
 .soul-editor__field--half {
   flex: 1;
 }
+
+.soul-editor__preview {
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.soul-editor__preview-input-row {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.soul-editor__preview-input-row .soul-editor__input {
+  flex: 1;
+}
+
+.soul-editor__preview-response {
+  padding: var(--space-sm);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-normal);
+  white-space: pre-wrap;
+}

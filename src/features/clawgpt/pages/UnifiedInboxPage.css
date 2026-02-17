@@ -47,6 +47,15 @@
   border-radius: var(--radius-sm);
 }
 
+.unified-inbox__offline-badge {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--color-danger);
+  background: rgba(220, 38, 38, 0.1);
+  padding: 2px var(--space-xs);
+  border-radius: var(--radius-sm);
+}
+
 .unified-inbox__toggle-details {
   margin-left: auto;
   font-size: 0.8125rem;

@@ -130,3 +130,49 @@
   background: rgba(255, 255, 255, 0.15);
   color: rgba(255, 255, 255, 0.9);
 }
+
+.message-thread__bubble--sending {
+  opacity: 0.8;
+}
+
+.message-thread__status--sending {
+  font-style: italic;
+}
+
+.message-thread__bubble--typing {
+  padding: var(--space-sm) var(--space-md);
+}
+
+.message-thread__typing-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: var(--space-xs) 0;
+}
+
+.message-thread__typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: typing-bounce 1.4s infinite ease-in-out;
+}
+
+.message-thread__typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.message-thread__typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing-bounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

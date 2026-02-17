@@ -41,10 +41,24 @@
   margin-left: auto;
 }
 
+.gateway-status__dot--pulse {
+  animation: gateway-pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes gateway-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
 .gateway-status__action {
   margin-left: auto;
   font-size: var(--text-sm);
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
   cursor: pointer;
+}
+
+.gateway-status__action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

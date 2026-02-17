@@ -1,123 +1,137 @@
-import { useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useGatewayStore } from '../stores/useGatewayStore'
-import { useChannelStore } from '../stores/useChannelStore'
+import { useFleetStore } from '../stores/useFleetStore'
 import { useMessageStore } from '../stores/useMessageStore'
-import { useSkillStore } from '../stores/useSkillStore'
 import GatewayStatus from '../components/GatewayStatus/GatewayStatus'
 import ActivityFeed from '../components/ActivityFeed/ActivityFeed'
+import FleetOverview from '../components/FleetOverview/FleetOverview'
+import FleetGrid from '../components/FleetGrid/FleetGrid'
+import TaskQueuePanel from '../components/TaskQueuePanel/TaskQueuePanel'
+import BudgetDashboard from '../components/BudgetDashboard/BudgetDashboard'
+import AlertPanel from '../components/AlertPanel/AlertPanel'
+import AgentSpawner from '../components/AgentSpawner/AgentSpawner'
+import FleetAgentDetail from '../components/FleetAgentDetail/FleetAgentDetail'
+import { spawnAgent, retireAgent, submitTask, startReconciliation } from '../lib/agentKernel'
+import { getRegistrySize } from '../../ai/lib/agentRegistry'
 import './BrainDashboardPage.css'
 
 export default function BrainDashboardPage() {
   const navigate = useNavigate()
-  const { activeSessions, totalMessagesToday } = useGatewayStore()
-  const { channels } = useChannelStore()
   const { messages } = useMessageStore()
-  const { skills } = useSkillStore()
-
-  const activeSessionCount = activeSessions.filter((s) => s.isActive).length
-  const connectedChannelCount = channels.filter((ch) => ch.status === 'connected').length
-  const installedSkillCount = skills.filter((sk) => sk.installed).length
+  const fleetMetrics = useFleetStore((s) => s.fleetMetrics)
+  const [spawnerOpen, setSpawnerOpen] = useState(false)
+  const [selectedInstanceId, setSelectedInstanceId] = useState<string | null>(null)
   const recentMessages = messages.slice(-20)
+
+  // Start reconciliation loop on mount
+  useEffect(() => {
+    // Initialize fleet metrics with registry size
+    useFleetStore.getState().refreshMetrics(getRegistrySize())
+    startReconciliation()
+  }, [])
+
+  const handleSpawnOpen = useCallback(() => {
+    setSpawnerOpen(true)
+  }, [])
+
+  const handleSpawnClose = useCallback(() => {
+    setSpawnerOpen(false)
+  }, [])
+
+  const handleSpawn = useCallback((registryId: string, task: string) => {
+    spawnAgent(registryId, task)
+    setSpawnerOpen(false)
+  }, [])
+
+  const handleSelectInstance = useCallback((instanceId: string) => {
+    setSelectedInstanceId(instanceId)
+  }, [])
+
+  const handleCloseDetail = useCallback(() => {
+    setSelectedInstanceId(null)
+  }, [])
+
+  const handleRetire = useCallback((instanceId: string) => {
+    retireAgent(instanceId)
+    setSelectedInstanceId(null)
+  }, [])
+
+  const handleSubmitTask = useCallback((description: string) => {
+    submitTask(description)
+  }, [])
 
   const handleNavigateInbox = useCallback(() => {
     navigate('/brain/inbox')
   }, [navigate])
 
-  const handleNavigateChannels = useCallback(() => {
-    navigate('/brain/channels')
-  }, [navigate])
-
-  const handleNavigateSkills = useCallback(() => {
-    navigate('/brain/skills')
-  }, [navigate])
-
-  const handleStatKeyDown = useCallback(
-    (handler: () => void) => (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        handler()
-      }
-    },
-    []
-  )
-
   return (
     <div className="brain-dashboard">
       <GatewayStatus />
 
-      <div className="brain-dashboard__stats">
-        <div
-          className="brain-dashboard__stat-card"
-          role="button"
-          tabIndex={0}
-          onClick={handleNavigateInbox}
-          onKeyDown={handleStatKeyDown(handleNavigateInbox)}
-          aria-label="Active Sessions — go to Inbox"
-        >
-          <span className="brain-dashboard__stat-value">{activeSessionCount}</span>
-          <span className="brain-dashboard__stat-label">Active Sessions</span>
+      <FleetOverview />
+
+      <div className="brain-dashboard__main">
+        <div className="brain-dashboard__main-left">
+          <div className="brain-dashboard__section">
+            <div className="brain-dashboard__section-header">
+              <h3 className="brain-dashboard__section-title">Active Fleet</h3>
+              <button
+                className="btn--primary brain-dashboard__spawn-btn"
+                onClick={handleSpawnOpen}
+              >
+                Spawn Agent
+              </button>
+            </div>
+            <FleetGrid onSelectInstance={handleSelectInstance} />
+          </div>
+
+          <div className="brain-dashboard__section">
+            <h3 className="brain-dashboard__section-title">Recent Activity</h3>
+            <ActivityFeed
+              messages={recentMessages}
+              maxItems={10}
+              onMessageClick={handleNavigateInbox}
+            />
+          </div>
         </div>
-        <div
-          className="brain-dashboard__stat-card"
-          role="button"
-          tabIndex={0}
-          onClick={handleNavigateInbox}
-          onKeyDown={handleStatKeyDown(handleNavigateInbox)}
-          aria-label="Messages Today — go to Inbox"
-        >
-          <span className="brain-dashboard__stat-value">{totalMessagesToday}</span>
-          <span className="brain-dashboard__stat-label">Messages Today</span>
-        </div>
-        <div
-          className="brain-dashboard__stat-card"
-          role="button"
-          tabIndex={0}
-          onClick={handleNavigateChannels}
-          onKeyDown={handleStatKeyDown(handleNavigateChannels)}
-          aria-label="Channels Connected — go to Channels"
-        >
-          <span className="brain-dashboard__stat-value">{connectedChannelCount}</span>
-          <span className="brain-dashboard__stat-label">Channels Connected</span>
-        </div>
-        <div
-          className="brain-dashboard__stat-card"
-          role="button"
-          tabIndex={0}
-          onClick={handleNavigateSkills}
-          onKeyDown={handleStatKeyDown(handleNavigateSkills)}
-          aria-label="Skills Installed — go to Skills"
-        >
-          <span className="brain-dashboard__stat-value">{installedSkillCount}</span>
-          <span className="brain-dashboard__stat-label">Skills Installed</span>
+
+        <div className="brain-dashboard__main-right">
+          <div className="brain-dashboard__section">
+            <h3 className="brain-dashboard__section-title">Task Queue</h3>
+            <TaskQueuePanel onSubmitTask={handleSubmitTask} />
+          </div>
+
+          <div className="brain-dashboard__section">
+            <h3 className="brain-dashboard__section-title">Budget</h3>
+            <BudgetDashboard />
+          </div>
         </div>
       </div>
 
-      <div className="brain-dashboard__activity">
-        <h3 className="brain-dashboard__activity-title">Recent Activity</h3>
-        <ActivityFeed messages={recentMessages} />
+      <div className="brain-dashboard__alerts">
+        <h3 className="brain-dashboard__section-title">Alerts</h3>
+        <AlertPanel maxItems={10} />
       </div>
 
-      <div className="brain-dashboard__quick-actions">
-        <button
-          className="btn--primary brain-dashboard__action-btn"
-          onClick={handleNavigateChannels}
-        >
-          Connect a Channel
-        </button>
-        <button
-          className="btn--secondary brain-dashboard__action-btn"
-          onClick={handleNavigateInbox}
-        >
-          Go to Inbox
-        </button>
-        <button
-          className="btn--secondary brain-dashboard__action-btn"
-          onClick={handleNavigateSkills}
-        >
-          Browse Skills
-        </button>
-      </div>
+      {fleetMetrics.totalRegistered === 0 && (
+        <div className="brain-dashboard__empty-state">
+          <p className="brain-dashboard__empty-text">
+            No agents registered yet. Import the agent catalog to get started with 540+ agent types.
+          </p>
+        </div>
+      )}
+
+      <AgentSpawner
+        isOpen={spawnerOpen}
+        onClose={handleSpawnClose}
+        onSpawn={handleSpawn}
+      />
+
+      <FleetAgentDetail
+        instanceId={selectedInstanceId}
+        onClose={handleCloseDetail}
+        onRetire={handleRetire}
+      />
     </div>
   )
 }

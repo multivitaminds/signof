@@ -32,6 +32,10 @@ export default function SoulEditor({
 }: SoulEditorProps) {
   const [newRule, setNewRule] = useState('')
   const [newContext, setNewContext] = useState('')
+  const [showPreview, setShowPreview] = useState(false)
+  const [previewInput, setPreviewInput] = useState('')
+  const [previewResponse, setPreviewResponse] = useState('')
+  const [previewLoading, setPreviewLoading] = useState(false)
 
   const handleAddRule = useCallback(() => {
     const trimmed = newRule.trim()
@@ -53,6 +57,38 @@ export default function SoulEditor({
     },
     [onSwitchPreset]
   )
+
+  const handlePreview = useCallback(async () => {
+    if (!previewInput.trim()) return
+    setPreviewLoading(true)
+    setPreviewResponse('')
+
+    const systemPrompt = [
+      config.systemPrompt,
+      config.rules.length > 0 ? 'Rules:\n' + config.rules.map((r, i) => `${i + 1}. ${r}`).join('\n') : '',
+      config.context.length > 0 ? 'Context:\n' + config.context.map((c) => `- ${c}`).join('\n') : '',
+      `Response style: ${config.responseStyle}`,
+      `Language: ${config.language}`,
+    ].filter(Boolean).join('\n\n')
+
+    try {
+      const res = await fetch('/api/chat/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: previewInput }],
+          systemPrompt,
+          maxTokens: 200,
+        }),
+      })
+      const data = await res.json() as { content?: string; error?: string }
+      setPreviewResponse(data.content ?? data.error ?? 'No response')
+    } catch {
+      setPreviewResponse('Server unavailable. Start the backend to test.')
+    } finally {
+      setPreviewLoading(false)
+    }
+  }, [previewInput, config])
 
   return (
     <div className="soul-editor">
@@ -77,8 +113,48 @@ export default function SoulEditor({
           <button className="btn--ghost" onClick={onReset} aria-label="Reset configuration">
             Reset
           </button>
+          <button
+            className="btn--outline"
+            onClick={() => setShowPreview((p) => !p)}
+            aria-label={showPreview ? 'Hide preview' : 'Show preview'}
+          >
+            {showPreview ? 'Hide Preview' : 'Preview'}
+          </button>
         </div>
       </div>
+
+      {showPreview && (
+        <div className="soul-editor__preview">
+          <div className="soul-editor__preview-input-row">
+            <input
+              type="text"
+              className="soul-editor__input"
+              value={previewInput}
+              onChange={(e) => setPreviewInput(e.target.value)}
+              placeholder="Type a test message to preview personality..."
+              aria-label="Preview message"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  handlePreview()
+                }
+              }}
+            />
+            <button
+              className="btn--primary"
+              onClick={handlePreview}
+              disabled={previewLoading || !previewInput.trim()}
+            >
+              {previewLoading ? '...' : 'Send'}
+            </button>
+          </div>
+          {previewResponse && (
+            <div className="soul-editor__preview-response">
+              <strong>{config.name}:</strong> {previewResponse}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="soul-editor__field">
         <label className="soul-editor__field-label" htmlFor="soul-name">

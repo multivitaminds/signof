@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Session } from '../types'
-import { GatewayStatus, ChannelType } from '../types'
+import type { Session, FleetMetrics } from '../types'
+import { GatewayStatus } from '../types'
 import type { ChannelType as ChannelTypeT } from '../types'
 
 function rid(): string {
@@ -13,79 +13,60 @@ interface GatewayState {
   activeSessions: Session[]
   totalMessagesToday: number
   uptimeSince: string | null
+  fleetMetrics: FleetMetrics | null
 
   startGateway: () => void
   stopGateway: () => void
+  setGatewayStatus: (status: GatewayStatus) => void
   createSession: (channelId: string, channelType: ChannelTypeT, contactName: string) => string
   closeSession: (sessionId: string) => void
   updateSession: (sessionId: string, updates: Partial<Session>) => void
+  loadSessions: (sessions: Session[]) => void
   getSessionsByChannel: (channelId: string) => Session[]
   getActiveSessionCount: () => number
   incrementMessageCount: () => void
+  setFleetMetrics: (metrics: FleetMetrics) => void
 }
-
-const SAMPLE_SESSIONS: Session[] = [
-  {
-    id: 'session-1',
-    channelId: 'ch-slack',
-    channelType: ChannelType.Slack,
-    contactId: 'contact-1',
-    contactName: 'Sarah Connor',
-    contactAvatar: null,
-    lastMessage: 'Can you add the team members?',
-    lastMessageAt: '2025-06-15T09:32:00Z',
-    startedAt: '2025-06-15T09:00:00Z',
-    agentId: null,
-    isActive: true,
-  },
-  {
-    id: 'session-2',
-    channelId: 'ch-email',
-    channelType: ChannelType.Email,
-    contactId: 'contact-2',
-    contactName: 'John Doe',
-    contactAvatar: null,
-    lastMessage: 'Yes, please forward it to john@acme.com. Thanks!',
-    lastMessageAt: '2025-06-15T09:15:00Z',
-    startedAt: '2025-06-15T08:45:00Z',
-    agentId: null,
-    isActive: true,
-  },
-  {
-    id: 'session-3',
-    channelId: 'ch-webchat',
-    channelType: ChannelType.WebChat,
-    contactId: 'contact-3',
-    contactName: 'Anonymous Visitor',
-    contactAvatar: null,
-    lastMessage: 'Yes please, especially the Pro plan.',
-    lastMessageAt: '2025-06-15T10:05:00Z',
-    startedAt: '2025-06-15T10:00:00Z',
-    agentId: null,
-    isActive: true,
-  },
-]
 
 export const useGatewayStore = create<GatewayState>()(
   persist(
     (_set, get) => ({
       gatewayStatus: GatewayStatus.Offline as GatewayStatus,
-      activeSessions: SAMPLE_SESSIONS,
-      totalMessagesToday: 47,
+      activeSessions: [],
+      totalMessagesToday: 0,
       uptimeSince: null,
+      fleetMetrics: null,
 
       startGateway: () => {
+        // Import dynamically to avoid circular dependency
+        import('../lib/gatewayClient').then(({ connectGateway }) => {
+          connectGateway()
+        })
         _set({
-          gatewayStatus: GatewayStatus.Online,
+          gatewayStatus: GatewayStatus.Degraded,
           uptimeSince: new Date().toISOString(),
         })
       },
 
       stopGateway: () => {
+        import('../lib/gatewayClient').then(({ disconnectGateway }) => {
+          disconnectGateway()
+        })
         _set({
           gatewayStatus: GatewayStatus.Offline,
           uptimeSince: null,
         })
+      },
+
+      setGatewayStatus: (status) => {
+        _set((s) => ({
+          gatewayStatus: status,
+          uptimeSince: status === GatewayStatus.Online
+            ? s.uptimeSince ?? new Date().toISOString()
+            : status === GatewayStatus.Offline
+              ? null
+              : s.uptimeSince,
+        }))
       },
 
       createSession: (channelId, channelType, contactName) => {
@@ -126,6 +107,10 @@ export const useGatewayStore = create<GatewayState>()(
         }))
       },
 
+      loadSessions: (sessions) => {
+        _set({ activeSessions: sessions })
+      },
+
       getSessionsByChannel: (channelId) => {
         return get().activeSessions.filter((s) => s.channelId === channelId)
       },
@@ -138,6 +123,10 @@ export const useGatewayStore = create<GatewayState>()(
         _set((s) => ({
           totalMessagesToday: s.totalMessagesToday + 1,
         }))
+      },
+
+      setFleetMetrics: (metrics) => {
+        _set({ fleetMetrics: metrics })
       },
     }),
     { name: 'orchestree-gateway-storage' }

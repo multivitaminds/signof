@@ -282,6 +282,101 @@ export interface GatewayEvent {
   timestamp: string
 }
 
+// ─── Fleet Types (Agent OS) ─────────────────────────────────────
+
+export const FleetAgentStatus = {
+  Spawning: 'spawning',
+  Idle: 'idle',
+  Working: 'working',
+  WaitingApproval: 'waiting_approval',
+  Error: 'error',
+  Retiring: 'retiring',
+} as const
+export type FleetAgentStatus = (typeof FleetAgentStatus)[keyof typeof FleetAgentStatus]
+
+export const TaskPriority = {
+  Critical: 'critical',
+  High: 'high',
+  Normal: 'normal',
+  Low: 'low',
+} as const
+export type TaskPriority = (typeof TaskPriority)[keyof typeof TaskPriority]
+
+export const TaskStatus = {
+  Queued: 'queued',
+  Routed: 'routed',
+  InProgress: 'in_progress',
+  Completed: 'completed',
+  Failed: 'failed',
+} as const
+export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus]
+
+export const TaskSource = {
+  User: 'user',
+  Agent: 'agent',
+  Workflow: 'workflow',
+  Channel: 'channel',
+  Schedule: 'schedule',
+} as const
+export type TaskSource = (typeof TaskSource)[keyof typeof TaskSource]
+
+export const AlertSeverity = {
+  Info: 'info',
+  Warning: 'warning',
+  Critical: 'critical',
+} as const
+export type AlertSeverity = (typeof AlertSeverity)[keyof typeof AlertSeverity]
+
+export interface FleetAgentInstance {
+  instanceId: string
+  registryId: string
+  runtimeAgentId: string
+  domain: string
+  status: FleetAgentStatus
+  currentTask: string | null
+  spawnedAt: string
+  lastHeartbeat: string
+  tokensConsumed: number
+  costUsd: number
+  cycleCount: number
+  errorCount: number
+}
+
+export interface TaskQueueItem {
+  id: string
+  description: string
+  domain: string | null
+  priority: TaskPriority
+  status: TaskStatus
+  assignedInstanceId: string | null
+  submittedAt: string
+  startedAt: string | null
+  completedAt: string | null
+  source: TaskSource
+  result: string | null
+}
+
+export interface FleetMetrics {
+  totalRegistered: number
+  totalActive: number
+  totalIdle: number
+  totalErrored: number
+  tasksTodayCompleted: number
+  tasksTodayFailed: number
+  totalTokensToday: number
+  totalCostToday: number
+  avgTaskDurationMs: number
+}
+
+export interface FleetAlert {
+  id: string
+  severity: AlertSeverity
+  message: string
+  agentInstanceId: string | null
+  timestamp: string
+  acknowledged: boolean
+}
+
 // ─── Labels ─────────────────────────────────────────────────────
 
 export const CHANNEL_STATUS_LABELS: Record<ChannelStatus, string> = {

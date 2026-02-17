@@ -16,6 +16,7 @@ import { pruneAgentMemories } from './memoryLifecycleManager'
 import useCostTrackingStore from '../stores/useCostTrackingStore'
 import useAgentIdentityStore from '../stores/useAgentIdentityStore'
 import { countTokens } from './tokenCount'
+import { emitCycleStart, emitCycleEnd, emitAgentError } from '../../clawgpt/lib/fleetTelemetry'
 
 const DEFAULT_CYCLE_INTERVAL_MS = 30_000
 const activeLoops = new Map<string, AbortController>()
@@ -70,37 +71,48 @@ async function runLoop(
     try {
       // 1. OBSERVE — gather context
       const startTime = Date.now()
+      emitCycleStart(agentId, 'observe')
       useAgentRuntimeStore.getState().setLifecycle(agentId, AgentLifecycle.Thinking)
       useAgentRuntimeStore.getState().heartbeat(agentId)
 
       const observeStep = await observe(agentId)
       addStep(agentId, 'observe', observeStep, Date.now() - startTime)
+      emitCycleEnd(agentId, 'observe', Date.now() - startTime)
 
       // 2. REASON — analyze context with LLM
       const reasonStart = Date.now()
+      emitCycleStart(agentId, 'reason')
       const reasoning = await reason(agentId, observeStep)
       addStep(agentId, 'reason', reasoning, Date.now() - reasonStart)
+      emitCycleEnd(agentId, 'reason', Date.now() - reasonStart)
 
       // 3. PLAN — decide next action
       const planStart = Date.now()
+      emitCycleStart(agentId, 'plan')
       const plan = await planAction(agentId, reasoning)
       addStep(agentId, 'plan', plan, Date.now() - planStart)
+      emitCycleEnd(agentId, 'plan', Date.now() - planStart)
 
       // 4. ACT — execute or queue for approval
       const actStart = Date.now()
+      emitCycleStart(agentId, 'act')
       useAgentRuntimeStore.getState().setLifecycle(agentId, AgentLifecycle.Acting)
       const result = await act(agentId, plan)
       addStep(agentId, 'act', result, Date.now() - actStart)
+      emitCycleEnd(agentId, 'act', Date.now() - actStart)
 
       // 5. REFLECT — evaluate result, update memory
       const reflectStart = Date.now()
+      emitCycleStart(agentId, 'reflect')
       await reflect(agentId, result)
       addStep(agentId, 'reflect', 'Cycle completed successfully', Date.now() - reflectStart)
+      emitCycleEnd(agentId, 'reflect', Date.now() - reflectStart)
 
     } catch (error: unknown) {
       // 6. HEAL — self-healing on error
       useAgentRuntimeStore.getState().setLifecycle(agentId, AgentLifecycle.Healing)
       useAgentRuntimeStore.getState().incrementErrorCount(agentId)
+      emitAgentError(agentId, 'cycle_error', error instanceof Error ? error.message : String(error))
       await heal(agentId, error)
     }
 

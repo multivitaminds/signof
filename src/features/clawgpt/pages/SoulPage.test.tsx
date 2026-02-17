@@ -3,8 +3,13 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import SoulPage from './SoulPage'
 
-const mockUpdateSoul = vi.fn()
 const mockResetToDefault = vi.fn()
+const mockSwitchPreset = vi.fn()
+const mockAddRule = vi.fn()
+const mockRemoveRule = vi.fn()
+const mockAddContext = vi.fn()
+const mockRemoveContext = vi.fn()
+const mockUpdateSoul = vi.fn()
 
 const mockSoulConfig = {
   name: 'Atlas',
@@ -13,22 +18,37 @@ const mockSoulConfig = {
   greeting: 'Hello! I\'m Atlas.',
   fallbackMessage: 'I\'m not sure I understand.',
   rules: ['Always be polite'],
+  context: ['Company: Orchestree'],
   contextItems: ['Company: Orchestree'],
   temperature: 0.7,
   maxTokens: 1024,
   systemPrompt: 'You are Atlas.',
+  language: 'en',
+  timezone: 'UTC',
 }
 
 vi.mock('../stores/useSoulStore', () => ({
   useSoulStore: vi.fn(() => ({
     soulConfig: mockSoulConfig,
+    presets: [],
+    activePresetId: null,
     updateSoul: mockUpdateSoul,
     resetToDefault: mockResetToDefault,
+    switchPreset: mockSwitchPreset,
+    addRule: mockAddRule,
+    removeRule: mockRemoveRule,
+    addContext: mockAddContext,
+    removeContext: mockRemoveContext,
   })),
 }))
 
+vi.mock('../lib/gatewayClient', () => ({
+  sendSoulUpdate: vi.fn(),
+  isGatewayConnected: vi.fn(() => false),
+}))
+
 vi.mock('../components/SoulEditor/SoulEditor', () => ({
-  default: ({ config }: { config: { name: string }; onUpdate: (partial: Record<string, unknown>) => void }) => (
+  default: ({ config }: { config: { name: string } }) => (
     <div data-testid="soul-editor">
       <span>Editing personality: {config.name}</span>
     </div>
@@ -45,8 +65,7 @@ function renderPage() {
 
 describe('SoulPage', () => {
   beforeEach(() => {
-    mockUpdateSoul.mockClear()
-    mockResetToDefault.mockClear()
+    vi.clearAllMocks()
   })
 
   it('renders the SoulEditor component', () => {
@@ -69,13 +88,15 @@ describe('SoulPage', () => {
     expect(screen.getByRole('button', { name: 'Reset to Default' })).toBeInTheDocument()
   })
 
-  it('calls updateSoul when Save is clicked', async () => {
+  it('calls sendSoulUpdate when Save is clicked', async () => {
+    const { sendSoulUpdate } = await import('../lib/gatewayClient')
     const user = userEvent.setup()
     renderPage()
 
     await user.click(screen.getByRole('button', { name: 'Save Configuration' }))
 
-    expect(mockUpdateSoul).toHaveBeenCalledTimes(1)
+    expect(sendSoulUpdate).toHaveBeenCalledTimes(1)
+    expect(sendSoulUpdate).toHaveBeenCalledWith(mockSoulConfig)
   })
 
   it('calls resetToDefault when Reset is clicked', async () => {
@@ -85,5 +106,15 @@ describe('SoulPage', () => {
     await user.click(screen.getByRole('button', { name: 'Reset to Default' }))
 
     expect(mockResetToDefault).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders Test Personality section', () => {
+    renderPage()
+    expect(screen.getByText('Test Personality')).toBeInTheDocument()
+  })
+
+  it('renders test message input', () => {
+    renderPage()
+    expect(screen.getByLabelText('Test message')).toBeInTheDocument()
   })
 })

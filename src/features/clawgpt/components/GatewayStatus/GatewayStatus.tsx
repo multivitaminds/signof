@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { useGatewayStore } from '../../stores/useGatewayStore'
+import { GatewayStatus as GatewayStatusType } from '../../types'
 import './GatewayStatus.css'
 
 function formatUptime(since: string | null): string {
@@ -19,8 +20,9 @@ export default function GatewayStatus() {
   const { gatewayStatus, uptimeSince, startGateway, stopGateway } =
     useGatewayStore()
 
-  const isOnline = gatewayStatus === 'online'
-  const isDegraded = gatewayStatus === 'degraded'
+  const isOnline = gatewayStatus === GatewayStatusType.Online
+  const isDegraded = gatewayStatus === GatewayStatusType.Degraded
+  const isConnecting = isDegraded
 
   const handleToggle = useCallback(() => {
     if (isOnline || isDegraded) {
@@ -30,16 +32,20 @@ export default function GatewayStatus() {
     }
   }, [isOnline, isDegraded, startGateway, stopGateway])
 
+  const statusLabel = isConnecting && !isOnline
+    ? 'Connecting...'
+    : gatewayStatus.charAt(0).toUpperCase() + gatewayStatus.slice(1)
+
   return (
     <div className="gateway-status">
       <span
-        className={`gateway-status__dot gateway-status__dot--${gatewayStatus}`}
+        className={`gateway-status__dot gateway-status__dot--${gatewayStatus}${isConnecting ? ' gateway-status__dot--pulse' : ''}`}
         aria-hidden="true"
       />
       <span className="gateway-status__label">
-        Gateway: {gatewayStatus.charAt(0).toUpperCase() + gatewayStatus.slice(1)}
+        Gateway: {statusLabel}
       </span>
-      {uptimeSince && (
+      {uptimeSince && isOnline && (
         <span className="gateway-status__uptime">
           Uptime: {formatUptime(uptimeSince)}
         </span>
@@ -48,8 +54,9 @@ export default function GatewayStatus() {
         className="gateway-status__action btn--ghost"
         onClick={handleToggle}
         aria-label={isOnline || isDegraded ? 'Stop gateway' : 'Start gateway'}
+        disabled={isConnecting && !isOnline}
       >
-        {isOnline || isDegraded ? 'Stop' : 'Start'}
+        {isConnecting && !isOnline ? 'Connecting...' : isOnline || isDegraded ? 'Stop' : 'Start'}
       </button>
     </div>
   )

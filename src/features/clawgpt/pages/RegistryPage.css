@@ -1,0 +1,24 @@
+.registry-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.registry-page__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.registry-page__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.registry-page__subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 0;
+}

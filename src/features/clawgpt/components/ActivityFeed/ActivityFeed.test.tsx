@@ -3,6 +3,19 @@ import userEvent from '@testing-library/user-event'
 import ActivityFeed from './ActivityFeed'
 import type { BrainMessage } from '../../types'
 
+// Mock the eventBus to prevent side effects
+vi.mock('../../../../lib/eventBus', () => ({
+  eventBus: {
+    on: vi.fn(() => vi.fn()),
+    emit: vi.fn(),
+  },
+  EVENT_TYPES: {
+    BRAIN_SESSION_CREATED: 'BRAIN_SESSION_CREATED',
+    BRAIN_SKILL_EXECUTED: 'BRAIN_SKILL_EXECUTED',
+    BRAIN_GATEWAY_STATUS: 'BRAIN_GATEWAY_STATUS',
+  },
+}))
+
 const makeMessage = (overrides: Partial<BrainMessage> = {}): BrainMessage => ({
   id: 'msg-1',
   sessionId: 'session-1',
@@ -74,7 +87,7 @@ describe('ActivityFeed', () => {
 
   it('shows empty state when no messages', () => {
     render(<ActivityFeed messages={[]} />)
-    expect(screen.getByText('No messages yet.')).toBeInTheDocument()
+    expect(screen.getByText('No activity yet.')).toBeInTheDocument()
   })
 
   it('sorts messages in reverse chronological order', () => {

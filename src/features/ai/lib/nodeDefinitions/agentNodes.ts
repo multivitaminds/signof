@@ -63,4 +63,20 @@ export const agentNodes: WorkflowNodeDefinition[] = [
     ],
     defaultData: { agentId: '', task: '', autonomyMode: 'suggest' },
   },
+  {
+    type: 'registry_agent',
+    category: 'agent',
+    label: 'Registry Agent',
+    description: 'Spawn an agent from the 540+ Agent OS registry as a workflow step',
+    icon: 'cpu',
+    color: '#8B5CF6',
+    inputs: [{ id: 'in', label: 'Input', type: 'flow' }],
+    outputs: [{ id: 'out', label: 'Output', type: 'flow' }],
+    parameters: [
+      { key: 'registryId', label: 'Registry Agent Type', type: 'string', required: true, placeholder: 'e.g., accounting.invoice-reconciliation' },
+      { key: 'task', label: 'Task Description', type: 'string', required: true, placeholder: 'What should the agent do?' },
+      { key: 'autonomyMode', label: 'Autonomy Mode', type: 'select', required: true, options: [{ label: 'Full Auto', value: 'full_auto' }, { label: 'Suggest', value: 'suggest' }, { label: 'Ask First', value: 'ask_first' }] },
+    ],
+    defaultData: { registryId: '', task: '', autonomyMode: 'full_auto' },
+  },
 ]

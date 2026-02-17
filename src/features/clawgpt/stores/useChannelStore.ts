@@ -33,18 +33,19 @@ const CHANNEL_DEFINITIONS: Omit<Channel, 'status' | 'unreadCount' | 'lastActivit
   { id: 'ch-api', name: 'Custom API', type: ChannelType.Custom, config: { ...DEFAULT_CONFIG, authType: ChannelAuthType.Webhook }, icon: 'code', description: 'REST API endpoint for custom integrations', authType: ChannelAuthType.Webhook, capabilities: ['text'] },
 ]
 
-const PRE_CONNECTED = new Set(['ch-slack', 'ch-email', 'ch-webchat'])
+const PRE_CONNECTED = new Set(['ch-webchat'])
 
 const INITIAL_CHANNELS: Channel[] = CHANNEL_DEFINITIONS.map((def) => ({
   ...def,
   status: PRE_CONNECTED.has(def.id) ? ChannelStatus.Connected : ChannelStatus.Disconnected,
-  unreadCount: PRE_CONNECTED.has(def.id) ? Math.floor(Math.random() * 8) : 0,
-  lastActivity: PRE_CONNECTED.has(def.id) ? '2025-06-15T10:00:00Z' : null,
+  unreadCount: 0,
+  lastActivity: PRE_CONNECTED.has(def.id) ? new Date().toISOString() : null,
   assignedAgentId: null,
 }))
 
 interface ChannelState {
   channels: Channel[]
+  validationErrors: Record<string, string[]>
 
   connectChannel: (id: string) => void
   disconnectChannel: (id: string) => void
@@ -55,21 +56,61 @@ interface ChannelState {
   getConnectedChannels: () => Channel[]
   getChannelsByType: (type: ChannelTypeT) => Channel[]
   updateUnreadCount: (id: string, count: number) => void
+  setValidationErrors: (channelId: string, errors: string[]) => void
+  clearValidationErrors: (channelId: string) => void
 }
 
 export const useChannelStore = create<ChannelState>()(
   persist(
     (_set, get) => ({
       channels: INITIAL_CHANNELS,
+      validationErrors: {},
 
       connectChannel: (id) => {
+        const channel = get().channels.find((ch) => ch.id === id)
+        if (!channel) return
+
+        // WebChat auto-connects without validation
+        if (channel.type === ChannelType.WebChat) {
+          _set((s) => ({
+            channels: s.channels.map((ch) =>
+              ch.id === id
+                ? { ...ch, status: ChannelStatus.Connected as ChannelStatus, lastActivity: new Date().toISOString() }
+                : ch
+            ),
+            validationErrors: { ...s.validationErrors, [id]: [] },
+          }))
+          return
+        }
+
+        // Set connecting state
         _set((s) => ({
           channels: s.channels.map((ch) =>
-            ch.id === id
-              ? { ...ch, status: ChannelStatus.Connected as ChannelStatus, lastActivity: new Date().toISOString() }
-              : ch
+            ch.id === id ? { ...ch, status: ChannelStatus.Connecting as ChannelStatus } : ch
           ),
         }))
+
+        // Validate then connect
+        import('../lib/channelValidator').then(({ validateChannelConfig }) => {
+          const result = validateChannelConfig(channel.type, channel.config)
+          if (result.valid) {
+            _set((s) => ({
+              channels: s.channels.map((ch) =>
+                ch.id === id
+                  ? { ...ch, status: ChannelStatus.Connected as ChannelStatus, lastActivity: new Date().toISOString() }
+                  : ch
+              ),
+              validationErrors: { ...s.validationErrors, [id]: [] },
+            }))
+          } else {
+            _set((s) => ({
+              channels: s.channels.map((ch) =>
+                ch.id === id ? { ...ch, status: ChannelStatus.Error as ChannelStatus } : ch
+              ),
+              validationErrors: { ...s.validationErrors, [id]: result.errors },
+            }))
+          }
+        })
       },
 
       disconnectChannel: (id) => {
@@ -139,7 +180,24 @@ export const useChannelStore = create<ChannelState>()(
           ),
         }))
       },
+
+      setValidationErrors: (channelId, errors) => {
+        _set((s) => ({
+          validationErrors: { ...s.validationErrors, [channelId]: errors },
+        }))
+      },
+
+      clearValidationErrors: (channelId) => {
+        _set((s) => ({
+          validationErrors: { ...s.validationErrors, [channelId]: [] },
+        }))
+      },
     }),
-    { name: 'orchestree-channel-storage' }
+    {
+      name: 'orchestree-channel-storage',
+      partialize: (state) => ({
+        channels: state.channels,
+      }),
+    }
   )
 )

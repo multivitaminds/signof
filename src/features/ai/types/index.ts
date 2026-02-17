@@ -187,6 +187,7 @@ export interface AgentTypeDefinition {
   useCases: string[]
   capabilities: string[]
   defaultSteps: Array<{ label: string; durationMs: number }>
+  registryId?: string
 }
 
 // ─── Agent Run Types (individual agent runs, not team-based) ─────────
@@ -908,4 +909,70 @@ export interface AgentDetailInfo {
   autonomy?: string
   price?: string
   domainId?: string
+}
+
+// ─── Agent Registry Types (Agent OS) ──────────────────────────────
+
+export const AgentDomain = {
+  Workspace: 'workspace',
+  Projects: 'projects',
+  Documents: 'documents',
+  Scheduling: 'scheduling',
+  Databases: 'databases',
+  Accounting: 'accounting',
+  Tax: 'tax',
+  Inbox: 'inbox',
+  Developer: 'developer',
+  CrossModule: 'cross-module',
+  Communication: 'communication',
+  Security: 'security',
+  Analytics: 'analytics',
+} as const
+
+export type AgentDomain = (typeof AgentDomain)[keyof typeof AgentDomain]
+
+export const CostTier = {
+  Cheap: 'cheap',
+  Standard: 'standard',
+  Expensive: 'expensive',
+} as const
+
+export type CostTier = (typeof CostTier)[keyof typeof CostTier]
+
+export const LatencyProfile = {
+  Realtime: 'realtime',
+  Interactive: 'interactive',
+  Batch: 'batch',
+} as const
+
+export type LatencyProfile = (typeof LatencyProfile)[keyof typeof LatencyProfile]
+
+export interface AgentCapabilityManifest {
+  agentTypeId: string
+  displayName: string
+  domain: AgentDomain
+  category: AgentCategory
+  baseType: AgentType
+  description: string
+  capabilities: {
+    tools: string[]
+    connectors: string[]
+    inputTypes: string[]
+    outputTypes: string[]
+    domains: string[]
+  }
+  constraints: {
+    maxConcurrency: number
+    costTier: CostTier
+    latencyProfile: LatencyProfile
+    requiresApproval: string[]
+    maxTokenBudget: number
+    maxCostUsdBudget: number
+  }
+  persona: {
+    systemPromptAddition: string
+    specialInstructions: string[]
+  }
+  icon: string
+  color: string
 }

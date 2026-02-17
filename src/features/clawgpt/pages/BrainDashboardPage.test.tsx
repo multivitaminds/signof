@@ -12,52 +12,86 @@ vi.mock('react-router-dom', async () => {
 vi.mock('../stores/useGatewayStore', () => ({
   useGatewayStore: vi.fn(() => ({
     gatewayStatus: 'online',
-    activeSessions: [
-      { id: 's1', channelId: 'ch-1', channelType: 'slack', contactId: 'c1', contactName: 'Alice', lastMessage: 'hi', lastMessageAt: '', startedAt: '', agentId: null, isActive: true },
-      { id: 's2', channelId: 'ch-2', channelType: 'email', contactId: 'c2', contactName: 'Bob', lastMessage: 'hey', lastMessageAt: '', startedAt: '', agentId: null, isActive: false },
-    ],
-    totalMessagesToday: 42,
+    activeSessions: [],
+    totalMessagesToday: 0,
     uptimeSince: '2025-06-15T09:00:00Z',
-  })),
-}))
-
-vi.mock('../stores/useChannelStore', () => ({
-  useChannelStore: vi.fn(() => ({
-    channels: [
-      { id: 'ch-1', name: 'Slack', type: 'slack', status: 'connected', config: {}, unreadCount: 0, lastActivity: null, icon: 'slack', description: '', authType: 'oauth2', capabilities: [], assignedAgentId: null },
-      { id: 'ch-2', name: 'Email', type: 'email', status: 'disconnected', config: {}, unreadCount: 0, lastActivity: null, icon: 'mail', description: '', authType: 'smtp', capabilities: [], assignedAgentId: null },
-      { id: 'ch-3', name: 'Web Chat', type: 'web_chat', status: 'connected', config: {}, unreadCount: 2, lastActivity: null, icon: 'message-circle', description: '', authType: 'webhook', capabilities: [], assignedAgentId: null },
-    ],
+    fleetMetrics: null,
   })),
 }))
 
 vi.mock('../stores/useMessageStore', () => ({
   useMessageStore: vi.fn(() => ({
-    messages: [
-      { id: 'msg-1', sessionId: 's1', channelId: 'ch-1', channelType: 'slack', direction: 'inbound', content: 'Hello from Slack', timestamp: '2025-06-15T09:00:00Z', status: 'read', senderName: 'Alice' },
-      { id: 'msg-2', sessionId: 's1', channelId: 'ch-1', channelType: 'slack', direction: 'outbound', content: 'Hi Alice!', timestamp: '2025-06-15T09:01:00Z', status: 'sent', senderName: 'Atlas' },
-    ],
+    messages: [],
   })),
 }))
 
-vi.mock('../stores/useSkillStore', () => ({
-  useSkillStore: vi.fn(() => ({
-    skills: [
-      { id: 'sk-1', name: 'Smart Reply', description: '', category: 'communication', version: '1.0', author: 'Orchestree', installed: true, enabled: true, config: {}, icon: 'message-square', triggers: [], actions: [] },
-      { id: 'sk-2', name: 'Sentiment', description: '', category: 'data', version: '1.0', author: 'Orchestree', installed: true, enabled: true, config: {}, icon: 'activity', triggers: [], actions: [] },
-      { id: 'sk-3', name: 'Calendar Sync', description: '', category: 'productivity', version: '1.0', author: 'Orchestree', installed: false, enabled: false, config: {}, icon: 'calendar', triggers: [], actions: [] },
-    ],
-  })),
-}))
+vi.mock('../stores/useFleetStore', () => {
+  const store = Object.assign(
+    vi.fn(() => ({
+      totalRegistered: 0,
+      totalActive: 0,
+      totalIdle: 0,
+      totalErrored: 0,
+      tasksTodayCompleted: 0,
+      tasksTodayFailed: 0,
+      totalTokensToday: 0,
+      totalCostToday: 0,
+      avgTaskDurationMs: 0,
+    })),
+    {
+      getState: vi.fn(() => ({
+        refreshMetrics: vi.fn(),
+      })),
+    },
+  )
+  return { useFleetStore: store }
+})
 
 vi.mock('../components/GatewayStatus/GatewayStatus', () => ({
   default: () => <div data-testid="gateway-status">GatewayStatus</div>,
 }))
 
+vi.mock('../components/FleetOverview/FleetOverview', () => ({
+  default: () => <div data-testid="fleet-overview">FleetOverview</div>,
+}))
+
+vi.mock('../components/FleetGrid/FleetGrid', () => ({
+  default: () => <div data-testid="fleet-grid">FleetGrid</div>,
+}))
+
+vi.mock('../components/TaskQueuePanel/TaskQueuePanel', () => ({
+  default: () => <div data-testid="task-queue-panel">TaskQueuePanel</div>,
+}))
+
+vi.mock('../components/BudgetDashboard/BudgetDashboard', () => ({
+  default: () => <div data-testid="budget-dashboard">BudgetDashboard</div>,
+}))
+
+vi.mock('../components/AlertPanel/AlertPanel', () => ({
+  default: () => <div data-testid="alert-panel">AlertPanel</div>,
+}))
+
+vi.mock('../components/AgentSpawner/AgentSpawner', () => ({
+  default: () => null,
+}))
+
+vi.mock('../components/FleetAgentDetail/FleetAgentDetail', () => ({
+  default: () => null,
+}))
+
 vi.mock('../components/ActivityFeed/ActivityFeed', () => ({
-  default: ({ messages }: { messages: unknown[] }) => (
-    <div data-testid="activity-feed">ActivityFeed ({messages.length} messages)</div>
-  ),
+  default: () => <div data-testid="activity-feed">ActivityFeed</div>,
+}))
+
+vi.mock('../lib/agentKernel', () => ({
+  spawnAgent: vi.fn(),
+  retireAgent: vi.fn(),
+  submitTask: vi.fn(),
+  startReconciliation: vi.fn(),
+}))
+
+vi.mock('../../ai/lib/agentRegistry', () => ({
+  getRegistrySize: vi.fn(() => 540),
 }))
 
 function renderPage() {
@@ -78,35 +112,29 @@ describe('BrainDashboardPage', () => {
     expect(screen.getByTestId('gateway-status')).toBeInTheDocument()
   })
 
-  it('renders Active Sessions stat card with correct value', () => {
+  it('renders FleetOverview component', () => {
     renderPage()
-    expect(screen.getByText('Active Sessions')).toBeInTheDocument()
-    // Only 1 session has isActive: true
-    expect(screen.getByText('1')).toBeInTheDocument()
+    expect(screen.getByTestId('fleet-overview')).toBeInTheDocument()
   })
 
-  it('renders Messages Today stat card with correct value', () => {
+  it('renders FleetGrid component', () => {
     renderPage()
-    expect(screen.getByText('Messages Today')).toBeInTheDocument()
-    expect(screen.getByText('42')).toBeInTheDocument()
+    expect(screen.getByTestId('fleet-grid')).toBeInTheDocument()
   })
 
-  it('renders Channels Connected stat card with correct value', () => {
+  it('renders TaskQueuePanel component', () => {
     renderPage()
-    const label = screen.getByText('Channels Connected')
-    expect(label).toBeInTheDocument()
-    // 2 channels have status 'connected' (ch-1 and ch-3)
-    const statCard = label.closest('.brain-dashboard__stat-card')!
-    expect(statCard.querySelector('.brain-dashboard__stat-value')!.textContent).toBe('2')
+    expect(screen.getByTestId('task-queue-panel')).toBeInTheDocument()
   })
 
-  it('renders Skills Installed stat card with correct value', () => {
+  it('renders BudgetDashboard component', () => {
     renderPage()
-    const label = screen.getByText('Skills Installed')
-    expect(label).toBeInTheDocument()
-    // 2 skills have installed: true
-    const statCard = label.closest('.brain-dashboard__stat-card')!
-    expect(statCard.querySelector('.brain-dashboard__stat-value')!.textContent).toBe('2')
+    expect(screen.getByTestId('budget-dashboard')).toBeInTheDocument()
+  })
+
+  it('renders AlertPanel component', () => {
+    renderPage()
+    expect(screen.getByTestId('alert-panel')).toBeInTheDocument()
   })
 
   it('renders ActivityFeed component', () => {
@@ -114,59 +142,28 @@ describe('BrainDashboardPage', () => {
     expect(screen.getByTestId('activity-feed')).toBeInTheDocument()
   })
 
-  it('renders Connect a Channel quick action button', () => {
+  it('renders Active Fleet section title', () => {
     renderPage()
-    expect(screen.getByRole('button', { name: 'Connect a Channel' })).toBeInTheDocument()
+    expect(screen.getByText('Active Fleet')).toBeInTheDocument()
   })
 
-  it('renders Go to Inbox quick action button', () => {
+  it('renders Task Queue section title', () => {
     renderPage()
-    expect(screen.getByRole('button', { name: 'Go to Inbox' })).toBeInTheDocument()
+    expect(screen.getByText('Task Queue')).toBeInTheDocument()
   })
 
-  it('renders Browse Skills quick action button', () => {
+  it('renders Budget section title', () => {
     renderPage()
-    expect(screen.getByRole('button', { name: 'Browse Skills' })).toBeInTheDocument()
+    expect(screen.getByText('Budget')).toBeInTheDocument()
   })
 
-  it('navigates to channels page when Connect a Channel is clicked', async () => {
-    const { default: userEvent } = await import('@testing-library/user-event')
-    const user = userEvent.setup()
+  it('renders Alerts section title', () => {
     renderPage()
-    await user.click(screen.getByRole('button', { name: 'Connect a Channel' }))
-    expect(mockNavigate).toHaveBeenCalledWith('/brain/channels')
+    expect(screen.getByText('Alerts')).toBeInTheDocument()
   })
 
-  it('navigates to inbox page when Go to Inbox is clicked', async () => {
-    const { default: userEvent } = await import('@testing-library/user-event')
-    const user = userEvent.setup()
+  it('renders Spawn Agent button', () => {
     renderPage()
-    await user.click(screen.getByRole('button', { name: 'Go to Inbox' }))
-    expect(mockNavigate).toHaveBeenCalledWith('/brain/inbox')
-  })
-
-  it('navigates to skills page when Browse Skills is clicked', async () => {
-    const { default: userEvent } = await import('@testing-library/user-event')
-    const user = userEvent.setup()
-    renderPage()
-    await user.click(screen.getByRole('button', { name: 'Browse Skills' }))
-    expect(mockNavigate).toHaveBeenCalledWith('/brain/skills')
-  })
-
-  it('stat cards navigate on click', async () => {
-    const { default: userEvent } = await import('@testing-library/user-event')
-    const user = userEvent.setup()
-    renderPage()
-    await user.click(screen.getByLabelText('Active Sessions — go to Inbox'))
-    expect(mockNavigate).toHaveBeenCalledWith('/brain/inbox')
-  })
-
-  it('stat cards navigate on Enter key', async () => {
-    const { default: userEvent } = await import('@testing-library/user-event')
-    renderPage()
-    const card = screen.getByLabelText('Channels Connected — go to Channels')
-    card.focus()
-    await userEvent.setup().keyboard('{Enter}')
-    expect(mockNavigate).toHaveBeenCalledWith('/brain/channels')
+    expect(screen.getByRole('button', { name: 'Spawn Agent' })).toBeInTheDocument()
   })
 })

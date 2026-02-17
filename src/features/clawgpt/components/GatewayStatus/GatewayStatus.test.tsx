@@ -42,7 +42,7 @@ describe('GatewayStatus', () => {
     expect(screen.getByText(/Uptime:/)).toBeInTheDocument()
   })
 
-  it('renders degraded state', () => {
+  it('renders degraded state as Connecting', () => {
     mockUseGatewayStore.mockReturnValue({
       gatewayStatus: 'degraded',
       uptimeSince: new Date().toISOString(),
@@ -51,7 +51,7 @@ describe('GatewayStatus', () => {
     } as ReturnType<typeof useGatewayStore>)
 
     render(<GatewayStatus />)
-    expect(screen.getByText('Gateway: Degraded')).toBeInTheDocument()
+    expect(screen.getByText('Gateway: Connecting...')).toBeInTheDocument()
   })
 
   it('calls startGateway when Start is clicked', async () => {
@@ -105,5 +105,18 @@ describe('GatewayStatus', () => {
     const { container } = render(<GatewayStatus />)
     const dot = container.querySelector('.gateway-status__dot')
     expect(dot).toHaveClass('gateway-status__dot--online')
+  })
+
+  it('disables button when connecting (degraded)', () => {
+    mockUseGatewayStore.mockReturnValue({
+      gatewayStatus: 'degraded',
+      uptimeSince: null,
+      startGateway: mockStart,
+      stopGateway: mockStop,
+    } as ReturnType<typeof useGatewayStore>)
+
+    render(<GatewayStatus />)
+    const button = screen.getByRole('button')
+    expect(button).toBeDisabled()
   })
 })

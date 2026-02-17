@@ -1740,7 +1740,7 @@ export function executeTool(
 
 // ─── Agent Tool Filtering ───────────────────────────────────────────
 
-const AGENT_TOOL_MAP: Partial<Record<AgentType, string[]>> = {
+export const AGENT_TOOL_MAP: Partial<Record<AgentType, string[]>> = {
   planner: ['create_page', 'create_issue', 'create_goal', 'create_cycle', 'list_issues', 'get_workspace_stats', 'get_upcoming_deadlines'],
   researcher: ['search_pages', 'list_issues', 'list_bookings', 'get_workspace_stats', 'get_upcoming_deadlines'],
   writer: ['create_page', 'add_block', 'search_pages', 'create_template'],

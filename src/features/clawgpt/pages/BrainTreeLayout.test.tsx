@@ -19,7 +19,7 @@ describe('BrainTreeLayout', () => {
   it('renders subtitle text', () => {
     renderWithRouter()
     expect(
-      screen.getByText('Manage your messaging channels, AI skills, and automations in one place')
+      screen.getByText(/Agent Operating System/)
     ).toBeInTheDocument()
   })
 
@@ -71,12 +71,26 @@ describe('BrainTreeLayout', () => {
     expect(tab.className).toContain('clawgpt-layout__tab--active')
   })
 
-  it('renders all 6 tab links', () => {
+  it('renders Fleet tab link', () => {
+    renderWithRouter()
+    const tab = screen.getByRole('link', { name: 'Fleet' })
+    expect(tab).toBeInTheDocument()
+    expect(tab).toHaveAttribute('href', '/brain/fleet')
+  })
+
+  it('renders Registry tab link', () => {
+    renderWithRouter()
+    const tab = screen.getByRole('link', { name: 'Registry' })
+    expect(tab).toBeInTheDocument()
+    expect(tab).toHaveAttribute('href', '/brain/registry')
+  })
+
+  it('renders all 8 tab links', () => {
     renderWithRouter()
     const links = screen.getAllByRole('link')
     const tabLinks = links.filter((link) =>
       link.className.includes('clawgpt-layout__tab')
     )
-    expect(tabLinks).toHaveLength(6)
+    expect(tabLinks).toHaveLength(8)
   })
 })

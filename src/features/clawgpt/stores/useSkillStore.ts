@@ -160,6 +160,7 @@ interface SkillState {
   searchSkills: (query: string) => Skill[]
   getInstalledSkills: () => Skill[]
   getSkillsByCategory: (category: SkillCategoryT) => Skill[]
+  getEnabledSkills: () => Skill[]
 }
 
 export const useSkillStore = create<SkillState>()(
@@ -228,6 +229,10 @@ export const useSkillStore = create<SkillState>()(
 
       getSkillsByCategory: (category) => {
         return get().skills.filter((sk) => sk.category === category)
+      },
+
+      getEnabledSkills: () => {
+        return get().skills.filter((sk) => sk.installed && sk.enabled)
       },
     }),
     { name: 'orchestree-skill-storage' }
