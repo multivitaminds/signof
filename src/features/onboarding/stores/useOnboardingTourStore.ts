@@ -104,7 +104,10 @@ const useOnboardingTourStore = create<OnboardingTourState>()(
         })
       },
     }),
-    { name: 'orchestree-tour-storage' }
+    {
+      name: 'orchestree-tour-storage',
+      partialize: (state) => ({ completedTours: state.completedTours }),
+    }
   )
 )
 
