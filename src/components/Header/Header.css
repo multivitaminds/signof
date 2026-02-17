@@ -1,8 +1,8 @@
 .header {
   position: sticky;
   top: 0;
-  z-index: 50;
-  background-color: var(--color-navy);
+  z-index: var(--z-sticky, 30);
+  background-color: var(--color-navy, #1A1A2E);
   color: #ffffff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -37,7 +37,7 @@
 .header-tagline {
   margin: 0;
   font-size: 14px;
-  color: #a0a0c0;
+  color: var(--text-secondary, #a0a0c0);
   font-weight: 300;
 }
 
@@ -48,7 +48,7 @@
   background: rgba(255, 255, 255, 0.08);
   padding: 6px 14px;
   border-radius: 20px;
-  transition: background var(--transition-fast);
+  transition: background var(--motion-fast, 150ms) ease;
 }
 
 .header-doc-count:hover {
@@ -62,9 +62,24 @@
 
 .header-doc-count-label {
   font-size: 13px;
-  color: #a0a0c0;
+  color: var(--text-secondary, #a0a0c0);
 }
 
+/* ─── Dark mode ─────────────────────────────────────────────── */
+[data-theme="dark"] .header {
+  background-color: var(--bg-secondary, #1A1A2E);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .header-tagline {
+  color: var(--text-muted, #64748B);
+}
+
+[data-theme="dark"] .header-doc-count-label {
+  color: var(--text-muted, #64748B);
+}
+
+/* ─── Responsive ────────────────────────────────────────────── */
 @media (max-width: 767px) {
   .header-content {
     padding: 12px 16px;

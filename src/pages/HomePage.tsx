@@ -75,7 +75,7 @@ export default function HomePage() {
       <WelcomeBanner userName={firstName} />
 
       {/* 1.5 First Run Checklist */}
-      {onboardingComplete && <FirstRunChecklist />}
+      {!onboardingComplete && <FirstRunChecklist />}
 
       {/* 2. Quick Actions */}
       <QuickActions />

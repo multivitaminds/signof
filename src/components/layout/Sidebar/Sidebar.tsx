@@ -315,7 +315,7 @@ export default function Sidebar() {
           >
             <Bell size={18} />
             {notificationUnreadCount > 0 && (
-              <NotificationBadge count={notificationUnreadCount} onClick={toggleNotificationCenter} />
+              <NotificationBadge count={notificationUnreadCount} />
             )}
           </button>
           <button

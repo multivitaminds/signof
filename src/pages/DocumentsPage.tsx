@@ -208,7 +208,7 @@ export default function DocumentsPage() {
         </div>
       )}
 
-      {modalView === 'add-signers' && pendingUploadDocId && (
+      {modalView === 'add-signers' && pendingUploadDocId && getDocument(pendingUploadDocId) && (
         <div
           className="modal-overlay"
           onClick={closeModal}
@@ -265,7 +265,7 @@ export default function DocumentsPage() {
         </div>
       )}
 
-      {modalView === 'ceremony' && signingDocId && signingSignerId && (
+      {modalView === 'ceremony' && signingDocId && signingSignerId && getDocument(signingDocId)?.signers.find(s => s.id === signingSignerId) && (
         <SigningCeremony
           document={getDocument(signingDocId)!}
           signer={getDocument(signingDocId)!.signers.find(s => s.id === signingSignerId)!}

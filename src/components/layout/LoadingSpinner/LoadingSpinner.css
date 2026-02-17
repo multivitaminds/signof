@@ -10,8 +10,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #FAFBFC;
-  z-index: 9999;
+  background: var(--bg-primary, #FAFBFC);
+  z-index: var(--z-modal, 50);
 }
 
 /* ─── Top gradient bar ─────────────────────────────────── */
@@ -88,7 +88,7 @@
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #6B7280;
+  color: var(--text-secondary, #6B7280);
   letter-spacing: 0.02em;
   animation: textFade 2s ease-in-out infinite;
 }
@@ -104,7 +104,7 @@
 
 /* ─── Dark mode ────────────────────────────────────────── */
 [data-theme="dark"] .loading-spinner {
-  background: #1A1A2E;
+  background: var(--bg-primary, #1A1A2E);
 }
 
 [data-theme="dark"] .loading-spinner__bar {
@@ -126,7 +126,7 @@
 }
 
 [data-theme="dark"] .loading-spinner__text {
-  color: #94A3B8;
+  color: var(--text-secondary, #94A3B8);
 }
 
 /* ─── Reduced motion ───────────────────────────────────── */
