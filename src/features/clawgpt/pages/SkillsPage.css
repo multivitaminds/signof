@@ -1,0 +1,101 @@
+.skills-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.skills-page__toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.skills-page__tabs {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.skills-page__tab {
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: none;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.skills-page__tab:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.skills-page__tab--active {
+  background-color: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.skills-page__categories {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.skills-page__category-pill {
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-full, 9999px);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.skills-page__category-pill:hover {
+  color: var(--text-primary);
+}
+
+.skills-page__category-pill--active {
+  background-color: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.skills-page__search {
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  max-width: 400px;
+}
+
+.skills-page__search::placeholder {
+  color: var(--text-muted);
+}
+
+.skills-page__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+
+.skills-page__empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: var(--space-2xl);
+  font-size: 0.9375rem;
+}
+
+/* ─── Dark mode ─────────────────────────────────────── */
+
+[data-theme="dark"] .skills-page__search {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}

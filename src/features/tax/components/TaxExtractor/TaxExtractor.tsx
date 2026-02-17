@@ -164,7 +164,7 @@ function TaxExtractor({
             <span>Extract Data</span>
           </button>
           <p className="tax-extractor__hint">
-            Simulates OCR extraction of form fields from the document.
+            Extracts form fields using PDF text parsing and OCR.
           </p>
         </div>
       )}

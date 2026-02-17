@@ -1,0 +1,131 @@
+.unified-inbox {
+  display: flex;
+  height: 100%;
+  gap: 0;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.unified-inbox__sessions {
+  width: 280px;
+  min-width: 280px;
+  border-right: 1px solid var(--border-color);
+  overflow-y: auto;
+  background: var(--bg-secondary);
+}
+
+.unified-inbox__messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.unified-inbox__messages-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.unified-inbox__contact-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.unified-inbox__channel-type {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  padding: 2px var(--space-xs);
+  border-radius: var(--radius-sm);
+}
+
+.unified-inbox__toggle-details {
+  margin-left: auto;
+  font-size: 0.8125rem;
+}
+
+.unified-inbox__empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.unified-inbox__details {
+  width: 260px;
+  min-width: 260px;
+  border-left: 1px solid var(--border-color);
+  overflow-y: auto;
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+}
+
+.unified-inbox__details-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.unified-inbox__details-list {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-xs) var(--space-sm);
+}
+
+.unified-inbox__details-list dt {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.unified-inbox__details-list dd {
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ─── Responsive ────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .unified-inbox {
+    flex-direction: column;
+  }
+
+  .unified-inbox__sessions {
+    width: 100%;
+    min-width: 0;
+    max-height: 200px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .unified-inbox__details {
+    width: 100%;
+    min-width: 0;
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+  }
+}
+
+/* ─── Dark mode ─────────────────────────────────────── */
+
+[data-theme="dark"] .unified-inbox {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .unified-inbox__sessions,
+[data-theme="dark"] .unified-inbox__details {
+  background: var(--bg-secondary);
+}

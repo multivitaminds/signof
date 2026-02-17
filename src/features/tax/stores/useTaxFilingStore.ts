@@ -12,9 +12,26 @@ import {
   FilingStatus,
   STANDARD_DEDUCTION_2025,
   TAX_BRACKETS_2025,
+  TaxFormType as TaxFormTypeValues,
   TAXBANDITS_FORM_PATHS,
 } from '../types'
 import { TaxBanditClient, TaxBanditError } from '../lib/taxBanditClient'
+import {
+  createBusinessService,
+  createFormW2Service,
+  createForm1099NecService,
+  buildFormW2Payload,
+  buildForm1099NecPayload,
+  type FormService,
+} from '../lib/api'
+import type { FormW2Payload } from '../lib/api/formW2Service'
+import type { Form1099NecPayload } from '../lib/api/form1099NecService'
+import {
+  filingToBusinessData,
+  extractionToW2Employee,
+  extractionTo1099NecRecipient,
+} from '../lib/extractionToPayload'
+import { useTaxDocumentStore } from './useTaxDocumentStore'
 
 // ─── Pre-Filing Checklist ───────────────────────────────────────────────
 
@@ -148,6 +165,35 @@ function hasCredentials(config: TaxBanditConfig): boolean {
   )
 }
 
+// ─── Form Pipeline Router ───────────────────────────────────────────────
+//
+// Selects the right service factory and payload builder based on form type.
+
+interface FormPipeline {
+  service: FormService<FormW2Payload> | FormService<Form1099NecPayload>
+  formPath: string
+}
+
+function getFormPipeline(
+  client: TaxBanditClient,
+  formType: TaxFormType
+): FormPipeline | null {
+  switch (formType) {
+    case TaxFormTypeValues.W2:
+      return {
+        service: createFormW2Service(client),
+        formPath: 'FormW2',
+      }
+    case TaxFormTypeValues.NEC1099:
+      return {
+        service: createForm1099NecService(client),
+        formPath: 'Form1099NEC',
+      }
+    default:
+      return null
+  }
+}
+
 // ─── Store ──────────────────────────────────────────────────────────────
 
 interface TaxFilingState {
@@ -164,6 +210,7 @@ interface TaxFilingState {
   accessTokenExpiry: string | null
   submissionId: string | null
   recordId: string | null
+  lastFormType: TaxFormType | null
   validationErrors: TaxBanditValidationError[]
   transmissionStatus: TransmissionStatus
   transmissionError: string | null
@@ -230,6 +277,7 @@ export const useTaxFilingStore = create<TaxFilingState>()(
       accessTokenExpiry: null,
       submissionId: null,
       recordId: null,
+      lastFormType: null,
       validationErrors: [],
       transmissionStatus: 'idle' as TransmissionStatus,
       transmissionError: null,
@@ -481,15 +529,10 @@ export const useTaxFilingStore = create<TaxFilingState>()(
 
         const config = state.taxBanditConfig
         const client = new TaxBanditClient(config)
+        const effectiveFormType = formType ?? TaxFormTypeValues.W2
 
-        // Determine form path
-        const effectiveFormType = formType
-        const formPath = effectiveFormType
-          ? TAXBANDITS_FORM_PATHS[effectiveFormType]
-          : null
-
-        // Authenticate if needed
-        set({ transmissionStatus: 'validating', transmissionError: null, validationErrors: [] })
+        // Authenticate
+        set({ transmissionStatus: 'validating', transmissionError: null, validationErrors: [], lastFormType: effectiveFormType })
 
         try {
           await client.authenticate()
@@ -501,84 +544,108 @@ export const useTaxFilingStore = create<TaxFilingState>()(
           return
         }
 
-        // Create a submission record if we have a form type
-        let localSubmissionId: string | null = null
-        if (effectiveFormType) {
-          localSubmissionId = get().createSubmission(effectiveFormType, {
-            filingId,
-            firstName: filing.firstName,
-            lastName: filing.lastName,
-          })
-        }
+        // Create a local submission record
+        const localSubmissionId = get().createSubmission(effectiveFormType, {
+          filingId,
+          firstName: filing.firstName,
+          lastName: filing.lastName,
+        })
 
         try {
-          // Step 1: Create business
+          // Step 1: Create business via businessService
           set({ transmissionStatus: 'validating' })
-          interface BusinessResponse { BusinessId: string }
-          const businessResult = await client.fetch<BusinessResponse>('Business/Create', {
-            method: 'POST',
-            body: {
-              BusinessName: `${filing.firstName} ${filing.lastName}`,
-              EINOrSSN: filing.ssn,
-              BusinessType: 'Individual',
-            },
-          })
-          const businessId = businessResult.BusinessId
+          const businessService = createBusinessService(client)
+          const businessData = filingToBusinessData(filing)
+          const businessId = await businessService.create(businessData)
 
-          if (localSubmissionId) {
-            set((s) => ({
-              submissions: s.submissions.map((sub) =>
-                sub.id === localSubmissionId
-                  ? { ...sub, businessId, updatedAt: new Date().toISOString() }
-                  : sub
-              ),
-            }))
-          }
+          set((s) => ({
+            submissions: s.submissions.map((sub) =>
+              sub.id === localSubmissionId
+                ? { ...sub, businessId, updatedAt: new Date().toISOString() }
+                : sub
+            ),
+          }))
 
-          // Step 2: Create form
-          const createPath = formPath ? `${formPath}/Create` : 'Form1040/Create'
-          interface CreateFormResponse {
-            SubmissionId: string
-            Records: Array<{ RecordId: string }>
-          }
-          const createResult = await client.fetch<CreateFormResponse>(createPath, {
-            method: 'POST',
-            body: {
-              BusinessId: businessId,
-              TaxYear: filing.taxYear,
-              FirstName: filing.firstName,
-              LastName: filing.lastName,
-              SSN: filing.ssn,
-              FilingStatus: filing.filingStatus,
-              Wages: filing.wages,
-              OtherIncome: filing.otherIncome,
-            },
+          // Step 2: Build payload using form-specific builders + extraction data
+          const pipeline = getFormPipeline(client, effectiveFormType)
+
+          // Gather extraction data from document store
+          const docStore = useTaxDocumentStore.getState()
+          const yearDocs = docStore.documents.filter((d) => d.taxYear === filing.taxYear)
+          const formDocs = yearDocs.filter((d) => d.formType === effectiveFormType)
+          const extractionFields = formDocs.flatMap((doc) => {
+            const extraction = docStore.extractionResults[doc.id]
+            if (!extraction?.extractedAt) return []
+            return extraction.fields
           })
 
-          const tbSubmissionId = createResult.SubmissionId
-          const tbRecordId = createResult.Records?.[0]?.RecordId ?? ''
+          let tbSubmissionId: string
+          let tbRecordId: string
+
+          if (pipeline && effectiveFormType === TaxFormTypeValues.W2) {
+            // W-2 path: use buildFormW2Payload with extraction bridge
+            const employeeInput = extractionToW2Employee(extractionFields, filing)
+            const payload = buildFormW2Payload({
+              taxYear: filing.taxYear,
+              businessId,
+              employees: [employeeInput],
+            })
+            const service = pipeline.service as FormService<FormW2Payload>
+            const result = await service.create(payload)
+            tbSubmissionId = result.submissionId
+            tbRecordId = result.recordId
+          } else if (pipeline && effectiveFormType === TaxFormTypeValues.NEC1099) {
+            // 1099-NEC path: use buildForm1099NecPayload with extraction bridge
+            const recipientInput = extractionTo1099NecRecipient(extractionFields, filing)
+            const payload = buildForm1099NecPayload({
+              taxYear: filing.taxYear,
+              businessId,
+              recipients: [recipientInput],
+            })
+            const service = pipeline.service as FormService<Form1099NecPayload>
+            const result = await service.create(payload)
+            tbSubmissionId = result.submissionId
+            tbRecordId = result.recordId
+          } else {
+            // Unsupported form type — use generic form service
+            const formPath = TAXBANDITS_FORM_PATHS[effectiveFormType] ?? 'FormW2'
+            const result = await client.fetch<{ SubmissionId: string; Records: Array<{ RecordId: string }> }>(
+              `${formPath}/Create`,
+              {
+                method: 'POST',
+                body: {
+                  SubmissionManifest: { TaxYear: filing.taxYear, IsFederalFiling: true, IsStateFiling: false },
+                  ReturnHeader: { Business: { BusinessId: businessId } },
+                },
+              }
+            )
+            tbSubmissionId = result.SubmissionId
+            tbRecordId = result.Records?.[0]?.RecordId ?? ''
+          }
+
           set({ submissionId: tbSubmissionId, recordId: tbRecordId })
+          get().setSubmissionTaxBanditIds(localSubmissionId, tbSubmissionId, tbRecordId)
 
-          if (localSubmissionId) {
-            get().setSubmissionTaxBanditIds(localSubmissionId, tbSubmissionId, tbRecordId)
-          }
+          // Step 3: Validate via form service
+          const formPath = TAXBANDITS_FORM_PATHS[effectiveFormType]
+          let errors: TaxBanditValidationError[]
 
-          // Step 3: Validate
-          const validatePath = formPath
-            ? `${formPath}/Validate?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
-            : `Form1040/Validate?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
-          interface ValidateResponse {
-            Errors: Array<{ Id?: string; Field?: string; Message?: string; Code?: string }> | null
+          if (pipeline) {
+            errors = await pipeline.service.validate(tbSubmissionId)
+          } else {
+            const validatePath = formPath
+              ? `${formPath}/Validate?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
+              : `FormW2/Validate?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
+            const validateResult = await client.fetch<{ Errors: Array<{ Id?: string; Field?: string; Message?: string; Code?: string }> | null }>(validatePath)
+            errors = validateResult.Errors
+              ? validateResult.Errors.map((e) => ({
+                  id: e.Id ?? generateId(),
+                  field: e.Field ?? '',
+                  message: e.Message ?? 'Unknown validation error',
+                  code: e.Code ?? '',
+                }))
+              : []
           }
-          const validateResult = await client.fetch<ValidateResponse>(validatePath)
-          const errors: TaxBanditValidationError[] = validateResult.Errors
-            ? validateResult.Errors.map((e) => ({
-                id: e.Id ?? generateId(),
-                field: e.Field ?? '',
-                message: e.Message ?? 'Unknown validation error',
-                code: e.Code ?? '',
-              }))
-            : []
 
           if (errors.length > 0) {
             set({
@@ -586,20 +653,23 @@ export const useTaxFilingStore = create<TaxFilingState>()(
               transmissionStatus: 'error',
               transmissionError: `Validation failed with ${errors.length} error(s)`,
             })
-            if (localSubmissionId) {
-              get().setSubmissionErrors(localSubmissionId, errors)
-              get().updateSubmissionState(localSubmissionId, FilingState.Rejected)
-            }
+            get().setSubmissionErrors(localSubmissionId, errors)
+            get().updateSubmissionState(localSubmissionId, FilingState.Rejected)
             return
           }
 
-          // Step 4: Transmit
+          // Step 4: Transmit via form service
           set({ transmissionStatus: 'transmitting' })
-          const transmitPath = formPath ? `${formPath}/Transmit` : 'Form1040/Transmit'
-          await client.fetch(transmitPath, {
-            method: 'POST',
-            body: { SubmissionId: tbSubmissionId, RecordIds: [tbRecordId] },
-          })
+
+          if (pipeline) {
+            await pipeline.service.transmit(tbSubmissionId, [tbRecordId])
+          } else {
+            const transmitPath = formPath ? `${formPath}/Transmit` : 'FormW2/Transmit'
+            await client.fetch(transmitPath, {
+              method: 'POST',
+              body: { SubmissionId: tbSubmissionId, RecordIds: [tbRecordId] },
+            })
+          }
 
           // Update filing state
           const filedAt = new Date().toISOString()
@@ -610,31 +680,39 @@ export const useTaxFilingStore = create<TaxFilingState>()(
                 : f
             ),
           }))
+          get().updateSubmissionState(localSubmissionId, FilingState.Filed)
 
-          if (localSubmissionId) {
-            get().updateSubmissionState(localSubmissionId, FilingState.Filed)
-          }
-
-          // Step 5: Poll status
+          // Step 5: Poll status via form service
           set({ transmissionStatus: 'polling' })
           const refNumber = generateReferenceNumber()
-          const statusPath = formPath
-            ? `${formPath}/Status?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
-            : `Form1040/Status?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
-
-          interface StatusResponse {
-            Records: Array<{
-              Status: string
-              AcknowledgementStatus: string
-              IRSErrors: Array<{ ErrorCode: string; ErrorMessage: string }> | null
-            }>
-          }
 
           for (let attempt = 0; attempt < 3; attempt++) {
             await new Promise((resolve) => setTimeout(resolve, 5000))
-            const statusResult = await client.fetch<StatusResponse>(statusPath)
-            const record = statusResult.Records?.[0]
-            const ackStatus = record?.AcknowledgementStatus?.toLowerCase() ?? ''
+
+            let statusResult: { status: string; acknowledgementStatus: string; irsErrors: Array<{ code: string; message: string }> }
+
+            if (pipeline) {
+              statusResult = await pipeline.service.getStatus(tbSubmissionId)
+            } else {
+              const statusPath = formPath
+                ? `${formPath}/Status?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
+                : `FormW2/Status?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
+              const raw = await client.fetch<{
+                Records: Array<{
+                  Status: string
+                  AcknowledgementStatus: string
+                  IRSErrors: Array<{ ErrorCode: string; ErrorMessage: string }> | null
+                }>
+              }>(statusPath)
+              const record = raw.Records?.[0]
+              statusResult = {
+                status: record?.Status ?? 'Unknown',
+                acknowledgementStatus: record?.AcknowledgementStatus ?? 'Pending',
+                irsErrors: record?.IRSErrors?.map((e) => ({ code: e.ErrorCode, message: e.ErrorMessage })) ?? [],
+              }
+            }
+
+            const ackStatus = statusResult.acknowledgementStatus.toLowerCase()
 
             if (ackStatus === 'accepted' || ackStatus === 'rejected') {
               const filingState = ackStatus === 'accepted'
@@ -658,21 +736,12 @@ export const useTaxFilingStore = create<TaxFilingState>()(
                 },
               }))
 
-              if (localSubmissionId) {
-                get().updateSubmissionState(localSubmissionId, filingState)
-                const irsErrors = record?.IRSErrors?.map((e) => ({
-                  code: e.ErrorCode,
-                  message: e.ErrorMessage,
-                })) ?? []
-                if (irsErrors.length > 0) {
-                  get().setSubmissionErrors(localSubmissionId, [], irsErrors)
-                }
-              }
-
-              if (record?.IRSErrors && record.IRSErrors.length > 0) {
+              get().updateSubmissionState(localSubmissionId, filingState)
+              if (statusResult.irsErrors.length > 0) {
+                get().setSubmissionErrors(localSubmissionId, [], statusResult.irsErrors)
                 set({
-                  transmissionError: record.IRSErrors
-                    .map((e) => `${e.ErrorCode}: ${e.ErrorMessage}`)
+                  transmissionError: statusResult.irsErrors
+                    .map((e) => `${e.code}: ${e.message}`)
                     .join('; '),
                 })
               }
@@ -704,43 +773,62 @@ export const useTaxFilingStore = create<TaxFilingState>()(
             transmissionError: errorMessage,
           })
 
-          if (localSubmissionId) {
-            get().updateSubmissionState(localSubmissionId, FilingState.Rejected)
-          }
+          get().updateSubmissionState(localSubmissionId, FilingState.Rejected)
         }
       },
 
       pollFilingStatus: async (filingId) => {
-        const { taxBanditConfig, submissionId: tbSubmissionId } = get()
+        const { taxBanditConfig, submissionId: tbSubmissionId, lastFormType } = get()
         if (!tbSubmissionId) return
 
         const client = new TaxBanditClient(taxBanditConfig)
         try {
           await client.authenticate()
-          interface StatusResponse {
-            Records: Array<{
-              Status: string
-              AcknowledgementStatus: string
-            }>
-          }
-          const statusResult = await client.fetch<StatusResponse>(
-            `Form1040/Status?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
-          )
-          const record = statusResult.Records?.[0]
-          const ackStatus = record?.AcknowledgementStatus?.toLowerCase() ?? ''
 
-          if (ackStatus === 'accepted' || ackStatus === 'rejected') {
-            const filingState = ackStatus === 'accepted'
-              ? FilingState.Accepted
-              : FilingState.Rejected
+          const pipeline = lastFormType ? getFormPipeline(client, lastFormType) : null
 
-            set((s) => ({
-              filings: s.filings.map((f) =>
-                f.id === filingId
-                  ? { ...f, state: filingState, updatedAt: new Date().toISOString() }
-                  : f
-              ),
-            }))
+          if (pipeline) {
+            const statusResult = await pipeline.service.getStatus(tbSubmissionId)
+            const ackStatus = statusResult.acknowledgementStatus.toLowerCase()
+
+            if (ackStatus === 'accepted' || ackStatus === 'rejected') {
+              const filingState = ackStatus === 'accepted'
+                ? FilingState.Accepted
+                : FilingState.Rejected
+
+              set((s) => ({
+                filings: s.filings.map((f) =>
+                  f.id === filingId
+                    ? { ...f, state: filingState, updatedAt: new Date().toISOString() }
+                    : f
+                ),
+              }))
+            }
+          } else {
+            const formPath = lastFormType ? TAXBANDITS_FORM_PATHS[lastFormType] : null
+            const statusPath = formPath
+              ? `${formPath}/Status?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
+              : `FormW2/Status?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
+
+            const statusResult = await client.fetch<{
+              Records: Array<{ Status: string; AcknowledgementStatus: string }>
+            }>(statusPath)
+            const record = statusResult.Records?.[0]
+            const ackStatus = record?.AcknowledgementStatus?.toLowerCase() ?? ''
+
+            if (ackStatus === 'accepted' || ackStatus === 'rejected') {
+              const filingState = ackStatus === 'accepted'
+                ? FilingState.Accepted
+                : FilingState.Rejected
+
+              set((s) => ({
+                filings: s.filings.map((f) =>
+                  f.id === filingId
+                    ? { ...f, state: filingState, updatedAt: new Date().toISOString() }
+                    : f
+                ),
+              }))
+            }
           }
         } catch {
           // Silently fail — user can retry
@@ -748,17 +836,27 @@ export const useTaxFilingStore = create<TaxFilingState>()(
       },
 
       downloadReturnPdf: async () => {
-        const { taxBanditConfig, submissionId: tbSubmissionId } = get()
+        const { taxBanditConfig, submissionId: tbSubmissionId, lastFormType } = get()
         if (!tbSubmissionId) return
 
         const client = new TaxBanditClient(taxBanditConfig)
         try {
           await client.authenticate()
-          interface PdfResponse { PDFURL: string }
-          const result = await client.fetch<PdfResponse>(
-            `Form1040/RequestPDFURL?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
-          )
-          set({ returnPdfUrl: result.PDFURL })
+
+          const pipeline = lastFormType ? getFormPipeline(client, lastFormType) : null
+
+          if (pipeline) {
+            const pdfUrl = await pipeline.service.getPdf(tbSubmissionId)
+            set({ returnPdfUrl: pdfUrl })
+          } else {
+            const formPath = lastFormType ? TAXBANDITS_FORM_PATHS[lastFormType] : null
+            const pdfPath = formPath
+              ? `${formPath}/RequestPDFURL?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
+              : `FormW2/RequestPDFURL?SubmissionId=${encodeURIComponent(tbSubmissionId)}`
+
+            const result = await client.fetch<{ PDFURL: string }>(pdfPath)
+            set({ returnPdfUrl: result.PDFURL })
+          }
         } catch (err) {
           set({
             transmissionError:
@@ -867,6 +965,7 @@ export const useTaxFilingStore = create<TaxFilingState>()(
           accessTokenExpiry: null,
           submissionId: null,
           recordId: null,
+          lastFormType: null,
           validationErrors: [],
           transmissionStatus: 'idle',
           transmissionError: null,

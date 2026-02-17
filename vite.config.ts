@@ -7,6 +7,10 @@ import path from 'node:path'
 export default defineConfig({
   plugins: [react()],
 
+  optimizeDeps: {
+    exclude: ['pdfjs-dist'],
+  },
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -51,6 +55,7 @@ export default defineConfig({
           'feature-projects': [
             './src/features/projects/stores/useProjectStore.ts',
           ],
+          'vendor-pdfjs': ['pdfjs-dist'],
           'feature-ai': [
             './src/features/ai/stores/useMemoryStore.ts',
             './src/features/ai/stores/useAgentStore.ts',

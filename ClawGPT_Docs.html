@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClawGPT Documentation Logs</title>
+  <style>
+    :root {
+      --bg: #0f0f1a;
+      --bg-card: #1a1a2e;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary: #4f46e5;
+      --accent: #38bdf8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+    .toc {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+    }
+    .toc h2 { font-size: 1.2rem; margin-bottom: 1rem; }
+    .toc a {
+      color: var(--accent);
+      text-decoration: none;
+      display: block;
+      padding: 0.3rem 0;
+    }
+    .toc a:hover { text-decoration: underline; }
+    .doc-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    .doc-section h2 {
+      font-size: 1.5rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .doc-section h3 {
+      font-size: 1.15rem;
+      color: var(--primary);
+      margin: 1.5rem 0 0.5rem;
+    }
+    .doc-section p, .doc-section li {
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    .doc-section ul, .doc-section ol {
+      padding-left: 1.5rem;
+    }
+    .doc-section strong { color: var(--text); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    th, td {
+      padding: 0.6rem 1rem;
+      text-align: left;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    th {
+      background: rgba(79, 70, 229, 0.15);
+      color: var(--text);
+      font-weight: 600;
+    }
+    code {
+      background: rgba(79, 70, 229, 0.1);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: var(--accent);
+    }
+    .tag {
+      display: inline-block;
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 0.3rem;
+    }
+    .tag--brain { background: rgba(79, 70, 229, 0.2); color: #818cf8; }
+    .tag--hands { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .tag--body { background: rgba(251, 146, 60, 0.2); color: #fb923c; }
+    .formula {
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(56, 189, 248, 0.1));
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .pillar-card {
+      background: rgba(79, 70, 229, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+    }
+    .pillar-card h4 { color: var(--text); margin-bottom: 0.5rem; }
+    .pillar-card p { color: var(--text-muted); font-size: 0.9rem; }
+    .timestamp {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-style: italic;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<h1>ClawGPT Documentation Logs</h1>
+<p class="subtitle">Consolidated reference from all 4 ClawGPT strategy &amp; implementation documents &mdash; Generated 2026-02-16</p>
+
+<nav class="toc">
+  <h2>Table of Contents</h2>
+  <a href="#doc1">1. ClawGPT Implementation Plan</a>
+  <a href="#doc2">2. ClawGPT Full Implementation &amp; Scaling Plan</a>
+  <a href="#doc3">3. ClawGPT Global Implementation Plan</a>
+  <a href="#doc4">4. ClawGPT &times; Orchestree 100x Strategy</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="doc-section" id="doc1">
+  <h2>1. ClawGPT (OpenClaw-style) &mdash; End-to-End Implementation Plan</h2>
+
+  <h3>Vision &amp; Scope</h3>
+  <p>ClawGPT is an agentic Business OS with:</p>
+  <ul>
+    <li><strong>Agent Orchestration:</strong> Multi-agent graphs that plan, reason, call tools/APIs, and coordinate human-in-the-loop. Built with a graph-based agent framework (e.g., LangGraph or Microsoft Agent Framework) for typed workflows, persistence, streaming, debugging, and deployment.</li>
+    <li><strong>Durable Workflows:</strong> Long-running, failure-resistant orchestrations for complex business processes (filings, approvals, accounting closes) powered by Temporal for durable execution, replays, versioning, and human signals.</li>
+    <li><strong>Enterprise Integrations:</strong> Native connectors for DocuSign (eSign), Calendly (scheduling), Notion (workspace), and QuickBooks Online (accounting).</li>
+    <li><strong>Developer Platform:</strong> SDKs (TypeScript/Python), CLI, OpenAPI tool contracts, Wasm sandboxed tool runtime, marketplace &amp; billing.</li>
+  </ul>
+
+  <h3>Reference Architecture</h3>
+  <p><strong>Layers:</strong></p>
+  <ul>
+    <li><strong>Experience layer:</strong> Web app (Admin, Flow/Agent Builder, AI Playground), Public &amp; Admin APIs, Webhooks.</li>
+    <li><strong>Gateway &amp; policy:</strong> API Gateway (Kong or Envoy) + OPA for fine-grained authorization &amp; policy as code.</li>
+    <li><strong>Agent/runtime:</strong> Agent Graph Orchestrator (LangGraph/Microsoft Agent Framework), Tool Registry, Wasm Tool Sandbox, Prompt/Skill Library, Evaluations.</li>
+    <li><strong>Workflow &amp; events:</strong> Temporal for durable workflows; NATS JetStream or Apache Kafka for events, retries, schedules, and fan-out.</li>
+    <li><strong>Data &amp; memory:</strong> Postgres + pgvector for embeddings; optional Qdrant/Milvus for large-scale vector search.</li>
+    <li><strong>Observability:</strong> OpenTelemetry traces/metrics/logs across gateway, orchestrator, tools, and databases.</li>
+    <li><strong>Security &amp; identity:</strong> Keycloak (OIDC) for SSO/RBAC, HashiCorp Vault for secrets &amp; KMS.</li>
+    <li><strong>Infrastructure:</strong> Kubernetes (multi-tenant), autoscaling node pools, IaC, and cost controls.</li>
+  </ul>
+
+  <p><strong>Rationale highlights:</strong></p>
+  <ul>
+    <li>Graph-based agents + typed workflows improve reliability, memory, and human-in-the-loop.</li>
+    <li>Temporal gives durable execution, retries, replays, versioning, and years-long runs.</li>
+    <li>JetStream/Kafka support async triggers, replay, and robust scheduling.</li>
+    <li>pgvector/Vector DBs deliver scalable RAG with SQL joins or high-throughput search.</li>
+    <li>OpenTelemetry provides end-to-end visibility for debugging and SLOs.</li>
+    <li>Gateway + OPA + Vault + Keycloak deliver enterprise-grade authn/z, policy, secrets, and SSO.</li>
+    <li>Wasmtime sandboxes tool code safely with portable WASI interfaces.</li>
+  </ul>
+
+  <h3>Developer Layer (SDKs, CLI, Tools)</h3>
+  <p><strong>Tool &amp; Agent Plugin Model:</strong></p>
+  <ul>
+    <li>Tool contracts via OpenAPI 3.1 (name, operations, JSON schemas, security scopes).</li>
+    <li>Registration: <code>POST /tools</code> with OAS spec + metadata; automated validation, scanning, marketplace listing.</li>
+    <li>Execution: Agent runtime selects tools via tool-calling; calls run in Wasm sandbox or proxied HTTP with isolated credentials.</li>
+    <li>Policy: OPA Rego enforces who/what/where policies, data egress rules, and requires human approvals on risky actions.</li>
+  </ul>
+  <p><strong>SDKs &amp; CLI:</strong></p>
+  <ul>
+    <li>SDKs (TS/Python) to register tools, define graphs, emit traces, stream tokens, persist memory, and run local sandboxes.</li>
+    <li>CLI (<code>claw</code>): <code>claw dev</code>, <code>claw tool publish</code>, <code>claw agent run</code>, <code>claw logs</code>, <code>claw traces</code>, <code>claw eval</code>.</li>
+  </ul>
+
+  <h3>Core Services</h3>
+  <p><strong>Agent Graph Orchestrator:</strong> Nodes: Planner, Retriever, ToolExecutor, Verifier, Critic, HumanApproval. State: Persisted with checkpoints; streaming outputs; retries/backoff; transparent logging. Durability: Temporal activities and workflows wrap graph steps for idempotence and replay.</p>
+  <p><strong>Workflow Engine:</strong> Temporal-based jobs such as "File Tax Return", "Client Onboarding", "Monthly Close". Deterministic flows, versioning, human signals, and compensation patterns.</p>
+  <p><strong>Eventing &amp; Scheduling:</strong> NATS JetStream for streams, consumers, replay; schedules and backoff queues; KV/Object Store for payload snapshots.</p>
+  <p><strong>Knowledge &amp; Memory:</strong> RAG pipeline: ingest &rarr; chunk/OCR &rarr; embed &rarr; store in pgvector; hybrid option to Qdrant/Milvus for extreme scale/perf. Indexing strategies: HNSW/IVF, cosine/inner/L2; half-precision vectors to reduce storage.</p>
+  <p><strong>Enterprise Integrations (Phase 1):</strong> DocuSign eSign (envelopes, templates, Connect webhooks). Calendly API v2 (availability, event types, scheduling webhooks). Notion API (pages, databases, blocks). QuickBooks Online API (OAuth2, invoices, GL, reports).</p>
+
+  <h3>Security, Compliance &amp; Observability</h3>
+  <ul>
+    <li><strong>Identity &amp; Access:</strong> Keycloak (OIDC/OAuth2), tenant realms, RBAC/ABAC; gateway enforces JWTs, scopes, rate limits.</li>
+    <li><strong>Secrets:</strong> HashiCorp Vault for credentials, keys, and dynamic secrets; audit trails &amp; rotation policies.</li>
+    <li><strong>Policy as Code:</strong> OPA Rego to constrain tool calls (domains, data types, time windows), require human approval, and redact PII.</li>
+    <li><strong>Sandboxing:</strong> Wasmtime isolates tool code (Wasm/WASI); egress controls and time/memory limits.</li>
+    <li><strong>Telemetry:</strong> OpenTelemetry traces/metrics/logs across every hop; collectors export to vendor/OSS backends.</li>
+    <li><strong>API Gateway:</strong> Kong/Envoy for mTLS, WAF, JWT validation, plugin-based policies and transformations.</li>
+  </ul>
+
+  <h3>Delivery Roadmap (90&ndash;180 days)</h3>
+  <table>
+    <tr><th>Phase</th><th>Timeline</th><th>Focus</th></tr>
+    <tr><td>Phase 0</td><td>Week 0&ndash;2</td><td>Inception &amp; Platform Skeleton &mdash; Repos, CI, base K8s, gateway, Keycloak, Vault, OTel collector, NATS/Temporal/Postgres stacks.</td></tr>
+    <tr><td>Phase 1</td><td>Week 3&ndash;8</td><td>MVP Agent &amp; Flow Builder &mdash; Implement Agent Graph Orchestrator; build Flow Builder (drag-and-drop); basic Tool Registry &amp; Wasm Sandbox.</td></tr>
+    <tr><td>Phase 2</td><td>Week 9&ndash;12</td><td>Memory + RAG + Durable Runs &mdash; Ingestion pipeline (PDF/HTML/email), embeddings to pgvector; agent retriever node; Temporal-wrapped agent run.</td></tr>
+    <tr><td>Phase 3</td><td>Week 13&ndash;16</td><td>Integrations + Human-in-the-Loop &mdash; DocuSign, Calendly, Notion tools; approvals &amp; audit trails; OPA guardrails.</td></tr>
+    <tr><td>Phase 4</td><td>Week 17&ndash;20</td><td>Developer Platform v1 &mdash; SDKs (TS/Python), CLI, tool publishing pipeline, marketplace alpha, usage metering; full-path OTel traces &amp; dashboards.</td></tr>
+    <tr><td>Phase 5</td><td>Week 21&ndash;26</td><td>Accounting &amp; Tax (pilot) &mdash; QuickBooks tool (chart of accounts, invoices, P&amp;L); prebuilt flows.</td></tr>
+  </table>
+
+  <h3>Team, Risks &amp; Mitigations</h3>
+  <p><strong>Team (lean):</strong> Eng Mgr/Architect; 2&ndash;3 Platform (K8s, Gateway, IAM, Vault, OTel); 3 Backend (Agents/Temporal/NATS/Postgres); 2 Full-stack (Flow Builder, Playground); 1&ndash;2 Integrations (DocuSign/Calendly/Notion/QBO); 1 DevEx (SDK/CLI/Docs); 1 Security (OPA, audits).</p>
+  <p><strong>Risks:</strong> Agent reliability &rarr; graph patterns, verify/critic loops, human approvals. Long-running jobs &rarr; Temporal retries/replays. Data privacy &rarr; OPA + Vault + sandbox. Observability &rarr; OTel tracing, SLOs.</p>
+
+  <h3>GA Readiness</h3>
+  <ul>
+    <li><strong>ClawGPT Studio:</strong> Flow/Agent Builder, Marketplace, Playground, Run Explorer (replay), Approvals.</li>
+    <li><strong>Developer Platform:</strong> TS/Python SDKs, <code>claw</code> CLI, signed tool manifests, Wasm sandbox runtime.</li>
+    <li><strong>Enterprise:</strong> SSO (Keycloak), mTLS gateway, audit trails, policy as code, clear tenancy &amp; quotas.</li>
+  </ul>
+
+  <p class="timestamp">Generated: 2026-02-17</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="doc-section" id="doc2">
+  <h2>2. ClawGPT &mdash; Global, Durable, and Safe Autonomous Work Platform</h2>
+  <p><em>End-to-end Implementation, Scaling, and Go-To-Market Plan</em></p>
+
+  <h3>Extended Table of Contents</h3>
+  <ol>
+    <li>Vision &amp; Scope</li>
+    <li>Reference Architecture</li>
+    <li>Developer Platform (SDKs, CLI, Marketplace)</li>
+    <li>Core Services (Agents, Workflows, Events, Memory, Integrations)</li>
+    <li>Security, Compliance &amp; Observability</li>
+    <li>Delivery Roadmap (90&ndash;180 days)</li>
+    <li>Example Interfaces &amp; Schemas</li>
+    <li>Team, Risks &amp; Mitigations</li>
+    <li>GA Readiness</li>
+    <li>Optional Enhancements (post-MVP)</li>
+    <li>Global Scale Extension (10&ndash;100&times; Impact)</li>
+    <li>Interaction OS &amp; Human-in-the-Loop UX</li>
+    <li>Policy, Safety &amp; Governance</li>
+    <li>540&ndash;1,000 'Hands' (n8n-style) Execution Model</li>
+    <li>Ecosystem/Standards &amp; Marketplace</li>
+    <li>Memory &amp; Knowledge (RAG) Architecture</li>
+    <li>Globalization, Data Residency &amp; SLAs</li>
+    <li>Economics &amp; Model Strategy</li>
+    <li>Go-To-Market &amp; Vertical Packs</li>
+    <li>Global Milestones &amp; KPIs</li>
+    <li>Immediate Backlog &amp; Next Steps</li>
+  </ol>
+
+  <h3>Vision &amp; Scope (Extended)</h3>
+  <p>ClawGPT is a durable, trustworthy, multi-agent Business Operating System that plans, executes, and finishes end-to-end business processes. Its 'brain' is a resilient agent graph; its 'hands' are 540&ndash;1,000 specialized automations (n8n-style flows and tools) that do the work across APIs, UIs, RPA, and integrations. Workflows are durable, auditable, observable, and governed by policy by default.</p>
+
+  <h3>Global Scale Extension (10&ndash;100&times; Impact)</h3>
+  <p><strong>Differentiators:</strong> Durable autonomy core (Temporal everywhere), industrial 'hands' layer (540&ndash;1,000 flows as tools and skills), default-deny safety (OPA, Vault, sandbox), compounding memory (pgvector/Qdrant/Milvus), deep observability (OTel), principled plugin model (OpenAPI tools), best-in-class connectors, human-centered guardrails, transparent economics, distribution flywheel.</p>
+
+  <h3>Interaction OS &amp; Human-in-the-Loop UX</h3>
+  <p>Multi-modal copilots (voice/real-time), Inbox-first approvals &amp; exceptions (Temporal signals), explainable autonomy with 'proof-packets' (inputs, policies, traces, artifacts), one-click compensate/retry.</p>
+
+  <h3>540&ndash;1,000 'Hands' Execution Model</h3>
+  <p>Skill taxonomy with SLOs; each skill exposes <code>/simulate</code> and <code>/execute</code>; event-native execution via JetStream/Kafka; Temporal activities with retries and saga compensations; curated connectors (DocuSign, Calendly, Notion, QBO).</p>
+
+  <h3>Memory &amp; Knowledge (RAG) Architecture</h3>
+  <p>Default Postgres + pgvector (ACID, joins, PITR); adapters for Qdrant/Milvus at large scale; hybrid sparse+dense; lineage, TTL, and redaction; embeddings refresh with semantic diffs.</p>
+
+  <h3>Economics &amp; Model Strategy</h3>
+  <p>Model routing and cost caps; per-run metering of tokens/compute/egress; marketplace rev-share; free/pro/enterprise tiers; cost dashboards.</p>
+
+  <h3>Go-To-Market &amp; Vertical Packs</h3>
+  <ul>
+    <li><strong>Finance Ops:</strong> Invoice &rarr; eSign &rarr; QBO &rarr; Archive, EOM Close, Vendor Onboarding.</li>
+    <li><strong>Legal:</strong> Contract Review &rarr; DocuSign &rarr; Retention.</li>
+    <li><strong>HR:</strong> Offer &rarr; eSign &rarr; Onboarding &rarr; Scheduling.</li>
+  </ul>
+
+  <h3>Global Milestones &amp; KPIs</h3>
+  <table>
+    <tr><th>Milestone</th><th>Timeline</th><th>Deliverables</th></tr>
+    <tr><td>G0</td><td>0&ndash;60 days</td><td>Temporal-native runner, Run Explorer, top 20 templates, policy profiles.</td></tr>
+    <tr><td>G1</td><td>60&ndash;120 days</td><td>Marketplace v1, SDK/CLI, curated connectors.</td></tr>
+    <tr><td>G2</td><td>120&ndash;180 days</td><td>300 skills with SLOs, simulation/safe-mode, regional data residency.</td></tr>
+    <tr><td>G3</td><td>6&ndash;12 months</td><td>Compliance packs, partner channel, rev-share, multi-model evaluation.</td></tr>
+  </table>
+  <p><strong>KPIs:</strong> Completion &ge;95%, Replay &ge;99%, Approval P95 &le;5min, Zero PII egress incidents, Cost per successful job, Marketplace MAU, MTTR.</p>
+
+  <h3>Immediate Backlog (Top 10)</h3>
+  <ol>
+    <li>Temporal everywhere</li>
+    <li>Tool Manifest v1 + policy profiles</li>
+    <li>Wasm sandbox runner with egress caps and signed bundles</li>
+    <li>Event contracts</li>
+    <li>Run Explorer v1</li>
+    <li>Memory v1</li>
+    <li>Universal Inbox</li>
+    <li>Curated connectors</li>
+    <li>SSO &amp; Secrets</li>
+    <li>Marketplace v1</li>
+  </ol>
+
+  <p class="timestamp">Generated: 2026-02-17</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="doc-section" id="doc3">
+  <h2>3. ClawGPT &mdash; Global Implementation Plan (Brain + 540&ndash;1,000 Hands)</h2>
+
+  <h3>Executive Summary</h3>
+  <p>ClawGPT is a durable, policy-governed, multi-agent Business OS. Its 'brain' is a resilient agent graph that plans and reasons; its 'hands' are 540&ndash;1,000 autonomous automations (n8n-style flows/tools) that execute end-to-end work. The platform achieves world-class reliability with Temporal durable execution, event-native hands (NATS JetStream/Kafka), safety via OPA policy + Keycloak/Vault, tool sandboxing with Wasmtime, and deep observability using OpenTelemetry.</p>
+
+  <h3>Vision &amp; Product North Star</h3>
+  <p><strong>AI that actually finishes the job:</strong> ClawGPT is the global operating system for autonomous work &mdash; multi-agent graphs that plan, execute, and finish business processes with human oversight where it matters.</p>
+
+  <h3>Ten Differentiators to Reach World-Class</h3>
+  <ol>
+    <li><strong>Durable Autonomy Core</strong> &mdash; every agent run is a versioned Temporal workflow (resume, replay, backoff).</li>
+    <li><strong>Industrial-scale Hands</strong> &mdash; 540&ndash;1,000 automations as tools + skills, event-native, with SLOs.</li>
+    <li><strong>Safety &amp; Policy</strong> &mdash; OPA default-deny, human approvals on risk; Keycloak/Vault + gateway enforcement.</li>
+    <li><strong>Memory that Compounds</strong> &mdash; RAG with pgvector/Qdrant/Milvus, lineage and TTL, hybrid dense+sparse.</li>
+    <li><strong>Deep Observability</strong> &mdash; OTel traces by default; replay &amp; proof-packets per step.</li>
+    <li><strong>Ecosystem Plugin Model</strong> &mdash; OpenAPI 3.1 tool contracts, Wasm sandbox, marketplace review/signing.</li>
+    <li><strong>Interoperability</strong> &mdash; curated connectors (DocuSign, Calendly, Notion, QuickBooks).</li>
+    <li><strong>Human-in-the-Loop UX</strong> &mdash; Universal Inbox for approvals/exceptions; SLAs; Temporal signals.</li>
+    <li><strong>Economics</strong> &mdash; model routing &amp; cost caps; per-run metering; quotas per tenant/skill.</li>
+    <li><strong>Distribution Flywheel</strong> &mdash; template packs, marketplace rev-share, partner channel.</li>
+  </ol>
+
+  <h3>Hands as Skills (540&ndash;1,000)</h3>
+  <ul>
+    <li>Group flows into Skills (Finance/Legal/HR/IT). Expose consistent OpenAPI contracts with <code>/simulate</code> and <code>/execute</code>.</li>
+    <li>Event-native execution: subscribe to JetStream/Kafka topics; publish status and results.</li>
+    <li>Wrap as Temporal activities: idempotent, retries with backoff, compensations (Sagas).</li>
+    <li>Safety profile per tool: OPA policies, signed bundle, sandbox limits, short-lived credentials.</li>
+    <li>SLOs: success rate, P50/P95 runtime, approval latency, error budget.</li>
+  </ul>
+
+  <h3>Observability &amp; Run Explorer</h3>
+  <ul>
+    <li>OpenTelemetry everywhere; collectors export to chosen backend; redaction at source.</li>
+    <li>Run Explorer: timeline of steps, inputs/outputs, spans, artifacts, and one-click retry/compensate.</li>
+    <li>Default SLO dashboards: completion rate, MTTR, approval latency, cost per successful job.</li>
+  </ul>
+
+  <h3>Canonical Integrations (Phase 1)</h3>
+  <ul>
+    <li>DocuSign eSignature (envelopes, templates, Connect webhooks).</li>
+    <li>Calendly API v2 (availability, event types, webhooks).</li>
+    <li>Notion API (pages, databases, blocks).</li>
+    <li>QuickBooks Online Accounting (OAuth2, invoices, GL, reports).</li>
+  </ul>
+
+  <h3>Roadmap (0&ndash;12 months)</h3>
+  <table>
+    <tr><th>Milestone</th><th>Timeline</th><th>Deliverables</th></tr>
+    <tr><td>G0</td><td>0&ndash;60 days</td><td>Temporal-native Agent Runner; Run Explorer (OTel) with replay; 20 templates; Policy Profiles.</td></tr>
+    <tr><td>G1</td><td>60&ndash;120 days</td><td>Marketplace v1 (OAS + Wasm + policy checks); SDKs + <code>claw</code> CLI; curated connectors live.</td></tr>
+    <tr><td>G2</td><td>120&ndash;180 days</td><td>300 skills with SLOs + simulation; i18n UI; data residency enforcement.</td></tr>
+    <tr><td>G3</td><td>6&ndash;12 months</td><td>Compliance packs, partner channel, rev-share; multi-model routing; eval harness.</td></tr>
+  </table>
+
+  <p class="timestamp">Generated: 2026-02-17</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="doc-section" id="doc4">
+  <h2>4. ClawGPT &times; Orchestree &mdash; The 100x Strategy</h2>
+  <p><em>Building the World's AI Operating System</em></p>
+  <p><span class="tag tag--brain">Brain (ClawGPT)</span> <span class="tag tag--hands">Hands (Orchestree Agent OS)</span> <span class="tag tag--body">Body (SignOf 739+ Connectors)</span></p>
+  <p>540&ndash;1,000 Autonomous Agents &bull; 23 Workflow Node Types &bull; 20 Life Domains &bull; 10,000+ Integrations</p>
+
+  <h3>Three Pillars of a Platform</h3>
+  <div class="pillar-grid">
+    <div class="pillar-card">
+      <h4><span class="tag tag--brain">THE BRAIN</span> ClawGPT</h4>
+      <p>Your own LLM foundation &mdash; reasoning, generation, decision-making across all domains. Architecture planned; needs training pipeline + domain fine-tuning.</p>
+    </div>
+    <div class="pillar-card">
+      <h4><span class="tag tag--hands">THE HANDS</span> Orchestree Engine</h4>
+      <p>Autonomous Runtime (OBSERVE&rarr;REASON&rarr;PLAN&rarr;ACT&rarr;REFLECT&rarr;HEAL) + DAG Workflow Engine with 23 node types. Built: 65 files, 11K lines, 3,367 tests, 0 failures.</p>
+    </div>
+    <div class="pillar-card">
+      <h4><span class="tag tag--body">THE BODY</span> SignOf Agent OS</h4>
+      <p>185&rarr;540&ndash;1,000 agents across 12&rarr;20 life domains, 739+ connectors, Agent Store, Creator Economy. Business plan complete.</p>
+    </div>
+  </div>
+
+  <div class="formula">
+    ClawGPT (Brain) + Orchestree (Hands) + SignOf (Body) = The AI OS for Human Life
+  </div>
+
+  <p><strong>The gap in the market:</strong> ChatGPT can think but can't act. Zapier/n8n can act but can't think. Orchestree's <code>agentWorkflowBridge.ts</code> connects Brain and Hands bidirectionally. ClawGPT as the foundational AI completes the picture. No one else has all three.</p>
+
+  <h3>The 8-Layer Mega-Stack</h3>
+  <table>
+    <tr><th>Layer</th><th>Name</th><th>System</th><th>What It Does</th></tr>
+    <tr><td>8 &mdash; NEW</td><td>Ambient Intelligence</td><td>Invisible AI</td><td>Proactive, predictive AI that acts without being asked. Users interact 5 min/day.</td></tr>
+    <tr><td>7</td><td>Life Intelligence</td><td>Cross-Domain Brain</td><td>Unified knowledge graph. Finance Agent informs Health Agent. Calendar informs Meals.</td></tr>
+    <tr><td>6</td><td>Agent Economy</td><td>Marketplace</td><td>540&ndash;1,000 agents built by platform + creators. Agent Store with 70/30 revenue share.</td></tr>
+    <tr><td>5</td><td>Autonomous Runtime</td><td>Brain Engine</td><td>OBSERVE&rarr;REASON&rarr;PLAN&rarr;ACT&rarr;REFLECT&rarr;HEAL loop. Self-healing. Approval queue. Memory.</td></tr>
+    <tr><td>4</td><td>Workflow DAG Engine</td><td>Hands Engine</td><td>23 node types, Kahn's topological sort, AsyncGenerator execution, multi-port connections.</td></tr>
+    <tr><td>3</td><td>Connector Fabric</td><td>Nervous System</td><td>739+ deep bidirectional connectors scaling to 10,000+. OAuth, webhooks, MQTT, SSE.</td></tr>
+    <tr><td>2</td><td>Workflow Runtime</td><td>Execution Layer</td><td>Node.js/TypeScript engine, BullMQ job queues, 220+ exec/sec per instance.</td></tr>
+    <tr><td>1 &mdash; NEW</td><td>ClawGPT Foundation</td><td>AI Models</td><td>Your own LLMs: Nano (on-device), Core (7&ndash;13B), Pro (70B+), domain-specific fine-tunes.</td></tr>
+  </table>
+
+  <h3>20 Additions That Make This World-Best</h3>
+
+  <h3>TIER 1: Existential Advantages (Must-Have, Do First)</h3>
+  <ol>
+    <li><strong>ClawGPT Model Suite &mdash; Own Your AI Brain:</strong> Train Nano (1&ndash;3B, on-device), Core (7&ndash;13B, daily tasks), Pro (70B+, complex reasoning), and domain-specific fine-tunes. Start with open base (LLaMA/Mistral). Timeline: Month 1&ndash;6.</li>
+    <li><strong>Scale to 540&ndash;1,000 Agents Across 20 Domains:</strong> Merge SignOf 185 + Orchestree 480 catalogs. Add 8 new domains (Gaming, Automotive, Real Estate, Elder Care, Sustainability, Investing, Career, Arts &amp; Hobbies). Target: 750 at launch, 1,000 by Year 2. Timeline: Month 1&ndash;12.</li>
+    <li><strong>Meta-Agents (Agent-Spawning Agents):</strong> Manager agents that decompose goals into coordinated sub-agent swarms. Extend <code>deployAgentFromWorkflow()</code> to agent-to-agent spawning. Timeline: Month 6&ndash;12.</li>
+    <li><strong>Real Self-Healing Engine:</strong> Add circuit breakers, cascading repair, and repair learning to existing architecture. Timeline: Month 3&ndash;6.</li>
+  </ol>
+
+  <h3>TIER 2: Category-Defining Features</h3>
+  <ol start="5">
+    <li><strong>Ambient Intelligence Layer (Layer 8):</strong> The 'Nothing App' experience. Agents observe email, calendar, bank, wearables, smart home &mdash; and act without being asked. Timeline: Month 6&ndash;18.</li>
+    <li><strong>n8n-Level Visual Builder:</strong> Monaco code editor, expression builder, data pinning, sticky notes, command bar (Cmd+K), version history. Timeline: Month 3&ndash;9.</li>
+    <li><strong>Hardware Play &mdash; Physical Devices:</strong> ClawGPT Hub, Wearable, Companion Device. Timeline: Month 12&ndash;24.</li>
+    <li><strong>On-Device AI (ClawGPT Nano):</strong> 1&ndash;3B parameter models on phones/laptops. Instant decisions without cloud. Timeline: Month 6&ndash;12.</li>
+    <li><strong>Open Agent Interoperability Protocol (OAIP):</strong> Open standard for agent-to-agent communication. Become the TCP/IP of AI agents. Timeline: Month 12&ndash;18.</li>
+  </ol>
+
+  <h3>TIER 3: Scale &amp; Ecosystem</h3>
+  <ol start="10">
+    <li><strong>$100M Creator Fund + Agent Builder Academy:</strong> 1,000 certified creators, online academy, annual Agent Summit. Timeline: Month 6&ndash;12.</li>
+    <li><strong>Full Developer Platform (API + SDK):</strong> ClawGPT API (chat, embeddings, vision, voice, code), Agent SDK (Python/TS/no-code), Connector SDK, Fine-Tuning API. Timeline: Month 3&ndash;12.</li>
+    <li><strong>Enterprise Agent Fleets:</strong> SOC2, HIPAA, on-prem, SSO. Departments deploy 50&ndash;200 agents. Timeline: Month 9&ndash;18.</li>
+    <li><strong>Voice-First + Screenless Interface:</strong> Full platform via voice. Siri, Alexa, Google Assistant + native ClawGPT Voice. Timeline: Month 6&ndash;15.</li>
+    <li><strong>Global-First from Day 1:</strong> 30+ languages, regional compliance, local payments, cultural adaptation. Timeline: Month 6&ndash;18.</li>
+  </ol>
+
+  <h3>TIER 4: Long-Term Dominance</h3>
+  <ol start="15">
+    <li><strong>AI-Native Operating System:</strong> Replace the app paradigm. Users declare goals, agents handle everything. Timeline: Month 18&ndash;36.</li>
+    <li><strong>Unified Knowledge Graph (Life Intelligence):</strong> One identity across all 20 domains. Finance informs Health informs Calendar. Timeline: Month 9&ndash;18.</li>
+    <li><strong>Agent Reputation &amp; Trust Scoring:</strong> Trust score from success rate, satisfaction, repair history. Timeline: Month 6&ndash;12.</li>
+    <li><strong>Predictive Agent Deployment:</strong> AI predicts which agents a user needs based on onboarding + behavior. Timeline: Month 9&ndash;15.</li>
+    <li><strong>Ethical AI Governance Board:</strong> Public ethics board, transparency reports, user-controlled data policies. Timeline: Month 3 (ongoing).</li>
+    <li><strong>Cross-Platform Agent Portability:</strong> Export agent configs, memory, preferences. No lock-in by fear &mdash; lock-in by VALUE. Timeline: Month 6&ndash;9.</li>
+  </ol>
+
+  <h3>Financial Projections</h3>
+  <table>
+    <tr><th>Metric</th><th>Year 1</th><th>Year 2</th><th>Year 3</th><th>Year 5</th><th>Year 7</th></tr>
+    <tr><td>Total Agents</td><td>500</td><td>750</td><td>1,000</td><td>2,500+</td><td>10,000+</td></tr>
+    <tr><td>Connectors</td><td>739</td><td>2,000</td><td>5,000</td><td>10,000+</td><td>25,000+</td></tr>
+    <tr><td>Total Users</td><td>2M</td><td>20M</td><td>100M</td><td>500M</td><td>1B+</td></tr>
+    <tr><td>Paying Users</td><td>200K</td><td>3M</td><td>15M</td><td>75M</td><td>200M</td></tr>
+    <tr><td>ARPU</td><td>$45/mo</td><td>$55/mo</td><td>$62/mo</td><td>$68/mo</td><td>$75/mo</td></tr>
+    <tr><td>Subscription ARR</td><td>$108M</td><td>$2B</td><td>$11.2B</td><td>$61B</td><td>$180B</td></tr>
+    <tr><td>ClawGPT API Revenue</td><td>$5M</td><td>$80M</td><td>$500M</td><td>$3B</td><td>$10B</td></tr>
+    <tr><td>Agent Store GMV</td><td>$10M</td><td>$200M</td><td>$1.5B</td><td>$12B</td><td>$50B</td></tr>
+    <tr><td>Hardware Revenue</td><td>&mdash;</td><td>$50M</td><td>$500M</td><td>$5B</td><td>$20B</td></tr>
+    <tr><td><strong>Total Revenue</strong></td><td><strong>$120M</strong></td><td><strong>$2.3B</strong></td><td><strong>$13.5B</strong></td><td><strong>$78B</strong></td><td><strong>$250B+</strong></td></tr>
+    <tr><td><strong>Valuation</strong></td><td><strong>$2B</strong></td><td><strong>$25B</strong></td><td><strong>$150B</strong></td><td><strong>$800B</strong></td><td><strong>$2T+</strong></td></tr>
+  </table>
+
+  <h3>Execution Roadmap</h3>
+  <table>
+    <tr><th>Phase</th><th>Timeline</th><th>Key Deliverables</th></tr>
+    <tr><td>Phase 1: Foundation</td><td>Months 1&ndash;6</td><td>Train ClawGPT Core (7B); scale connectors to 100+ real; Agent Store MVP with 250 agents; n8n-parity features; ClawGPT API beta; Ethics Board v1.</td></tr>
+    <tr><td>Phase 2: Scale</td><td>Months 6&ndash;12</td><td>750 agents across 16 domains; Meta-Agents; ClawGPT Pro (70B) + Nano (1&ndash;3B); Creator Economy; Ambient Intelligence Layer; 739+ connectors; Voice v1.</td></tr>
+    <tr><td>Phase 3: Dominate</td><td>Months 12&ndash;24</td><td>ClawGPT Hardware (Hub + Wearable); 1,000 agents; Enterprise GA (SOC2, HIPAA, SSO); OAIP protocol; Global 30+ languages; Annual Agent Summit.</td></tr>
+    <tr><td>Phase 4: Transcend</td><td>Months 24&ndash;48</td><td>AI-Native OS prototype; Full hardware lineup; Agent-spawning-agent autonomy; IPO at $100B+.</td></tr>
+  </table>
+
+  <h3>Orchestree vs. n8n Feature Gap</h3>
+  <table>
+    <tr><th>n8n Feature</th><th>Orchestree Status</th><th>Gap / Action</th></tr>
+    <tr><td>Workflow Canvas Editor (48 flows)</td><td>7 editor components built</td><td>Add: Monaco, expression builder, sticky notes</td></tr>
+    <tr><td>400+ Node Integrations</td><td>23 node types + 10 mock connectors</td><td>Scale to 739+ real connectors</td></tr>
+    <tr><td>Execution History &amp; Debug</td><td>WorkflowExecutionLog component</td><td>Add: per-node I/O, data pinning, diff views</td></tr>
+    <tr><td>Credential Manager</td><td>ConnectorManager component</td><td>Add: OAuth flow, credential sharing</td></tr>
+    <tr><td>AI Agent Builder</td><td>4 agent nodes</td><td style="color:#34d399"><strong>YOU WIN:</strong> n8n has basic AI; you have autonomous runtime</td></tr>
+    <tr><td>Template Gallery (7,000+)</td><td>480 marketplace agents</td><td>Scale to 1,000+</td></tr>
+    <tr><td>Self-Healing</td><td>BUILT: 8 error types, backoff, LLM analysis</td><td style="color:#34d399"><strong>YOU WIN:</strong> n8n has basic retry; you have intelligent healing</td></tr>
+    <tr><td>Autonomous Agent Loop</td><td>BUILT: OBSERVE&rarr;REASON&rarr;PLAN&rarr;ACT&rarr;REFLECT&rarr;HEAL</td><td style="color:#34d399"><strong>YOU WIN:</strong> n8n has no autonomous agents</td></tr>
+    <tr><td>Inter-Agent Communication</td><td>BUILT: topic-based pub/sub</td><td style="color:#34d399"><strong>YOU WIN:</strong> n8n has no agent-to-agent comms</td></tr>
+    <tr><td>Agent Memory (TF-IDF)</td><td>BUILT: per-agent + shared semantic search</td><td style="color:#34d399"><strong>YOU WIN:</strong> n8n has no persistent memory</td></tr>
+  </table>
+
+  <div class="formula">
+    1,000 agents &bull; 20 life domains &bull; Your own AI &bull; Hardware in every home &bull; A creator army building the future.
+  </div>
+
+  <p class="timestamp">Confidential &bull; Strategic Master Plan &bull; February 2026</p>
+</section>
+
+</body>
+</html>

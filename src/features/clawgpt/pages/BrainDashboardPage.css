@@ -1,0 +1,66 @@
+.brain-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.brain-dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.brain-dashboard__stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-lg);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.brain-dashboard__stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.brain-dashboard__stat-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.brain-dashboard__activity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.brain-dashboard__activity-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.brain-dashboard__quick-actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.brain-dashboard__action-btn {
+  min-width: 160px;
+}
+
+/* ─── Dark mode ─────────────────────────────────────── */
+
+[data-theme="dark"] .brain-dashboard__stat-card {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}

@@ -1,10 +1,13 @@
 import type { ExtractionResult, TaxFormType, ExtractionField } from '../types'
 import { ExtractionConfidence, TaxFormType as TaxFormTypeValues } from '../types'
+import { extractTextFromPDF } from './pdfTextExtractor'
+import { extractTextFromImage } from './ocrExtractor'
+import { parseFieldsFromText } from './fieldParser'
 
 // ─── Extraction Steps ───────────────────────────────────────────────────
 //
-// Simulated extraction pipeline that runs through each step with delays
-// to give the user visual feedback during document processing.
+// Steps for the extraction pipeline. Duration is 0 for real extraction
+// (progress driven by actual processing) but used for simulated fallback.
 
 export interface ExtractionStep {
   label: string
@@ -12,16 +15,18 @@ export interface ExtractionStep {
 }
 
 export const EXTRACTION_STEPS: ExtractionStep[] = [
-  { label: 'Analyzing document format...', duration: 500 },
-  { label: 'Identifying form type...', duration: 400 },
-  { label: 'Reading field values...', duration: 800 },
-  { label: 'Validating extracted data...', duration: 300 },
+  { label: 'Reading document...', duration: 0 },
+  { label: 'Extracting text content...', duration: 0 },
+  { label: 'Identifying form fields...', duration: 0 },
+  { label: 'Validating extracted data...', duration: 0 },
 ]
+
+// Durations used for the simulated fallback path (no file provided)
+const SIMULATED_STEP_DURATIONS = [500, 400, 800, 300]
 
 // ─── Field Templates ────────────────────────────────────────────────────
 //
-// Form-type-specific field templates that define what data can be
-// extracted from each tax form type.
+// Form-type-specific field templates used for simulated extraction fallback.
 
 interface FieldTemplate {
   key: string
@@ -146,21 +151,77 @@ function generateWarnings(fields: ExtractionField[]): string[] {
   return warnings
 }
 
-// ─── Main Extraction Function ───────────────────────────────────────────
+function isPDF(file: File): boolean {
+  return (
+    file.type === 'application/pdf' ||
+    file.name.toLowerCase().endsWith('.pdf')
+  )
+}
 
-/**
- * Simulate extracting data from a tax document.
- * Runs through visual steps and generates fields from the form template.
- */
-export async function extractDocument(
+function isImage(file: File): boolean {
+  return (
+    file.type.startsWith('image/') ||
+    /\.(png|jpe?g|gif|bmp|tiff?)$/i.test(file.name)
+  )
+}
+
+// ─── Real Extraction ────────────────────────────────────────────────────
+
+async function extractReal(
+  formType: TaxFormType,
+  file: File,
+  onStep?: (step: ExtractionStep, index: number) => void
+): Promise<ExtractionResult> {
+  // Step 1: Reading document
+  onStep?.(EXTRACTION_STEPS[0]!, 0)
+
+  // Step 2: Extract text content
+  onStep?.(EXTRACTION_STEPS[1]!, 1)
+  let rawText = ''
+
+  if (isPDF(file)) {
+    rawText = await extractTextFromPDF(file)
+    // If PDF has very little text (scanned/image-based), fall back to OCR
+    if (rawText.trim().length < 50) {
+      rawText = await extractTextFromImage(file)
+    }
+  } else if (isImage(file)) {
+    rawText = await extractTextFromImage(file)
+  } else {
+    // Try PDF extraction first, fall back to OCR
+    rawText = await extractTextFromPDF(file)
+    if (rawText.trim().length < 50) {
+      rawText = await extractTextFromImage(file)
+    }
+  }
+
+  // Step 3: Parse fields from text
+  onStep?.(EXTRACTION_STEPS[2]!, 2)
+  const fields = parseFieldsFromText(rawText, formType)
+
+  // Step 4: Validate
+  onStep?.(EXTRACTION_STEPS[3]!, 3)
+
+  return {
+    fields,
+    overallConfidence: calculateOverallConfidence(fields),
+    formType,
+    warnings: generateWarnings(fields),
+    extractedAt: new Date().toISOString(),
+  }
+}
+
+// ─── Simulated Extraction (Fallback) ────────────────────────────────────
+
+async function extractSimulated(
   formType: TaxFormType,
   onStep?: (step: ExtractionStep, index: number) => void
 ): Promise<ExtractionResult> {
-  // Run through each step with delays
+  // Run through each step with simulated delays
   for (let i = 0; i < EXTRACTION_STEPS.length; i++) {
     const step = EXTRACTION_STEPS[i]!
     onStep?.(step, i)
-    await new Promise((resolve) => setTimeout(resolve, step.duration))
+    await new Promise((resolve) => setTimeout(resolve, SIMULATED_STEP_DURATIONS[i]))
   }
 
   // Generate fields from template
@@ -179,6 +240,24 @@ export async function extractDocument(
     warnings: generateWarnings(fields),
     extractedAt: new Date().toISOString(),
   }
+}
+
+// ─── Main Extraction Function ───────────────────────────────────────────
+
+/**
+ * Extract data from a tax document.
+ * When a file is provided, uses real PDF text extraction or OCR.
+ * When no file is provided, falls back to simulated extraction.
+ */
+export async function extractDocument(
+  formType: TaxFormType,
+  file?: File,
+  onStep?: (step: ExtractionStep, index: number) => void
+): Promise<ExtractionResult> {
+  if (file) {
+    return extractReal(formType, file, onStep)
+  }
+  return extractSimulated(formType, onStep)
 }
 
 /**

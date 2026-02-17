@@ -8,6 +8,28 @@ import type {
   ExtractionField,
   ExtractionConfidence,
 } from '../types'
+import { extractDocument as runExtraction } from '../lib/extractionEngine'
+
+// ─── File Blob Storage (session-scoped, not persisted) ──────────────────
+//
+// File/Blob objects cannot be serialized to JSON (localStorage).
+// We store them in a module-level Map for the current session only.
+// Users re-upload documents across sessions; real extraction only needs
+// the file during the current session.
+
+const fileBlobs = new Map<string, File>()
+
+export function setFileBlob(id: string, file: File): void {
+  fileBlobs.set(id, file)
+}
+
+export function getFileBlob(id: string): File | undefined {
+  return fileBlobs.get(id)
+}
+
+export function clearFileBlob(id: string): void {
+  fileBlobs.delete(id)
+}
 
 // ─── Document Review Status ─────────────────────────────────────────────
 
@@ -174,14 +196,14 @@ interface TaxDocumentState {
   extractionResults: Record<string, ExtractionResult>
 
   // Actions
-  addDocument: (doc: Omit<TaxUploadedDoc, 'id' | 'uploadDate' | 'status' | 'issueNote'>) => void
+  addDocument: (doc: Omit<TaxUploadedDoc, 'id' | 'uploadDate' | 'status' | 'issueNote'>) => string
   deleteDocument: (id: string) => void
   updateDocumentStatus: (id: string, status: DocReviewStatus, issueNote?: string) => void
   setActiveTaxYear: (year: TaxYear) => void
   setDragging: (dragging: boolean) => void
 
   // Extraction
-  extractDocument: (id: string) => void
+  extractDocument: (id: string) => Promise<void>
   setExtractionConfirmed: (id: string, confirmed: boolean) => void
   getExtractionResult: (id: string) => ExtractionResult | undefined
 
@@ -204,27 +226,32 @@ export const useTaxDocumentStore = create<TaxDocumentState>()(
       isDragging: false,
       extractionResults: {},
 
-      addDocument: (doc) =>
+      addDocument: (doc) => {
+        const id = generateId()
         set((state) => ({
           documents: [
             {
               ...doc,
-              id: generateId(),
+              id,
               uploadDate: new Date().toISOString(),
               status: DocReviewStatus.PendingReview,
               issueNote: '',
             },
             ...state.documents,
           ],
-        })),
+        }))
+        return id
+      },
 
-      deleteDocument: (id) =>
+      deleteDocument: (id) => {
+        clearFileBlob(id)
         set((state) => ({
           documents: state.documents.filter((d) => d.id !== id),
           extractionResults: Object.fromEntries(
             Object.entries(state.extractionResults).filter(([key]) => key !== id)
           ),
-        })),
+        }))
+      },
 
       updateDocumentStatus: (id, status, issueNote) =>
         set((state) => ({
@@ -241,11 +268,11 @@ export const useTaxDocumentStore = create<TaxDocumentState>()(
 
       // ─── Extraction ─────────────────────────────────────────────────
 
-      extractDocument: (id) => {
+      extractDocument: async (id) => {
         const doc = get().documents.find((d) => d.id === id)
         if (!doc) return
 
-        // Step 1: Set status to extracting
+        // Set initial extracting state
         set((state) => ({
           extractionResults: {
             ...state.extractionResults,
@@ -253,69 +280,37 @@ export const useTaxDocumentStore = create<TaxDocumentState>()(
               fields: [],
               overallConfidence: 0,
               formType: doc.formType,
-              warnings: ['Analyzing document format...'],
+              warnings: ['Reading document...'],
               extractedAt: '',
             },
           },
         }))
 
-        // Step 2: Analyzing document format (500ms)
-        setTimeout(() => {
-          set((state) => {
-            const current = state.extractionResults[id]
-            if (!current) return state
-            return {
-              extractionResults: {
-                ...state.extractionResults,
-                [id]: {
-                  ...current,
-                  warnings: ['Identifying form type...'],
+        const blob = getFileBlob(id)
+
+        try {
+          const result = await runExtraction(doc.formType, blob, (step) => {
+            set((state) => {
+              const current = state.extractionResults[id]
+              if (!current) return state
+              return {
+                extractionResults: {
+                  ...state.extractionResults,
+                  [id]: { ...current, warnings: [step.label] },
                 },
-              },
-            }
+              }
+            })
           })
-        }, 500)
 
-        // Step 3: Identifying form type (900ms)
-        setTimeout(() => {
-          set((state) => {
-            const current = state.extractionResults[id]
-            if (!current) return state
-            return {
-              extractionResults: {
-                ...state.extractionResults,
-                [id]: {
-                  ...current,
-                  warnings: ['Reading field values...'],
-                },
-              },
-            }
-          })
-        }, 900)
-
-        // Step 4: Reading field values (1700ms)
-        setTimeout(() => {
-          set((state) => {
-            const current = state.extractionResults[id]
-            if (!current) return state
-            return {
-              extractionResults: {
-                ...state.extractionResults,
-                [id]: {
-                  ...current,
-                  warnings: ['Validating extracted data...'],
-                },
-              },
-            }
-          })
-        }, 1700)
-
-        // Step 5: Complete extraction (2000ms)
-        setTimeout(() => {
-          const currentDoc = get().documents.find((d) => d.id === id)
-          if (!currentDoc) return
-
-          const fields = generateExtractionFields(currentDoc.formType)
+          set((state) => ({
+            extractionResults: {
+              ...state.extractionResults,
+              [id]: result,
+            },
+          }))
+        } catch {
+          // On failure, use the simulated fallback
+          const fields = generateExtractionFields(doc.formType)
           const confidenceScores = fields.map((f) =>
             f.confidence === 'high' ? 0.95 : f.confidence === 'medium' ? 0.78 : 0.55
           )
@@ -342,13 +337,13 @@ export const useTaxDocumentStore = create<TaxDocumentState>()(
               [id]: {
                 fields,
                 overallConfidence,
-                formType: currentDoc.formType,
+                formType: doc.formType,
                 warnings,
                 extractedAt: new Date().toISOString(),
               },
             },
           }))
-        }, 2000)
+        }
       },
 
       setExtractionConfirmed: (id, confirmed) =>

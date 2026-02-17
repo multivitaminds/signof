@@ -5,6 +5,7 @@ import {
   DocReviewStatus,
   DOC_REVIEW_LABELS,
   detectFormType,
+  setFileBlob,
 } from '../stores/useTaxDocumentStore'
 import {
   TaxFormType,
@@ -98,13 +99,14 @@ function TaxDocumentsPage() {
       const files = Array.from(e.dataTransfer.files)
       for (const file of files) {
         const detectedType = detectFormType(file.name)
-        addDocument({
+        const id = addDocument({
           fileName: file.name,
           formType: detectedType,
           taxYear: activeTaxYear as TaxYear,
           employerName: 'Auto-detected',
           fileSize: file.size,
         })
+        setFileBlob(id, file)
       }
     },
     [addDocument, activeTaxYear, setDragging]
@@ -151,13 +153,14 @@ function TaxDocumentsPage() {
       if (!files) return
       for (const file of Array.from(files)) {
         const detectedType = detectFormType(file.name)
-        addDocument({
+        const id = addDocument({
           fileName: file.name,
           formType: detectedType,
           taxYear: activeTaxYear as TaxYear,
           employerName: 'Auto-detected',
           fileSize: file.size,
         })
+        setFileBlob(id, file)
       }
       e.target.value = ''
     },

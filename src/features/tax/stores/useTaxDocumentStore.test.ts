@@ -1,6 +1,13 @@
-import { useTaxDocumentStore, DocReviewStatus, detectFormType } from './useTaxDocumentStore'
-import { TaxFormType } from '../types'
-import type { TaxYear } from '../types'
+import { useTaxDocumentStore, DocReviewStatus, detectFormType, setFileBlob, getFileBlob, clearFileBlob } from './useTaxDocumentStore'
+import { TaxFormType, ExtractionConfidence } from '../types'
+import type { TaxYear, ExtractionResult } from '../types'
+
+// Mock the extraction engine
+vi.mock('../lib/extractionEngine', () => ({
+  extractDocument: vi.fn(),
+}))
+
+import { extractDocument as mockRunExtraction } from '../lib/extractionEngine'
 
 function resetStore() {
   useTaxDocumentStore.setState({
@@ -14,11 +21,7 @@ function resetStore() {
 describe('useTaxDocumentStore', () => {
   beforeEach(() => {
     resetStore()
-    vi.useFakeTimers()
-  })
-
-  afterEach(() => {
-    vi.useRealTimers()
+    vi.clearAllMocks()
   })
 
   describe('addDocument', () => {
@@ -40,6 +43,21 @@ describe('useTaxDocumentStore', () => {
       expect(documents[0]!.issueNote).toBe('')
     })
 
+    it('returns the generated document id', () => {
+      const id = useTaxDocumentStore.getState().addDocument({
+        fileName: 'W-2_Test.pdf',
+        formType: TaxFormType.W2,
+        taxYear: '2025' as TaxYear,
+        employerName: 'Test Corp',
+        fileSize: 100000,
+      })
+
+      expect(typeof id).toBe('string')
+      expect(id.length).toBeGreaterThan(0)
+      const { documents } = useTaxDocumentStore.getState()
+      expect(documents[0]!.id).toBe(id)
+    })
+
     it('prepends new documents to the beginning of the list', () => {
       useTaxDocumentStore.getState().addDocument({
         fileName: 'first.pdf',
@@ -59,6 +77,25 @@ describe('useTaxDocumentStore', () => {
       const { documents } = useTaxDocumentStore.getState()
       expect(documents[0]!.fileName).toBe('second.pdf')
       expect(documents[1]!.fileName).toBe('first.pdf')
+    })
+  })
+
+  describe('file blob storage', () => {
+    it('stores and retrieves file blobs', () => {
+      const file = new File(['content'], 'test.pdf', { type: 'application/pdf' })
+      setFileBlob('doc-1', file)
+      expect(getFileBlob('doc-1')).toBe(file)
+    })
+
+    it('returns undefined for unknown ids', () => {
+      expect(getFileBlob('nonexistent')).toBeUndefined()
+    })
+
+    it('clears file blobs', () => {
+      const file = new File(['content'], 'test.pdf', { type: 'application/pdf' })
+      setFileBlob('doc-1', file)
+      clearFileBlob('doc-1')
+      expect(getFileBlob('doc-1')).toBeUndefined()
     })
   })
 
@@ -86,6 +123,20 @@ describe('useTaxDocumentStore', () => {
 
       useTaxDocumentStore.getState().deleteDocument('doc-1')
       expect(useTaxDocumentStore.getState().extractionResults).toEqual({})
+    })
+
+    it('clears file blob on delete', () => {
+      const file = new File(['content'], 'test.pdf', { type: 'application/pdf' })
+      setFileBlob('doc-1', file)
+
+      useTaxDocumentStore.setState({
+        documents: [
+          { id: 'doc-1', fileName: 'test.pdf', formType: TaxFormType.W2, taxYear: '2025' as TaxYear, employerName: 'Corp', uploadDate: '', status: DocReviewStatus.PendingReview, fileSize: 100, issueNote: '' },
+        ],
+      })
+
+      useTaxDocumentStore.getState().deleteDocument('doc-1')
+      expect(getFileBlob('doc-1')).toBeUndefined()
     })
   })
 
@@ -126,36 +177,117 @@ describe('useTaxDocumentStore', () => {
   })
 
   describe('extractDocument', () => {
-    it('runs extraction pipeline with intermediate steps and final result', () => {
+    const mockResult: ExtractionResult = {
+      fields: [
+        { key: 'Employer Name', value: 'Acme Corp', confidence: ExtractionConfidence.High, confirmed: false },
+        { key: 'Wages (Box 1)', value: '85000.00', confidence: ExtractionConfidence.High, confirmed: false },
+      ],
+      overallConfidence: 100,
+      formType: TaxFormType.W2,
+      warnings: [],
+      extractedAt: '2026-01-01T00:00:00Z',
+    }
+
+    it('calls extraction engine and stores result', async () => {
+      vi.mocked(mockRunExtraction).mockResolvedValue(mockResult)
+
       useTaxDocumentStore.setState({
         documents: [
           { id: 'doc-1', fileName: 'W-2_Test.pdf', formType: TaxFormType.W2, taxYear: '2025' as TaxYear, employerName: 'Corp', uploadDate: '', status: DocReviewStatus.PendingReview, fileSize: 100, issueNote: '' },
         ],
       })
 
-      useTaxDocumentStore.getState().extractDocument('doc-1')
+      await useTaxDocumentStore.getState().extractDocument('doc-1')
 
-      // Step 1: initial state set immediately
-      let result = useTaxDocumentStore.getState().extractionResults['doc-1']
+      const result = useTaxDocumentStore.getState().extractionResults['doc-1']
       expect(result).toBeDefined()
-      expect(result!.warnings).toContain('Analyzing document format...')
-
-      // Step 2: advance 500ms
-      vi.advanceTimersByTime(500)
-      result = useTaxDocumentStore.getState().extractionResults['doc-1']
-      expect(result!.warnings).toContain('Identifying form type...')
-
-      // Final: advance to 2000ms total
-      vi.advanceTimersByTime(1500)
-      result = useTaxDocumentStore.getState().extractionResults['doc-1']
-      expect(result!.fields.length).toBeGreaterThan(0)
+      expect(result!.fields).toHaveLength(2)
+      expect(result!.fields[0]!.value).toBe('Acme Corp')
       expect(result!.extractedAt).toBeTruthy()
-      expect(result!.formType).toBe(TaxFormType.W2)
     })
 
-    it('does nothing for unknown document id', () => {
-      useTaxDocumentStore.getState().extractDocument('nonexistent')
+    it('sets initial extracting state before extraction completes', async () => {
+      let capturedWarnings: string[] = []
+      vi.mocked(mockRunExtraction).mockImplementation(async (_formType, _file, onStep) => {
+        // Capture the store state after initial set but before completion
+        capturedWarnings = [...(useTaxDocumentStore.getState().extractionResults['doc-1']?.warnings ?? [])]
+        onStep?.({ label: 'Reading document...', duration: 0 }, 0)
+        return mockResult
+      })
+
+      useTaxDocumentStore.setState({
+        documents: [
+          { id: 'doc-1', fileName: 'test.pdf', formType: TaxFormType.W2, taxYear: '2025' as TaxYear, employerName: 'Corp', uploadDate: '', status: DocReviewStatus.PendingReview, fileSize: 100, issueNote: '' },
+        ],
+      })
+
+      await useTaxDocumentStore.getState().extractDocument('doc-1')
+      expect(capturedWarnings).toContain('Reading document...')
+    })
+
+    it('passes file blob to extraction engine when available', async () => {
+      vi.mocked(mockRunExtraction).mockResolvedValue(mockResult)
+
+      const file = new File(['pdf-content'], 'w2.pdf', { type: 'application/pdf' })
+      setFileBlob('doc-1', file)
+
+      useTaxDocumentStore.setState({
+        documents: [
+          { id: 'doc-1', fileName: 'w2.pdf', formType: TaxFormType.W2, taxYear: '2025' as TaxYear, employerName: 'Corp', uploadDate: '', status: DocReviewStatus.PendingReview, fileSize: 100, issueNote: '' },
+        ],
+      })
+
+      await useTaxDocumentStore.getState().extractDocument('doc-1')
+
+      expect(mockRunExtraction).toHaveBeenCalledWith(
+        TaxFormType.W2,
+        file,
+        expect.any(Function)
+      )
+
+      // Clean up
+      clearFileBlob('doc-1')
+    })
+
+    it('passes undefined file when no blob stored', async () => {
+      vi.mocked(mockRunExtraction).mockResolvedValue(mockResult)
+
+      useTaxDocumentStore.setState({
+        documents: [
+          { id: 'doc-1', fileName: 'test.pdf', formType: TaxFormType.W2, taxYear: '2025' as TaxYear, employerName: 'Corp', uploadDate: '', status: DocReviewStatus.PendingReview, fileSize: 100, issueNote: '' },
+        ],
+      })
+
+      await useTaxDocumentStore.getState().extractDocument('doc-1')
+
+      expect(mockRunExtraction).toHaveBeenCalledWith(
+        TaxFormType.W2,
+        undefined,
+        expect.any(Function)
+      )
+    })
+
+    it('does nothing for unknown document id', async () => {
+      await useTaxDocumentStore.getState().extractDocument('nonexistent')
       expect(useTaxDocumentStore.getState().extractionResults).toEqual({})
+      expect(mockRunExtraction).not.toHaveBeenCalled()
+    })
+
+    it('falls back to simulated data on extraction error', async () => {
+      vi.mocked(mockRunExtraction).mockRejectedValue(new Error('Extraction failed'))
+
+      useTaxDocumentStore.setState({
+        documents: [
+          { id: 'doc-1', fileName: 'test.pdf', formType: TaxFormType.W2, taxYear: '2025' as TaxYear, employerName: 'Corp', uploadDate: '', status: DocReviewStatus.PendingReview, fileSize: 100, issueNote: '' },
+        ],
+      })
+
+      await useTaxDocumentStore.getState().extractDocument('doc-1')
+
+      const result = useTaxDocumentStore.getState().extractionResults['doc-1']
+      expect(result).toBeDefined()
+      expect(result!.fields.length).toBeGreaterThan(0)
+      expect(result!.extractedAt).toBeTruthy()
     })
   })
 

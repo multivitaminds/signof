@@ -17,6 +17,9 @@ import useAIAgentStore from '../features/ai/stores/useAIAgentStore'
 import { useDatabaseStore } from '../features/databases/stores/useDatabaseStore'
 import { useTaxStore } from '../features/tax/stores/useTaxStore'
 import { useTaxFilingStore } from '../features/tax/stores/useTaxFilingStore'
+import { useGatewayStore } from '../features/clawgpt/stores/useGatewayStore'
+import { useChannelStore } from '../features/clawgpt/stores/useChannelStore'
+import { useSkillStore } from '../features/clawgpt/stores/useSkillStore'
 import { RunStatus } from '../features/ai/types'
 import { ACTIVE_STATUSES } from '../types'
 
@@ -32,6 +35,7 @@ export interface ModuleMetrics {
   databases: { total: number; totalRecords: number }
   aiAgents: { running: number; completed: number; total: number }
   tax: { pendingFilings: number; upcomingDeadlines: number }
+  clawgpt: { activeSessions: number; connectedChannels: number; messagesToday: number; installedSkills: number }
 }
 
 export interface DeadlineItem {
@@ -106,6 +110,14 @@ export function getModuleMetrics(): ModuleMetrics {
   ).length
   const upcomingTaxDeadlines = taxState.deadlines.filter((d) => !d.completed).length
 
+  // ClawGPT metrics
+  const gatewayState = useGatewayStore.getState()
+  const channelState = useChannelStore.getState()
+  const skillState = useSkillStore.getState()
+  const clawActiveSessions = gatewayState.activeSessions.filter((s) => s.isActive).length
+  const clawConnectedChannels = channelState.getConnectedChannels().length
+  const clawInstalledSkills = skillState.getInstalledSkills().length
+
   return {
     documents: { pending: pendingDocs, total: documents.length },
     projects: { open: openIssues, total: projects.length },
@@ -116,6 +128,12 @@ export function getModuleMetrics(): ModuleMetrics {
     databases: { total: allDatabases.length, totalRecords },
     aiAgents: { running: runningAgents, completed: completedAgents, total: aiRuns.length },
     tax: { pendingFilings, upcomingDeadlines: upcomingTaxDeadlines },
+    clawgpt: {
+      activeSessions: clawActiveSessions,
+      connectedChannels: clawConnectedChannels,
+      messagesToday: gatewayState.totalMessagesToday,
+      installedSkills: clawInstalledSkills,
+    },
   }
 }
 
@@ -317,6 +335,26 @@ export function getCopilotInsights(): CrossModuleInsight[] {
       module: 'Tax',
       path: '/tax',
       severity: metrics.tax.upcomingDeadlines > 2 ? 'warning' : 'info',
+    })
+  }
+
+  if (metrics.clawgpt.activeSessions > 0) {
+    insights.push({
+      id: 'clawgpt-sessions',
+      message: `${metrics.clawgpt.activeSessions} active ClawGPT session${metrics.clawgpt.activeSessions > 1 ? 's' : ''} across channels`,
+      module: 'ClawGPT',
+      path: '/brain/inbox',
+      severity: 'info',
+    })
+  }
+
+  if (metrics.clawgpt.connectedChannels > 0) {
+    insights.push({
+      id: 'clawgpt-channels',
+      message: `${metrics.clawgpt.connectedChannels} channel${metrics.clawgpt.connectedChannels > 1 ? 's' : ''} connected to ClawGPT`,
+      module: 'ClawGPT',
+      path: '/brain/channels',
+      severity: 'success',
     })
   }
 

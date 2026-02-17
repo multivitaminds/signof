@@ -1,0 +1,46 @@
+.clawgpt-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.clawgpt-layout__tabs {
+  display: flex;
+  gap: var(--space-xs);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.clawgpt-layout__tab {
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background-color 0.15s, color 0.15s;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.clawgpt-layout__tab:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.clawgpt-layout__tab--active {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.clawgpt-layout__tab--active:hover {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.clawgpt-layout__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md) 0;
+}

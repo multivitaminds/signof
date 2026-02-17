@@ -92,6 +92,14 @@ const DocumentBuilderPage = lazy(() => import('./features/documents/pages/Docume
 
 const PlaygroundLayout = lazy(() => import('./features/playground/pages/PlaygroundLayout'))
 
+const BrainTreeLayout = lazy(() => import('./features/clawgpt/pages/BrainTreeLayout'))
+const BrainDashboardPage = lazy(() => import('./features/clawgpt/pages/BrainDashboardPage'))
+const ChannelsPage = lazy(() => import('./features/clawgpt/pages/ChannelsPage'))
+const UnifiedInboxPage = lazy(() => import('./features/clawgpt/pages/UnifiedInboxPage'))
+const SkillsPage = lazy(() => import('./features/clawgpt/pages/SkillsPage'))
+const SoulPage = lazy(() => import('./features/clawgpt/pages/SoulPage'))
+const DevicesPage = lazy(() => import('./features/clawgpt/pages/DevicesPage'))
+
 const DeveloperLayout = lazy(() => import('./features/developer/pages/DeveloperLayout'))
 const ApiDocsPage = lazy(() => import('./features/developer/pages/ApiDocsPage'))
 const CliDocsPage = lazy(() => import('./features/developer/pages/CliDocsPage'))
@@ -237,6 +245,22 @@ createRoot(root).render(
             <Route path="workflows/:workflowId" element={<Suspense fallback={CardFallback}><WorkflowEditorPage /></Suspense>} />
             <Route path="operations" element={<Suspense fallback={CardFallback}><AgentOpsPage /></Suspense>} />
             <Route path="connectors" element={<Suspense fallback={CardFallback}><ConnectorHubPage /></Suspense>} />
+          </Route>
+
+          {/* ClawGPT (Central Intelligence Hub) */}
+          <Route path="brain" element={
+            <ModuleErrorBoundary moduleName="ClawGPT">
+              <Suspense fallback={CardFallback}><BrainTreeLayout /></Suspense>
+            </ModuleErrorBoundary>
+          }>
+            <Route index element={<Navigate to="/brain/dashboard" replace />} />
+            <Route path="dashboard" element={<Suspense fallback={CardFallback}><BrainDashboardPage /></Suspense>} />
+            <Route path="channels" element={<Suspense fallback={CardFallback}><ChannelsPage /></Suspense>} />
+            <Route path="inbox" element={<Suspense fallback={TableFallback}><UnifiedInboxPage /></Suspense>} />
+            <Route path="inbox/:sessionId" element={<Suspense fallback={TableFallback}><UnifiedInboxPage /></Suspense>} />
+            <Route path="skills" element={<Suspense fallback={CardFallback}><SkillsPage /></Suspense>} />
+            <Route path="soul" element={<Suspense fallback={EditorFallback}><SoulPage /></Suspense>} />
+            <Route path="devices" element={<Suspense fallback={CardFallback}><DevicesPage /></Suspense>} />
           </Route>
 
           {/* Tax E-Filing (TaxBandit) */}

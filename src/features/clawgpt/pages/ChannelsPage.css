@@ -1,0 +1,80 @@
+.channels-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.channels-page__toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.channels-page__filters {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.channels-page__filter {
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-full, 9999px);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.channels-page__filter:hover {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.channels-page__filter--active {
+  background-color: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.channels-page__search {
+  flex: 1;
+  min-width: 200px;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.channels-page__search::placeholder {
+  color: var(--text-muted);
+}
+
+.channels-page__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-md);
+}
+
+.channels-page__empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: var(--space-2xl);
+  font-size: 0.9375rem;
+}
+
+.channels-page__add-btn {
+  align-self: flex-start;
+}
+
+/* ─── Dark mode ─────────────────────────────────────── */
+
+[data-theme="dark"] .channels-page__search {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
