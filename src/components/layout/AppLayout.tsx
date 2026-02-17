@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from 'react'
+import { useEffect, useCallback, useRef, lazy, Suspense } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from './Sidebar/Sidebar'
 import TopBar from './TopBar/TopBar'
@@ -6,13 +6,13 @@ import MobileNav from './MobileNav/MobileNav'
 import PageTransition from './PageTransition/PageTransition'
 import CommandPalette from '../CommandPalette/CommandPalette'
 import KeyboardShortcutHelp from '../KeyboardShortcutHelp/KeyboardShortcutHelp'
-import SearchOverlay from '../../features/search/components/SearchOverlay/SearchOverlay'
-import QuickActionPalette from '../../features/search/components/QuickActionPalette/QuickActionPalette'
+const SearchOverlay = lazy(() => import('../../features/search/components/SearchOverlay/SearchOverlay'))
+const QuickActionPalette = lazy(() => import('../../features/search/components/QuickActionPalette/QuickActionPalette'))
 import { useQuickActionRegistration } from '../../hooks/useQuickActionRegistration'
 import AccountModeBanner from '../AccountModeBanner/AccountModeBanner'
 import OfflineBanner from '../OfflineBanner/OfflineBanner'
-import AIChatSidebar from '../../features/ai/components/AIChatSidebar/AIChatSidebar'
-import TourProvider from '../../features/onboarding/components/TourProvider/TourProvider'
+const AIChatSidebar = lazy(() => import('../../features/ai/components/AIChatSidebar/AIChatSidebar'))
+const TourProvider = lazy(() => import('../../features/onboarding/components/TourProvider/TourProvider'))
 import useAIChatStore from '../../features/ai/stores/useAIChatStore'
 import { useTheme } from '../../hooks/useTheme'
 import { useFocusOnRouteChange } from '../../hooks/useFocusOnRouteChange'
@@ -159,12 +159,20 @@ export default function AppLayout() {
       </div>
       {/* Mobile bottom nav (hidden on desktop) */}
       {isMobile && <MobileNav />}
-      <SearchOverlay isOpen={searchOverlayOpen} onClose={handleCloseSearch} />
-      <QuickActionPalette isOpen={quickActionPaletteOpen} onClose={handleCloseQuickActions} />
+      <Suspense fallback={null}>
+        <SearchOverlay isOpen={searchOverlayOpen} onClose={handleCloseSearch} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <QuickActionPalette isOpen={quickActionPaletteOpen} onClose={handleCloseQuickActions} />
+      </Suspense>
       <CommandPalette />
       <KeyboardShortcutHelp />
-      <AIChatSidebar />
-      <TourProvider />
+      <Suspense fallback={null}>
+        <AIChatSidebar />
+      </Suspense>
+      <Suspense fallback={null}>
+        <TourProvider />
+      </Suspense>
       {/* ARIA live region for toast announcements */}
       <div
         className="app-layout__live-region"

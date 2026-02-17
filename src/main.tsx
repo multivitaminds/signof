@@ -14,7 +14,7 @@ import LoginPage from './features/auth/pages/LoginPage'
 import SignupPage from './features/auth/pages/SignupPage'
 import OnboardingPage from './features/auth/pages/OnboardingPage'
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
-import InboxPage from './features/inbox/pages/InboxPage'
+const InboxPage = lazy(() => import('./features/inbox/pages/InboxPage'))
 
 // Skeleton fallbacks
 import TableSkeleton from './components/skeletons/TableSkeleton'
@@ -233,7 +233,7 @@ createRoot(root).render(
           {/* Inbox */}
           <Route path="inbox" element={
             <ModuleErrorBoundary moduleName="Inbox">
-              <InboxPage />
+              <Suspense fallback={TableFallback}><InboxPage /></Suspense>
             </ModuleErrorBoundary>
           } />
 

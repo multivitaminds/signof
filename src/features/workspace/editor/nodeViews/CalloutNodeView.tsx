@@ -1,6 +1,7 @@
 import { NodeViewWrapper, NodeViewContent } from '@tiptap/react'
 import type { NodeViewProps } from '@tiptap/react'
-import { MappedIcon, isEmojiIcon } from '../../../../lib/iconMap'
+import MappedIcon from '../../../../lib/MappedIcon'
+import { isEmojiIcon } from '../../../../lib/iconMap'
 import './CalloutNodeView.css'
 
 export default function CalloutNodeView({ node }: NodeViewProps) {

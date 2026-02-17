@@ -59,6 +59,16 @@ export default defineConfig({
           'feature-ai': [
             './src/features/ai/stores/useMemoryStore.ts',
             './src/features/ai/stores/useAgentStore.ts',
+            './src/features/ai/stores/useAIChatStore.ts',
+          ],
+          'feature-clawgpt': [
+            './src/features/clawgpt/stores/useChannelStore.ts',
+            './src/features/clawgpt/stores/useMessageStore.ts',
+            './src/features/clawgpt/stores/useSkillStore.ts',
+            './src/features/clawgpt/stores/useSoulStore.ts',
+            './src/features/clawgpt/stores/useDeviceStore.ts',
+            './src/features/clawgpt/stores/useGatewayStore.ts',
+            './src/features/clawgpt/stores/useFleetStore.ts',
           ],
         },
       },
