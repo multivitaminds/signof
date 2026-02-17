@@ -61,7 +61,7 @@ export const useAppStore = create<AppState>()(
       sidebarWidth: 256,
       toggleSidebar: () =>
         set((state) => ({ sidebarExpanded: !state.sidebarExpanded })),
-      setSidebarWidth: (width) => set({ sidebarWidth: width }),
+      setSidebarWidth: (width) => set({ sidebarWidth: Math.min(320, Math.max(180, width)) }),
 
       // Mobile sidebar
       mobileSidebarOpen: false,
@@ -139,6 +139,14 @@ export const useAppStore = create<AppState>()(
         recentItems: state.recentItems,
         favorites: state.favorites,
       }),
+      merge: (persisted, current) => {
+        const merged = { ...current, ...(persisted as Partial<AppState>) }
+        // Clamp sidebarWidth to valid range on rehydration
+        if (typeof merged.sidebarWidth === 'number') {
+          merged.sidebarWidth = Math.min(320, Math.max(180, merged.sidebarWidth))
+        }
+        return merged
+      },
     }
   )
 )

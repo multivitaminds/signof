@@ -9,7 +9,6 @@ import KeyboardShortcutHelp from '../KeyboardShortcutHelp/KeyboardShortcutHelp'
 const SearchOverlay = lazy(() => import('../../features/search/components/SearchOverlay/SearchOverlay'))
 const QuickActionPalette = lazy(() => import('../../features/search/components/QuickActionPalette/QuickActionPalette'))
 import { useQuickActionRegistration } from '../../hooks/useQuickActionRegistration'
-import AccountModeBanner from '../AccountModeBanner/AccountModeBanner'
 import OfflineBanner from '../OfflineBanner/OfflineBanner'
 const AIChatSidebar = lazy(() => import('../../features/ai/components/AIChatSidebar/AIChatSidebar'))
 const TourProvider = lazy(() => import('../../features/onboarding/components/TourProvider/TourProvider'))
@@ -144,7 +143,6 @@ export default function AppLayout() {
         />
       )}
       <div className="app-layout__main">
-        <AccountModeBanner />
         <OfflineBanner />
         <TopBar />
         <main
