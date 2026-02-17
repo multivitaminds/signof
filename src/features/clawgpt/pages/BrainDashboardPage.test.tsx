@@ -114,42 +114,59 @@ describe('BrainDashboardPage', () => {
     expect(screen.getByTestId('activity-feed')).toBeInTheDocument()
   })
 
-  it('renders Connect Channel quick action button', () => {
+  it('renders Connect a Channel quick action button', () => {
     renderPage()
-    expect(screen.getByRole('button', { name: 'Connect Channel' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Connect a Channel' })).toBeInTheDocument()
   })
 
-  it('renders Send Message quick action button', () => {
+  it('renders Go to Inbox quick action button', () => {
     renderPage()
-    expect(screen.getByRole('button', { name: 'Send Message' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Go to Inbox' })).toBeInTheDocument()
   })
 
-  it('renders Install Skill quick action button', () => {
+  it('renders Browse Skills quick action button', () => {
     renderPage()
-    expect(screen.getByRole('button', { name: 'Install Skill' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Browse Skills' })).toBeInTheDocument()
   })
 
-  it('navigates to channels page when Connect Channel is clicked', async () => {
+  it('navigates to channels page when Connect a Channel is clicked', async () => {
     const { default: userEvent } = await import('@testing-library/user-event')
     const user = userEvent.setup()
     renderPage()
-    await user.click(screen.getByRole('button', { name: 'Connect Channel' }))
+    await user.click(screen.getByRole('button', { name: 'Connect a Channel' }))
     expect(mockNavigate).toHaveBeenCalledWith('/brain/channels')
   })
 
-  it('navigates to inbox page when Send Message is clicked', async () => {
+  it('navigates to inbox page when Go to Inbox is clicked', async () => {
     const { default: userEvent } = await import('@testing-library/user-event')
     const user = userEvent.setup()
     renderPage()
-    await user.click(screen.getByRole('button', { name: 'Send Message' }))
+    await user.click(screen.getByRole('button', { name: 'Go to Inbox' }))
     expect(mockNavigate).toHaveBeenCalledWith('/brain/inbox')
   })
 
-  it('navigates to skills page when Install Skill is clicked', async () => {
+  it('navigates to skills page when Browse Skills is clicked', async () => {
     const { default: userEvent } = await import('@testing-library/user-event')
     const user = userEvent.setup()
     renderPage()
-    await user.click(screen.getByRole('button', { name: 'Install Skill' }))
+    await user.click(screen.getByRole('button', { name: 'Browse Skills' }))
     expect(mockNavigate).toHaveBeenCalledWith('/brain/skills')
+  })
+
+  it('stat cards navigate on click', async () => {
+    const { default: userEvent } = await import('@testing-library/user-event')
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(screen.getByLabelText('Active Sessions — go to Inbox'))
+    expect(mockNavigate).toHaveBeenCalledWith('/brain/inbox')
+  })
+
+  it('stat cards navigate on Enter key', async () => {
+    const { default: userEvent } = await import('@testing-library/user-event')
+    renderPage()
+    const card = screen.getByLabelText('Channels Connected — go to Channels')
+    card.focus()
+    await userEvent.setup().keyboard('{Enter}')
+    expect(mockNavigate).toHaveBeenCalledWith('/brain/channels')
   })
 })

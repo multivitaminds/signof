@@ -7,24 +7,24 @@ export default function BrainTreeLayout() {
   return (
     <div className="clawgpt-layout">
       <ModuleHeader
-        title="ClawGPT"
-        subtitle="Central intelligence hub — route messages, manage skills, define your brain's personality"
+        title="Command Center"
+        subtitle="Manage your messaging channels, AI skills, and automations in one place"
       />
 
       <DemoVideoSection videos={[
-        { title: 'Getting Started with ClawGPT', description: 'Connect your first channel and start routing messages through the brain.', duration: '4:15' },
-        { title: 'Configuring Skills & Soul', description: 'Install skills and shape your brain personality for better responses.', duration: '3:50' },
+        { title: 'Getting Started with Command Center', description: 'Connect your first channel and start routing messages.', duration: '4:15' },
+        { title: 'Configuring Skills & Personality', description: 'Install skills and shape your AI personality for better responses.', duration: '3:50' },
         { title: 'Multi-Device Orchestration', description: 'Pair devices and run commands across your entire fleet.', duration: '5:00' },
       ]} />
 
-      <nav className="clawgpt-layout__tabs" aria-label="ClawGPT sections">
+      <nav className="clawgpt-layout__tabs" aria-label="Command Center sections">
         <NavLink
           to="/brain/dashboard"
           className={({ isActive }) =>
             `clawgpt-layout__tab${isActive ? ' clawgpt-layout__tab--active' : ''}`
           }
         >
-          Dashboard
+          Overview
         </NavLink>
         <NavLink
           to="/brain/channels"
@@ -56,7 +56,7 @@ export default function BrainTreeLayout() {
             `clawgpt-layout__tab${isActive ? ' clawgpt-layout__tab--active' : ''}`
           }
         >
-          Soul
+          Personality
         </NavLink>
         <NavLink
           to="/brain/devices"

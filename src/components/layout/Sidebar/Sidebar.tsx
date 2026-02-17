@@ -161,7 +161,7 @@ export default function Sidebar() {
     { path: '/copilot', label: 'Copilot', icon: Sparkles },
     { path: '/tax', label: 'Tax', icon: Receipt },
     { path: '/accounting', label: 'Accounting', icon: Calculator },
-    { path: '/brain', label: 'ClawGPT', icon: Brain },
+    { path: '/brain', label: 'Command Center', icon: Brain },
     { path: '/playground', label: 'Playground', icon: MessageSquare },
     { path: '/developer', label: 'Developer', icon: Code2 },
   ]

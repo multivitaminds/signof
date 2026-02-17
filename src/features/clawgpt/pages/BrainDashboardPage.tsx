@@ -20,36 +20,74 @@ export default function BrainDashboardPage() {
   const installedSkillCount = skills.filter((sk) => sk.installed).length
   const recentMessages = messages.slice(-20)
 
-  const handleConnectChannel = useCallback(() => {
-    navigate('/brain/channels')
-  }, [navigate])
-
-  const handleSendMessage = useCallback(() => {
+  const handleNavigateInbox = useCallback(() => {
     navigate('/brain/inbox')
   }, [navigate])
 
-  const handleInstallSkill = useCallback(() => {
+  const handleNavigateChannels = useCallback(() => {
+    navigate('/brain/channels')
+  }, [navigate])
+
+  const handleNavigateSkills = useCallback(() => {
     navigate('/brain/skills')
   }, [navigate])
+
+  const handleStatKeyDown = useCallback(
+    (handler: () => void) => (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        handler()
+      }
+    },
+    []
+  )
 
   return (
     <div className="brain-dashboard">
       <GatewayStatus />
 
       <div className="brain-dashboard__stats">
-        <div className="brain-dashboard__stat-card">
+        <div
+          className="brain-dashboard__stat-card"
+          role="button"
+          tabIndex={0}
+          onClick={handleNavigateInbox}
+          onKeyDown={handleStatKeyDown(handleNavigateInbox)}
+          aria-label="Active Sessions — go to Inbox"
+        >
           <span className="brain-dashboard__stat-value">{activeSessionCount}</span>
           <span className="brain-dashboard__stat-label">Active Sessions</span>
         </div>
-        <div className="brain-dashboard__stat-card">
+        <div
+          className="brain-dashboard__stat-card"
+          role="button"
+          tabIndex={0}
+          onClick={handleNavigateInbox}
+          onKeyDown={handleStatKeyDown(handleNavigateInbox)}
+          aria-label="Messages Today — go to Inbox"
+        >
           <span className="brain-dashboard__stat-value">{totalMessagesToday}</span>
           <span className="brain-dashboard__stat-label">Messages Today</span>
         </div>
-        <div className="brain-dashboard__stat-card">
+        <div
+          className="brain-dashboard__stat-card"
+          role="button"
+          tabIndex={0}
+          onClick={handleNavigateChannels}
+          onKeyDown={handleStatKeyDown(handleNavigateChannels)}
+          aria-label="Channels Connected — go to Channels"
+        >
           <span className="brain-dashboard__stat-value">{connectedChannelCount}</span>
           <span className="brain-dashboard__stat-label">Channels Connected</span>
         </div>
-        <div className="brain-dashboard__stat-card">
+        <div
+          className="brain-dashboard__stat-card"
+          role="button"
+          tabIndex={0}
+          onClick={handleNavigateSkills}
+          onKeyDown={handleStatKeyDown(handleNavigateSkills)}
+          aria-label="Skills Installed — go to Skills"
+        >
           <span className="brain-dashboard__stat-value">{installedSkillCount}</span>
           <span className="brain-dashboard__stat-label">Skills Installed</span>
         </div>
@@ -63,21 +101,21 @@ export default function BrainDashboardPage() {
       <div className="brain-dashboard__quick-actions">
         <button
           className="btn--primary brain-dashboard__action-btn"
-          onClick={handleConnectChannel}
+          onClick={handleNavigateChannels}
         >
-          Connect Channel
+          Connect a Channel
         </button>
         <button
           className="btn--secondary brain-dashboard__action-btn"
-          onClick={handleSendMessage}
+          onClick={handleNavigateInbox}
         >
-          Send Message
+          Go to Inbox
         </button>
         <button
           className="btn--secondary brain-dashboard__action-btn"
-          onClick={handleInstallSkill}
+          onClick={handleNavigateSkills}
         >
-          Install Skill
+          Browse Skills
         </button>
       </div>
     </div>

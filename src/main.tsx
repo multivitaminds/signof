@@ -247,9 +247,9 @@ createRoot(root).render(
             <Route path="connectors" element={<Suspense fallback={CardFallback}><ConnectorHubPage /></Suspense>} />
           </Route>
 
-          {/* ClawGPT (Central Intelligence Hub) */}
+          {/* Command Center */}
           <Route path="brain" element={
-            <ModuleErrorBoundary moduleName="ClawGPT">
+            <ModuleErrorBoundary moduleName="Command Center">
               <Suspense fallback={CardFallback}><BrainTreeLayout /></Suspense>
             </ModuleErrorBoundary>
           }>

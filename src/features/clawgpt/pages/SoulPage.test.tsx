@@ -30,7 +30,7 @@ vi.mock('../stores/useSoulStore', () => ({
 vi.mock('../components/SoulEditor/SoulEditor', () => ({
   default: ({ config }: { config: { name: string }; onUpdate: (partial: Record<string, unknown>) => void }) => (
     <div data-testid="soul-editor">
-      <span>Editing soul: {config.name}</span>
+      <span>Editing personality: {config.name}</span>
     </div>
   ),
 }))
@@ -56,7 +56,7 @@ describe('SoulPage', () => {
 
   it('displays soul name in editor', () => {
     renderPage()
-    expect(screen.getByText('Editing soul: Atlas')).toBeInTheDocument()
+    expect(screen.getByText('Editing personality: Atlas')).toBeInTheDocument()
   })
 
   it('renders Save Configuration button', () => {

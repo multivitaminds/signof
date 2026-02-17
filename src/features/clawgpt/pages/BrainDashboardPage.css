@@ -20,6 +20,18 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   text-align: center;
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.brain-dashboard__stat-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+.brain-dashboard__stat-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .brain-dashboard__stat-value {

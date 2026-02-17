@@ -30,13 +30,14 @@
 }
 
 .clawgpt-layout__tab--active {
-  background-color: var(--color-primary);
-  color: #fff;
+  color: var(--color-primary);
+  background: none;
+  box-shadow: inset 0 -2px 0 var(--color-primary);
 }
 
 .clawgpt-layout__tab--active:hover {
-  background-color: var(--color-primary);
-  color: #fff;
+  color: var(--color-primary);
+  background: none;
 }
 
 .clawgpt-layout__content {

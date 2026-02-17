@@ -110,7 +110,7 @@ export function getModuleMetrics(): ModuleMetrics {
   ).length
   const upcomingTaxDeadlines = taxState.deadlines.filter((d) => !d.completed).length
 
-  // ClawGPT metrics
+  // Command Center metrics
   const gatewayState = useGatewayStore.getState()
   const channelState = useChannelStore.getState()
   const skillState = useSkillStore.getState()
@@ -341,8 +341,8 @@ export function getCopilotInsights(): CrossModuleInsight[] {
   if (metrics.clawgpt.activeSessions > 0) {
     insights.push({
       id: 'clawgpt-sessions',
-      message: `${metrics.clawgpt.activeSessions} active ClawGPT session${metrics.clawgpt.activeSessions > 1 ? 's' : ''} across channels`,
-      module: 'ClawGPT',
+      message: `${metrics.clawgpt.activeSessions} active Command Center session${metrics.clawgpt.activeSessions > 1 ? 's' : ''} across channels`,
+      module: 'Command Center',
       path: '/brain/inbox',
       severity: 'info',
     })
@@ -351,8 +351,8 @@ export function getCopilotInsights(): CrossModuleInsight[] {
   if (metrics.clawgpt.connectedChannels > 0) {
     insights.push({
       id: 'clawgpt-channels',
-      message: `${metrics.clawgpt.connectedChannels} channel${metrics.clawgpt.connectedChannels > 1 ? 's' : ''} connected to ClawGPT`,
-      module: 'ClawGPT',
+      message: `${metrics.clawgpt.connectedChannels} channel${metrics.clawgpt.connectedChannels > 1 ? 's' : ''} connected to Command Center`,
+      module: 'Command Center',
       path: '/brain/channels',
       severity: 'success',
     })

@@ -4,7 +4,7 @@ import SoulEditor from './SoulEditor'
 import type { SoulConfig, SoulPreset } from '../../types'
 
 const mockConfig: SoulConfig = {
-  name: 'ClawGPT',
+  name: 'Atlas',
   personality: 'Helpful and professional',
   systemPrompt: 'You are a helpful assistant.',
   rules: ['Be polite', 'Stay on topic'],
@@ -50,7 +50,7 @@ describe('SoulEditor', () => {
   it('renders config name', () => {
     render(<SoulEditor {...defaultProps} />)
     const nameInput = screen.getByLabelText('Name') as HTMLInputElement
-    expect(nameInput.value).toBe('ClawGPT')
+    expect(nameInput.value).toBe('Atlas')
   })
 
   it('renders personality textarea', () => {

@@ -28,8 +28,31 @@ export default function SkillCard({
     onToggle?.(skill.id, !skill.enabled)
   }, [skill.id, skill.enabled, onToggle])
 
+  const handleCardClick = useCallback(() => {
+    if (!skill.installed) {
+      onInstall?.(skill.id)
+    }
+  }, [skill.id, skill.installed, onInstall])
+
+  const handleCardKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        handleCardClick()
+      }
+    },
+    [handleCardClick]
+  )
+
   return (
-    <div className="skill-card">
+    <div
+      className="skill-card"
+      role="button"
+      tabIndex={0}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      aria-label={`${skill.name} — ${skill.installed ? 'Installed' : 'Click to install'}`}
+    >
       <div className="skill-card__header">
         <span className="skill-card__icon" aria-hidden="true">
           {skill.icon}

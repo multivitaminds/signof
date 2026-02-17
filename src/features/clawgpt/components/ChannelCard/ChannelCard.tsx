@@ -31,8 +31,29 @@ export default function ChannelCard({
     onConfigure?.(channel.id)
   }, [channel.id, onConfigure])
 
+  const handleCardClick = useCallback(() => {
+    onConfigure?.(channel.id)
+  }, [channel.id, onConfigure])
+
+  const handleCardKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        onConfigure?.(channel.id)
+      }
+    },
+    [channel.id, onConfigure]
+  )
+
   return (
-    <div className="channel-card">
+    <div
+      className="channel-card"
+      role="button"
+      tabIndex={0}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      aria-label={`${channel.name} channel — ${CHANNEL_STATUS_LABELS[channel.status]}`}
+    >
       <div className="channel-card__header">
         <span className="channel-card__icon" aria-hidden="true">
           {channel.icon}

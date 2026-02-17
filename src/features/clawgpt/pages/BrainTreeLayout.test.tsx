@@ -11,21 +11,21 @@ describe('BrainTreeLayout', () => {
     )
   }
 
-  it('renders header with ClawGPT title', () => {
+  it('renders header with Command Center title', () => {
     renderWithRouter()
-    expect(screen.getByText('ClawGPT')).toBeInTheDocument()
+    expect(screen.getByText('Command Center')).toBeInTheDocument()
   })
 
   it('renders subtitle text', () => {
     renderWithRouter()
     expect(
-      screen.getByText('Central intelligence hub — route messages, manage skills, define your brain\'s personality')
+      screen.getByText('Manage your messaging channels, AI skills, and automations in one place')
     ).toBeInTheDocument()
   })
 
-  it('renders Dashboard tab link', () => {
+  it('renders Overview tab link', () => {
     renderWithRouter()
-    const tab = screen.getByRole('link', { name: 'Dashboard' })
+    const tab = screen.getByRole('link', { name: 'Overview' })
     expect(tab).toBeInTheDocument()
     expect(tab).toHaveAttribute('href', '/brain/dashboard')
   })
@@ -51,9 +51,9 @@ describe('BrainTreeLayout', () => {
     expect(tab).toHaveAttribute('href', '/brain/skills')
   })
 
-  it('renders Soul tab link', () => {
+  it('renders Personality tab link', () => {
     renderWithRouter()
-    const tab = screen.getByRole('link', { name: 'Soul' })
+    const tab = screen.getByRole('link', { name: 'Personality' })
     expect(tab).toBeInTheDocument()
     expect(tab).toHaveAttribute('href', '/brain/soul')
   })
@@ -67,7 +67,7 @@ describe('BrainTreeLayout', () => {
 
   it('highlights the active tab', () => {
     renderWithRouter('/brain/dashboard')
-    const tab = screen.getByRole('link', { name: 'Dashboard' })
+    const tab = screen.getByRole('link', { name: 'Overview' })
     expect(tab.className).toContain('clawgpt-layout__tab--active')
   })
 
