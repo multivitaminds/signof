@@ -1,7 +1,8 @@
 .fleet-overview {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: var(--space-md);
+  min-width: 0;
 }
 
 .fleet-overview__stat {
