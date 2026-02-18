@@ -79,10 +79,6 @@ vi.mock('../components/FilingWizard/FilingWizard', () => ({
   ),
 }))
 
-vi.mock('../components/TaxBanditSettings/TaxBanditSettings', () => ({
-  default: () => <div data-testid="taxbandit-settings" />,
-}))
-
 describe('TaxFilingPage', () => {
   it('renders the Pre-Filing Checklist', () => {
     render(<TaxFilingPage />)
@@ -120,8 +116,4 @@ describe('TaxFilingPage', () => {
     expect(screen.getByText('50%')).toBeInTheDocument()
   })
 
-  it('renders TaxBandit settings panel', () => {
-    render(<TaxFilingPage />)
-    expect(screen.getByTestId('taxbandit-settings')).toBeInTheDocument()
-  })
 })

@@ -5,9 +5,8 @@ import { useTaxStore } from '../stores/useTaxStore'
 import { useTaxDocumentStore } from '../stores/useTaxDocumentStore'
 import { useTaxFilingStore } from '../stores/useTaxFilingStore'
 import { FILING_STATUS_LABELS, FILING_STATE_LABELS, FilingState, STANDARD_DEDUCTION_2025, TransmissionStatus } from '../types'
-import type { TaxFiling, FilingStatus, TaxBanditConfig } from '../types'
+import type { TaxFiling, FilingStatus } from '../types'
 import FilingWizard from '../components/FilingWizard/FilingWizard'
-import TaxBanditSettings from '../components/TaxBanditSettings/TaxBanditSettings'
 import FilingConfirmation from '../components/FilingConfirmation/FilingConfirmation'
 import FiledStateCard from '../components/FiledStateCard/FiledStateCard'
 import PreFilingChecklist from '../components/PreFilingChecklist/PreFilingChecklist'
@@ -60,10 +59,7 @@ function TaxFilingPage() {
   const setAmendmentReason = useTaxFilingStore((s) => s.setAmendmentReason)
   const submitAmendment = useTaxFilingStore((s) => s.submitAmendment)
 
-  // TaxBandit state
-  const taxBanditConfig = useTaxFilingStore((s) => s.taxBanditConfig)
-  const setTaxBanditConfig = useTaxFilingStore((s) => s.setTaxBanditConfig)
-  const authenticateWithTaxBandit = useTaxFilingStore((s) => s.authenticateWithTaxBandit)
+  // E-filing connection state
   const isTaxBanditConnected = useTaxFilingStore((s) => s.isTaxBanditConnected)
   const transmissionStatus = useTaxFilingStore((s) => s.transmissionStatus)
   const transmissionError = useTaxFilingStore((s) => s.transmissionError)
@@ -180,17 +176,6 @@ function TaxFilingPage() {
     setShowChecklist((prev) => !prev)
   }, [])
 
-  const handleConfigChange = useCallback(
-    (config: Partial<TaxBanditConfig>) => {
-      setTaxBanditConfig(config)
-    },
-    [setTaxBanditConfig]
-  )
-
-  const handleTestConnection = useCallback(async () => {
-    return authenticateWithTaxBandit()
-  }, [authenticateWithTaxBandit])
-
   const handleDownloadPdf = useCallback(() => {
     void downloadReturnPdf()
   }, [downloadReturnPdf])
@@ -285,14 +270,6 @@ function TaxFilingPage() {
 
   return (
     <div className="tax-filing">
-      {/* ─── TaxBandit API Settings ──────────────────────── */}
-      <TaxBanditSettings
-        config={taxBanditConfig}
-        isConnected={connected}
-        onConfigChange={handleConfigChange}
-        onTestConnection={handleTestConnection}
-      />
-
       {/* ─── Pre-Filing Checklist ───────────────────────────── */}
       <PreFilingChecklist
         checklist={checklist}
@@ -776,9 +753,7 @@ function TaxFilingPage() {
           <div className="tax-filing__step">
             <h2 className="tax-filing__step-title">Review & File</h2>
             <p className="tax-filing__step-desc">
-              {connected
-                ? 'Review your tax return summary. Your return will be validated and transmitted via TaxBandit.'
-                : 'Review your tax return summary before submitting.'}
+              Review your tax return summary before submitting.
             </p>
 
             {!isChecklistComplete() && (

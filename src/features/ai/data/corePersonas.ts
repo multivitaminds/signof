@@ -2229,7 +2229,7 @@ export const CORE_PERSONAS: Record<string, AgentPersona> = {
         { name: 'IRS Form Requirements', level: ProficiencyLevel.Master, description: 'Detailed knowledge of W-2, 1099, 1040, and related form specifications' },
         { name: 'Common Deductions and Credits', level: ProficiencyLevel.Expert, description: 'Standard deduction, itemized deductions, child tax credit, education credits' },
         { name: 'Filing Status Rules', level: ProficiencyLevel.Expert, description: 'Single, married filing jointly/separately, head of household, qualifying widow(er)' },
-        { name: 'TaxBandits API Lifecycle', level: ProficiencyLevel.Advanced, description: 'Submission, validation, transmission, and status polling workflows' },
+        { name: 'E-Filing API Lifecycle', level: ProficiencyLevel.Advanced, description: 'Submission, validation, transmission, and status polling workflows' },
       ],
       certifications: ['Tax Preparation Specialist', 'IRS Enrolled Agent Equivalent', 'Document Extraction Analyst'],
     },

@@ -15,7 +15,7 @@ describe('EnvironmentBanner', () => {
   it('renders sandbox mode text', () => {
     render(<EnvironmentBanner {...defaultProps} />)
     expect(
-      screen.getByText(/Demo Mode.*filings go to TaxBandits sandbox, NOT the IRS/)
+      screen.getByText(/Demo Mode.*filings go to a sandbox environment, NOT the IRS/)
     ).toBeInTheDocument()
   })
 

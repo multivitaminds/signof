@@ -24,7 +24,7 @@ function EnvironmentBanner({ environment, onToggle }: EnvironmentBannerProps) {
       </span>
       <span className="environment-banner__text">
         {isSandbox
-          ? 'Demo Mode \u2014 filings go to TaxBandits sandbox, NOT the IRS'
+          ? 'Demo Mode \u2014 filings go to a sandbox environment, NOT the IRS'
           : 'Live Account \u2014 filings will be submitted to the IRS'}
       </span>
       <button
