@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type { Issue, Member, Label, IssueStatus } from '../../types'
 import { BOARD_STATUSES, STATUS_CONFIG } from '../../types'
 import IssueCard from '../IssueCard/IssueCard'
@@ -67,17 +67,19 @@ function BoardView({
     [onStatusChange],
   )
 
-  // Build a map of status -> issues for efficient lookup
-  const issuesByStatus = new Map<IssueStatus, Issue[]>()
-  for (const status of BOARD_STATUSES) {
-    issuesByStatus.set(status, [])
-  }
-  for (const issue of issues) {
-    const bucket = issuesByStatus.get(issue.status)
-    if (bucket) {
-      bucket.push(issue)
+  const issuesByStatus = useMemo(() => {
+    const map = new Map<IssueStatus, Issue[]>()
+    for (const status of BOARD_STATUSES) {
+      map.set(status, [])
     }
-  }
+    for (const issue of issues) {
+      const bucket = map.get(issue.status)
+      if (bucket) {
+        bucket.push(issue)
+      }
+    }
+    return map
+  }, [issues])
 
   // Track a global index across all columns for focusedIndex
   let globalIndex = 0

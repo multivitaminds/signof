@@ -114,7 +114,7 @@ function VideoPlayerModal({ title, description, duration, onClose }: VideoPlayer
           <X size={20} />
         </button>
 
-        <div className="vpm-screen" onClick={togglePlay}>
+        <button className="vpm-screen" onClick={togglePlay} type="button" aria-label={isPlaying ? 'Pause video' : 'Play video'}>
           <div className="vpm-screen__gradient" />
 
           <div className={`vpm-screen__center ${isPlaying ? 'vpm-screen__center--playing' : ''}`}>
@@ -136,7 +136,7 @@ function VideoPlayerModal({ title, description, duration, onClose }: VideoPlayer
           {isPlaying && (
             <span className="vpm-screen__now-playing">Now playing</span>
           )}
-        </div>
+        </button>
 
         <div className="vpm-controls">
           <button

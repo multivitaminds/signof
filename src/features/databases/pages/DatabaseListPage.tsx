@@ -133,6 +133,13 @@ export default function DatabaseListPage() {
     setSearchQuery(e.target.value)
   }, [])
 
+  const handleCardKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>, dbId: string) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      navigate(`/data/${dbId}`)
+    }
+  }, [navigate])
+
   const handleTemplateClick = useCallback((template: TemplateDefinition) => {
     const dbId = addDatabase(template.name, template.icon, template.description)
     const db = useDatabaseStore.getState().databases[dbId]
@@ -252,7 +259,14 @@ export default function DatabaseListPage() {
             const tableCount = db.tables.length
             const rowCount = db.tables.reduce((sum, tid) => sum + (tablesMap[tid]?.rows.length ?? 0), 0)
             return (
-              <div key={db.id} className="db-list-page__card" onClick={() => navigate(`/data/${db.id}`)}>
+              <div
+                key={db.id}
+                className="db-list-page__card"
+                onClick={() => navigate(`/data/${db.id}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => handleCardKeyDown(e, db.id)}
+              >
                 <div className="db-list-page__card-top">
                   <div className="db-list-page__card-icon">
                     {(() => {

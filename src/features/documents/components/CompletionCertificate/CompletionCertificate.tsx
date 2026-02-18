@@ -108,7 +108,8 @@ function CompletionCertificate({ document: doc, onClose }: CompletionCertificate
     navigator.clipboard.writeText(certificateUrl).then(() => {
       setLinkCopied(true)
       setTimeout(() => setLinkCopied(false), 2000)
-    }).catch(() => {
+    }).catch((err: unknown) => {
+      console.error('Clipboard write failed, using fallback:', err)
       // Fallback: use a hidden input
       const input = window.document.createElement('input')
       input.value = certificateUrl

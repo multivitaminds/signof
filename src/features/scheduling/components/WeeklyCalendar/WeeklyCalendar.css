@@ -130,13 +130,80 @@
   background-color: rgba(79, 70, 229, 0.1);
 }
 
-/* ─── Tablet ─────────────────────────────────────────────── */
-@media (min-width: 768px) and (max-width: 1023px) {
+/* --- Tablet (max-width: 1023px) --------------------------------------- */
+
+@media (max-width: 1023px) {
+  .weekly-calendar__header {
+    grid-template-columns: 48px repeat(7, 1fr);
+  }
+
   .weekly-calendar__body {
+    grid-template-columns: 48px repeat(7, 1fr);
     max-height: 400px;
   }
 
   .weekly-calendar__day-name {
     font-size: 10px;
+  }
+
+  .weekly-calendar__day-number {
+    font-size: var(--text-base);
+  }
+
+  .weekly-calendar__time-label {
+    font-size: 10px;
+    padding-right: var(--space-1);
+  }
+}
+
+/* --- Mobile (max-width: 767px) --------------------------------------- */
+
+@media (max-width: 767px) {
+  .weekly-calendar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .weekly-calendar__header {
+    grid-template-columns: 40px repeat(7, minmax(48px, 1fr));
+    min-width: 420px;
+  }
+
+  .weekly-calendar__body {
+    grid-template-columns: 40px repeat(7, minmax(48px, 1fr));
+    min-width: 420px;
+    max-height: 320px;
+  }
+
+  .weekly-calendar__day-header {
+    padding: var(--space-1) 0;
+  }
+
+  .weekly-calendar__day-name {
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+
+  .weekly-calendar__day-number {
+    font-size: var(--text-sm);
+  }
+
+  .weekly-calendar__time-label {
+    height: 32px;
+    font-size: 9px;
+    padding-right: 2px;
+  }
+
+  .weekly-calendar__time-slot {
+    height: 32px;
+  }
+
+  .weekly-calendar__booking-block {
+    font-size: 9px;
+    padding: 1px 2px;
+  }
+
+  .weekly-calendar__booking-attendee {
+    display: none;
   }
 }

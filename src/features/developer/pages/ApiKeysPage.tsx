@@ -79,7 +79,7 @@ function ApiKeysPage() {
     navigator.clipboard.writeText(value).then(() => {
       setCopiedId(id)
       setTimeout(() => setCopiedId(null), 2000)
-    })
+    }).catch(() => { /* clipboard unavailable */ })
   }, [])
 
   const handleTogglePermission = useCallback((perm: string) => {

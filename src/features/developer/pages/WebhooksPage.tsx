@@ -101,7 +101,7 @@ function WebhooksPage() {
     navigator.clipboard.writeText(secret).then(() => {
       setCopiedId(id)
       setTimeout(() => setCopiedId(null), 2000)
-    })
+    }).catch(() => { /* clipboard unavailable */ })
   }, [])
 
   const handleToggleExpand = useCallback((id: string) => {

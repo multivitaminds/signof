@@ -50,9 +50,12 @@ export default function GridView({
   const [focusedCol, setFocusedCol] = useState<number>(-1)
   const tableRef = useRef<HTMLTableElement>(null)
 
-  const visibleFields = fieldOrder
-    .map((id) => fields.find((f) => f.id === id))
-    .filter((f): f is DbField => f !== undefined && !hiddenFields.includes(f.id))
+  const visibleFields = useMemo(
+    () => fieldOrder
+      .map((id) => fields.find((f) => f.id === id))
+      .filter((f): f is DbField => f !== undefined && !hiddenFields.includes(f.id)),
+    [fieldOrder, fields, hiddenFields]
+  )
 
   const tablesMap = useMemo(() => tables ?? {}, [tables])
 

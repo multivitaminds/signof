@@ -230,15 +230,25 @@ function IssueDetailContent({ issueId, onClose }: { issueId: string; onClose: ()
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
 
-  if (!issue || !project) return null
-
-  // Get sub-issues (legacy pattern)
-  const subIssues = Object.values(allIssues).filter((i) => i.parentIssueId === issue.id)
-
-  // Other project issues for relation picker (excluding self)
-  const otherIssues = Object.values(allIssues).filter(
-    (i) => i.projectId === issue.projectId && i.id !== issueId
+  const subIssues = useMemo(
+    () => {
+      if (!issue) return []
+      return Object.values(allIssues).filter((i) => i.parentIssueId === issue.id)
+    },
+    [allIssues, issue]
   )
+
+  const otherIssues = useMemo(
+    () => {
+      if (!issue) return []
+      return Object.values(allIssues).filter(
+        (i) => i.projectId === issue.projectId && i.id !== issueId
+      )
+    },
+    [allIssues, issue, issueId]
+  )
+
+  if (!issue || !project) return null
 
   const overdue = isOverdue(issue.dueDate)
 

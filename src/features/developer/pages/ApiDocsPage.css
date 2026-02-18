@@ -230,3 +230,101 @@
   border: none;
   border-radius: 0;
 }
+
+/* --- Tablet (max-width: 1023px) ----------------------------------------- */
+
+@media (max-width: 1023px) {
+  .api-docs-page__title {
+    font-size: var(--text-xl);
+  }
+
+  .api-docs-page__base-url {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .api-docs-page__try-it-panel {
+    padding: var(--space-3);
+  }
+
+  .api-docs-page__try-it-controls {
+    gap: var(--space-2);
+  }
+
+  .api-docs-page__try-it-response-header {
+    padding: var(--space-2) var(--space-3);
+  }
+}
+
+/* --- Mobile (max-width: 767px) ------------------------------------------ */
+
+@media (max-width: 767px) {
+  .api-docs-page__header {
+    margin-bottom: var(--space-3);
+  }
+
+  .api-docs-page__title {
+    font-size: var(--text-lg);
+  }
+
+  .api-docs-page__subtitle {
+    font-size: var(--text-xs);
+  }
+
+  .api-docs-page__base-url {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+
+  .api-docs-page__base-url-value {
+    font-size: var(--text-xs);
+    word-break: break-all;
+  }
+
+  .api-docs-page__filters {
+    margin-bottom: var(--space-3);
+  }
+
+  .api-docs-page__try-it-panel {
+    padding: var(--space-2);
+  }
+
+  .api-docs-page__try-it-header {
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .api-docs-page__try-it-path {
+    font-size: var(--text-xs);
+    word-break: break-all;
+  }
+
+  .api-docs-page__try-it-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+  }
+
+  .api-docs-page__try-it-send {
+    align-self: flex-start;
+  }
+
+  .api-docs-page__try-it-response-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+
+  .api-docs-page__try-it-response-meta {
+    gap: var(--space-2);
+  }
+
+  .api-docs-page__try-it-response .code-block {
+    font-size: var(--text-xs);
+  }
+}

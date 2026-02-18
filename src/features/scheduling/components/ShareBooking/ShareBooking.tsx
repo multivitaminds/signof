@@ -217,6 +217,10 @@ export default function ShareBooking({ eventType, isOpen, onClose }: ShareBookin
             </div>
           )}
         </div>
+
+        <div aria-live="polite" className="sr-only">
+          {copied && 'Copied to clipboard'}
+        </div>
       </div>
     </div>
   )
