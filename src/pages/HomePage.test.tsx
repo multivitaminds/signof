@@ -29,11 +29,6 @@ vi.mock('../components/FirstRunChecklist/FirstRunChecklist', () => ({
   default: () => null,
 }))
 
-// Mock AIFeatureWidget
-vi.mock('../features/ai/components/AIFeatureWidget/AIFeatureWidget', () => ({
-  default: () => null,
-}))
-
 // Mock the scheduling store
 vi.mock('../features/scheduling/stores/useSchedulingStore', () => ({
   useSchedulingStore: (selector: (s: Record<string, unknown>) => unknown) =>

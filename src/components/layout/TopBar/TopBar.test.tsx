@@ -4,12 +4,6 @@ import { MemoryRouter } from 'react-router-dom'
 import TopBar from './TopBar'
 import { useAppStore } from '../../../stores/useAppStore'
 
-vi.mock('../../../features/ai/stores/useAIChatStore', () => ({
-  __esModule: true,
-  default: (selector: (s: Record<string, unknown>) => unknown) =>
-    selector({ isOpen: false, toggleOpen: vi.fn() }),
-}))
-
 vi.mock('../../Breadcrumbs/Breadcrumbs', () => ({
   default: () => <nav aria-label="Breadcrumbs">Home</nav>,
 }))

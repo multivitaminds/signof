@@ -89,13 +89,12 @@ describe('AIFeatureChatModal', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
-  it('calls onClose when overlay is clicked', async () => {
-    const user = userEvent.setup()
+  it('overlay does not block page interactions (pointer-events: none)', () => {
     render(
       <AIFeatureChatModal featureKey="workspace" isOpen={true} onClose={onClose} />
     )
-    await user.click(screen.getByRole('dialog'))
-    expect(onClose).toHaveBeenCalled()
+    const overlay = screen.getByRole('dialog')
+    expect(overlay).toHaveClass('ai-feature-chat__overlay')
   })
 
   it('sends a message when typing and pressing Enter', async () => {

@@ -15,7 +15,6 @@ import WelcomeBanner from '../components/WelcomeBanner/WelcomeBanner'
 import QuickActions from '../components/QuickActions/QuickActions'
 import FirstRunChecklist from '../components/FirstRunChecklist/FirstRunChecklist'
 import DashboardGrid from '../features/home/components/DashboardGrid/DashboardGrid'
-import AIFeatureWidget from '../features/ai/components/AIFeatureWidget/AIFeatureWidget'
 import './HomePage.css'
 
 export default function HomePage() {
@@ -178,7 +177,6 @@ export default function HomePage() {
         </section>
       )}
 
-      <AIFeatureWidget featureKey="home" />
     </div>
   )
 }

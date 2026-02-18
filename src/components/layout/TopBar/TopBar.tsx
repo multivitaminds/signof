@@ -1,9 +1,8 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { Search, User, Sun, Moon, Monitor, Menu, Wand2, Settings, HelpCircle, LogOut } from 'lucide-react'
+import { Search, User, Sun, Moon, Monitor, Menu, Settings, HelpCircle, LogOut } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../../../stores/useAppStore'
 import { useTheme } from '../../../hooks/useTheme'
-import useAIChatStore from '../../../features/ai/stores/useAIChatStore'
 import Breadcrumbs from '../../Breadcrumbs/Breadcrumbs'
 import NotificationCenter from '../../NotificationCenter/NotificationCenter'
 import './TopBar.css'
@@ -29,7 +28,6 @@ const PROFILE_MENU_ITEMS = [
 export default function TopBar() {
   const { openCommandPalette, openMobileSidebar } = useAppStore()
   const { theme, cycleTheme } = useTheme()
-  const toggleAIChat = useAIChatStore((s) => s.toggleOpen)
   const navigate = useNavigate()
 
   const [profileMenuOpen, setProfileMenuOpen] = useState(false)
@@ -118,16 +116,6 @@ export default function TopBar() {
           title="Search (⌘K)"
         >
           <Search size={22} />
-        </button>
-
-        {/* AI Chat Toggle */}
-        <button
-          className="topbar__icon-btn"
-          onClick={toggleAIChat}
-          aria-label="Toggle AI assistant"
-          title="AI Assistant"
-        >
-          <Wand2 size={22} />
         </button>
 
         {/* Theme Toggle */}

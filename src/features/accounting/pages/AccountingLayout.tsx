@@ -14,8 +14,6 @@ import {
 } from 'lucide-react'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
 import { DemoVideoSection } from '../../../components/ui/DemoVideo'
-import AccountingCopilotButton from '../components/AccountingCopilotButton/AccountingCopilotButton'
-import AccountingCopilotPanel from '../components/AccountingCopilotPanel/AccountingCopilotPanel'
 import { useAccountingStore } from '../stores/useAccountingStore'
 import { FISCAL_YEARS } from '../types'
 import type { FiscalYear } from '../types'
@@ -150,8 +148,6 @@ function AccountingLayout() {
         <Outlet />
       </main>
 
-      <AccountingCopilotButton />
-      <AccountingCopilotPanel />
     </div>
   )
 }

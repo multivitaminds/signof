@@ -10,9 +10,7 @@ const SearchOverlay = lazy(() => import('../../features/search/components/Search
 const QuickActionPalette = lazy(() => import('../../features/search/components/QuickActionPalette/QuickActionPalette'))
 import { useQuickActionRegistration } from '../../hooks/useQuickActionRegistration'
 import OfflineBanner from '../OfflineBanner/OfflineBanner'
-const AIChatSidebar = lazy(() => import('../../features/ai/components/AIChatSidebar/AIChatSidebar'))
 const TourProvider = lazy(() => import('../../features/onboarding/components/TourProvider/TourProvider'))
-import useAIChatStore from '../../features/ai/stores/useAIChatStore'
 import { useTheme } from '../../hooks/useTheme'
 import { useFocusOnRouteChange } from '../../hooks/useFocusOnRouteChange'
 import { useIsMobile } from '../../hooks/useMediaQuery'
@@ -47,8 +45,6 @@ export default function AppLayout() {
   const mobileSidebarOpen = useAppStore((s) => s.mobileSidebarOpen)
   const closeMobileSidebar = useAppStore((s) => s.closeMobileSidebar)
   const addRecentItem = useAppStore((s) => s.addRecentItem)
-  const setAIChatContext = useAIChatStore((s) => s.setContextLabel)
-  const setAIChatRoute = useAIChatStore((s) => s.setCurrentRoute)
   const searchOverlayOpen = useAppStore((s) => s.searchOverlayOpen)
   const closeSearchOverlay = useAppStore((s) => s.closeSearchOverlay)
   const quickActionPaletteOpen = useAppStore((s) => s.quickActionPaletteOpen)
@@ -122,10 +118,8 @@ export default function AppLayout() {
     const label = ROUTE_LABELS[location.pathname]
     if (label) {
       addRecentItem({ path: location.pathname, label })
-      setAIChatContext(label)
     }
-    setAIChatRoute(location.pathname)
-  }, [location.pathname, addRecentItem, setAIChatContext, setAIChatRoute])
+  }, [location.pathname, addRecentItem])
 
   return (
     <div className="app-layout">
@@ -165,9 +159,6 @@ export default function AppLayout() {
       </Suspense>
       <CommandPalette />
       <KeyboardShortcutHelp />
-      <Suspense fallback={null}>
-        <AIChatSidebar />
-      </Suspense>
       <Suspense fallback={null}>
         <TourProvider />
       </Suspense>

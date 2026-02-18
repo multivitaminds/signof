@@ -172,12 +172,11 @@ export default function AIFeatureChatModal({ featureKey, isOpen, onClose }: AIFe
   return (
     <div
       className="ai-feature-chat__overlay"
-      onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-label={context.label}
     >
-      <div className="ai-feature-chat" onClick={(e) => e.stopPropagation()}>
+      <div className="ai-feature-chat">
         {/* Header */}
         <div className="ai-feature-chat__header">
           <div className="ai-feature-chat__header-left">
