@@ -9,9 +9,13 @@ interface RequestOptions {
   signal?: AbortSignal
 }
 
+// Auth endpoint paths that should NOT trigger token refresh on 401
+const AUTH_PATHS = ['/api/auth/login', '/api/auth/signup', '/api/auth/refresh']
+
 class ApiClient {
   private baseUrl: string
   private token: string | null = null
+  private refreshPromise: Promise<boolean> | null = null
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl
@@ -19,6 +23,51 @@ class ApiClient {
 
   setToken(token: string | null): void {
     this.token = token
+  }
+
+  private async tryRefreshToken(): Promise<boolean> {
+    // Deduplicate concurrent refresh attempts
+    if (this.refreshPromise) return this.refreshPromise
+
+    this.refreshPromise = this.executeRefresh()
+    try {
+      return await this.refreshPromise
+    } finally {
+      this.refreshPromise = null
+    }
+  }
+
+  private async executeRefresh(): Promise<boolean> {
+    try {
+      // Dynamic import to avoid circular dependency
+      const { useAuthStore } = await import('../features/auth/stores/useAuthStore')
+      const { refreshToken } = useAuthStore.getState()
+      if (!refreshToken) return false
+
+      const response = await fetch(this.baseUrl + '/api/auth/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken }),
+      })
+
+      if (!response.ok) {
+        // Refresh failed — clear tokens and log out
+        this.token = null
+        useAuthStore.getState().logout()
+        return false
+      }
+
+      const tokens = await response.json() as {
+        accessToken: string
+        refreshToken: string
+        expiresIn: number
+      }
+      this.token = tokens.accessToken
+      useAuthStore.getState().setTokens(tokens.accessToken, tokens.refreshToken)
+      return true
+    } catch {
+      return false
+    }
   }
 
   async request<T>(path: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
@@ -43,7 +92,17 @@ class ApiClient {
       fetchOptions.body = JSON.stringify(body)
     }
 
-    const response = await fetch(this.baseUrl + path, fetchOptions)
+    let response = await fetch(this.baseUrl + path, fetchOptions)
+
+    // On 401 for non-auth endpoints, try refreshing the token
+    if (response.status === 401 && !AUTH_PATHS.includes(path)) {
+      const refreshed = await this.tryRefreshToken()
+      if (refreshed) {
+        // Retry with new token
+        const retryHeaders = { ...requestHeaders, Authorization: `Bearer ${this.token}` }
+        response = await fetch(this.baseUrl + path, { ...fetchOptions, headers: retryHeaders })
+      }
+    }
 
     if (!response.ok) {
       if (response.status === 401) {
@@ -54,6 +113,13 @@ class ApiClient {
       try {
         const errorBody: unknown = await response.json()
         if (
+          typeof errorBody === 'object' &&
+          errorBody !== null &&
+          'error' in errorBody &&
+          typeof (errorBody as Record<string, unknown>).error === 'string'
+        ) {
+          message = (errorBody as { error: string }).error
+        } else if (
           typeof errorBody === 'object' &&
           errorBody !== null &&
           'message' in errorBody &&

@@ -33,7 +33,7 @@ export interface AuthResponse {
 const authService = {
   async login(data: LoginRequest): Promise<ApiResult<AuthResponse>> {
     try {
-      const response = await api.post<AuthResponse>('/auth/login', data)
+      const response = await api.post<AuthResponse>('/api/auth/login', data)
       api.setToken(response.data.tokens.accessToken)
       return { data: response.data, ok: true as const }
     } catch (error) {
@@ -43,7 +43,7 @@ const authService = {
 
   async signup(data: SignupRequest): Promise<ApiResult<AuthResponse>> {
     try {
-      const response = await api.post<AuthResponse>('/auth/signup', data)
+      const response = await api.post<AuthResponse>('/api/auth/signup', data)
       api.setToken(response.data.tokens.accessToken)
       return { data: response.data, ok: true as const }
     } catch (error) {
@@ -53,7 +53,7 @@ const authService = {
 
   async logout(): Promise<void> {
     try {
-      await api.post('/auth/logout', {})
+      await api.post('/api/auth/logout', {})
     } catch {
       // Logout should succeed even if API fails
     } finally {
@@ -63,7 +63,7 @@ const authService = {
 
   async refreshToken(refreshToken: string): Promise<ApiResult<AuthTokens>> {
     try {
-      const response = await api.post<AuthTokens>('/auth/refresh', { refreshToken })
+      const response = await api.post<AuthTokens>('/api/auth/refresh', { refreshToken })
       api.setToken(response.data.accessToken)
       return { data: response.data, ok: true as const }
     } catch (error) {
@@ -73,7 +73,7 @@ const authService = {
 
   async getCurrentUser(): Promise<ApiResult<AuthUser>> {
     try {
-      const response = await api.get<AuthUser>('/auth/me')
+      const response = await api.get<AuthUser>('/api/auth/me')
       return { data: response.data, ok: true as const }
     } catch (error) {
       return { ok: false as const, status: 401, message: (error as Error).message }

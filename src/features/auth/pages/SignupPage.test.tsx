@@ -5,6 +5,7 @@ import SignupPage from './SignupPage'
 
 const mockNavigate = vi.fn()
 const mockSignup = vi.fn()
+const mockLoginFromApi = vi.fn()
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom')
@@ -13,7 +14,13 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('../stores/useAuthStore', () => ({
   useAuthStore: (selector: (s: Record<string, unknown>) => unknown) =>
-    selector({ signup: mockSignup }),
+    selector({ signup: mockSignup, loginFromApi: mockLoginFromApi }),
+}))
+
+vi.mock('../lib/authService', () => ({
+  default: {
+    signup: vi.fn(),
+  },
 }))
 
 function renderSignupPage() {

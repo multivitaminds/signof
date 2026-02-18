@@ -115,11 +115,19 @@ const SandboxPage = lazy(() => import('./features/developer/pages/SandboxPage'))
 const ApiKeysPage = lazy(() => import('./features/developer/pages/ApiKeysPage'))
 
 import { initCrossModuleListeners } from './lib/crossModuleListeners'
+import { useAuthStore } from './features/auth/stores/useAuthStore'
+import { api } from './lib/api'
 
 import './index.css'
 
 // Wire up cross-module event listeners (document signed → activity feed, etc.)
 initCrossModuleListeners()
+
+// Restore access token from persisted store on app load
+const storedAccessToken = useAuthStore.getState().accessToken
+if (storedAccessToken) {
+  api.setToken(storedAccessToken)
+}
 
 const root = document.getElementById('root')
 

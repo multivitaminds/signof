@@ -8,6 +8,8 @@ describe('useAuthStore', () => {
       status: AuthStatus.Unauthenticated,
       user: null,
       onboardingComplete: false,
+      accessToken: null,
+      refreshToken: null,
     })
   })
 
@@ -84,5 +86,61 @@ describe('useAuthStore', () => {
     expect(id1).toBeTruthy()
     expect(id2).toBeTruthy()
     expect(id1).not.toBe(id2)
+  })
+
+  // New token-related tests
+  it('loginFromApi sets user and tokens', () => {
+    const user = {
+      id: 'api-user-1',
+      name: 'API User',
+      email: 'api@test.com',
+      avatarUrl: null,
+      createdAt: '2024-01-01T00:00:00Z',
+    }
+    useAuthStore.getState().loginFromApi(user, 'access-token-123', 'refresh-token-456')
+    const state = useAuthStore.getState()
+
+    expect(state.status).toBe(AuthStatus.Authenticated)
+    expect(state.user?.id).toBe('api-user-1')
+    expect(state.user?.email).toBe('api@test.com')
+    expect(state.accessToken).toBe('access-token-123')
+    expect(state.refreshToken).toBe('refresh-token-456')
+    expect(state.accountMode).toBe('live')
+  })
+
+  it('setTokens updates access and refresh tokens', () => {
+    useAuthStore.getState().setTokens('new-access', 'new-refresh')
+    const state = useAuthStore.getState()
+
+    expect(state.accessToken).toBe('new-access')
+    expect(state.refreshToken).toBe('new-refresh')
+  })
+
+  it('clearTokens sets tokens to null', () => {
+    useAuthStore.getState().setTokens('some-access', 'some-refresh')
+    useAuthStore.getState().clearTokens()
+    const state = useAuthStore.getState()
+
+    expect(state.accessToken).toBeNull()
+    expect(state.refreshToken).toBeNull()
+  })
+
+  it('logout clears tokens', () => {
+    useAuthStore.getState().setTokens('access', 'refresh')
+    useAuthStore.getState().login('test@test.com', 'Test')
+
+    useAuthStore.getState().logout()
+    const state = useAuthStore.getState()
+
+    expect(state.accessToken).toBeNull()
+    expect(state.refreshToken).toBeNull()
+    expect(state.user).toBeNull()
+    expect(state.status).toBe(AuthStatus.Unauthenticated)
+  })
+
+  it('starts with null tokens', () => {
+    const state = useAuthStore.getState()
+    expect(state.accessToken).toBeNull()
+    expect(state.refreshToken).toBeNull()
   })
 })

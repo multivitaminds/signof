@@ -6,6 +6,7 @@ import sessionsRoutes from './routes/sessions.js';
 import channelsRoutes from './routes/channels.js';
 import connectorRoutes from './routes/connectors.js';
 import telemetryRoutes from './routes/telemetry.js';
+import authRoutes from './routes/auth.js';
 import { getAllProviders } from './providers/index.js';
 import { createWebSocketServer, getWSConnectionCount } from './gateway/websocketServer.js';
 import { requireAuth } from './middleware/auth.js';
@@ -102,6 +103,7 @@ app.use('/api', generalLimiter);
 app.use('/api', requireAuth);
 
 // Routes
+app.use('/api', authRoutes);
 app.use('/api', chatRoutes);
 app.use('/api', sessionsRoutes);
 app.use('/api', channelsRoutes);

@@ -19,7 +19,7 @@ export const authService = {
       if (!user) throw new Error('Login failed')
       return user
     }
-    const res = await api.post<AuthTokenResponse>('/auth/login', { email, name })
+    const res = await api.post<AuthTokenResponse>('/api/auth/login', { email, name })
     api.setToken(res.data.token)
     useAuthStore.getState().login(email, name)
     return res.data.user
@@ -32,7 +32,7 @@ export const authService = {
       if (!user) throw new Error('Signup failed')
       return user
     }
-    const res = await api.post<AuthTokenResponse>('/auth/signup', { email, name })
+    const res = await api.post<AuthTokenResponse>('/api/auth/signup', { email, name })
     api.setToken(res.data.token)
     useAuthStore.getState().signup(email, name)
     return res.data.user
@@ -44,7 +44,7 @@ export const authService = {
       return
     }
     try {
-      await api.post('/auth/logout')
+      await api.post('/api/auth/logout')
     } finally {
       api.setToken(null)
       useAuthStore.getState().logout()
@@ -56,7 +56,7 @@ export const authService = {
       useAuthStore.getState().completeOnboarding(data)
       return
     }
-    await api.post('/auth/onboarding', data)
+    await api.post('/api/auth/onboarding', data)
     useAuthStore.getState().completeOnboarding(data)
   },
 
@@ -64,7 +64,7 @@ export const authService = {
     if (!isApiEnabled()) {
       return
     }
-    const res = await api.post<{ token: string }>('/auth/refresh')
+    const res = await api.post<{ token: string }>('/api/auth/refresh')
     api.setToken(res.data.token)
   },
 }

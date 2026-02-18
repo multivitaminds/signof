@@ -1,28 +1,69 @@
 import { useState, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '../stores/useAuthStore'
+import authService from '../lib/authService'
+import { api } from '../../../lib/api'
 import './LoginPage.css'
+
+const isApiMode = Boolean(import.meta.env.VITE_API_URL)
 
 export default function LoginPage() {
   const navigate = useNavigate()
   const login = useAuthStore((s) => s.login)
+  const loginFromApi = useAuthStore((s) => s.loginFromApi)
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = useCallback((e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email.trim()) {
-      setError('Email is required')
-      return
+
+    if (isApiMode) {
+      // API mode: email + password
+      if (!email.trim()) {
+        setError('Email is required')
+        return
+      }
+      if (!password) {
+        setError('Password is required')
+        return
+      }
+      setLoading(true)
+      const result = await authService.login({ email: email.trim(), password })
+      setLoading(false)
+      if (!result.ok) {
+        setError(result.message)
+        return
+      }
+      api.setToken(result.data.tokens.accessToken)
+      loginFromApi(
+        {
+          id: result.data.user.id,
+          name: result.data.user.displayName,
+          email: result.data.user.email,
+          avatarUrl: result.data.user.avatarUrl,
+          createdAt: new Date().toISOString(),
+        },
+        result.data.tokens.accessToken,
+        result.data.tokens.refreshToken
+      )
+      navigate('/')
+    } else {
+      // Demo mode: name + email, no password
+      if (!email.trim()) {
+        setError('Email is required')
+        return
+      }
+      if (!name.trim()) {
+        setError('Name is required')
+        return
+      }
+      login(email.trim(), name.trim())
+      navigate('/')
     }
-    if (!name.trim()) {
-      setError('Name is required')
-      return
-    }
-    login(email.trim(), name.trim())
-    navigate('/')
-  }, [email, name, login, navigate])
+  }, [email, name, password, login, loginFromApi, navigate])
 
   return (
     <div className="auth-page">
@@ -35,17 +76,19 @@ export default function LoginPage() {
 
         <form className="auth-page__form" onSubmit={handleSubmit}>
           {error && <div className="auth-page__error">{error}</div>}
-          <div className="auth-page__field">
-            <label className="auth-page__label">Name</label>
-            <input
-              className="auth-page__input"
-              type="text"
-              value={name}
-              onChange={(e) => { setName(e.target.value); setError('') }}
-              placeholder="Your name"
-              autoComplete="name"
-            />
-          </div>
+          {!isApiMode && (
+            <div className="auth-page__field">
+              <label className="auth-page__label">Name</label>
+              <input
+                className="auth-page__input"
+                type="text"
+                value={name}
+                onChange={(e) => { setName(e.target.value); setError('') }}
+                placeholder="Your name"
+                autoComplete="name"
+              />
+            </div>
+          )}
           <div className="auth-page__field">
             <label className="auth-page__label">Email</label>
             <input
@@ -57,8 +100,21 @@ export default function LoginPage() {
               autoComplete="email"
             />
           </div>
-          <button type="submit" className="btn-primary auth-page__submit">
-            Sign In
+          {isApiMode && (
+            <div className="auth-page__field">
+              <label className="auth-page__label">Password</label>
+              <input
+                className="auth-page__input"
+                type="password"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setError('') }}
+                placeholder="Enter your password"
+                autoComplete="current-password"
+              />
+            </div>
+          )}
+          <button type="submit" className="btn-primary auth-page__submit" disabled={loading}>
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 

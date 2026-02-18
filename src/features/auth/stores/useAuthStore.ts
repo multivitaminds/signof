@@ -15,9 +15,14 @@ interface AuthState {
   onboardingComplete: boolean
   accountMode: AccountMode
   registrationStep: RegistrationStep
+  accessToken: string | null
+  refreshToken: string | null
 
   login: (email: string, name: string) => void
   signup: (email: string, name: string) => void
+  loginFromApi: (user: User, accessToken: string, refreshToken: string) => void
+  setTokens: (accessToken: string, refreshToken: string) => void
+  clearTokens: () => void
   logout: () => void
   completeOnboarding: (data: OnboardingData) => void
   setAccountMode: (mode: AccountMode) => void
@@ -33,6 +38,8 @@ export const useAuthStore = create<AuthState>()(
       onboardingComplete: false,
       accountMode: 'demo' as AccountMode,
       registrationStep: 'none' as RegistrationStep,
+      accessToken: null,
+      refreshToken: null,
 
       login: (email, name) => {
         const user: User = {
@@ -62,8 +69,31 @@ export const useAuthStore = create<AuthState>()(
         })
       },
 
+      loginFromApi: (user, accessToken, refreshToken) => {
+        set({
+          status: AuthStatus.Authenticated,
+          user,
+          accessToken,
+          refreshToken,
+          accountMode: 'live',
+        })
+      },
+
+      setTokens: (accessToken, refreshToken) => {
+        set({ accessToken, refreshToken })
+      },
+
+      clearTokens: () => {
+        set({ accessToken: null, refreshToken: null })
+      },
+
       logout: () => {
-        set({ status: AuthStatus.Unauthenticated, user: null })
+        set({
+          status: AuthStatus.Unauthenticated,
+          user: null,
+          accessToken: null,
+          refreshToken: null,
+        })
       },
 
       completeOnboarding: (_data) => {
@@ -86,6 +116,17 @@ export const useAuthStore = create<AuthState>()(
         })
       },
     }),
-    { name: 'orchestree-auth-storage' }
+    {
+      name: 'orchestree-auth-storage',
+      partialize: (state) => ({
+        status: state.status,
+        user: state.user,
+        onboardingComplete: state.onboardingComplete,
+        accountMode: state.accountMode,
+        registrationStep: state.registrationStep,
+        accessToken: state.accessToken,
+        refreshToken: state.refreshToken,
+      }),
+    }
   )
 )

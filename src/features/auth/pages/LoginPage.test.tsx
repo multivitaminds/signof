@@ -5,6 +5,7 @@ import LoginPage from './LoginPage'
 
 const mockNavigate = vi.fn()
 const mockLogin = vi.fn()
+const mockLoginFromApi = vi.fn()
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom')
@@ -13,7 +14,13 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('../stores/useAuthStore', () => ({
   useAuthStore: (selector: (s: Record<string, unknown>) => unknown) =>
-    selector({ login: mockLogin }),
+    selector({ login: mockLogin, loginFromApi: mockLoginFromApi }),
+}))
+
+vi.mock('../lib/authService', () => ({
+  default: {
+    login: vi.fn(),
+  },
 }))
 
 function renderLoginPage() {
@@ -36,7 +43,7 @@ describe('LoginPage', () => {
     expect(screen.getByText('Sign in to your workspace')).toBeInTheDocument()
   })
 
-  it('renders name and email input fields', () => {
+  it('renders name and email input fields in demo mode', () => {
     renderLoginPage()
     expect(screen.getByPlaceholderText('Your name')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('you@company.com')).toBeInTheDocument()
