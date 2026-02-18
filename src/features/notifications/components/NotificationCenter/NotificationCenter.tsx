@@ -100,7 +100,7 @@ export default function NotificationCenter({ open, onClose }: NotificationCenter
     <div className="notification-center__overlay" aria-hidden={!open}>
       <div
         ref={panelRef}
-        className="notification-center"
+        className="nc-panel"
         role="dialog"
         aria-label="Notification Center"
         aria-modal="true"
