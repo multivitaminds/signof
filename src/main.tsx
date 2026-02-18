@@ -286,7 +286,7 @@ createRoot(root).render(
             <Route path="registry" element={<Suspense fallback={CardFallback}><RegistryPage /></Suspense>} />
           </Route>
 
-          {/* Tax E-Filing (TaxBandit) */}
+          {/* Tax E-Filing */}
           <Route path="tax" element={
             <ModuleErrorBoundary moduleName="Tax">
               <Suspense fallback={TableFallback}><TaxLayout /></Suspense>

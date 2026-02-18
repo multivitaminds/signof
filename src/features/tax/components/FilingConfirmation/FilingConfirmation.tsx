@@ -48,7 +48,7 @@ export default function FilingConfirmation({
 
         {submissionId && (
           <div className="tax-filing__confirmation-ref">
-            <span className="tax-filing__confirmation-ref-label">TaxBandit Submission ID</span>
+            <span className="tax-filing__confirmation-ref-label">Submission ID</span>
             <span className="tax-filing__confirmation-ref-value">{submissionId}</span>
           </div>
         )}

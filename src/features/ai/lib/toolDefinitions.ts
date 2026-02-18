@@ -508,7 +508,7 @@ export const ORCHESTREE_TOOLS: ToolDefinition[] = [
   },
   {
     name: 'check_submission_status',
-    description: 'Check the status of a TaxBandit submission by its local submission ID.',
+    description: 'Check the status of an e-filing submission by its local submission ID.',
     input_schema: {
       type: 'object',
       properties: {
