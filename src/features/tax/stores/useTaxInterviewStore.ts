@@ -1,12 +1,16 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
+import { createEncryptedStorage } from '../lib/encryptedStorage'
 import {
   type InterviewSection,
   type InterviewSectionId,
   type InterviewAnswer,
   type TaxFiling,
+  type ExtractionResult,
+  type TaxFormType,
   InterviewSectionStatus,
   FilingStatus,
+  TaxFormType as FormType,
 } from '../types'
 
 // ─── Default Sections ───────────────────────────────────────────────
@@ -83,6 +87,9 @@ interface TaxInterviewState {
 
   // Export
   exportToFilingData: () => Partial<TaxFiling>
+
+  // Auto-populate from extracted documents
+  autoPopulateFromExtractions: (results: Record<string, ExtractionResult>) => number
 
   // Reset
   resetInterview: () => void
@@ -326,6 +333,134 @@ export const useTaxInterviewStore = create<TaxInterviewState>()(
         return filingData
       },
 
+      // ─── Auto-Populate from Extractions ────────────────────────────
+
+      autoPopulateFromExtractions: (results) => {
+        const now = new Date().toISOString()
+        const newAnswers: Record<string, InterviewAnswer> = {}
+
+        // Helper to parse currency values from extraction fields
+        const parseCurrency = (val: string): number => {
+          const cleaned = val.replace(/[,$\s]/g, '')
+          const num = parseFloat(cleaned)
+          return isNaN(num) ? 0 : num
+        }
+
+        // Helper to set an answer
+        const setAnswer = (questionId: string, value: string | number | boolean) => {
+          newAnswers[questionId] = { questionId, value, confirmedAt: now }
+        }
+
+        // Aggregate values across multiple documents of the same type
+        let totalWages = 0
+        let totalWithheld = 0
+        let total1099Income = 0
+        let totalInterest = 0
+        let totalDividends = 0
+        let totalMortgageInterest = 0
+        let totalStudentLoanInterest = 0
+        let totalTuition = 0
+        let hasW2 = false
+        let has1099 = false
+        let hasInvestments = false
+
+        for (const result of Object.values(results)) {
+          if (!result.extractedAt) continue
+
+          const fieldMap = new Map(result.fields.map((f) => [f.key, f.value]))
+
+          switch (result.formType as TaxFormType) {
+            case FormType.W2: {
+              hasW2 = true
+              const wages = fieldMap.get('Wages (Box 1)')
+              const withheld = fieldMap.get('Federal Tax Withheld (Box 2)')
+              if (wages) totalWages += parseCurrency(wages)
+              if (withheld) totalWithheld += parseCurrency(withheld)
+              break
+            }
+            case FormType.NEC1099:
+            case FormType.MISC1099:
+            case FormType.K1099: {
+              has1099 = true
+              const compensation = fieldMap.get('Nonemployee Compensation (Box 1)')
+                ?? fieldMap.get('Extracted Amount')
+              if (compensation) total1099Income += parseCurrency(compensation)
+              break
+            }
+            case FormType.INT1099: {
+              hasInvestments = true
+              const interest = fieldMap.get('Interest Income (Box 1)')
+              if (interest) totalInterest += parseCurrency(interest)
+              break
+            }
+            case FormType.DIV1099: {
+              hasInvestments = true
+              const dividends = fieldMap.get('Total Ordinary Dividends (Box 1a)')
+              if (dividends) totalDividends += parseCurrency(dividends)
+              break
+            }
+            case FormType.Mortgage1098: {
+              const mortgage = fieldMap.get('Mortgage Interest Received (Box 1)')
+              if (mortgage) totalMortgageInterest += parseCurrency(mortgage)
+              break
+            }
+            case FormType.E1098: {
+              const studentLoan = fieldMap.get('Student Loan Interest (Box 1)')
+                ?? fieldMap.get('Extracted Amount')
+              if (studentLoan) totalStudentLoanInterest += parseCurrency(studentLoan)
+              break
+            }
+            case FormType.T1098: {
+              const tuition = fieldMap.get('Amounts Billed (Box 1)')
+                ?? fieldMap.get('Extracted Amount')
+              if (tuition) totalTuition += parseCurrency(tuition)
+              break
+            }
+          }
+        }
+
+        // Map aggregated values to interview question answers
+        if (hasW2) {
+          setAnswer('income_w2_received', true)
+          if (totalWages > 0) setAnswer('income_w2_wages', totalWages)
+          if (totalWithheld > 0) setAnswer('income_w2_withheld', totalWithheld)
+        }
+
+        if (has1099) {
+          setAnswer('income_1099_received', true)
+          if (total1099Income > 0) setAnswer('income_1099_total', total1099Income)
+        }
+
+        if (hasInvestments) {
+          setAnswer('income_investments_has', true)
+          if (totalInterest > 0) setAnswer('income_investments_interest', totalInterest)
+          if (totalDividends > 0) setAnswer('income_investments_dividends', totalDividends)
+        }
+
+        if (totalMortgageInterest > 0) {
+          setAnswer('deductions_itemized_mortgage', totalMortgageInterest)
+        }
+
+        if (totalStudentLoanInterest > 0) {
+          setAnswer('deductions_itemized_student_loan', totalStudentLoanInterest)
+        }
+
+        if (totalTuition > 0) {
+          setAnswer('credits_education', true)
+          setAnswer('credits_education_amount', totalTuition)
+        }
+
+        const populatedCount = Object.keys(newAnswers).length
+
+        if (populatedCount > 0) {
+          set((state) => ({
+            answers: { ...newAnswers, ...state.answers },
+          }))
+        }
+
+        return populatedCount
+      },
+
       // ─── Reset ──────────────────────────────────────────────────────
 
       resetInterview: () =>
@@ -343,6 +478,7 @@ export const useTaxInterviewStore = create<TaxInterviewState>()(
     }),
     {
       name: 'orchestree-tax-interview-storage',
+      storage: createJSONStorage(() => createEncryptedStorage()),
       partialize: (state) => ({
         sections: state.sections,
         currentSectionId: state.currentSectionId,

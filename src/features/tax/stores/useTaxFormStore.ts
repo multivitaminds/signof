@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
+import { createEncryptedStorage } from '../lib/encryptedStorage'
 import {
   type TaxFormType,
   type FormCategory,
@@ -312,6 +313,7 @@ export const useTaxFormStore = create<TaxFormState>()(
     }),
     {
       name: 'orchestree-tax-form-storage',
+      storage: createJSONStorage(() => createEncryptedStorage()),
       partialize: (state) => ({
         entries: state.entries,
       }),
