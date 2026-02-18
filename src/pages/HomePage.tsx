@@ -7,21 +7,16 @@ import {
   Clock,
 } from 'lucide-react'
 import { useSchedulingStore } from '../features/scheduling/stores/useSchedulingStore'
-import { useAuthStore } from '../features/auth/stores/useAuthStore'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import { useIsMobile } from '../hooks/useMediaQuery'
 import { getUpcomingDeadlines, getCopilotInsights } from '../lib/crossModuleService'
-import WelcomeBanner from '../components/WelcomeBanner/WelcomeBanner'
 import QuickActions from '../components/QuickActions/QuickActions'
-import FirstRunChecklist from '../components/FirstRunChecklist/FirstRunChecklist'
 import DashboardGrid from '../features/home/components/DashboardGrid/DashboardGrid'
 import './HomePage.css'
 
 export default function HomePage() {
   const bookings = useSchedulingStore((s) => s.bookings)
   const eventTypes = useSchedulingStore((s) => s.eventTypes)
-  const user = useAuthStore((s) => s.user)
-  const onboardingComplete = useAuthStore((s) => s.onboardingComplete)
   const isMobile = useIsMobile()
 
   const handleRefresh = useCallback(async () => {
@@ -33,11 +28,6 @@ export default function HomePage() {
     onRefresh: handleRefresh,
     enabled: isMobile,
   })
-
-  const firstName = useMemo(() => {
-    if (user?.name) return user.name.split(' ')[0]
-    return 'Sam' // Demo account default
-  }, [user])
 
   const upcomingBookings = useMemo(
     () =>
@@ -70,13 +60,7 @@ export default function HomePage() {
           <div className="pull-to-refresh__spinner" />
         </div>
       )}
-      {/* 1. Welcome Banner */}
-      <WelcomeBanner userName={firstName} />
-
-      {/* 1.5 First Run Checklist */}
-      {!onboardingComplete && <FirstRunChecklist />}
-
-      {/* 2. Quick Actions */}
+      {/* Quick Actions */}
       <QuickActions />
 
       {/* 3. Customizable Dashboard Grid */}

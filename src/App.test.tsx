@@ -134,11 +134,6 @@ describe('Orchestree App', () => {
     expect(screen.getByText('Orchestree')).toBeInTheDocument()
   })
 
-  it('renders the home page welcome banner', () => {
-    renderWithRouter()
-    expect(screen.getByTestId('welcome-banner')).toBeInTheDocument()
-  })
-
   it('shows the command palette shortcut', () => {
     renderWithRouter()
     expect(screen.getByText(/⌘K/i)).toBeInTheDocument()

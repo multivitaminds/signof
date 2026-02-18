@@ -5,6 +5,7 @@
 
 .page-transition {
   animation: pageIn 200ms ease-out both;
+  contain: paint;
 }
 
 @keyframes pageIn {
