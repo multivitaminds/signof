@@ -3,11 +3,13 @@
   flex-direction: column;
   gap: var(--space-lg);
   min-width: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .brain-dashboard__main {
   display: grid;
-  grid-template-columns: 3fr 2fr;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
   gap: var(--space-lg);
   min-width: 0;
 }

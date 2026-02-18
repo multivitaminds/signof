@@ -50,6 +50,7 @@
 
 .app-layout__content {
   flex: 1;
+  overflow-x: hidden;
   overflow-y: auto;
   padding: var(--space-4, 16px) var(--space-5, 24px);
 }
