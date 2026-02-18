@@ -15,6 +15,7 @@ interface ExtractionConfirmationProps {
   onConfirm: (fields: ExtractionField[]) => void
   onEdit: (fieldIndex: number, value: string) => void
   onReject: () => void
+  onToggleField?: (fieldIndex: number, confirmed: boolean) => void
 }
 
 const CONFIDENCE_CONFIG: Record<string, { label: string; className: string }> = {
@@ -23,7 +24,7 @@ const CONFIDENCE_CONFIG: Record<string, { label: string; className: string }> = 
   [ExtractionConfidence.Low]: { label: 'Low', className: 'extraction-confirmation__confidence--low' },
 }
 
-function ExtractionConfirmation({ result, onConfirm, onEdit, onReject }: ExtractionConfirmationProps) {
+function ExtractionConfirmation({ result, onConfirm, onEdit, onReject, onToggleField }: ExtractionConfirmationProps) {
   const [fields, setFields] = useState<ExtractionField[]>(result.fields)
 
   const handleValueChange = useCallback(
@@ -37,12 +38,14 @@ function ExtractionConfirmation({ result, onConfirm, onEdit, onReject }: Extract
   )
 
   const handleToggleConfirm = useCallback((index: number) => {
-    setFields((prev) =>
-      prev.map((f, i) =>
-        i === index ? { ...f, confirmed: !f.confirmed } : f
+    setFields((prev) => {
+      const newConfirmed = !prev[index]!.confirmed
+      onToggleField?.(index, newConfirmed)
+      return prev.map((f, i) =>
+        i === index ? { ...f, confirmed: newConfirmed } : f
       )
-    )
-  }, [])
+    })
+  }, [onToggleField])
 
   const handleConfirmAll = useCallback(() => {
     const confirmedFields = fields.map((f) => ({ ...f, confirmed: true }))

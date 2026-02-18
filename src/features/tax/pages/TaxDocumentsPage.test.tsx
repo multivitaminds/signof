@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import TaxDocumentsPage from './TaxDocumentsPage'
 
 vi.mock('../stores/useTaxDocumentStore', () => ({
@@ -28,6 +29,11 @@ vi.mock('../stores/useTaxDocumentStore', () => ({
       verifiedCount: () => 0,
       pendingCount: () => 1,
       issueCount: () => 0,
+      extractDocument: vi.fn().mockResolvedValue(undefined),
+      extractionResults: {},
+      setExtractionConfirmed: vi.fn(),
+      updateExtractionField: vi.fn(),
+      setFieldConfirmed: vi.fn(),
     }),
   DocReviewStatus: {
     PendingReview: 'pending_review',
@@ -40,59 +46,77 @@ vi.mock('../stores/useTaxDocumentStore', () => ({
     issue_found: 'Issue Found',
   },
   detectFormType: () => 'w2',
+  setFileBlob: vi.fn(),
 }))
 
 describe('TaxDocumentsPage', () => {
   it('renders the Tax Documents title', () => {
-    render(<TaxDocumentsPage />)
+    render(<MemoryRouter><TaxDocumentsPage /></MemoryRouter>)
     expect(screen.getByText('Tax Documents')).toBeInTheDocument()
   })
 
+  it('renders the subtitle', () => {
+    render(<MemoryRouter><TaxDocumentsPage /></MemoryRouter>)
+    expect(screen.getByText(/Upload your tax forms/)).toBeInTheDocument()
+  })
+
   it('renders the Add Document button', () => {
-    render(<TaxDocumentsPage />)
+    render(<MemoryRouter><TaxDocumentsPage /></MemoryRouter>)
     expect(screen.getByText('Add Document')).toBeInTheDocument()
   })
 
   it('renders summary cards', () => {
-    render(<TaxDocumentsPage />)
-    expect(screen.getByText('Total Uploaded')).toBeInTheDocument()
-    expect(screen.getByText('Verified')).toBeInTheDocument()
-    // "Pending Review" appears in summary card and in document status badge
-    const pendingElements = screen.getAllByText('Pending Review')
-    expect(pendingElements.length).toBeGreaterThanOrEqual(1)
-    expect(screen.getByText('Issues Found')).toBeInTheDocument()
+    render(<MemoryRouter><TaxDocumentsPage /></MemoryRouter>)
+    expect(screen.getByText('Uploaded')).toBeInTheDocument()
+    expect(screen.getByText('Extracted')).toBeInTheDocument()
+    expect(screen.getByText('Confirmed')).toBeInTheDocument()
+    expect(screen.getByText('Issues')).toBeInTheDocument()
+  })
+
+  it('renders flow step indicator', () => {
+    render(<MemoryRouter><TaxDocumentsPage /></MemoryRouter>)
+    expect(screen.getByText('Upload Documents')).toBeInTheDocument()
+    expect(screen.getByText('Extract Data')).toBeInTheDocument()
+    expect(screen.getByText('Confirm & Review')).toBeInTheDocument()
+    expect(screen.getByText('File Taxes')).toBeInTheDocument()
   })
 
   it('renders the drop zone', () => {
-    render(<TaxDocumentsPage />)
+    render(<MemoryRouter><TaxDocumentsPage /></MemoryRouter>)
     expect(
       screen.getByText(/Drag & drop tax forms here/)
     ).toBeInTheDocument()
   })
 
   it('renders document list with file name', () => {
-    render(<TaxDocumentsPage />)
+    render(<MemoryRouter><TaxDocumentsPage /></MemoryRouter>)
     expect(screen.getByText('Acme W-2.pdf')).toBeInTheDocument()
   })
 
   it('renders document employer name', () => {
-    render(<TaxDocumentsPage />)
+    render(<MemoryRouter><TaxDocumentsPage /></MemoryRouter>)
     expect(screen.getByText('Acme Corp')).toBeInTheDocument()
   })
 
   it('renders document list column headers', () => {
-    render(<TaxDocumentsPage />)
+    render(<MemoryRouter><TaxDocumentsPage /></MemoryRouter>)
     expect(screen.getByText('Document')).toBeInTheDocument()
     expect(screen.getByText('Form Type')).toBeInTheDocument()
     expect(screen.getByText('Employer / Institution')).toBeInTheDocument()
+    expect(screen.getByText('Extraction')).toBeInTheDocument()
   })
 
   it('shows upload form when Add Document is clicked', async () => {
     const user = userEvent.setup()
-    render(<TaxDocumentsPage />)
+    render(<MemoryRouter><TaxDocumentsPage /></MemoryRouter>)
     await user.click(screen.getByText('Add Document'))
     expect(screen.getByText('Add Tax Document Manually')).toBeInTheDocument()
     expect(screen.getByLabelText('Document Name')).toBeInTheDocument()
     expect(screen.getByLabelText('Form Type')).toBeInTheDocument()
+  })
+
+  it('renders Extract All button when documents exist', () => {
+    render(<MemoryRouter><TaxDocumentsPage /></MemoryRouter>)
+    expect(screen.getByText('Extract All')).toBeInTheDocument()
   })
 })

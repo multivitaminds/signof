@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
+import { createEncryptedStorage } from '../lib/encryptedStorage'
 import {
   type TaxFiling,
   type TaxYear,
@@ -410,6 +411,9 @@ interface TaxFilingState {
 
   // Confirmation
   clearConfirmation: () => void
+
+  // Bulk filing
+  bulkSubmitForms: (formType: TaxFormType, documentIds: string[]) => Promise<{ submitted: number; errors: string[] }>
 
   // Clear data
   clearData: () => void
@@ -1091,6 +1095,108 @@ export const useTaxFilingStore = create<TaxFilingState>()(
         }, 3000)
       },
 
+      // ─── Bulk Filing ────────────────────────────────────────────────────
+
+      bulkSubmitForms: async (formType, documentIds) => {
+        const state = get()
+        const config = state.taxBanditConfig
+        const errors: string[] = []
+        let submitted = 0
+
+        // Get the active filing for context (personal info, tax year)
+        const filing = state.filings[0]
+        if (!filing) {
+          return { submitted: 0, errors: ['No filing found. Create a filing first.'] }
+        }
+
+        // If TaxBandit credentials are available, use API
+        if (hasCredentials(config) && state.accessToken) {
+          const client = new TaxBanditClient(config)
+
+          try {
+            await client.authenticate()
+            const businessService = createBusinessService(client)
+            const businessData = filingToBusinessData(filing)
+            const businessId = await businessService.create(businessData)
+            const pipeline = getFormPipeline(client, formType)
+
+            if (!pipeline) {
+              return { submitted: 0, errors: [`Unsupported form type: ${formType}`] }
+            }
+
+            const docStore = useTaxDocumentStore.getState()
+
+            for (const docId of documentIds) {
+              try {
+                const doc = docStore.documents.find((d) => d.id === docId)
+                if (!doc) {
+                  errors.push(`Document ${docId} not found`)
+                  continue
+                }
+
+                const extraction = docStore.extractionResults[docId]
+                if (!extraction?.extractedAt) {
+                  errors.push(`Document ${doc.fileName} has no extraction data`)
+                  continue
+                }
+
+                const payload = buildPayloadForType(formType, extraction.fields, filing, businessId)
+                if (!payload) {
+                  errors.push(`Could not build payload for ${doc.fileName}`)
+                  continue
+                }
+
+                const localSubId = get().createSubmission(formType, { documentId: docId, fileName: doc.fileName })
+                const service = pipeline.service as FormService<unknown>
+                const result = await service.create(payload)
+                get().setSubmissionTaxBanditIds(localSubId, result.submissionId, result.recordId)
+
+                const valErrors = await pipeline.service.validate(result.submissionId)
+                if (valErrors.length > 0) {
+                  get().setSubmissionErrors(localSubId, valErrors)
+                  errors.push(`${doc.fileName}: ${valErrors.length} validation error(s)`)
+                  continue
+                }
+
+                await pipeline.service.transmit(result.submissionId, [result.recordId])
+                get().updateSubmissionState(localSubId, FilingState.Filed)
+                submitted++
+              } catch (err) {
+                const msg = err instanceof Error ? err.message : 'Unknown error'
+                errors.push(`${docId}: ${msg}`)
+              }
+            }
+          } catch (err) {
+            const msg = err instanceof TaxBanditError ? err.message : 'Authentication failed'
+            return { submitted: 0, errors: [msg] }
+          }
+        } else {
+          // Simulated bulk filing (no API credentials)
+          for (const docId of documentIds) {
+            const docStore = useTaxDocumentStore.getState()
+            const doc = docStore.documents.find((d) => d.id === docId)
+            if (!doc) {
+              errors.push(`Document ${docId} not found`)
+              continue
+            }
+
+            const localSubId = get().createSubmission(formType, { documentId: docId, fileName: doc.fileName })
+
+            // Simulate success
+            setTimeout(() => {
+              get().updateSubmissionState(localSubId, FilingState.Filed)
+              setTimeout(() => {
+                get().updateSubmissionState(localSubId, FilingState.Accepted)
+              }, 3000)
+            }, 1000)
+
+            submitted++
+          }
+        }
+
+        return { submitted, errors }
+      },
+
       // ─── Confirmation / Clear ───────────────────────────────────────────
 
       clearConfirmation: () =>
@@ -1125,6 +1231,7 @@ export const useTaxFilingStore = create<TaxFilingState>()(
     }),
     {
       name: 'orchestree-tax-filing-storage',
+      storage: createJSONStorage(() => createEncryptedStorage()),
       partialize: (state) => ({
         filings: state.filings,
         checklist: state.checklist,

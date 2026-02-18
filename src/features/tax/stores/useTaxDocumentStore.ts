@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
+import { createEncryptedStorage } from '../lib/encryptedStorage'
 import { TaxFormType } from '../types'
 import type {
   TaxYear,
@@ -206,6 +207,8 @@ interface TaxDocumentState {
   extractDocument: (id: string) => Promise<void>
   setExtractionConfirmed: (id: string, confirmed: boolean) => void
   getExtractionResult: (id: string) => ExtractionResult | undefined
+  updateExtractionField: (docId: string, fieldIndex: number, value: string) => void
+  setFieldConfirmed: (docId: string, fieldIndex: number, confirmed: boolean) => void
 
   // Clear data
   clearData: () => void
@@ -363,6 +366,40 @@ export const useTaxDocumentStore = create<TaxDocumentState>()(
 
       getExtractionResult: (id) => get().extractionResults[id],
 
+      updateExtractionField: (docId, fieldIndex, value) =>
+        set((state) => {
+          const result = state.extractionResults[docId]
+          if (!result) return state
+          return {
+            extractionResults: {
+              ...state.extractionResults,
+              [docId]: {
+                ...result,
+                fields: result.fields.map((f, i) =>
+                  i === fieldIndex ? { ...f, value, confirmed: false } : f
+                ),
+              },
+            },
+          }
+        }),
+
+      setFieldConfirmed: (docId, fieldIndex, confirmed) =>
+        set((state) => {
+          const result = state.extractionResults[docId]
+          if (!result) return state
+          return {
+            extractionResults: {
+              ...state.extractionResults,
+              [docId]: {
+                ...result,
+                fields: result.fields.map((f, i) =>
+                  i === fieldIndex ? { ...f, confirmed } : f
+                ),
+              },
+            },
+          }
+        }),
+
       // ─── Clear ──────────────────────────────────────────────────────
 
       clearData: () => {
@@ -402,6 +439,7 @@ export const useTaxDocumentStore = create<TaxDocumentState>()(
     }),
     {
       name: 'orchestree-tax-document-storage',
+      storage: createJSONStorage(() => createEncryptedStorage()),
       partialize: (state) => ({
         documents: state.documents,
         activeTaxYear: state.activeTaxYear,
