@@ -13,7 +13,6 @@ import {
   ChevronDown,
 } from 'lucide-react'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
-import { DemoVideoSection } from '../../../components/ui/DemoVideo'
 import { useAccountingStore } from '../stores/useAccountingStore'
 import { FISCAL_YEARS } from '../types'
 import type { FiscalYear } from '../types'
@@ -33,12 +32,6 @@ function AccountingLayout() {
   return (
     <div className="accounting-layout">
       <ModuleHeader title="Accounting" subtitle="Invoices, expenses, and financial reports" />
-
-      <DemoVideoSection videos={[
-        { title: 'Dashboard Overview', description: 'Navigate the accounting dashboard and key metrics.', duration: '3:15' },
-        { title: 'Creating Invoices', description: 'Generate and send professional invoices to clients.', duration: '4:00' },
-        { title: 'Running Financial Reports', description: 'Generate P&L statements, balance sheets, and more.', duration: '5:10' },
-      ]} />
 
       <header className="accounting-layout__header">
         <div className="accounting-layout__header-left">
