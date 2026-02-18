@@ -86,7 +86,7 @@ export default function FirstRunChecklist() {
     }
   })
 
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(true)
 
   // Check store state for auto-completion
   const pagesMap = useWorkspaceStore((s) => s.pages)
