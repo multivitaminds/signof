@@ -54,11 +54,6 @@ vi.mock('./features/scheduling/stores/useSchedulingStore', () => ({
     }),
 }))
 
-// Mock FirstRunChecklist
-vi.mock('./components/FirstRunChecklist/FirstRunChecklist', () => ({
-  default: () => null,
-}))
-
 // Mock DashboardWidgets
 vi.mock('./components/DashboardWidgets/UpcomingDeadlines', () => ({
   default: () => <div data-testid="upcoming-deadlines">Upcoming Deadlines</div>,

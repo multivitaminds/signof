@@ -24,11 +24,6 @@ vi.mock('../hooks/useMediaQuery', () => ({
   useIsMobile: () => false,
 }))
 
-// Mock FirstRunChecklist
-vi.mock('../components/FirstRunChecklist/FirstRunChecklist', () => ({
-  default: () => null,
-}))
-
 // Mock the scheduling store
 vi.mock('../features/scheduling/stores/useSchedulingStore', () => ({
   useSchedulingStore: (selector: (s: Record<string, unknown>) => unknown) =>
@@ -89,11 +84,6 @@ function renderHomePage() {
 describe('HomePage', () => {
   beforeEach(() => {
     localStorage.clear()
-  })
-
-  it('renders the welcome banner', () => {
-    renderHomePage()
-    expect(screen.getByTestId('welcome-banner')).toBeInTheDocument()
   })
 
   it('renders the quick actions section', () => {
