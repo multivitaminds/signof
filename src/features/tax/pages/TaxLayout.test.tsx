@@ -19,10 +19,6 @@ vi.mock('../../../components/ui/ModuleHeader', () => ({
   ),
 }))
 
-vi.mock('../../../components/ui/DemoVideo', () => ({
-  DemoVideoSection: () => <div data-testid="demo-videos">DemoVideos</div>,
-}))
-
 vi.mock('../components/TaxCopilotButton/TaxCopilotButton', () => ({
   default: () => <div data-testid="tax-copilot-button">CopilotButton</div>,
 }))
@@ -63,11 +59,6 @@ describe('TaxLayout', () => {
     expect(screen.getByText('Forms')).toBeInTheDocument()
     expect(screen.getByText('E-File')).toBeInTheDocument()
     expect(screen.getByText('Pricing')).toBeInTheDocument()
-  })
-
-  it('renders DemoVideoSection', () => {
-    render(<MemoryRouter><TaxLayout /></MemoryRouter>)
-    expect(screen.getByTestId('demo-videos')).toBeInTheDocument()
   })
 
   it('renders TaxCopilotButton and TaxCopilotPanel', () => {

@@ -8,10 +8,6 @@ vi.mock('../../../components/ui/ModuleHeader', () => ({
   ),
 }))
 
-vi.mock('../../../components/ui/DemoVideo', () => ({
-  DemoVideoSection: () => <div data-testid="demo-videos">DemoVideos</div>,
-}))
-
 vi.mock('./ApiDocsPage', () => ({ default: () => <div data-testid="page-api-docs">ApiDocsPage</div> }))
 vi.mock('./CliDocsPage', () => ({ default: () => <div data-testid="page-cli">CliDocsPage</div> }))
 vi.mock('./WebhooksPage', () => ({ default: () => <div data-testid="page-webhooks">WebhooksPage</div> }))
@@ -91,8 +87,4 @@ describe('DeveloperLayout', () => {
     expect(statusLink).toHaveAttribute('href', 'https://status.orchestree.io')
   })
 
-  it('renders DemoVideoSection', () => {
-    render(<DeveloperLayout />)
-    expect(screen.getByTestId('demo-videos')).toBeInTheDocument()
-  })
 })

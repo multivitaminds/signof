@@ -8,7 +8,6 @@ import {
   Key,
 } from 'lucide-react'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
-import { DemoVideoSection } from '../../../components/ui/DemoVideo'
 import DeveloperCopilotButton from '../components/DeveloperCopilotButton/DeveloperCopilotButton'
 import DeveloperCopilotPanel from '../components/DeveloperCopilotPanel/DeveloperCopilotPanel'
 import './DeveloperLayout.css'
@@ -66,11 +65,6 @@ function DeveloperLayout() {
     <div className="developer-layout">
       <aside className="developer-layout__sidebar">
         <ModuleHeader title="Developer" subtitle="API docs, webhooks, and SDKs" />
-
-        <DemoVideoSection videos={[
-          { title: 'API Playground Tour', description: 'Test API endpoints interactively in the sandbox.', duration: '4:00' },
-          { title: 'SDK Integration Guide', description: 'Integrate Orchestree into your app with our SDKs.', duration: '5:30' },
-        ]} />
 
         <nav className="developer-layout__nav">
           {NAV_ITEMS.map(item => (

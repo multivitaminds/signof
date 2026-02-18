@@ -1,7 +1,6 @@
 import { NavLink, Outlet, useLocation, Navigate } from 'react-router-dom'
 import { CalendarDays, Clock, List, Link2, BarChart3, UserX } from 'lucide-react'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
-import { DemoVideoSection } from '../../../components/ui/DemoVideo'
 import SchedulingCopilotButton from '../components/SchedulingCopilotButton/SchedulingCopilotButton'
 import SchedulingCopilotPanel from '../components/SchedulingCopilotPanel/SchedulingCopilotPanel'
 import './SchedulingLayout.css'
@@ -25,12 +24,6 @@ export default function SchedulingLayout() {
   return (
     <div className="scheduling-layout">
       <ModuleHeader title="Calendar" subtitle="Schedule meetings and manage bookings" />
-
-      <DemoVideoSection videos={[
-        { title: 'Setting Up Event Types', description: 'Configure meeting types with custom durations and rules.', duration: '3:00' },
-        { title: 'Managing Your Calendar', description: 'View, create, and manage all your scheduled events.', duration: '2:50' },
-        { title: 'Booking Page Walkthrough', description: 'See how attendees book time on your calendar.', duration: '3:30' },
-      ]} />
 
       <div className="scheduling-layout__header">
         <nav className="scheduling-layout__tabs">

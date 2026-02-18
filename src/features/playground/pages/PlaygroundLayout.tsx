@@ -1,7 +1,6 @@
 import { useEffect, useCallback } from 'react'
 import usePlaygroundStore from '../stores/usePlaygroundStore'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
-import { DemoVideoSection } from '../../../components/ui/DemoVideo'
 import ConversationSidebar from '../components/ConversationSidebar/ConversationSidebar'
 import PlaygroundTopBar from '../components/PlaygroundTopBar/PlaygroundTopBar'
 import ChatArea from '../components/ChatArea/ChatArea'
@@ -43,11 +42,6 @@ export default function PlaygroundLayout() {
     <div className={`playground-layout ${settingsPanelOpen ? 'playground-layout--settings-open' : ''}`}>
       <aside className="playground-layout__sidebar">
         <ModuleHeader title="Playground" subtitle="Test AI models and conversations" />
-
-        <DemoVideoSection videos={[
-          { title: 'AI Chat Basics', description: 'Start conversations with AI models and explore capabilities.', duration: '3:00' },
-          { title: 'Working with Models', description: 'Switch between models and customize parameters.', duration: '3:45' },
-        ]} />
 
         <ConversationSidebar />
       </aside>

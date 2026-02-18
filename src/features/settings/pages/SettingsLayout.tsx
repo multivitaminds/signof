@@ -1,7 +1,6 @@
 import { NavLink, Outlet, useLocation, Navigate } from 'react-router-dom'
 import { Settings, Users, Bell, Palette, Plug, CreditCard, Bot } from 'lucide-react'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
-import { DemoVideoSection } from '../../../components/ui/DemoVideo'
 import './SettingsLayout.css'
 
 const SETTINGS_NAV = [
@@ -24,11 +23,6 @@ export default function SettingsLayout() {
   return (
     <div className="settings-layout">
       <ModuleHeader title="Settings" subtitle="Workspace preferences and team management" />
-
-      <DemoVideoSection videos={[
-        { title: 'Team Management', description: 'Invite members, assign roles, and manage permissions.', duration: '3:30' },
-        { title: 'Appearance & Theming', description: 'Customize colors, dark mode, and layout preferences.', duration: '2:15' },
-      ]} />
 
       <nav className="settings-layout__nav">
         {SETTINGS_NAV.map(({ path, label, icon: Icon }) => (

@@ -2,7 +2,6 @@ import { useCallback } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { LayoutDashboard, FileText, FolderOpen, Send, ChevronDown, CreditCard, Sparkles, Activity } from 'lucide-react'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
-import { DemoVideoSection } from '../../../components/ui/DemoVideo'
 import { useTaxStore } from '../stores/useTaxStore'
 import { TAX_YEARS } from '../types'
 import type { TaxYear } from '../types'
@@ -25,11 +24,6 @@ function TaxLayout() {
     <div className="tax-layout">
 
       <ModuleHeader title="Tax" subtitle="E-file tax forms and track submissions" />
-
-      <DemoVideoSection videos={[
-        { title: 'Filing Your First Return', description: 'Step-by-step guide to filing tax returns.', duration: '5:30' },
-        { title: 'Organizing Tax Documents', description: 'Upload and categorize tax-related documents.', duration: '3:00' },
-      ]} />
 
       <header className="tax-layout__header">
         <div className="tax-layout__header-left">

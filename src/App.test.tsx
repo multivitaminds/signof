@@ -81,10 +81,6 @@ vi.mock('./features/activity/components/DashboardCharts/DashboardCharts', () => 
 }))
 
 // Mock widget components
-vi.mock('./components/WelcomeBanner/WelcomeBanner', () => ({
-  default: () => <div data-testid="welcome-banner">Welcome Banner</div>,
-}))
-
 vi.mock('./components/StatsOverview/StatsOverview', () => ({
   default: () => <div data-testid="stats-overview">Stats Overview</div>,
 }))

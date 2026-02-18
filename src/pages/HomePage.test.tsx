@@ -60,10 +60,6 @@ vi.mock('../features/scheduling/stores/useSchedulingStore', () => ({
 }))
 
 // Mock the widget components to isolate HomePage layout tests
-vi.mock('../components/WelcomeBanner/WelcomeBanner', () => ({
-  default: () => <div data-testid="welcome-banner">Welcome Banner</div>,
-}))
-
 vi.mock('../components/QuickActions/QuickActions', () => ({
   default: () => <div data-testid="quick-actions">Quick Actions</div>,
 }))

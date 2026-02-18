@@ -13,7 +13,6 @@ import { useInboxStore } from '../stores/useInboxStore'
 import { NotificationType, NotificationCategory, TYPE_TO_CATEGORY } from '../types'
 import type { Notification, NotificationCategory as NotifCategoryType } from '../types'
 import ModuleHeader from '../../../components/ui/ModuleHeader'
-import { DemoVideoSection } from '../../../components/ui/DemoVideo'
 import EmptyState from '../../../components/EmptyState/EmptyState'
 import AIFeatureWidget from '../../ai/components/AIFeatureWidget/AIFeatureWidget'
 import InboxCopilotButton from '../components/InboxCopilotButton/InboxCopilotButton'
@@ -415,11 +414,6 @@ export default function InboxPage() {
           </div>
         }
       />
-
-      <DemoVideoSection videos={[
-        { title: 'Notification Management', description: 'Filter, search, and manage all your notifications.', duration: '2:45' },
-        { title: 'Inbox Zero Workflow', description: 'Achieve inbox zero with batch actions and archiving.', duration: '3:10' },
-      ]} />
 
       {/* Compose form */}
       {showCompose && (
