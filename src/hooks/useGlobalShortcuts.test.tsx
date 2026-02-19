@@ -35,7 +35,7 @@ describe('useGlobalShortcuts', () => {
     clearRegistry()
     mockNavigate.mockClear()
     useAppStore.setState({
-      searchOverlayOpen: false,
+      commandPaletteOpen: false,
       shortcutHelpOpen: false,
       sidebarExpanded: true,
     })
@@ -72,10 +72,10 @@ describe('useGlobalShortcuts', () => {
     expect(getAllShortcuts()).toHaveLength(0)
   })
 
-  it('mod+k opens the search overlay', () => {
+  it('mod+k opens command palette', () => {
     renderHook(() => useGlobalShortcuts(), { wrapper })
     dispatchModKey('k')
-    expect(useAppStore.getState().searchOverlayOpen).toBe(true)
+    expect(useAppStore.getState().commandPaletteOpen).toBe(true)
   })
 
   it('mod+b toggles sidebar', () => {

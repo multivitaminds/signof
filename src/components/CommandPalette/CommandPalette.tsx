@@ -601,18 +601,6 @@ export default function CommandPalette() {
     return groups
   }, [filteredItems])
 
-  // Keyboard shortcut: Cmd+Shift+P opens command palette
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'p') {
-        e.preventDefault()
-        useAppStore.getState().toggleCommandPalette()
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
-
   // Focus input when opened
   useEffect(() => {
     if (commandPaletteOpen) {

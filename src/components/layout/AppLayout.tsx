@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef, lazy, Suspense } from 'react'
+import { useEffect, useRef, lazy, Suspense } from 'react'
 import useLLMConfigStore from '../../features/ai/stores/useLLMConfigStore'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from './Sidebar/Sidebar'
@@ -7,9 +7,6 @@ import MobileNav from './MobileNav/MobileNav'
 import PageTransition from './PageTransition/PageTransition'
 import CommandPalette from '../CommandPalette/CommandPalette'
 import KeyboardShortcutHelp from '../KeyboardShortcutHelp/KeyboardShortcutHelp'
-const SearchOverlay = lazy(() => import('../../features/search/components/SearchOverlay/SearchOverlay'))
-const QuickActionPalette = lazy(() => import('../../features/search/components/QuickActionPalette/QuickActionPalette'))
-import { useQuickActionRegistration } from '../../hooks/useQuickActionRegistration'
 import OfflineBanner from '../OfflineBanner/OfflineBanner'
 const TourProvider = lazy(() => import('../../features/onboarding/components/TourProvider/TourProvider'))
 import { useTheme } from '../../hooks/useTheme'
@@ -46,19 +43,12 @@ export default function AppLayout() {
   const mobileSidebarOpen = useAppStore((s) => s.mobileSidebarOpen)
   const closeMobileSidebar = useAppStore((s) => s.closeMobileSidebar)
   const addRecentItem = useAppStore((s) => s.addRecentItem)
-  const searchOverlayOpen = useAppStore((s) => s.searchOverlayOpen)
-  const closeSearchOverlay = useAppStore((s) => s.closeSearchOverlay)
-  const quickActionPaletteOpen = useAppStore((s) => s.quickActionPaletteOpen)
-  const closeQuickActionPalette = useAppStore((s) => s.closeQuickActionPalette)
 
   // Focus management for screen readers on route changes
   useFocusOnRouteChange(mainRef)
 
   // Listen for eventBus events and create notifications
   useNotificationListener()
-
-  // Register quick actions
-  useQuickActionRegistration()
 
   // Register all keyboard shortcuts
   useKeyboardShortcuts([
@@ -99,26 +89,6 @@ export default function AppLayout() {
     useLLMConfigStore.getState().checkConnection()
   }, [])
 
-  const handleCloseSearch = useCallback(() => {
-    closeSearchOverlay()
-  }, [closeSearchOverlay])
-
-  const handleCloseQuickActions = useCallback(() => {
-    closeQuickActionPalette()
-  }, [closeQuickActionPalette])
-
-  // Cmd+Shift+P to open quick actions palette
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'p') {
-        e.preventDefault()
-        useAppStore.getState().toggleQuickActionPalette()
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
-
   // Track recent items on navigation
   useEffect(() => {
     const label = ROUTE_LABELS[location.pathname]
@@ -157,12 +127,6 @@ export default function AppLayout() {
       </div>
       {/* Mobile bottom nav (hidden on desktop) */}
       {isMobile && <MobileNav />}
-      <Suspense fallback={null}>
-        <SearchOverlay isOpen={searchOverlayOpen} onClose={handleCloseSearch} />
-      </Suspense>
-      <Suspense fallback={null}>
-        <QuickActionPalette isOpen={quickActionPaletteOpen} onClose={handleCloseQuickActions} />
-      </Suspense>
       <CommandPalette />
       <KeyboardShortcutHelp />
       <Suspense fallback={null}>

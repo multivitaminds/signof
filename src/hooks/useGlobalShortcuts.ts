@@ -41,7 +41,7 @@ export function useGlobalShortcuts(): void {
   const location = useLocation()
 
   const openSearch = useCallback(() => {
-    useAppStore.getState().toggleSearchOverlay()
+    useAppStore.getState().toggleCommandPalette()
   }, [])
 
   const openShortcutHelp = useCallback(() => {
@@ -101,8 +101,8 @@ export function useGlobalShortcuts(): void {
       {
         id: 'global:search',
         keys: 'mod+k',
-        label: 'Search',
-        description: 'Open command palette / search',
+        label: 'Command palette',
+        description: 'Open command palette',
         category: ShortcutCategory.Navigation,
         handler: openSearch,
         scope: 'global' as const,
