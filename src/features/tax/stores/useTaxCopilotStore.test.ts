@@ -1,6 +1,15 @@
 import { act } from 'react'
 import { useTaxCopilotStore } from './useTaxCopilotStore'
 
+// ─── Mock copilotLLM (always returns fallback) ──────────────────────
+
+vi.mock('../../ai/lib/copilotLLM', () => ({
+  copilotChat: (_mod: string, _msg: string, _ctx: string, fallback: () => string) =>
+    Promise.resolve(fallback()),
+  copilotAnalysis: (_mod: string, _type: string, _ctx: string, fallback: () => { summary: string; items: string[] }) =>
+    Promise.resolve(fallback()),
+}))
+
 // ─── Mock Other Tax Stores ──────────────────────────────────────────
 
 vi.mock('./useTaxDocumentStore', () => ({
@@ -189,7 +198,7 @@ describe('useTaxCopilotStore', () => {
   })
 
   describe('sendMessage', () => {
-    it('adds user message and generates assistant response after delay', () => {
+    it('adds user message and generates assistant response', async () => {
       act(() => {
         useTaxCopilotStore.getState().sendMessage('Tell me about deductions')
       })
@@ -200,10 +209,8 @@ describe('useTaxCopilotStore', () => {
       expect(stateAfterSend.messages[0]!.content).toBe('Tell me about deductions')
       expect(stateAfterSend.isTyping).toBe(true)
 
-      // Advance past max delay (1500ms)
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      // Flush the microtask queue for the copilotChat promise
+      await act(async () => {})
 
       const stateAfterResponse = useTaxCopilotStore.getState()
       expect(stateAfterResponse.messages).toHaveLength(2)
@@ -221,14 +228,12 @@ describe('useTaxCopilotStore', () => {
       expect(useTaxCopilotStore.getState().messages[0]!.context).toBe('income_w2')
     })
 
-    it('generates keyword-aware responses for refund', () => {
+    it('generates keyword-aware responses for refund', async () => {
       act(() => {
         useTaxCopilotStore.getState().sendMessage('What is my refund?')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useTaxCopilotStore.getState().messages[1]!.content
       // The mock filing has refundOrOwed = -1376 (refund)
@@ -236,14 +241,12 @@ describe('useTaxCopilotStore', () => {
       expect(response).toContain('1,376')
     })
 
-    it('generates keyword-aware responses for audit', () => {
+    it('generates keyword-aware responses for audit', async () => {
       act(() => {
         useTaxCopilotStore.getState().sendMessage('Am I at risk for an audit?')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useTaxCopilotStore.getState().messages[1]!.content
       expect(response).toContain('audit')
@@ -353,7 +356,7 @@ describe('useTaxCopilotStore', () => {
   })
 
   describe('analyzeDocuments', () => {
-    it('produces lastAnalysis with document type after delay', () => {
+    it('produces lastAnalysis with document type', async () => {
       act(() => {
         useTaxCopilotStore.getState().analyzeDocuments()
       })
@@ -361,10 +364,7 @@ describe('useTaxCopilotStore', () => {
       expect(useTaxCopilotStore.getState().isAnalyzing).toBe(true)
       expect(useTaxCopilotStore.getState().lastAnalysis).toBeNull()
 
-      // Advance past the 800ms delay
-      act(() => {
-        vi.advanceTimersByTime(900)
-      })
+      await act(async () => {})
 
       const state = useTaxCopilotStore.getState()
       expect(state.isAnalyzing).toBe(false)
@@ -375,14 +375,12 @@ describe('useTaxCopilotStore', () => {
       expect(state.lastAnalysis!.timestamp).toBeTruthy()
     })
 
-    it('generates suggestions for documents with issues', () => {
+    it('generates suggestions for documents with issues', async () => {
       act(() => {
         useTaxCopilotStore.getState().analyzeDocuments()
       })
 
-      act(() => {
-        vi.advanceTimersByTime(900)
-      })
+      await act(async () => {})
 
       const suggestions = useTaxCopilotStore.getState().suggestions
       // Should have suggestions for unextracted docs and issue docs
@@ -393,17 +391,14 @@ describe('useTaxCopilotStore', () => {
   })
 
   describe('reviewFiling', () => {
-    it('produces lastAnalysis with filing type after delay', () => {
+    it('produces lastAnalysis with filing type', async () => {
       act(() => {
         useTaxCopilotStore.getState().reviewFiling()
       })
 
       expect(useTaxCopilotStore.getState().isAnalyzing).toBe(true)
 
-      // Advance past the 1000ms delay
-      act(() => {
-        vi.advanceTimersByTime(1100)
-      })
+      await act(async () => {})
 
       const state = useTaxCopilotStore.getState()
       expect(state.isAnalyzing).toBe(false)
@@ -413,14 +408,12 @@ describe('useTaxCopilotStore', () => {
       expect(state.lastAnalysis!.items.length).toBeGreaterThan(0)
     })
 
-    it('detects incomplete interview sections', () => {
+    it('detects incomplete interview sections', async () => {
       act(() => {
         useTaxCopilotStore.getState().reviewFiling()
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1100)
-      })
+      await act(async () => {})
 
       const items = useTaxCopilotStore.getState().lastAnalysis!.items
       const sectionItem = items.find((i) => i.includes('interview section(s) incomplete'))
@@ -429,17 +422,14 @@ describe('useTaxCopilotStore', () => {
   })
 
   describe('suggestDeductions', () => {
-    it('produces lastAnalysis with deductions type after delay', () => {
+    it('produces lastAnalysis with deductions type', async () => {
       act(() => {
         useTaxCopilotStore.getState().suggestDeductions()
       })
 
       expect(useTaxCopilotStore.getState().isAnalyzing).toBe(true)
 
-      // Advance past the 600ms delay
-      act(() => {
-        vi.advanceTimersByTime(700)
-      })
+      await act(async () => {})
 
       const state = useTaxCopilotStore.getState()
       expect(state.isAnalyzing).toBe(false)
@@ -449,14 +439,12 @@ describe('useTaxCopilotStore', () => {
       expect(state.lastAnalysis!.items.length).toBeGreaterThan(0)
     })
 
-    it('suggests deductions based on uploaded document types', () => {
+    it('suggests deductions based on uploaded document types', async () => {
       act(() => {
         useTaxCopilotStore.getState().suggestDeductions()
       })
 
-      act(() => {
-        vi.advanceTimersByTime(700)
-      })
+      await act(async () => {})
 
       const items = useTaxCopilotStore.getState().lastAnalysis!.items
       // Mock has 1098 (mortgage) and 1099_nec (self-employment)
@@ -467,14 +455,12 @@ describe('useTaxCopilotStore', () => {
       expect(selfEmploymentItem).toBeTruthy()
     })
 
-    it('generates deduction suggestions', () => {
+    it('generates deduction suggestions', async () => {
       act(() => {
         useTaxCopilotStore.getState().suggestDeductions()
       })
 
-      act(() => {
-        vi.advanceTimersByTime(700)
-      })
+      await act(async () => {})
 
       const suggestions = useTaxCopilotStore.getState().suggestions
       const deductionSuggestions = suggestions.filter((s) => s.type === 'deduction')

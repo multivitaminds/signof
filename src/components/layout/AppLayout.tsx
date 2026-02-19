@@ -1,4 +1,5 @@
 import { useEffect, useCallback, useRef, lazy, Suspense } from 'react'
+import useLLMConfigStore from '../../features/ai/stores/useLLMConfigStore'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from './Sidebar/Sidebar'
 import TopBar from './TopBar/TopBar'
@@ -92,6 +93,11 @@ export default function AppLayout() {
 
   // Register enhanced global shortcuts (mod+k, mod+b, mod+1-9, etc.)
   useGlobalShortcuts()
+
+  // Check LLM server connectivity on mount
+  useEffect(() => {
+    useLLMConfigStore.getState().checkConnection()
+  }, [])
 
   const handleCloseSearch = useCallback(() => {
     closeSearchOverlay()

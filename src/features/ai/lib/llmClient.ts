@@ -126,7 +126,7 @@ export async function streamChat(
           const parsed: { type?: string; text?: string; tool_use?: ToolUseBlock } =
             JSON.parse(payload)
 
-          if (parsed.type === 'text' && parsed.text !== undefined && parsed.text !== null) {
+          if ((parsed.type === 'text' || parsed.type === 'text_delta') && parsed.text !== undefined && parsed.text !== null) {
             callbacks.onText(parsed.text)
           } else if (parsed.type === 'tool_use' && parsed.tool_use) {
             callbacks.onToolUse(parsed.tool_use)
@@ -144,7 +144,7 @@ export async function streamChat(
         try {
           const parsed: { type?: string; text?: string; tool_use?: ToolUseBlock } =
             JSON.parse(payload)
-          if (parsed.type === 'text' && parsed.text !== undefined && parsed.text !== null) {
+          if ((parsed.type === 'text' || parsed.type === 'text_delta') && parsed.text !== undefined && parsed.text !== null) {
             callbacks.onText(parsed.text)
           } else if (parsed.type === 'tool_use' && parsed.tool_use) {
             callbacks.onToolUse(parsed.tool_use)
@@ -217,8 +217,8 @@ export async function syncChat(options: StreamChatOptions): Promise<string | nul
 
     if (!response.ok) return null
 
-    const data: { text?: string } = await response.json()
-    return data.text ?? null
+    const data: { content?: string; text?: string } = await response.json()
+    return data.content ?? data.text ?? null
   } catch {
     return null
   }
@@ -262,10 +262,10 @@ export async function syncChatSafe(options: StreamChatOptions): Promise<LLMResul
     }
   }
 
-  const data: { text?: string } = await response.json()
+  const data: { content?: string; text?: string } = await response.json()
   return {
     status: 'success',
-    content: data.text ?? null,
+    content: data.content ?? data.text ?? null,
     usage: null,
   }
 }

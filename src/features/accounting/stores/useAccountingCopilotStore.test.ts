@@ -1,6 +1,15 @@
 import { act } from 'react'
 import { useAccountingCopilotStore } from './useAccountingCopilotStore'
 
+// ─── Mock copilotLLM (always returns fallback) ──────────────────────
+
+vi.mock('../../ai/lib/copilotLLM', () => ({
+  copilotChat: (_mod: string, _msg: string, _ctx: string, fallback: () => string) =>
+    Promise.resolve(fallback()),
+  copilotAnalysis: (_mod: string, _type: string, _ctx: string, fallback: () => { summary: string; items: string[] }) =>
+    Promise.resolve(fallback()),
+}))
+
 // ─── Mock Accounting Stores ──────────────────────────────────────────
 
 vi.mock('./useAccountingStore', () => ({
@@ -159,7 +168,7 @@ describe('useAccountingCopilotStore', () => {
   })
 
   describe('sendMessage', () => {
-    it('adds user message and generates assistant response after delay', () => {
+    it('adds user message and generates assistant response', async () => {
       act(() => {
         useAccountingCopilotStore.getState().sendMessage('Tell me about expenses')
       })
@@ -170,10 +179,7 @@ describe('useAccountingCopilotStore', () => {
       expect(stateAfterSend.messages[0]!.content).toBe('Tell me about expenses')
       expect(stateAfterSend.isTyping).toBe(true)
 
-      // Advance past max delay (1500ms)
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const stateAfterResponse = useAccountingCopilotStore.getState()
       expect(stateAfterResponse.messages).toHaveLength(2)
@@ -191,42 +197,36 @@ describe('useAccountingCopilotStore', () => {
       expect(useAccountingCopilotStore.getState().messages[0]!.context).toBe('invoices')
     })
 
-    it('generates keyword-aware responses for invoices', () => {
+    it('generates keyword-aware responses for invoices', async () => {
       act(() => {
         useAccountingCopilotStore.getState().sendMessage('Show me my invoices')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useAccountingCopilotStore.getState().messages[1]!.content
       expect(response).toContain('invoice')
       expect(response).toContain('5,200')
     })
 
-    it('generates keyword-aware responses for payroll', () => {
+    it('generates keyword-aware responses for payroll', async () => {
       act(() => {
         useAccountingCopilotStore.getState().sendMessage('How much is our payroll?')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useAccountingCopilotStore.getState().messages[1]!.content
       expect(response).toContain('employee')
       expect(response).toContain('active')
     })
 
-    it('generates keyword-aware responses for cash flow', () => {
+    it('generates keyword-aware responses for cash flow', async () => {
       act(() => {
         useAccountingCopilotStore.getState().sendMessage('What is our cash flow?')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useAccountingCopilotStore.getState().messages[1]!.content
       expect(response).toContain('Cash')
@@ -335,7 +335,7 @@ describe('useAccountingCopilotStore', () => {
   })
 
   describe('analyzeExpenses', () => {
-    it('produces lastAnalysis with expenses type after delay', () => {
+    it('produces lastAnalysis with expenses type', async () => {
       act(() => {
         useAccountingCopilotStore.getState().analyzeExpenses()
       })
@@ -343,10 +343,7 @@ describe('useAccountingCopilotStore', () => {
       expect(useAccountingCopilotStore.getState().isAnalyzing).toBe(true)
       expect(useAccountingCopilotStore.getState().lastAnalysis).toBeNull()
 
-      // Advance past the 800ms delay
-      act(() => {
-        vi.advanceTimersByTime(900)
-      })
+      await act(async () => {})
 
       const state = useAccountingCopilotStore.getState()
       expect(state.isAnalyzing).toBe(false)
@@ -357,14 +354,12 @@ describe('useAccountingCopilotStore', () => {
       expect(state.lastAnalysis!.timestamp).toBeTruthy()
     })
 
-    it('generates suggestions for expense categories', () => {
+    it('generates suggestions for expense categories', async () => {
       act(() => {
         useAccountingCopilotStore.getState().analyzeExpenses()
       })
 
-      act(() => {
-        vi.advanceTimersByTime(900)
-      })
+      await act(async () => {})
 
       const suggestions = useAccountingCopilotStore.getState().suggestions
       expect(suggestions.length).toBeGreaterThan(0)
@@ -375,17 +370,14 @@ describe('useAccountingCopilotStore', () => {
   })
 
   describe('reviewInvoices', () => {
-    it('produces lastAnalysis with invoices type after delay', () => {
+    it('produces lastAnalysis with invoices type', async () => {
       act(() => {
         useAccountingCopilotStore.getState().reviewInvoices()
       })
 
       expect(useAccountingCopilotStore.getState().isAnalyzing).toBe(true)
 
-      // Advance past the 1000ms delay
-      act(() => {
-        vi.advanceTimersByTime(1100)
-      })
+      await act(async () => {})
 
       const state = useAccountingCopilotStore.getState()
       expect(state.isAnalyzing).toBe(false)
@@ -395,14 +387,12 @@ describe('useAccountingCopilotStore', () => {
       expect(state.lastAnalysis!.items.length).toBeGreaterThan(0)
     })
 
-    it('detects overdue and draft invoices', () => {
+    it('detects overdue and draft invoices', async () => {
       act(() => {
         useAccountingCopilotStore.getState().reviewInvoices()
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1100)
-      })
+      await act(async () => {})
 
       const items = useAccountingCopilotStore.getState().lastAnalysis!.items
       // Should detect overdue
@@ -421,17 +411,14 @@ describe('useAccountingCopilotStore', () => {
   })
 
   describe('forecastCashFlow', () => {
-    it('produces lastAnalysis with cash_flow type after delay', () => {
+    it('produces lastAnalysis with cash_flow type', async () => {
       act(() => {
         useAccountingCopilotStore.getState().forecastCashFlow()
       })
 
       expect(useAccountingCopilotStore.getState().isAnalyzing).toBe(true)
 
-      // Advance past the 600ms delay
-      act(() => {
-        vi.advanceTimersByTime(700)
-      })
+      await act(async () => {})
 
       const state = useAccountingCopilotStore.getState()
       expect(state.isAnalyzing).toBe(false)
@@ -441,14 +428,12 @@ describe('useAccountingCopilotStore', () => {
       expect(state.lastAnalysis!.items.length).toBeGreaterThan(0)
     })
 
-    it('includes income and expense transaction counts', () => {
+    it('includes income and expense transaction counts', async () => {
       act(() => {
         useAccountingCopilotStore.getState().forecastCashFlow()
       })
 
-      act(() => {
-        vi.advanceTimersByTime(700)
-      })
+      await act(async () => {})
 
       const items = useAccountingCopilotStore.getState().lastAnalysis!.items
       const incomeItem = items.find((i) => i.includes('income transaction'))

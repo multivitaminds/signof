@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import useDeveloperStore from './useDeveloperStore'
+import { copilotChat, copilotAnalysis } from '../../ai/lib/copilotLLM'
 
 // ─── ID Generator ────────────────────────────────────────────────────
 
@@ -116,127 +117,109 @@ export const useDeveloperCopilotStore = create<DeveloperCopilotState>()(
         isTyping: true,
       }))
 
-      const delay = 500 + Math.random() * 1000
-      setTimeout(() => {
-        const responseContent = generateResponse(content)
-        const assistantMessage: CopilotMessage = {
-          id: generateId(),
-          role: 'assistant',
-          content: responseContent,
-          timestamp: new Date().toISOString(),
-        }
+      const dev = useDeveloperStore.getState()
+      const activeKeys = dev.apiKeys.filter((k: { status: string }) => k.status === 'active').length
+      const activeWebhooks = dev.webhooks.filter((w: { status: string }) => w.status === 'active').length
+      const contextSummary = `${activeKeys} API keys, ${activeWebhooks} webhooks`
 
-        set((state) => ({
-          messages: [...state.messages, assistantMessage],
-          isTyping: false,
-        }))
-      }, delay)
+      copilotChat('Developer', content, contextSummary, () => generateResponse(content))
+        .then((responseContent) => {
+          const assistantMessage: CopilotMessage = {
+            id: generateId(),
+            role: 'assistant',
+            content: responseContent,
+            timestamp: new Date().toISOString(),
+          }
+
+          set((state) => ({
+            messages: [...state.messages, assistantMessage],
+            isTyping: false,
+          }))
+        })
     },
 
     clearMessages: () => set({ messages: [], isTyping: false }),
 
     checkApiHealth: () => {
       set({ isAnalyzing: true })
-      setTimeout(() => {
-        const dev = useDeveloperStore.getState()
+
+      const dev = useDeveloperStore.getState()
+      const dataContext = `${dev.apiKeys.length} API keys, ${dev.webhooks.length} webhooks, ${dev.deliveries.length} deliveries`
+
+      const fallbackFn = () => {
         const items: string[] = []
         const deliveries = dev.deliveries
         const recent = deliveries.slice(-20)
         const failures = recent.filter((d: { success: boolean }) => !d.success)
-
         items.push(`${dev.apiKeys.filter((k: { status: string }) => k.status === 'active').length} active API key(s)`)
         items.push(`${dev.webhooks.filter((w: { status: string }) => w.status === 'active').length} active webhook(s)`)
         if (recent.length > 0) {
           const successRate = Math.round(((recent.length - failures.length) / recent.length) * 100)
           items.push(`Webhook success rate: ${successRate}% (last ${recent.length} deliveries)`)
         }
-        if (failures.length > 0) {
-          items.push(`⚠ ${failures.length} failed webhook delivery(ies) in recent batch`)
-        }
+        if (failures.length > 0) items.push(`⚠ ${failures.length} failed webhook delivery(ies) in recent batch`)
+        return { summary: failures.length > 0 ? 'API health: some issues detected.' : 'API health: all systems operational.', items }
+      }
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'api_health',
-            summary: failures.length > 0 ? 'API health: some issues detected.' : 'API health: all systems operational.',
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Developer', 'API health', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'api_health', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 800)
     },
 
     debugWebhooks: () => {
       set({ isAnalyzing: true })
-      setTimeout(() => {
-        const dev = useDeveloperStore.getState()
-        const items: string[] = []
 
+      const dev = useDeveloperStore.getState()
+      const dataContext = `${dev.webhooks.length} webhooks configured`
+
+      const fallbackFn = () => {
+        const items: string[] = []
         for (const webhook of dev.webhooks) {
           const deliveries = dev.getDeliveries(webhook.id)
           const failures = deliveries.filter((d: { success: boolean }) => !d.success)
-          if (failures.length > 0) {
-            items.push(`"${webhook.description || webhook.url}": ${failures.length} failure(s)`)
-          } else if (deliveries.length === 0) {
-            items.push(`"${webhook.description || webhook.url}": no deliveries yet`)
-          }
+          if (failures.length > 0) items.push(`"${webhook.description || webhook.url}": ${failures.length} failure(s)`)
+          else if (deliveries.length === 0) items.push(`"${webhook.description || webhook.url}": no deliveries yet`)
         }
+        if (items.length === 0) items.push('All webhooks healthy — no failures detected')
+        return { summary: `Webhook debug: ${dev.webhooks.length} endpoint(s) checked.`, items }
+      }
 
-        if (items.length === 0) {
-          items.push('All webhooks healthy — no failures detected')
-        }
-
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'webhooks',
-            summary: `Webhook debug: ${dev.webhooks.length} endpoint(s) checked.`,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Developer', 'webhooks', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'webhooks', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 700)
     },
 
     reviewKeys: () => {
       set({ isAnalyzing: true })
-      setTimeout(() => {
-        const dev = useDeveloperStore.getState()
+
+      const dev = useDeveloperStore.getState()
+      const dataContext = `${dev.apiKeys.length} API keys`
+
+      const fallbackFn = () => {
         const items: string[] = []
         const now = new Date()
-
         for (const key of dev.apiKeys) {
           if (key.status === 'active') {
             if (key.expiresAt && new Date(key.expiresAt) < now) {
               items.push(`⚠ "${key.name}" has expired — revoke or rotate`)
             } else if (key.expiresAt) {
               const daysLeft = Math.ceil((new Date(key.expiresAt).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-              if (daysLeft < 30) {
-                items.push(`"${key.name}" expires in ${daysLeft} days — plan rotation`)
-              }
+              if (daysLeft < 30) items.push(`"${key.name}" expires in ${daysLeft} days — plan rotation`)
             }
           }
         }
-
         const revoked = dev.apiKeys.filter((k: { status: string }) => k.status === 'revoked')
-        if (revoked.length > 0) {
-          items.push(`${revoked.length} revoked key(s) — consider deleting for cleanup`)
-        }
+        if (revoked.length > 0) items.push(`${revoked.length} revoked key(s) — consider deleting for cleanup`)
+        if (items.length === 0) items.push('All API keys are healthy — no issues found')
+        return { summary: `Key review: ${dev.apiKeys.length} key(s) checked.`, items }
+      }
 
-        if (items.length === 0) {
-          items.push('All API keys are healthy — no issues found')
-        }
-
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'keys',
-            summary: `Key review: ${dev.apiKeys.length} key(s) checked.`,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Developer', 'keys', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'keys', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 600)
     },
   })
 )

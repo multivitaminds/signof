@@ -4,6 +4,7 @@ import { useTaxFilingStore } from './useTaxFilingStore'
 import { useTaxInterviewStore } from './useTaxInterviewStore'
 import { TAX_FORM_LABELS, FILING_STATUS_LABELS, InterviewSectionStatus } from '../types'
 import type { TaxFormType } from '../types'
+import { copilotChat, copilotAnalysis } from '../../ai/lib/copilotLLM'
 
 // ─── ID Generator ────────────────────────────────────────────────────
 
@@ -197,22 +198,24 @@ export const useTaxCopilotStore = create<TaxCopilotState>()(
         isTyping: true,
       }))
 
-      // Generate response after a simulated delay (500-1500ms)
-      const delay = 500 + Math.random() * 1000
-      setTimeout(() => {
-        const responseContent = generateResponse(content, context)
-        const assistantMessage: CopilotMessage = {
-          id: generateId(),
-          role: 'assistant',
-          content: responseContent,
-          timestamp: new Date().toISOString(),
-        }
+      const docCount = useTaxDocumentStore.getState().documents.length
+      const interviewProgress = useTaxInterviewStore.getState().getOverallProgress()
+      const contextSummary = `${docCount} tax documents, interview ${interviewProgress}% complete`
 
-        set((state) => ({
-          messages: [...state.messages, assistantMessage],
-          isTyping: false,
-        }))
-      }, delay)
+      copilotChat('Tax', content, contextSummary, () => generateResponse(content, context))
+        .then((responseContent) => {
+          const assistantMessage: CopilotMessage = {
+            id: generateId(),
+            role: 'assistant',
+            content: responseContent,
+            timestamp: new Date().toISOString(),
+          }
+
+          set((state) => ({
+            messages: [...state.messages, assistantMessage],
+            isTyping: false,
+          }))
+        })
     },
 
     clearMessages: () => set({ messages: [], isTyping: false }),
@@ -247,313 +250,135 @@ export const useTaxCopilotStore = create<TaxCopilotState>()(
     analyzeDocuments: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const docState = useTaxDocumentStore.getState()
-        const documents = docState.documents
-        const extractionResults = docState.extractionResults
+      const docState = useTaxDocumentStore.getState()
+      const documents = docState.documents
+      const extractionResults = docState.extractionResults
+      const dataContext = `${documents.length} tax documents`
 
+      const fallbackFn = () => {
         const items: string[] = []
         const formTypeCounts: Record<string, number> = {}
-
         for (const doc of documents) {
           const label = TAX_FORM_LABELS[doc.formType as TaxFormType] ?? doc.formType
           formTypeCounts[label] = (formTypeCounts[label] ?? 0) + 1
         }
-
         for (const [formType, count] of Object.entries(formTypeCounts)) {
           items.push(`${count} ${formType} form(s)`)
         }
-
-        // Check for missing extractions
-        const docsWithoutExtraction = documents.filter(
-          (d) => !extractionResults[d.id]
-        )
-        if (docsWithoutExtraction.length > 0) {
-          items.push(
-            `${docsWithoutExtraction.length} document(s) have not been extracted yet`
-          )
-        }
-
-        // Check for documents with issues
+        const docsWithoutExtraction = documents.filter((d) => !extractionResults[d.id])
+        if (docsWithoutExtraction.length > 0) items.push(`${docsWithoutExtraction.length} document(s) have not been extracted yet`)
         const issueDocs = documents.filter((d) => d.status === 'issue_found')
-        if (issueDocs.length > 0) {
-          items.push(
-            `${issueDocs.length} document(s) have issues that need attention`
-          )
-        }
-
-        const summary =
-          documents.length > 0
-            ? `Analyzed ${documents.length} document(s) across ${Object.keys(formTypeCounts).length} form type(s).`
-            : 'No documents uploaded yet. Upload your tax documents to get started.'
-
-        // Generate suggestions from analysis
+        if (issueDocs.length > 0) items.push(`${issueDocs.length} document(s) have issues that need attention`)
         if (docsWithoutExtraction.length > 0) {
-          get().addSuggestion({
-            type: 'missing_info',
-            title: 'Documents Need Extraction',
-            description: `${docsWithoutExtraction.length} document(s) haven't been processed. Run extraction to capture field values.`,
-            action: { label: 'Go to Documents', route: '/tax/documents' },
-            sectionId: 'documents',
-          })
+          get().addSuggestion({ type: 'missing_info', title: 'Documents Need Extraction', description: `${docsWithoutExtraction.length} document(s) haven't been processed. Run extraction to capture field values.`, action: { label: 'Go to Documents', route: '/tax/documents' }, sectionId: 'documents' })
         }
-
         if (issueDocs.length > 0) {
-          get().addSuggestion({
-            type: 'warning',
-            title: 'Document Issues Found',
-            description: `${issueDocs.length} document(s) have issues: ${issueDocs.map((d) => d.fileName).join(', ')}`,
-            action: { label: 'Review Documents', route: '/tax/documents' },
-            sectionId: 'documents',
-          })
+          get().addSuggestion({ type: 'warning', title: 'Document Issues Found', description: `${issueDocs.length} document(s) have issues: ${issueDocs.map((d) => d.fileName).join(', ')}`, action: { label: 'Review Documents', route: '/tax/documents' }, sectionId: 'documents' })
         }
+        const summary = documents.length > 0
+          ? `Analyzed ${documents.length} document(s) across ${Object.keys(formTypeCounts).length} form type(s).`
+          : 'No documents uploaded yet. Upload your tax documents to get started.'
+        return { summary, items }
+      }
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'document',
-            summary,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Tax', 'documents', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'document', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 800)
     },
 
     reviewFiling: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const filingState = useTaxFilingStore.getState()
-        const interviewState = useTaxInterviewStore.getState()
-        const filing = filingState.filings[0]
+      const filingState = useTaxFilingStore.getState()
+      const interviewState = useTaxInterviewStore.getState()
+      const filing = filingState.filings[0]
+      const dataContext = filing ? `Filing status: ${filing.filingStatus}, wages: $${filing.wages}` : 'No filing'
 
+      const fallbackFn = () => {
         const items: string[] = []
-
         if (!filing) {
-          set({
-            isAnalyzing: false,
-            lastAnalysis: {
-              type: 'filing',
-              summary: 'No filing found. Start a new filing to begin.',
-              items: ['No active filing for the current tax year'],
-              timestamp: new Date().toISOString(),
-            },
-          })
-          return
+          return { summary: 'No filing found. Start a new filing to begin.', items: ['No active filing for the current tax year'] }
         }
-
-        // Check for missing personal info
         if (!filing.firstName || !filing.lastName) {
           items.push('Personal information is incomplete (missing name)')
-          get().addSuggestion({
-            type: 'missing_info',
-            title: 'Missing Personal Information',
-            description: 'First name and last name are required for filing.',
-            action: { label: 'Complete Info', route: '/tax/interview' },
-            sectionId: 'personal_info',
-          })
+          get().addSuggestion({ type: 'missing_info', title: 'Missing Personal Information', description: 'First name and last name are required for filing.', action: { label: 'Complete Info', route: '/tax/interview' }, sectionId: 'personal_info' })
         }
-
         if (!filing.ssn || filing.ssn === '') {
           items.push('SSN is missing')
-          get().addSuggestion({
-            type: 'warning',
-            title: 'SSN Required',
-            description: 'Social Security Number is required for federal tax filing.',
-            action: { label: 'Enter SSN', route: '/tax/interview' },
-            sectionId: 'personal_info',
-          })
+          get().addSuggestion({ type: 'warning', title: 'SSN Required', description: 'Social Security Number is required for federal tax filing.', action: { label: 'Enter SSN', route: '/tax/interview' }, sectionId: 'personal_info' })
         }
-
-        // Check income
         if (filing.wages === 0 && filing.otherIncome === 0) {
           items.push('No income reported — verify W-2 and 1099 data')
-          get().addSuggestion({
-            type: 'warning',
-            title: 'No Income Reported',
-            description:
-              'Your filing shows $0 income. Make sure your W-2 and 1099 data are entered.',
-            action: { label: 'Enter Income', route: '/tax/interview' },
-            sectionId: 'income_w2',
-          })
+          get().addSuggestion({ type: 'warning', title: 'No Income Reported', description: 'Your filing shows $0 income. Make sure your W-2 and 1099 data are entered.', action: { label: 'Enter Income', route: '/tax/interview' }, sectionId: 'income_w2' })
         }
-
-        // Check withholding
         if (filing.wages > 0 && filing.withheld === 0) {
           items.push('No federal tax withheld despite having wage income')
-          get().addSuggestion({
-            type: 'warning',
-            title: 'No Withholding Reported',
-            description:
-              'You have wage income but $0 federal tax withheld. Check your W-2 Box 2.',
-            sectionId: 'income_w2',
-          })
+          get().addSuggestion({ type: 'warning', title: 'No Withholding Reported', description: 'You have wage income but $0 federal tax withheld. Check your W-2 Box 2.', sectionId: 'income_w2' })
         }
-
-        // Check incomplete interview sections
-        const incompleteSections = interviewState.sections.filter(
-          (s) =>
-            s.status === InterviewSectionStatus.NotStarted ||
-            s.status === InterviewSectionStatus.InProgress
-        )
-        if (incompleteSections.length > 0) {
-          items.push(
-            `${incompleteSections.length} interview section(s) incomplete`
-          )
-        }
-
-        // Check checklist
+        const incompleteSections = interviewState.sections.filter((s) => s.status === InterviewSectionStatus.NotStarted || s.status === InterviewSectionStatus.InProgress)
+        if (incompleteSections.length > 0) items.push(`${incompleteSections.length} interview section(s) incomplete`)
         const checklistProgress = filingState.checklistProgress()
-        if (checklistProgress < 100) {
-          items.push(
-            `Pre-filing checklist is ${checklistProgress}% complete`
-          )
-        }
+        if (checklistProgress < 100) items.push(`Pre-filing checklist is ${checklistProgress}% complete`)
+        if (!filing.address.street || !filing.address.city || !filing.address.zip) items.push('Mailing address is incomplete')
+        const summary = items.length > 0 ? `Found ${items.length} item(s) to review before filing.` : 'Your filing looks good! All required fields are complete.'
+        return { summary, items }
+      }
 
-        // Check address
-        if (!filing.address.street || !filing.address.city || !filing.address.zip) {
-          items.push('Mailing address is incomplete')
-        }
-
-        const summary =
-          items.length > 0
-            ? `Found ${items.length} item(s) to review before filing.`
-            : 'Your filing looks good! All required fields are complete.'
-
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'filing',
-            summary,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Tax', 'filing review', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'filing', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 1000)
     },
 
     suggestDeductions: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const interviewState = useTaxInterviewStore.getState()
-        const filingState = useTaxFilingStore.getState()
-        const docState = useTaxDocumentStore.getState()
-        const filing = filingState.filings[0]
+      const interviewState = useTaxInterviewStore.getState()
+      const filingState = useTaxFilingStore.getState()
+      const docState = useTaxDocumentStore.getState()
+      const filing = filingState.filings[0]
+      const dataContext = `${docState.documents.length} documents, ${filing ? `filing status: ${filing.filingStatus}` : 'no filing'}`
 
+      const fallbackFn = () => {
         const items: string[] = []
-
-        // Check for mortgage interest deduction
-        const has1098 = docState.documents.some(
-          (d) => d.formType === '1098'
-        )
+        const has1098 = docState.documents.some((d) => d.formType === '1098')
         if (has1098) {
-          items.push(
-            'Mortgage interest deduction available (Form 1098 uploaded)'
-          )
-          get().addSuggestion({
-            type: 'deduction',
-            title: 'Mortgage Interest Deduction',
-            description:
-              'You uploaded a 1098 form. Mortgage interest may be deductible if you itemize. Consider comparing standard vs. itemized deductions.',
-            sectionId: 'deductions_itemized',
-          })
+          items.push('Mortgage interest deduction available (Form 1098 uploaded)')
+          get().addSuggestion({ type: 'deduction', title: 'Mortgage Interest Deduction', description: 'You uploaded a 1098 form. Mortgage interest may be deductible if you itemize. Consider comparing standard vs. itemized deductions.', sectionId: 'deductions_itemized' })
         }
-
-        // Check for self-employment income
-        const has1099NEC = docState.documents.some(
-          (d) => d.formType === '1099_nec'
-        )
+        const has1099NEC = docState.documents.some((d) => d.formType === '1099_nec')
         if (has1099NEC) {
           items.push('Self-employment deductions may apply (1099-NEC income)')
-          get().addSuggestion({
-            type: 'deduction',
-            title: 'Self-Employment Deductions',
-            description:
-              'With 1099-NEC income, you may deduct business expenses, home office, health insurance premiums, and half of self-employment tax.',
-            sectionId: 'income_1099',
-          })
+          get().addSuggestion({ type: 'deduction', title: 'Self-Employment Deductions', description: 'With 1099-NEC income, you may deduct business expenses, home office, health insurance premiums, and half of self-employment tax.', sectionId: 'income_1099' })
         }
-
-        // Check for student loan interest
-        const has1098E = docState.documents.some(
-          (d) => d.formType === '1098_e'
-        )
+        const has1098E = docState.documents.some((d) => d.formType === '1098_e')
         if (has1098E) {
-          items.push(
-            'Student loan interest deduction available (Form 1098-E uploaded)'
-          )
-          get().addSuggestion({
-            type: 'deduction',
-            title: 'Student Loan Interest Deduction',
-            description:
-              'You may deduct up to $2,500 in student loan interest. This is an above-the-line deduction (no itemizing required).',
-            sectionId: 'deductions_standard',
-          })
+          items.push('Student loan interest deduction available (Form 1098-E uploaded)')
+          get().addSuggestion({ type: 'deduction', title: 'Student Loan Interest Deduction', description: 'You may deduct up to $2,500 in student loan interest. This is an above-the-line deduction (no itemizing required).', sectionId: 'deductions_standard' })
         }
-
-        // Check for education expenses
-        const has1098T = docState.documents.some(
-          (d) => d.formType === '1098_t'
-        )
+        const has1098T = docState.documents.some((d) => d.formType === '1098_t')
         if (has1098T) {
-          items.push(
-            'Education credits may apply (Form 1098-T uploaded)'
-          )
-          get().addSuggestion({
-            type: 'tip',
-            title: 'Education Tax Credits',
-            description:
-              'With a 1098-T form, you may qualify for the American Opportunity Credit (up to $2,500) or Lifetime Learning Credit (up to $2,000).',
-            sectionId: 'credits',
-          })
+          items.push('Education credits may apply (Form 1098-T uploaded)')
+          get().addSuggestion({ type: 'tip', title: 'Education Tax Credits', description: 'With a 1098-T form, you may qualify for the American Opportunity Credit (up to $2,500) or Lifetime Learning Credit (up to $2,000).', sectionId: 'credits' })
         }
-
-        // General suggestions based on filing data
         if (filing && filing.useStandardDeduction) {
-          items.push(
-            'Currently using standard deduction — review if itemizing would save more'
-          )
-          get().addSuggestion({
-            type: 'tip',
-            title: 'Consider Itemizing',
-            description: `You're using the standard deduction ($${filing.standardDeduction.toLocaleString()}). If your mortgage interest, state taxes, and charitable giving exceed this amount, itemizing could save you money.`,
-            sectionId: 'deductions_standard',
-          })
+          items.push('Currently using standard deduction — review if itemizing would save more')
+          get().addSuggestion({ type: 'tip', title: 'Consider Itemizing', description: `You're using the standard deduction ($${filing.standardDeduction.toLocaleString()}). If your mortgage interest, state taxes, and charitable giving exceed this amount, itemizing could save you money.`, sectionId: 'deductions_standard' })
         }
+        const hasInvestmentDocs = docState.documents.some((d) => d.formType === '1099_div' || d.formType === '1099_int' || d.formType === '1099_b')
+        if (hasInvestmentDocs) items.push('Investment income detected — check for tax-loss harvesting opportunities')
+        if (interviewState.selectedTopics.includes('charitable')) items.push('Charitable contribution deductions available')
+        const summary = items.length > 0
+          ? `Found ${items.length} potential deduction(s) and tax-saving opportunities.`
+          : 'No specific deduction suggestions at this time. Upload more documents or complete the interview to get personalized recommendations.'
+        return { summary, items }
+      }
 
-        // Check for investment income
-        const hasInvestmentDocs = docState.documents.some(
-          (d) =>
-            d.formType === '1099_div' ||
-            d.formType === '1099_int' ||
-            d.formType === '1099_b'
-        )
-        if (hasInvestmentDocs) {
-          items.push('Investment income detected — check for tax-loss harvesting opportunities')
-        }
-
-        // Check interview topics selected
-        if (interviewState.selectedTopics.includes('charitable')) {
-          items.push('Charitable contribution deductions available')
-        }
-
-        const summary =
-          items.length > 0
-            ? `Found ${items.length} potential deduction(s) and tax-saving opportunities.`
-            : 'No specific deduction suggestions at this time. Upload more documents or complete the interview to get personalized recommendations.'
-
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'deductions',
-            summary,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Tax', 'deductions', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'deductions', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 600)
     },
   })
 )

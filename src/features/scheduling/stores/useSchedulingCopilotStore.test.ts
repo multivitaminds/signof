@@ -1,6 +1,15 @@
 import { act } from 'react'
 import { useSchedulingCopilotStore } from './useSchedulingCopilotStore'
 
+// ─── Mock copilotLLM (always returns fallback) ──────────────────────
+
+vi.mock('../../ai/lib/copilotLLM', () => ({
+  copilotChat: (_mod: string, _msg: string, _ctx: string, fallback: () => string) =>
+    Promise.resolve(fallback()),
+  copilotAnalysis: (_mod: string, _type: string, _ctx: string, fallback: () => { summary: string; items: string[] }) =>
+    Promise.resolve(fallback()),
+}))
+
 // ─── Mock Scheduling Store ──────────────────────────────────────────
 
 vi.mock('./useSchedulingStore', () => ({
@@ -156,7 +165,7 @@ describe('useSchedulingCopilotStore', () => {
   })
 
   describe('sendMessage', () => {
-    it('adds user message and generates assistant response after delay', () => {
+    it('adds user message and generates assistant response', async () => {
       act(() => {
         useSchedulingCopilotStore.getState().sendMessage('Show me my bookings')
       })
@@ -167,10 +176,7 @@ describe('useSchedulingCopilotStore', () => {
       expect(stateAfterSend.messages[0]!.content).toBe('Show me my bookings')
       expect(stateAfterSend.isTyping).toBe(true)
 
-      // Advance past max delay (1500ms)
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const stateAfterResponse = useSchedulingCopilotStore.getState()
       expect(stateAfterResponse.messages).toHaveLength(2)
@@ -188,40 +194,34 @@ describe('useSchedulingCopilotStore', () => {
       expect(useSchedulingCopilotStore.getState().messages[0]!.context).toBe('event_types')
     })
 
-    it('generates keyword-aware responses for availability', () => {
+    it('generates keyword-aware responses for availability', async () => {
       act(() => {
         useSchedulingCopilotStore.getState().sendMessage('What is my availability?')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useSchedulingCopilotStore.getState().messages[1]!.content
       expect(response).toContain('event type')
     })
 
-    it('generates keyword-aware responses for no-shows', () => {
+    it('generates keyword-aware responses for no-shows', async () => {
       act(() => {
         useSchedulingCopilotStore.getState().sendMessage('Show me no-show stats')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useSchedulingCopilotStore.getState().messages[1]!.content
       expect(response).toContain('no-show rate')
     })
 
-    it('generates keyword-aware responses for calendar sync', () => {
+    it('generates keyword-aware responses for calendar sync', async () => {
       act(() => {
         useSchedulingCopilotStore.getState().sendMessage('Is my calendar synced?')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useSchedulingCopilotStore.getState().messages[1]!.content
       expect(response).toContain('Calendar sync')
@@ -313,7 +313,7 @@ describe('useSchedulingCopilotStore', () => {
   })
 
   describe('analyzeBookings', () => {
-    it('produces lastAnalysis with bookings type after delay', () => {
+    it('produces lastAnalysis with bookings type', async () => {
       act(() => {
         useSchedulingCopilotStore.getState().analyzeBookings()
       })
@@ -321,9 +321,7 @@ describe('useSchedulingCopilotStore', () => {
       expect(useSchedulingCopilotStore.getState().isAnalyzing).toBe(true)
       expect(useSchedulingCopilotStore.getState().lastAnalysis).toBeNull()
 
-      act(() => {
-        vi.advanceTimersByTime(900)
-      })
+      await act(async () => {})
 
       const state = useSchedulingCopilotStore.getState()
       expect(state.isAnalyzing).toBe(false)
@@ -336,16 +334,14 @@ describe('useSchedulingCopilotStore', () => {
   })
 
   describe('reviewAvailability', () => {
-    it('produces lastAnalysis with availability type after delay', () => {
+    it('produces lastAnalysis with availability type', async () => {
       act(() => {
         useSchedulingCopilotStore.getState().reviewAvailability()
       })
 
       expect(useSchedulingCopilotStore.getState().isAnalyzing).toBe(true)
 
-      act(() => {
-        vi.advanceTimersByTime(900)
-      })
+      await act(async () => {})
 
       const state = useSchedulingCopilotStore.getState()
       expect(state.isAnalyzing).toBe(false)
@@ -357,16 +353,14 @@ describe('useSchedulingCopilotStore', () => {
   })
 
   describe('checkCalendarHealth', () => {
-    it('produces lastAnalysis with calendar_health type after delay', () => {
+    it('produces lastAnalysis with calendar_health type', async () => {
       act(() => {
         useSchedulingCopilotStore.getState().checkCalendarHealth()
       })
 
       expect(useSchedulingCopilotStore.getState().isAnalyzing).toBe(true)
 
-      act(() => {
-        vi.advanceTimersByTime(700)
-      })
+      await act(async () => {})
 
       const state = useSchedulingCopilotStore.getState()
       expect(state.isAnalyzing).toBe(false)
@@ -376,14 +370,12 @@ describe('useSchedulingCopilotStore', () => {
       expect(state.lastAnalysis!.items.length).toBeGreaterThan(0)
     })
 
-    it('detects disconnected calendars', () => {
+    it('detects disconnected calendars', async () => {
       act(() => {
         useSchedulingCopilotStore.getState().checkCalendarHealth()
       })
 
-      act(() => {
-        vi.advanceTimersByTime(700)
-      })
+      await act(async () => {})
 
       const suggestions = useSchedulingCopilotStore.getState().suggestions
       const disconnectedWarning = suggestions.find((s) => s.title.includes('Disconnected'))
