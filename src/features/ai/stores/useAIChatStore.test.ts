@@ -1,6 +1,13 @@
 import { act } from '@testing-library/react'
 import useAIChatStore from './useAIChatStore'
 
+// ─── Mock llmClient (LLM unavailable in tests) ──────────────────────
+
+vi.mock('../lib/llmClient', () => ({
+  isLLMAvailable: () => false,
+  syncChat: vi.fn(),
+}))
+
 describe('useAIChatStore', () => {
   beforeEach(() => {
     useAIChatStore.setState({

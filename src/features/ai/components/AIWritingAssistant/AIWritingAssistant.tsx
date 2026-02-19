@@ -11,6 +11,7 @@ import {
   Plus,
   MessageSquare,
 } from 'lucide-react'
+import { isLLMAvailable, syncChat } from '../../lib/llmClient'
 import './AIWritingAssistant.css'
 
 // ─── Types ─────────────────────────────────────────────────────────────
@@ -131,38 +132,53 @@ export default function AIWritingAssistant({
     return () => document.removeEventListener('keydown', handleEscape)
   }, [onDismiss])
 
-  const processAction = useCallback((fn: () => WritingSuggestion) => {
+  const processAction = useCallback(async (action: string, fallbackFn: () => WritingSuggestion) => {
     setIsProcessing(true)
     setSuggestion(null)
     setShowToneMenu(false)
 
-    // Simulate AI processing delay
+    if (isLLMAvailable()) {
+      try {
+        const response = await syncChat({
+          messages: [{ role: 'user', content: selectedText }],
+          systemPrompt: `You are a writing assistant. ${action} the following text. Return ONLY the improved text, no explanation.`,
+        })
+        if (response) {
+          setSuggestion({ original: selectedText, improved: response, action })
+          setIsProcessing(false)
+          return
+        }
+      } catch {
+        // Fall through to local fallback
+      }
+    }
+
+    // Fallback to local simulation
     const delay = 500 + Math.random() * 1000
     setTimeout(() => {
-      const result = fn()
-      setSuggestion(result)
+      setSuggestion(fallbackFn())
       setIsProcessing(false)
     }, delay)
-  }, [])
+  }, [selectedText])
 
   const handleImprove = useCallback(() => {
-    processAction(() => simulateImproveWriting(selectedText))
+    processAction('Improve writing', () => simulateImproveWriting(selectedText))
   }, [selectedText, processAction])
 
   const handleFixGrammar = useCallback(() => {
-    processAction(() => simulateFixGrammar(selectedText))
+    processAction('Fix grammar', () => simulateFixGrammar(selectedText))
   }, [selectedText, processAction])
 
   const handleMakeShorter = useCallback(() => {
-    processAction(() => simulateMakeShorter(selectedText))
+    processAction('Make shorter', () => simulateMakeShorter(selectedText))
   }, [selectedText, processAction])
 
   const handleMakeLonger = useCallback(() => {
-    processAction(() => simulateMakeLonger(selectedText))
+    processAction('Make longer', () => simulateMakeLonger(selectedText))
   }, [selectedText, processAction])
 
   const handleChangeTone = useCallback((tone: ToneOption) => {
-    processAction(() => simulateChangeTone(selectedText, tone))
+    processAction(`Change tone to ${tone}`, () => simulateChangeTone(selectedText, tone))
   }, [selectedText, processAction])
 
   const handleAccept = useCallback(() => {

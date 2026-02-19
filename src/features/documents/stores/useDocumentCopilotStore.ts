@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { useContactStore } from './useContactStore'
 import { useTemplateStore } from './useTemplateStore'
+import { copilotChat, copilotAnalysis } from '../../ai/lib/copilotLLM'
 
 // ─── ID Generator ────────────────────────────────────────────────────
 
@@ -116,103 +117,122 @@ export const useDocumentCopilotStore = create<DocumentCopilotState>()(
         isTyping: true,
       }))
 
-      const delay = 500 + Math.random() * 1000
-      setTimeout(() => {
-        const responseContent = generateResponse(content)
-        const assistantMessage: CopilotMessage = {
-          id: generateId(),
-          role: 'assistant',
-          content: responseContent,
-          timestamp: new Date().toISOString(),
-        }
+      const templates = useTemplateStore.getState().templates
+      const contacts = useContactStore.getState().contacts
+      const contextSummary = `${templates.length} templates, ${contacts.length} contacts`
 
-        set((state) => ({
-          messages: [...state.messages, assistantMessage],
-          isTyping: false,
-        }))
-      }, delay)
+      copilotChat('Documents', content, contextSummary, () => generateResponse(content))
+        .then((responseContent) => {
+          const assistantMessage: CopilotMessage = {
+            id: generateId(),
+            role: 'assistant',
+            content: responseContent,
+            timestamp: new Date().toISOString(),
+          }
+
+          set((state) => ({
+            messages: [...state.messages, assistantMessage],
+            isTyping: false,
+          }))
+        })
     },
 
     clearMessages: () => set({ messages: [], isTyping: false }),
 
     analyzeTemplates: () => {
       set({ isAnalyzing: true })
-      setTimeout(() => {
-        const templates = useTemplateStore.getState().templates
+
+      const templates = useTemplateStore.getState().templates
+      const dataContext = `${templates.length} templates: ${templates.map((t) => t.name).join(', ')}`
+
+      const fallbackFn = () => {
         const items: string[] = []
-
         items.push(`${templates.length} template(s) available`)
-
         const noFields = templates.filter((t) => !t.fields || t.fields.length === 0)
         if (noFields.length > 0) {
           items.push(`${noFields.length} template(s) have no fields — add signature and form fields`)
         }
-
         const noRecipients = templates.filter((t) => !t.recipientRoles || t.recipientRoles.length === 0)
         if (noRecipients.length > 0) {
           items.push(`${noRecipients.length} template(s) have no recipient roles defined`)
         }
+        return {
+          summary: templates.length > 0 ? `Analyzed ${templates.length} template(s).` : 'No templates found. Create one to get started.',
+          items,
+        }
+      }
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'templates',
-            summary: templates.length > 0 ? `Analyzed ${templates.length} template(s).` : 'No templates found. Create one to get started.',
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Documents', 'template', dataContext, fallbackFn)
+        .then((result) => {
+          set({
+            isAnalyzing: false,
+            lastAnalysis: {
+              type: 'templates',
+              ...result,
+              timestamp: new Date().toISOString(),
+            },
+          })
         })
-      }, 700)
     },
 
     reviewContacts: () => {
       set({ isAnalyzing: true })
-      setTimeout(() => {
-        const contacts = useContactStore.getState().contacts
+
+      const contacts = useContactStore.getState().contacts
+      const dataContext = `${contacts.length} contacts`
+
+      const fallbackFn = () => {
         const items: string[] = []
-
         items.push(`${contacts.length} contact(s) in directory`)
-
         const withHistory = contacts.filter((c) => c.signingHistory && c.signingHistory.length > 0)
         items.push(`${withHistory.length} contact(s) with signing history`)
-
         const noEmail = contacts.filter((c) => !c.email)
         if (noEmail.length > 0) {
           items.push(`⚠ ${noEmail.length} contact(s) missing email address`)
         }
+        return {
+          summary: `Contact directory: ${contacts.length} contact(s) reviewed.`,
+          items,
+        }
+      }
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'contacts',
-            summary: `Contact directory: ${contacts.length} contact(s) reviewed.`,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Documents', 'contacts', dataContext, fallbackFn)
+        .then((result) => {
+          set({
+            isAnalyzing: false,
+            lastAnalysis: {
+              type: 'contacts',
+              ...result,
+              timestamp: new Date().toISOString(),
+            },
+          })
         })
-      }, 600)
     },
 
     checkCompliance: () => {
       set({ isAnalyzing: true })
-      setTimeout(() => {
-        const items: string[] = []
 
-        items.push('Electronic signatures comply with ESIGN Act and UETA')
-        items.push('Audit trails are automatically generated for all documents')
-        items.push('Signer identity verified via email authentication')
-        items.push('Documents encrypted at rest and in transit')
+      const fallbackFn = () => ({
+        summary: 'Compliance check: all core requirements met.',
+        items: [
+          'Electronic signatures comply with ESIGN Act and UETA',
+          'Audit trails are automatically generated for all documents',
+          'Signer identity verified via email authentication',
+          'Documents encrypted at rest and in transit',
+        ],
+      })
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'compliance',
-            summary: 'Compliance check: all core requirements met.',
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Documents', 'compliance', 'Document signing compliance review', fallbackFn)
+        .then((result) => {
+          set({
+            isAnalyzing: false,
+            lastAnalysis: {
+              type: 'compliance',
+              ...result,
+              timestamp: new Date().toISOString(),
+            },
+          })
         })
-      }, 500)
     },
   })
 )

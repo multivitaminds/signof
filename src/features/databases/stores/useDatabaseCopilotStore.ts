@@ -4,6 +4,7 @@ import { FIELD_TYPE_LABELS } from '../types'
 import type { DbFieldType } from '../types'
 import { TRIGGER_LABELS, ACTION_LABELS } from '../types/automation'
 import type { AutomationTrigger, AutomationAction } from '../types/automation'
+import { copilotChat, copilotAnalysis } from '../../ai/lib/copilotLLM'
 
 // ─── ID Generator ────────────────────────────────────────────────────
 
@@ -242,21 +243,27 @@ export const useDatabaseCopilotStore = create<DatabaseCopilotState>()(
         isTyping: true,
       }))
 
-      const delay = 500 + Math.random() * 1000
-      setTimeout(() => {
-        const responseContent = generateResponse(content, context)
-        const assistantMessage: CopilotMessage = {
-          id: generateId(),
-          role: 'assistant',
-          content: responseContent,
-          timestamp: new Date().toISOString(),
-        }
+      const dbState = useDatabaseStore.getState()
+      const databases = Object.values(dbState.databases)
+      const allTables = Object.values(dbState.tables)
+      const totalRows = allTables.reduce((sum, t) => sum + t.rows.length, 0)
+      const totalViews = allTables.reduce((sum, t) => sum + t.views.length, 0)
+      const contextSummary = `${databases.length} database(s), ${allTables.length} table(s), ${totalRows} row(s), ${totalViews} view(s). Section: ${context ?? 'general'}`
 
-        set((state) => ({
-          messages: [...state.messages, assistantMessage],
-          isTyping: false,
-        }))
-      }, delay)
+      copilotChat('Databases', content, contextSummary, () => generateResponse(content, context))
+        .then((responseContent) => {
+          const assistantMessage: CopilotMessage = {
+            id: generateId(),
+            role: 'assistant',
+            content: responseContent,
+            timestamp: new Date().toISOString(),
+          }
+
+          set((state) => ({
+            messages: [...state.messages, assistantMessage],
+            isTyping: false,
+          }))
+        })
     },
 
     clearMessages: () => set({ messages: [], isTyping: false }),
@@ -291,23 +298,26 @@ export const useDatabaseCopilotStore = create<DatabaseCopilotState>()(
     analyzeSchema: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const dbState = useDatabaseStore.getState()
-        const allTables = Object.values(dbState.tables)
+      const dbState = useDatabaseStore.getState()
+      const allTables = Object.values(dbState.tables)
 
+      const dataContext = allTables.length === 0
+        ? 'No tables found.'
+        : allTables.map((t) => {
+            const fields = t.fields
+              .map((f) => `${f.name} (${FIELD_TYPE_LABELS[f.type as DbFieldType] ?? f.type}${f.required ? ', required' : ''})`)
+              .join(', ')
+            return `Table "${t.name}": ${t.fields.length} field(s), ${t.rows.length} row(s), ${t.views.length} view(s). Fields: ${fields}`
+          }).join('\n')
+
+      const fallbackFn = (): { summary: string; items: string[] } => {
         const items: string[] = []
 
         if (allTables.length === 0) {
-          set({
-            isAnalyzing: false,
-            lastAnalysis: {
-              type: 'schema',
-              summary: 'No tables found. Create a database to get started.',
-              items: ['No tables created yet'],
-              timestamp: new Date().toISOString(),
-            },
-          })
-          return
+          return {
+            summary: 'No tables found. Create a database to get started.',
+            items: ['No tables created yet'],
+          }
         }
 
         // Table overview
@@ -360,38 +370,44 @@ export const useDatabaseCopilotStore = create<DatabaseCopilotState>()(
         const totalRows = allTables.reduce((sum, t) => sum + t.rows.length, 0)
         const summary = `Analyzed ${allTables.length} table(s) with ${totalFields} field(s) and ${totalRows} row(s).`
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'schema',
-            summary,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+        return { summary, items }
+      }
+
+      copilotAnalysis('Databases', 'schema', dataContext, fallbackFn)
+        .then((result) => {
+          set({
+            isAnalyzing: false,
+            lastAnalysis: {
+              type: 'schema',
+              ...result,
+              timestamp: new Date().toISOString(),
+            },
+          })
         })
-      }, 800)
     },
 
     reviewAutomations: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const dbState = useDatabaseStore.getState()
-        const automations = dbState.automations
+      const dbState = useDatabaseStore.getState()
+      const automations = dbState.automations
 
+      const dataContext = automations.length === 0
+        ? 'No automations configured.'
+        : automations.map((a) => {
+            const triggerLabel = TRIGGER_LABELS[a.trigger as AutomationTrigger] ?? a.trigger
+            const actionLabel = ACTION_LABELS[a.action as AutomationAction] ?? a.action
+            return `"${a.name}": trigger=${triggerLabel}, action=${actionLabel}, enabled=${a.enabled}, runCount=${a.runCount}`
+          }).join('\n')
+
+      const fallbackFn = (): { summary: string; items: string[] } => {
         const items: string[] = []
 
         if (automations.length === 0) {
-          set({
-            isAnalyzing: false,
-            lastAnalysis: {
-              type: 'automations',
-              summary: 'No automations configured. Set up automation rules to streamline your workflows.',
-              items: ['No automations created yet'],
-              timestamp: new Date().toISOString(),
-            },
-          })
-          return
+          return {
+            summary: 'No automations configured. Set up automation rules to streamline your workflows.',
+            items: ['No automations created yet'],
+          }
         }
 
         const active = automations.filter((a) => a.enabled)
@@ -436,38 +452,62 @@ export const useDatabaseCopilotStore = create<DatabaseCopilotState>()(
 
         const summary = `Reviewed ${automations.length} automation(s): ${active.length} active, ${inactive.length} inactive. Total runs: ${totalRuns}.`
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'automations',
-            summary,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+        return { summary, items }
+      }
+
+      copilotAnalysis('Databases', 'automations', dataContext, fallbackFn)
+        .then((result) => {
+          set({
+            isAnalyzing: false,
+            lastAnalysis: {
+              type: 'automations',
+              ...result,
+              timestamp: new Date().toISOString(),
+            },
+          })
         })
-      }, 800)
     },
 
     checkDataHealth: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const dbState = useDatabaseStore.getState()
-        const allTables = Object.values(dbState.tables)
+      const dbState = useDatabaseStore.getState()
+      const allTables = Object.values(dbState.tables)
 
+      const dataContext = allTables.length === 0
+        ? 'No tables available.'
+        : allTables.map((t) => {
+            const totalCells = t.rows.length * t.fields.length
+            let emptyCells = 0
+            for (const row of t.rows) {
+              for (const field of t.fields) {
+                const val = row.cells[field.id]
+                if (val === null || val === undefined || val === '') {
+                  emptyCells++
+                }
+              }
+            }
+            const requiredFields = t.fields.filter((f) => f.required)
+            let missingRequired = 0
+            for (const row of t.rows) {
+              for (const field of requiredFields) {
+                const val = row.cells[field.id]
+                if (val === null || val === undefined || val === '') {
+                  missingRequired++
+                }
+              }
+            }
+            return `Table "${t.name}": ${t.rows.length} row(s), ${t.fields.length} field(s), ${totalCells} cells (${emptyCells} empty), ${requiredFields.length} required field(s) (${missingRequired} missing), ${t.views.length} view(s)`
+          }).join('\n')
+
+      const fallbackFn = (): { summary: string; items: string[] } => {
         const items: string[] = []
 
         if (allTables.length === 0) {
-          set({
-            isAnalyzing: false,
-            lastAnalysis: {
-              type: 'data_health',
-              summary: 'No tables to check. Create a database first.',
-              items: ['No tables available'],
-              timestamp: new Date().toISOString(),
-            },
-          })
-          return
+          return {
+            summary: 'No tables to check. Create a database first.',
+            items: ['No tables available'],
+          }
         }
 
         const totalRows = allTables.reduce((sum, t) => sum + t.rows.length, 0)
@@ -547,16 +587,20 @@ export const useDatabaseCopilotStore = create<DatabaseCopilotState>()(
           ? `Data health check: ${totalRows} row(s), ${totalCells > 0 ? `${Math.round(((totalCells - emptyCells) / totalCells) * 100)}% fill rate` : 'no fields'}, ${totalViews} view(s).`
           : 'Tables exist but no data has been added yet.'
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'data_health',
-            summary,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+        return { summary, items }
+      }
+
+      copilotAnalysis('Databases', 'data_health', dataContext, fallbackFn)
+        .then((result) => {
+          set({
+            isAnalyzing: false,
+            lastAnalysis: {
+              type: 'data_health',
+              ...result,
+              timestamp: new Date().toISOString(),
+            },
+          })
         })
-      }, 600)
     },
   })
 )

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { useSchedulingStore } from './useSchedulingStore'
+import { copilotChat, copilotAnalysis } from '../../ai/lib/copilotLLM'
 
 // ─── ID Generator ────────────────────────────────────────────────────
 
@@ -282,22 +283,23 @@ export const useSchedulingCopilotStore = create<SchedulingCopilotState>()(
         isTyping: true,
       }))
 
-      // Generate response after a simulated delay (500-1500ms)
-      const delay = 500 + Math.random() * 1000
-      setTimeout(() => {
-        const responseContent = generateResponse(content, context)
-        const assistantMessage: CopilotMessage = {
-          id: generateId(),
-          role: 'assistant',
-          content: responseContent,
-          timestamp: new Date().toISOString(),
-        }
+      const ss = useSchedulingStore.getState()
+      const contextSummary = `${ss.bookings.length} bookings, ${ss.eventTypes.length} event types`
 
-        set((state) => ({
-          messages: [...state.messages, assistantMessage],
-          isTyping: false,
-        }))
-      }, delay)
+      copilotChat('Scheduling', content, contextSummary, () => generateResponse(content, context))
+        .then((responseContent) => {
+          const assistantMessage: CopilotMessage = {
+            id: generateId(),
+            role: 'assistant',
+            content: responseContent,
+            timestamp: new Date().toISOString(),
+          }
+
+          set((state) => ({
+            messages: [...state.messages, assistantMessage],
+            isTyping: false,
+          }))
+        })
     },
 
     clearMessages: () => set({ messages: [], isTyping: false }),
@@ -332,15 +334,14 @@ export const useSchedulingCopilotStore = create<SchedulingCopilotState>()(
     analyzeBookings: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const schedulingState = useSchedulingStore.getState()
-        const bookings = schedulingState.bookings
+      const schedulingState = useSchedulingStore.getState()
+      const bookings = schedulingState.bookings
+      const dataContext = `${bookings.length} bookings, no-show rate ${schedulingState.getNoShowRate()}%`
+
+      const fallbackFn = () => {
         const today = new Date()
         const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-
         const items: string[] = []
-
-        // Status breakdown
         const byStatus: Record<string, number> = {}
         for (const b of bookings) {
           byStatus[b.status] = (byStatus[b.status] ?? 0) + 1
@@ -348,182 +349,104 @@ export const useSchedulingCopilotStore = create<SchedulingCopilotState>()(
         for (const [status, count] of Object.entries(byStatus)) {
           items.push(`${status}: ${count} booking(s)`)
         }
-
-        // Upcoming vs past
         const upcoming = bookings.filter((b) => b.date >= todayStr && b.status !== 'cancelled')
         const past = bookings.filter((b) => b.date < todayStr)
         items.push(`${upcoming.length} upcoming, ${past.length} past`)
-
-        // No-show rate
         const noShowRate = schedulingState.getNoShowRate()
         items.push(`Overall no-show rate: ${noShowRate}%`)
-
-        // Flag high no-show event types
         const eventTypes = schedulingState.eventTypes
         for (const et of eventTypes) {
           const etRate = schedulingState.getNoShowRate(et.id)
           if (etRate > 20) {
             items.push(`High no-show rate for "${et.name}": ${etRate}%`)
-            get().addSuggestion({
-              type: 'warning',
-              title: `High No-Show Rate: ${et.name}`,
-              description: `${et.name} has a ${etRate}% no-show rate. Consider sending reminders or requiring deposits.`,
-              action: { label: 'View Event Type', route: '/calendar' },
-              sectionId: 'bookings',
-            })
+            get().addSuggestion({ type: 'warning', title: `High No-Show Rate: ${et.name}`, description: `${et.name} has a ${etRate}% no-show rate. Consider sending reminders or requiring deposits.`, action: { label: 'View Event Type', route: '/calendar' }, sectionId: 'bookings' })
           }
         }
-
-        // Cancelled bookings warning
         const cancelledCount = byStatus['cancelled'] ?? 0
         if (cancelledCount > 0) {
-          get().addSuggestion({
-            type: 'tip',
-            title: `${cancelledCount} Cancelled Booking(s)`,
-            description: `You have ${cancelledCount} cancelled booking(s). Review cancellation reasons to improve retention.`,
-            action: { label: 'View Cancelled', route: '/calendar' },
-            sectionId: 'bookings',
-          })
+          get().addSuggestion({ type: 'tip', title: `${cancelledCount} Cancelled Booking(s)`, description: `You have ${cancelledCount} cancelled booking(s). Review cancellation reasons to improve retention.`, action: { label: 'View Cancelled', route: '/calendar' }, sectionId: 'bookings' })
         }
+        const summary = bookings.length > 0
+          ? `Analyzed ${bookings.length} booking(s): ${upcoming.length} upcoming, ${past.length} past. No-show rate: ${noShowRate}%.`
+          : 'No bookings recorded yet. Create event types and share your booking page to get started.'
+        return { summary, items }
+      }
 
-        const summary =
-          bookings.length > 0
-            ? `Analyzed ${bookings.length} booking(s): ${upcoming.length} upcoming, ${past.length} past. No-show rate: ${noShowRate}%.`
-            : 'No bookings recorded yet. Create event types and share your booking page to get started.'
-
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'bookings',
-            summary,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Scheduling', 'bookings', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'bookings', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 800)
     },
 
     reviewAvailability: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const schedulingState = useSchedulingStore.getState()
-        const eventTypes = schedulingState.eventTypes
-        const bookings = schedulingState.bookings
+      const schedulingState = useSchedulingStore.getState()
+      const eventTypes = schedulingState.eventTypes
+      const bookings = schedulingState.bookings
+      const dataContext = `${eventTypes.length} event types, ${bookings.length} bookings`
 
+      const fallbackFn = () => {
         const items: string[] = []
-
         if (eventTypes.length === 0) {
-          set({
-            isAnalyzing: false,
-            lastAnalysis: {
-              type: 'availability',
-              summary: 'No event types found. Create your first event type to start accepting bookings.',
-              items: ['No event types created yet'],
-              timestamp: new Date().toISOString(),
-            },
-          })
-          return
+          return { summary: 'No event types found. Create your first event type to start accepting bookings.', items: ['No event types created yet'] }
         }
-
         const activeTypes = eventTypes.filter((et) => et.isActive)
         const inactiveTypes = eventTypes.filter((et) => !et.isActive)
-
         items.push(`${activeTypes.length} active event type(s), ${inactiveTypes.length} inactive`)
-
-        // Check each active event type's availability
         const today = new Date()
         const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-
         for (const et of activeTypes) {
           const etBookings = bookings.filter((b) => b.eventTypeId === et.id && b.date >= todayStr && b.status !== 'cancelled')
           items.push(`${et.name}: ${etBookings.length} upcoming booking(s), max ${et.maxBookingsPerDay}/day, ${et.durationMinutes}min each`)
-
-          // Check if any day is at capacity
           const bookingsByDate: Record<string, number> = {}
-          for (const b of etBookings) {
-            bookingsByDate[b.date] = (bookingsByDate[b.date] ?? 0) + 1
-          }
+          for (const b of etBookings) { bookingsByDate[b.date] = (bookingsByDate[b.date] ?? 0) + 1 }
           for (const [date, count] of Object.entries(bookingsByDate)) {
             if (count >= et.maxBookingsPerDay) {
               items.push(`  Fully booked on ${date} (${count}/${et.maxBookingsPerDay})`)
-              get().addSuggestion({
-                type: 'warning',
-                title: `${et.name}: Fully Booked on ${date}`,
-                description: `${et.name} has reached its daily limit of ${et.maxBookingsPerDay} bookings on ${date}.${et.waitlistEnabled ? ' Waitlist is enabled.' : ' Consider enabling waitlist.'}`,
-                action: { label: 'View Event Type', route: '/calendar' },
-                sectionId: 'availability',
-              })
+              get().addSuggestion({ type: 'warning', title: `${et.name}: Fully Booked on ${date}`, description: `${et.name} has reached its daily limit of ${et.maxBookingsPerDay} bookings on ${date}.${et.waitlistEnabled ? ' Waitlist is enabled.' : ' Consider enabling waitlist.'}`, action: { label: 'View Event Type', route: '/calendar' }, sectionId: 'availability' })
             }
           }
         }
-
         if (inactiveTypes.length > 0) {
-          get().addSuggestion({
-            type: 'tip',
-            title: `${inactiveTypes.length} Inactive Event Type(s)`,
-            description: `You have ${inactiveTypes.length} inactive event type(s): ${inactiveTypes.map((et) => et.name).join(', ')}. Activate them if you want to accept bookings.`,
-            sectionId: 'availability',
-          })
+          get().addSuggestion({ type: 'tip', title: `${inactiveTypes.length} Inactive Event Type(s)`, description: `You have ${inactiveTypes.length} inactive event type(s): ${inactiveTypes.map((et) => et.name).join(', ')}. Activate them if you want to accept bookings.`, sectionId: 'availability' })
         }
-
         const summary = `Reviewed ${eventTypes.length} event type(s): ${activeTypes.length} active with a combined capacity of ${activeTypes.reduce((sum, et) => sum + et.maxBookingsPerDay, 0)} bookings/day.`
+        return { summary, items }
+      }
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'availability',
-            summary,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Scheduling', 'availability', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'availability', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 800)
     },
 
     checkCalendarHealth: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const schedulingState = useSchedulingStore.getState()
-        const connections = schedulingState.calendarConnections
-        const bookings = schedulingState.bookings
+      const schedulingState = useSchedulingStore.getState()
+      const connections = schedulingState.calendarConnections
+      const bookings = schedulingState.bookings
+      const dataContext = `${connections.length} calendar connections, ${bookings.length} bookings`
 
+      const fallbackFn = () => {
         const items: string[] = []
-
-        // Calendar connections
         const connected = connections.filter((c) => c.connected)
         const disconnected = connections.filter((c) => !c.connected)
         items.push(`${connected.length} connected calendar(s), ${disconnected.length} disconnected`)
-
         for (const conn of connected) {
           items.push(`${conn.name}: ${conn.syncDirection}, last synced ${conn.lastSyncedAt ?? 'never'}`)
         }
-
-        // Flag disconnected calendars
         if (disconnected.length > 0) {
-          get().addSuggestion({
-            type: 'warning',
-            title: `${disconnected.length} Disconnected Calendar(s)`,
-            description: `${disconnected.map((c) => c.name).join(', ')} are not connected. Connect them to avoid double-bookings.`,
-            action: { label: 'Manage Calendars', route: '/calendar' },
-            sectionId: 'calendar_health',
-          })
+          get().addSuggestion({ type: 'warning', title: `${disconnected.length} Disconnected Calendar(s)`, description: `${disconnected.map((c) => c.name).join(', ')} are not connected. Connect them to avoid double-bookings.`, action: { label: 'Manage Calendars', route: '/calendar' }, sectionId: 'calendar_health' })
         }
-
-        // Upcoming booking load (next 7 days)
         const today = new Date()
         const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
         const nextWeek = new Date(today)
         nextWeek.setDate(nextWeek.getDate() + 7)
         const nextWeekStr = `${nextWeek.getFullYear()}-${String(nextWeek.getMonth() + 1).padStart(2, '0')}-${String(nextWeek.getDate()).padStart(2, '0')}`
-
-        const next7Days = bookings.filter(
-          (b) => b.date >= todayStr && b.date <= nextWeekStr && b.status !== 'cancelled'
-        )
+        const next7Days = bookings.filter((b) => b.date >= todayStr && b.date <= nextWeekStr && b.status !== 'cancelled')
         items.push(`${next7Days.length} booking(s) in the next 7 days`)
-
-        // Check for conflicts (overlapping times on same date)
         const activeBookings = bookings.filter((b) => b.status !== 'cancelled')
         const conflicts: string[] = []
         for (let i = 0; i < activeBookings.length; i++) {
@@ -535,33 +458,20 @@ export const useSchedulingCopilotStore = create<SchedulingCopilotState>()(
             }
           }
         }
-
         if (conflicts.length > 0) {
           items.push(`${conflicts.length} scheduling conflict(s) detected`)
-          get().addSuggestion({
-            type: 'warning',
-            title: `${conflicts.length} Scheduling Conflict(s)`,
-            description: `Found overlapping bookings: ${conflicts.slice(0, 3).join('; ')}${conflicts.length > 3 ? ` and ${conflicts.length - 3} more` : ''}.`,
-            action: { label: 'View Bookings', route: '/calendar' },
-            sectionId: 'calendar_health',
-          })
+          get().addSuggestion({ type: 'warning', title: `${conflicts.length} Scheduling Conflict(s)`, description: `Found overlapping bookings: ${conflicts.slice(0, 3).join('; ')}${conflicts.length > 3 ? ` and ${conflicts.length - 3} more` : ''}.`, action: { label: 'View Bookings', route: '/calendar' }, sectionId: 'calendar_health' })
         } else {
           items.push('No scheduling conflicts detected')
         }
+        const summary = `Calendar health: ${connected.length}/${connections.length} calendar(s) connected, ${next7Days.length} booking(s) next week, ${conflicts.length} conflict(s).`
+        return { summary, items }
+      }
 
-        const summary =
-          `Calendar health: ${connected.length}/${connections.length} calendar(s) connected, ${next7Days.length} booking(s) next week, ${conflicts.length} conflict(s).`
-
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'calendar_health',
-            summary,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Scheduling', 'calendar health', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'calendar_health', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 600)
     },
   })
 )

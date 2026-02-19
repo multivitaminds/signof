@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { AIChatMessage } from '../types'
+import { isLLMAvailable, syncChat } from '../lib/llmClient'
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
@@ -149,11 +150,7 @@ const useAIChatStore = create<AIChatState>()(
           isTyping: true,
         }))
 
-        // Simulate typing delay (500-1500ms)
-        const delay = 500 + Math.random() * 1000
-        setTimeout(() => {
-          const { contextLabel } = get()
-          const aiContent = getAIResponse(content, contextLabel)
+        const addAssistantMessage = (aiContent: string) => {
           const aiMsg: AIChatMessage = {
             id: generateId(),
             role: 'assistant',
@@ -164,7 +161,33 @@ const useAIChatStore = create<AIChatState>()(
             messages: [...state.messages, aiMsg],
             isTyping: false,
           }))
-        }, delay)
+        }
+
+        if (isLLMAvailable()) {
+          const { messages: allMessages, contextLabel, currentRoute } = get()
+          const history = allMessages.slice(-10).map(m => ({ role: m.role as 'user' | 'assistant', content: m.content }))
+          const systemPrompt = `You are the Orchestree Copilot on the ${contextLabel} page (${currentRoute}). Be concise and helpful.`
+
+          syncChat({ messages: history, systemPrompt })
+            .then(response => {
+              if (response) {
+                addAssistantMessage(response)
+              } else {
+                const { contextLabel: label } = get()
+                addAssistantMessage(getAIResponse(content, label))
+              }
+            })
+            .catch(() => {
+              const { contextLabel: label } = get()
+              addAssistantMessage(getAIResponse(content, label))
+            })
+        } else {
+          const delay = 500 + Math.random() * 1000
+          setTimeout(() => {
+            const { contextLabel } = get()
+            addAssistantMessage(getAIResponse(content, contextLabel))
+          }, delay)
+        }
       },
 
       toggleOpen: () => {

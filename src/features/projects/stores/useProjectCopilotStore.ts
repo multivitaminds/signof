@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { useProjectStore } from './useProjectStore'
+import { copilotChat, copilotAnalysis } from '../../ai/lib/copilotLLM'
 
 // ─── ID Generator ────────────────────────────────────────────────────
 
@@ -155,34 +156,42 @@ export const useProjectCopilotStore = create<ProjectCopilotState>()(
         isTyping: true,
       }))
 
-      const delay = 500 + Math.random() * 1000
-      setTimeout(() => {
-        const responseContent = generateResponse(content, context)
-        const assistantMessage: CopilotMessage = {
-          id: generateId(),
-          role: 'assistant',
-          content: responseContent,
-          timestamp: new Date().toISOString(),
-        }
+      const ps = useProjectStore.getState()
+      const projects = Object.values(ps.projects)
+      const issues = Object.values(ps.issues)
+      const contextSummary = `${projects.length} projects, ${issues.length} issues`
 
-        set((state) => ({
-          messages: [...state.messages, assistantMessage],
-          isTyping: false,
-        }))
-      }, delay)
+      copilotChat('Projects', content, contextSummary, () => generateResponse(content, context))
+        .then((responseContent) => {
+          const assistantMessage: CopilotMessage = {
+            id: generateId(),
+            role: 'assistant',
+            content: responseContent,
+            timestamp: new Date().toISOString(),
+          }
+
+          set((state) => ({
+            messages: [...state.messages, assistantMessage],
+            isTyping: false,
+          }))
+        })
     },
 
     clearMessages: () => set({ messages: [], isTyping: false }),
 
     analyzeSprintHealth: () => {
       set({ isAnalyzing: true })
-      setTimeout(() => {
-        const ps = useProjectStore.getState()
-        const cycles = Object.values(ps.cycles)
-        const issues = Object.values(ps.issues)
-        const items: string[] = []
 
-        const activeCycle = cycles.find((c) => c.status === 'active')
+      const ps = useProjectStore.getState()
+      const cycles = Object.values(ps.cycles)
+      const issues = Object.values(ps.issues)
+      const activeCycle = cycles.find((c) => c.status === 'active')
+      const dataContext = activeCycle
+        ? `Active sprint "${activeCycle.name}" with ${issues.filter((i) => i.cycleId === activeCycle.id).length} issues`
+        : 'No active sprint'
+
+      const fallbackFn = () => {
+        const items: string[] = []
         if (activeCycle) {
           const cycleIssues = issues.filter((i) => i.cycleId === activeCycle.id)
           const done = cycleIssues.filter((i) => i.status === 'done').length
@@ -195,57 +204,61 @@ export const useProjectCopilotStore = create<ProjectCopilotState>()(
         } else {
           items.push('No active sprint — consider starting one')
         }
+        return {
+          summary: activeCycle ? `Sprint health check for "${activeCycle.name}".` : 'No active sprint found.',
+          items,
+        }
+      }
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'sprint',
-            summary: activeCycle ? `Sprint health check for "${activeCycle.name}".` : 'No active sprint found.',
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Projects', 'sprint health', dataContext, fallbackFn)
+        .then((result) => {
+          set({
+            isAnalyzing: false,
+            lastAnalysis: { type: 'sprint', ...result, timestamp: new Date().toISOString() },
+          })
         })
-      }, 800)
     },
 
     reviewBacklog: () => {
       set({ isAnalyzing: true })
-      setTimeout(() => {
-        const ps = useProjectStore.getState()
-        const issues = Object.values(ps.issues)
-        const items: string[] = []
 
-        const backlog = issues.filter((i) => i.status === 'backlog' || (!i.cycleId && i.status === 'todo'))
+      const ps = useProjectStore.getState()
+      const issues = Object.values(ps.issues)
+      const backlog = issues.filter((i) => i.status === 'backlog' || (!i.cycleId && i.status === 'todo'))
+      const dataContext = `${issues.length} total issues, ${backlog.length} in backlog`
+
+      const fallbackFn = () => {
+        const items: string[] = []
         const unassigned = issues.filter((i) => !i.assigneeId && i.status !== 'done')
         const noPriority = issues.filter((i) => !i.priority || i.priority === 'none')
-
         items.push(`${backlog.length} issue(s) in backlog`)
         if (unassigned.length > 0) items.push(`${unassigned.length} unassigned issue(s)`)
         if (noPriority.length > 0) items.push(`${noPriority.length} issue(s) without priority`)
-
         const now = new Date()
         const overdue = issues.filter((i) => i.dueDate && new Date(i.dueDate) < now && i.status !== 'done')
         if (overdue.length > 0) items.push(`🔴 ${overdue.length} overdue issue(s)`)
+        return { summary: `Backlog review: ${items.length} insight(s) found.`, items }
+      }
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'backlog',
-            summary: `Backlog review: ${items.length} insight(s) found.`,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Projects', 'backlog', dataContext, fallbackFn)
+        .then((result) => {
+          set({
+            isAnalyzing: false,
+            lastAnalysis: { type: 'backlog', ...result, timestamp: new Date().toISOString() },
+          })
         })
-      }, 700)
     },
 
     trackGoals: () => {
       set({ isAnalyzing: true })
-      setTimeout(() => {
-        const ps = useProjectStore.getState()
-        const items: string[] = []
 
-        const goals = ps.goals
+      const ps = useProjectStore.getState()
+      const goals = ps.goals
+      const milestones = ps.milestones
+      const dataContext = `${goals.length} goals, ${milestones.length} milestones`
+
+      const fallbackFn = () => {
+        const items: string[] = []
         if (goals.length > 0) {
           const avgProgress = Math.round(goals.reduce((sum, g) => sum + g.progress, 0) / goals.length)
           items.push(`${goals.length} goal(s) at ${avgProgress}% average progress`)
@@ -254,23 +267,20 @@ export const useProjectCopilotStore = create<ProjectCopilotState>()(
         } else {
           items.push('No goals defined — set OKRs to align team efforts')
         }
-
-        const milestones = ps.milestones
         if (milestones.length > 0) {
           const completed = milestones.filter((m) => m.completed).length
           items.push(`${completed}/${milestones.length} milestone(s) completed`)
         }
+        return { summary: `Goal tracking: ${goals.length} goal(s), ${milestones.length} milestone(s).`, items }
+      }
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'goals',
-            summary: `Goal tracking: ${goals.length} goal(s), ${ps.milestones.length} milestone(s).`,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Projects', 'goals', dataContext, fallbackFn)
+        .then((result) => {
+          set({
+            isAnalyzing: false,
+            lastAnalysis: { type: 'goals', ...result, timestamp: new Date().toISOString() },
+          })
         })
-      }, 600)
     },
   })
 )

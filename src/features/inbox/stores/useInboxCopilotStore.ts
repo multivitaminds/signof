@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { useInboxStore } from './useInboxStore'
+import { copilotChat, copilotAnalysis } from '../../ai/lib/copilotLLM'
 
 // ─── ID Generator ────────────────────────────────────────────────────
 
@@ -124,99 +125,85 @@ export const useInboxCopilotStore = create<InboxCopilotState>()(
         isTyping: true,
       }))
 
-      const delay = 500 + Math.random() * 1000
-      setTimeout(() => {
-        const responseContent = generateResponse(content)
-        const assistantMessage: CopilotMessage = {
-          id: generateId(),
-          role: 'assistant',
-          content: responseContent,
-          timestamp: new Date().toISOString(),
-        }
+      const inbox = useInboxStore.getState()
+      const contextSummary = `${inbox.getUnreadCount()} unread, ${inbox.notifications.length} total notifications`
 
-        set((state) => ({
-          messages: [...state.messages, assistantMessage],
-          isTyping: false,
-        }))
-      }, delay)
+      copilotChat('Inbox', content, contextSummary, () => generateResponse(content))
+        .then((responseContent) => {
+          const assistantMessage: CopilotMessage = {
+            id: generateId(),
+            role: 'assistant',
+            content: responseContent,
+            timestamp: new Date().toISOString(),
+          }
+
+          set((state) => ({
+            messages: [...state.messages, assistantMessage],
+            isTyping: false,
+          }))
+        })
     },
 
     clearMessages: () => set({ messages: [], isTyping: false }),
 
     triageInbox: () => {
       set({ isAnalyzing: true })
-      setTimeout(() => {
-        const inbox = useInboxStore.getState()
+
+      const inbox = useInboxStore.getState()
+      const dataContext = `${inbox.notifications.length} notifications, ${inbox.getUnreadCount()} unread`
+
+      const fallbackFn = () => {
         const items: string[] = []
         const unread = inbox.notifications.filter((n) => !n.read)
-
-        const actionRequired = unread.filter((n) =>
-          n.type === 'signature_request' || n.type === 'assignment' || n.type === 'mention'
-        )
-        const informational = unread.filter((n) =>
-          n.type === 'status_change' || n.type === 'system' || n.type === 'reminder'
-        )
-        const social = unread.filter((n) =>
-          n.type === 'comment' || n.type === 'invitation'
-        )
-
+        const actionRequired = unread.filter((n) => n.type === 'signature_request' || n.type === 'assignment' || n.type === 'mention')
+        const informational = unread.filter((n) => n.type === 'status_change' || n.type === 'system' || n.type === 'reminder')
+        const social = unread.filter((n) => n.type === 'comment' || n.type === 'invitation')
         if (actionRequired.length > 0) items.push(`🔴 ${actionRequired.length} action-required notification(s)`)
         if (social.length > 0) items.push(`🟡 ${social.length} social notification(s) (comments, invitations)`)
         if (informational.length > 0) items.push(`🟢 ${informational.length} informational notification(s)`)
         if (unread.length === 0) items.push('Inbox zero — no unread notifications!')
+        return { summary: unread.length > 0 ? `Triaged ${unread.length} unread notification(s).` : 'Inbox is clear!', items }
+      }
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'triage',
-            summary: unread.length > 0 ? `Triaged ${unread.length} unread notification(s).` : 'Inbox is clear!',
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Inbox', 'triage', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'triage', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 600)
     },
 
     smartDigest: () => {
       set({ isAnalyzing: true })
-      setTimeout(() => {
-        const inbox = useInboxStore.getState()
+
+      const inbox = useInboxStore.getState()
+      const dataContext = `${inbox.notifications.length} notifications, digest frequency: ${inbox.digestFrequency}`
+
+      const fallbackFn = () => {
         const items: string[] = []
         const today = new Date()
         today.setHours(0, 0, 0, 0)
-
-        const todayNotifications = inbox.notifications.filter((n) =>
-          new Date(n.createdAt) >= today
-        )
-
+        const todayNotifications = inbox.notifications.filter((n) => new Date(n.createdAt) >= today)
         items.push(`${todayNotifications.length} notification(s) today`)
         items.push(`Current digest frequency: ${inbox.digestFrequency}`)
+        const avgPerDay = Math.round(inbox.notifications.length / 7)
+        if (avgPerDay > 20) items.push(`High volume (~${avgPerDay}/day) — consider switching to daily digest`)
+        else if (avgPerDay < 5) items.push(`Low volume (~${avgPerDay}/day) — instant notifications work well`)
+        return { summary: `Digest analysis: ~${avgPerDay} notification(s) per day.`, items }
+      }
 
-        const avgPerDay = Math.round(inbox.notifications.length / 7) // rough estimate
-        if (avgPerDay > 20) {
-          items.push(`High volume (~${avgPerDay}/day) — consider switching to daily digest`)
-        } else if (avgPerDay < 5) {
-          items.push(`Low volume (~${avgPerDay}/day) — instant notifications work well`)
-        }
-
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'digest',
-            summary: `Digest analysis: ~${avgPerDay} notification(s) per day.`,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Inbox', 'digest', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'digest', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 700)
     },
 
     prioritySummary: () => {
       set({ isAnalyzing: true })
-      setTimeout(() => {
-        const inbox = useInboxStore.getState()
-        const items: string[] = []
 
+      const inbox = useInboxStore.getState()
+      const dataContext = `${inbox.getUnreadCount()} unread notifications across multiple types`
+
+      const fallbackFn = () => {
+        const items: string[] = []
         const types = ['signature_request', 'assignment', 'mention', 'comment', 'status_change', 'booking', 'reminder', 'system'] as const
         for (const type of types) {
           const count = inbox.notifications.filter((n) => n.type === type && !n.read).length
@@ -225,21 +212,14 @@ export const useInboxCopilotStore = create<InboxCopilotState>()(
             items.push(`${label}: ${count} unread`)
           }
         }
+        if (items.length === 0) items.push('No unread notifications by type')
+        return { summary: `Priority breakdown across ${items.length} category(ies).`, items }
+      }
 
-        if (items.length === 0) {
-          items.push('No unread notifications by type')
-        }
-
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'cleanup',
-            summary: `Priority breakdown across ${items.length} category(ies).`,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Inbox', 'priority', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'cleanup', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 500)
     },
   })
 )

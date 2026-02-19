@@ -6,6 +6,7 @@ import { usePayrollStore } from './usePayrollStore'
 import { useAccountingContactStore } from './useAccountingContactStore'
 import { EXPENSE_CATEGORY_LABELS } from '../types'
 import type { ExpenseCategory } from '../types'
+import { copilotChat, copilotAnalysis } from '../../ai/lib/copilotLLM'
 
 // ─── ID Generator ────────────────────────────────────────────────────
 
@@ -272,22 +273,24 @@ export const useAccountingCopilotStore = create<AccountingCopilotState>()(
         isTyping: true,
       }))
 
-      // Generate response after a simulated delay (500-1500ms)
-      const delay = 500 + Math.random() * 1000
-      setTimeout(() => {
-        const responseContent = generateResponse(content, context)
-        const assistantMessage: CopilotMessage = {
-          id: generateId(),
-          role: 'assistant',
-          content: responseContent,
-          timestamp: new Date().toISOString(),
-        }
+      const invoiceCount = useInvoiceStore.getState().invoices.length
+      const expenseCount = useExpenseStore.getState().expenses.length
+      const contextSummary = `${invoiceCount} invoices, ${expenseCount} expenses`
 
-        set((state) => ({
-          messages: [...state.messages, assistantMessage],
-          isTyping: false,
-        }))
-      }, delay)
+      copilotChat('Accounting', content, contextSummary, () => generateResponse(content, context))
+        .then((responseContent) => {
+          const assistantMessage: CopilotMessage = {
+            id: generateId(),
+            role: 'assistant',
+            content: responseContent,
+            timestamp: new Date().toISOString(),
+          }
+
+          set((state) => ({
+            messages: [...state.messages, assistantMessage],
+            isTyping: false,
+          }))
+        })
     },
 
     clearMessages: () => set({ messages: [], isTyping: false }),
@@ -322,230 +325,121 @@ export const useAccountingCopilotStore = create<AccountingCopilotState>()(
     analyzeExpenses: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const expenseState = useExpenseStore.getState()
-        const expenses = expenseState.expenses
-        const totalByCategory = expenseState.getTotalByCategory()
+      const expenseState = useExpenseStore.getState()
+      const expenses = expenseState.expenses
+      const totalByCategory = expenseState.getTotalByCategory()
+      const dataContext = `${expenses.length} expenses across ${Object.keys(totalByCategory).length} categories`
 
+      const fallbackFn = () => {
         const items: string[] = []
-
-        // Category breakdown
-        const sortedCategories = Object.entries(totalByCategory)
-          .sort(([, a], [, b]) => b - a)
-
+        const sortedCategories = Object.entries(totalByCategory).sort(([, a], [, b]) => b - a)
         for (const [cat, amount] of sortedCategories) {
           const label = EXPENSE_CATEGORY_LABELS[cat as ExpenseCategory] ?? cat
           items.push(`${label}: $${amount.toLocaleString()}`)
         }
-
-        // Flag recurring expenses
         const recurringExpenses = expenses.filter((e) => e.recurring)
         if (recurringExpenses.length > 0) {
           const recurringTotal = recurringExpenses.reduce((sum, e) => sum + e.amount, 0)
           items.push(`${recurringExpenses.length} recurring expense(s) totaling $${recurringTotal.toLocaleString()}/period`)
         }
-
-        // Generate suggestions
         if (sortedCategories.length > 0) {
           const [topCategory, topAmount] = sortedCategories[0]!
           const topLabel = EXPENSE_CATEGORY_LABELS[topCategory as ExpenseCategory] ?? topCategory
-          get().addSuggestion({
-            type: 'tip',
-            title: `Top Expense: ${topLabel}`,
-            description: `Your largest expense category is ${topLabel} at $${topAmount.toLocaleString()}. Review to identify potential savings.`,
-            action: { label: 'View Expenses', route: '/accounting/expenses' },
-            sectionId: 'expenses',
-          })
+          get().addSuggestion({ type: 'tip', title: `Top Expense: ${topLabel}`, description: `Your largest expense category is ${topLabel} at $${topAmount.toLocaleString()}. Review to identify potential savings.`, action: { label: 'View Expenses', route: '/accounting/expenses' }, sectionId: 'expenses' })
         }
-
         if (recurringExpenses.length > 0) {
-          get().addSuggestion({
-            type: 'review',
-            title: 'Review Recurring Expenses',
-            description: `You have ${recurringExpenses.length} recurring expense(s). Review these regularly to ensure they are still necessary.`,
-            action: { label: 'View Expenses', route: '/accounting/expenses' },
-            sectionId: 'expenses',
-          })
+          get().addSuggestion({ type: 'review', title: 'Review Recurring Expenses', description: `You have ${recurringExpenses.length} recurring expense(s). Review these regularly to ensure they are still necessary.`, action: { label: 'View Expenses', route: '/accounting/expenses' }, sectionId: 'expenses' })
         }
-
         const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0)
-        const summary =
-          expenses.length > 0
-            ? `Analyzed ${expenses.length} expense(s) totaling $${totalExpenses.toLocaleString()} across ${sortedCategories.length} categories.`
-            : 'No expenses recorded yet. Start tracking your expenses to get insights.'
+        const summary = expenses.length > 0 ? `Analyzed ${expenses.length} expense(s) totaling $${totalExpenses.toLocaleString()} across ${sortedCategories.length} categories.` : 'No expenses recorded yet. Start tracking your expenses to get insights.'
+        return { summary, items }
+      }
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'expenses',
-            summary,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Accounting', 'expenses', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'expenses', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 800)
     },
 
     reviewInvoices: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const invoiceState = useInvoiceStore.getState()
-        const invoices = invoiceState.invoices
+      const invoiceState = useInvoiceStore.getState()
+      const invoices = invoiceState.invoices
+      const dataContext = `${invoices.length} invoices, outstanding: $${invoiceState.getOutstandingTotal().toLocaleString()}`
 
+      const fallbackFn = () => {
         const items: string[] = []
-
-        if (invoices.length === 0) {
-          set({
-            isAnalyzing: false,
-            lastAnalysis: {
-              type: 'invoices',
-              summary: 'No invoices found. Create your first invoice to get started.',
-              items: ['No invoices created yet'],
-              timestamp: new Date().toISOString(),
-            },
-          })
-          return
-        }
-
-        // Status breakdown
+        if (invoices.length === 0) return { summary: 'No invoices found. Create your first invoice to get started.', items: ['No invoices created yet'] }
         const statusCounts: Record<string, number> = {}
-        for (const inv of invoices) {
-          statusCounts[inv.status] = (statusCounts[inv.status] ?? 0) + 1
-        }
-        for (const [status, count] of Object.entries(statusCounts)) {
-          items.push(`${count} invoice(s) with status: ${status}`)
-        }
-
-        // Check for overdue invoices
+        for (const inv of invoices) { statusCounts[inv.status] = (statusCounts[inv.status] ?? 0) + 1 }
+        for (const [status, count] of Object.entries(statusCounts)) { items.push(`${count} invoice(s) with status: ${status}`) }
         const overdueInvoices = invoices.filter((inv) => inv.status === 'overdue')
         if (overdueInvoices.length > 0) {
           const overdueTotal = overdueInvoices.reduce((sum, inv) => sum + inv.balance, 0)
           items.push(`$${overdueTotal.toLocaleString()} overdue across ${overdueInvoices.length} invoice(s)`)
-          get().addSuggestion({
-            type: 'warning',
-            title: 'Overdue Invoices',
-            description: `${overdueInvoices.length} invoice(s) are overdue totaling $${overdueTotal.toLocaleString()}: ${overdueInvoices.map((inv) => `${inv.invoiceNumber} (${inv.customerName})`).join(', ')}.`,
-            action: { label: 'View Invoices', route: '/accounting/invoices' },
-            sectionId: 'invoices',
-          })
+          get().addSuggestion({ type: 'warning', title: 'Overdue Invoices', description: `${overdueInvoices.length} invoice(s) are overdue totaling $${overdueTotal.toLocaleString()}: ${overdueInvoices.map((inv) => `${inv.invoiceNumber} (${inv.customerName})`).join(', ')}.`, action: { label: 'View Invoices', route: '/accounting/invoices' }, sectionId: 'invoices' })
         }
-
-        // Check for draft invoices not sent
         const draftInvoices = invoices.filter((inv) => inv.status === 'draft')
         if (draftInvoices.length > 0) {
           const draftTotal = draftInvoices.reduce((sum, inv) => sum + inv.total, 0)
           items.push(`${draftInvoices.length} draft invoice(s) totaling $${draftTotal.toLocaleString()} not yet sent`)
-          get().addSuggestion({
-            type: 'missing_info',
-            title: 'Unsent Draft Invoices',
-            description: `${draftInvoices.length} invoice(s) are still in draft and haven't been sent to customers. Total value: $${draftTotal.toLocaleString()}.`,
-            action: { label: 'Review Drafts', route: '/accounting/invoices' },
-            sectionId: 'invoices',
-          })
+          get().addSuggestion({ type: 'missing_info', title: 'Unsent Draft Invoices', description: `${draftInvoices.length} invoice(s) are still in draft and haven't been sent to customers. Total value: $${draftTotal.toLocaleString()}.`, action: { label: 'Review Drafts', route: '/accounting/invoices' }, sectionId: 'invoices' })
         }
-
-        // Outstanding total
         const outstanding = invoiceState.getOutstandingTotal()
         items.push(`Total outstanding: $${outstanding.toLocaleString()}`)
-
         const summary = `Reviewed ${invoices.length} invoice(s). Outstanding: $${outstanding.toLocaleString()}.${overdueInvoices.length > 0 ? ` ${overdueInvoices.length} overdue.` : ''}`
+        return { summary, items }
+      }
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'invoices',
-            summary,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Accounting', 'invoices', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'invoices', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 1000)
     },
 
     forecastCashFlow: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const accountingState = useAccountingStore.getState()
-        const transactions = accountingState.transactions
+      const accountingState = useAccountingStore.getState()
+      const transactions = accountingState.transactions
+      const dataContext = `${transactions.length} transactions in ledger`
 
+      const fallbackFn = () => {
         const items: string[] = []
-
-        let totalCashIn = 0
-        let totalCashOut = 0
-        let incomeCount = 0
-        let expenseCount = 0
-
+        let totalCashIn = 0, totalCashOut = 0, incomeCount = 0, expenseCount = 0
         for (const txn of transactions) {
-          if (txn.type === 'income') {
-            incomeCount++
-            for (const line of txn.lines) {
-              totalCashIn += line.debit
-            }
-          } else if (txn.type === 'expense') {
-            expenseCount++
-            for (const line of txn.lines) {
-              totalCashOut += line.debit
-            }
-          }
+          if (txn.type === 'income') { incomeCount++; for (const line of txn.lines) { totalCashIn += line.debit } }
+          else if (txn.type === 'expense') { expenseCount++; for (const line of txn.lines) { totalCashOut += line.debit } }
         }
-
         const netCashFlow = totalCashIn - totalCashOut
-
         items.push(`${incomeCount} income transaction(s): $${totalCashIn.toLocaleString()} in`)
         items.push(`${expenseCount} expense transaction(s): $${totalCashOut.toLocaleString()} out`)
         items.push(`Net cash flow: ${netCashFlow >= 0 ? '+' : ''}$${netCashFlow.toLocaleString()}`)
-
-        // Trend analysis: compare income to expenses ratio
         if (totalCashIn > 0 && totalCashOut > 0) {
           const ratio = totalCashIn / totalCashOut
-          if (ratio >= 1.5) {
-            items.push('Healthy income-to-expense ratio (1.5x+)')
-          } else if (ratio >= 1.0) {
+          if (ratio >= 1.5) { items.push('Healthy income-to-expense ratio (1.5x+)') }
+          else if (ratio >= 1.0) {
             items.push('Income covers expenses but margins are tight')
-            get().addSuggestion({
-              type: 'tip',
-              title: 'Tight Cash Flow Margins',
-              description: 'Your income barely covers expenses. Consider reviewing recurring costs or increasing revenue to build a financial buffer.',
-              sectionId: 'cash_flow',
-            })
+            get().addSuggestion({ type: 'tip', title: 'Tight Cash Flow Margins', description: 'Your income barely covers expenses. Consider reviewing recurring costs or increasing revenue to build a financial buffer.', sectionId: 'cash_flow' })
           } else {
             items.push('Warning: expenses exceed income')
-            get().addSuggestion({
-              type: 'warning',
-              title: 'Negative Cash Flow',
-              description: `Expenses ($${totalCashOut.toLocaleString()}) exceed income ($${totalCashIn.toLocaleString()}). Review spending and consider strategies to increase revenue.`,
-              action: { label: 'View Expenses', route: '/accounting/expenses' },
-              sectionId: 'cash_flow',
-            })
+            get().addSuggestion({ type: 'warning', title: 'Negative Cash Flow', description: `Expenses ($${totalCashOut.toLocaleString()}) exceed income ($${totalCashIn.toLocaleString()}). Review spending and consider strategies to increase revenue.`, action: { label: 'View Expenses', route: '/accounting/expenses' }, sectionId: 'cash_flow' })
           }
         }
-
-        // Check account balances
-        const checkingAccounts = accountingState.accounts.filter(
-          (a) => a.type === 'asset' && (a.name.toLowerCase().includes('checking') || a.name.toLowerCase().includes('savings'))
-        )
+        const checkingAccounts = accountingState.accounts.filter((a) => a.type === 'asset' && (a.name.toLowerCase().includes('checking') || a.name.toLowerCase().includes('savings')))
         if (checkingAccounts.length > 0) {
           const liquidCash = checkingAccounts.reduce((sum, a) => sum + a.balance, 0)
           items.push(`Liquid cash (checking + savings): $${liquidCash.toLocaleString()}`)
         }
+        const summary = transactions.length > 0 ? `Cash flow analysis based on ${transactions.length} transaction(s). Net: ${netCashFlow >= 0 ? '+' : ''}$${netCashFlow.toLocaleString()}.` : 'No transactions recorded yet. Start recording transactions to get cash flow insights.'
+        return { summary, items }
+      }
 
-        const summary =
-          transactions.length > 0
-            ? `Cash flow analysis based on ${transactions.length} transaction(s). Net: ${netCashFlow >= 0 ? '+' : ''}$${netCashFlow.toLocaleString()}.`
-            : 'No transactions recorded yet. Start recording transactions to get cash flow insights.'
-
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'cash_flow',
-            summary,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Accounting', 'cash_flow', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'cash_flow', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 600)
     },
   })
 )

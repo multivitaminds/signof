@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { useWorkspaceStore } from './useWorkspaceStore'
+import { copilotChat, copilotAnalysis } from '../../ai/lib/copilotLLM'
 
 // ─── ID Generator ────────────────────────────────────────────────────
 
@@ -129,21 +130,24 @@ export const useWorkspaceCopilotStore = create<WorkspaceCopilotState>()(
         isTyping: true,
       }))
 
-      const delay = 500 + Math.random() * 1000
-      setTimeout(() => {
-        const responseContent = generateResponse(content, context)
-        const assistantMessage: CopilotMessage = {
-          id: generateId(),
-          role: 'assistant',
-          content: responseContent,
-          timestamp: new Date().toISOString(),
-        }
+      const ws = useWorkspaceStore.getState()
+      const allPages = ws.getAllPages()
+      const contextSummary = `${allPages.length} pages, ${ws.getFavoritePages().length} favorites`
 
-        set((state) => ({
-          messages: [...state.messages, assistantMessage],
-          isTyping: false,
-        }))
-      }, delay)
+      copilotChat('Workspace', content, contextSummary, () => generateResponse(content, context))
+        .then((responseContent) => {
+          const assistantMessage: CopilotMessage = {
+            id: generateId(),
+            role: 'assistant',
+            content: responseContent,
+            timestamp: new Date().toISOString(),
+          }
+
+          set((state) => ({
+            messages: [...state.messages, assistantMessage],
+            isTyping: false,
+          }))
+        })
     },
 
     clearMessages: () => set({ messages: [], isTyping: false }),
@@ -151,112 +155,77 @@ export const useWorkspaceCopilotStore = create<WorkspaceCopilotState>()(
     analyzeStructure: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const ws = useWorkspaceStore.getState()
-        const allPages = ws.getAllPages()
-        const rootPages = ws.getRootPages()
-        const favorites = ws.getFavoritePages()
+      const ws = useWorkspaceStore.getState()
+      const allPages = ws.getAllPages()
+      const rootPages = ws.getRootPages()
+      const favorites = ws.getFavoritePages()
+      const dataContext = `${allPages.length} pages, ${rootPages.length} root sections, ${favorites.length} favorites`
+
+      const fallbackFn = () => {
         const items: string[] = []
-
         items.push(`${allPages.length} total pages across ${rootPages.length} top-level sections`)
-
         const orphans = allPages.filter((p) => !p.parentId && !rootPages.includes(p))
-        if (orphans.length > 0) {
-          items.push(`${orphans.length} orphan page(s) without a parent`)
-        }
-
+        if (orphans.length > 0) items.push(`${orphans.length} orphan page(s) without a parent`)
         const untitled = allPages.filter((p) => !p.title || p.title === 'Untitled')
-        if (untitled.length > 0) {
-          items.push(`${untitled.length} untitled page(s) — consider naming them`)
-        }
-
-        if (favorites.length === 0) {
-          items.push('No favorite pages — star important pages for quick access')
-        }
-
+        if (untitled.length > 0) items.push(`${untitled.length} untitled page(s) — consider naming them`)
+        if (favorites.length === 0) items.push('No favorite pages — star important pages for quick access')
         const deepPages = rootPages.filter((p) => ws.getChildPages(p.id).length > 10)
-        if (deepPages.length > 0) {
-          items.push(`${deepPages.length} section(s) with 10+ sub-pages — consider splitting`)
-        }
+        if (deepPages.length > 0) items.push(`${deepPages.length} section(s) with 10+ sub-pages — consider splitting`)
+        return { summary: items.length > 1 ? `Found ${items.length} structural insights.` : 'Your workspace structure looks clean!', items }
+      }
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'structure',
-            summary: items.length > 1 ? `Found ${items.length} structural insights.` : 'Your workspace structure looks clean!',
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Workspace', 'structure', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'structure', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 800)
     },
 
     reviewContent: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const ws = useWorkspaceStore.getState()
-        const allPages = ws.getAllPages()
-        const items: string[] = []
+      const ws = useWorkspaceStore.getState()
+      const allPages = ws.getAllPages()
+      const dataContext = `${allPages.length} pages`
 
+      const fallbackFn = () => {
+        const items: string[] = []
         const withComments = allPages.filter((p) => ws.getPageComments(p.id).length > 0)
         items.push(`${withComments.length} page(s) have comments or discussions`)
-
         const recent = ws.getRecentPages()
         items.push(`${recent.length} recently viewed page(s)`)
-
         const noIcon = allPages.filter((p) => !p.icon)
-        if (noIcon.length > 3) {
-          items.push(`${noIcon.length} pages without icons — add icons for visual clarity`)
-        }
+        if (noIcon.length > 3) items.push(`${noIcon.length} pages without icons — add icons for visual clarity`)
+        return { summary: `Reviewed ${allPages.length} page(s) for content health.`, items }
+      }
 
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'content',
-            summary: `Reviewed ${allPages.length} page(s) for content health.`,
-            items,
-            timestamp: new Date().toISOString(),
-          },
+      copilotAnalysis('Workspace', 'content', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'content', ...result, timestamp: new Date().toISOString() } })
         })
-      }, 700)
     },
 
     suggestCleanup: () => {
       set({ isAnalyzing: true })
 
-      setTimeout(() => {
-        const ws = useWorkspaceStore.getState()
-        const trashedPages = ws.getTrashedPages()
-        const allPages = ws.getAllPages()
+      const ws = useWorkspaceStore.getState()
+      const trashedPages = ws.getTrashedPages()
+      const allPages = ws.getAllPages()
+      const dataContext = `${allPages.length} pages, ${trashedPages.length} trashed`
+
+      const fallbackFn = () => {
         const items: string[] = []
-
-        if (trashedPages.length > 0) {
-          items.push(`${trashedPages.length} page(s) in trash — review and permanently delete or restore`)
-        }
-
+        if (trashedPages.length > 0) items.push(`${trashedPages.length} page(s) in trash — review and permanently delete or restore`)
         const untitled = allPages.filter((p) => !p.title || p.title === 'Untitled')
-        if (untitled.length > 0) {
-          items.push(`${untitled.length} untitled page(s) — name them or remove if unused`)
-        }
+        if (untitled.length > 0) items.push(`${untitled.length} untitled page(s) — name them or remove if unused`)
+        const emptyPages = allPages.filter((p) => p.blockIds.length === 0)
+        if (emptyPages.length > 0) items.push(`${emptyPages.length} empty page(s) with no content`)
+        return { summary: items.length > 0 ? `Found ${items.length} cleanup opportunity(ies).` : 'Your workspace is tidy — no cleanup needed!', items }
+      }
 
-        const emptyPages = allPages.filter((p) => {
-          return p.blockIds.length === 0
+      copilotAnalysis('Workspace', 'cleanup', dataContext, fallbackFn)
+        .then((result) => {
+          set({ isAnalyzing: false, lastAnalysis: { type: 'activity', ...result, timestamp: new Date().toISOString() } })
         })
-        if (emptyPages.length > 0) {
-          items.push(`${emptyPages.length} empty page(s) with no content`)
-        }
-
-        set({
-          isAnalyzing: false,
-          lastAnalysis: {
-            type: 'activity',
-            summary: items.length > 0 ? `Found ${items.length} cleanup opportunity(ies).` : 'Your workspace is tidy — no cleanup needed!',
-            items,
-            timestamp: new Date().toISOString(),
-          },
-        })
-      }, 600)
     },
   })
 )

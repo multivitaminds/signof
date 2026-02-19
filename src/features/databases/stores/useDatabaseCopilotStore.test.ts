@@ -1,6 +1,15 @@
 import { act } from 'react'
 import { useDatabaseCopilotStore } from './useDatabaseCopilotStore'
 
+// ─── Mock copilotLLM (always returns fallback) ──────────────────────
+
+vi.mock('../../ai/lib/copilotLLM', () => ({
+  copilotChat: (_mod: string, _msg: string, _ctx: string, fallback: () => string) =>
+    Promise.resolve(fallback()),
+  copilotAnalysis: (_mod: string, _type: string, _ctx: string, fallback: () => { summary: string; items: string[] }) =>
+    Promise.resolve(fallback()),
+}))
+
 // ─── Mock Database Store ─────────────────────────────────────────────
 
 vi.mock('./useDatabaseStore', () => ({
@@ -157,7 +166,7 @@ describe('useDatabaseCopilotStore', () => {
   })
 
   describe('sendMessage', () => {
-    it('adds user message and generates assistant response after delay', () => {
+    it('adds user message and generates assistant response', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().sendMessage('Tell me about tables')
       })
@@ -168,9 +177,7 @@ describe('useDatabaseCopilotStore', () => {
       expect(stateAfterSend.messages[0]!.content).toBe('Tell me about tables')
       expect(stateAfterSend.isTyping).toBe(true)
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const stateAfterResponse = useDatabaseCopilotStore.getState()
       expect(stateAfterResponse.messages).toHaveLength(2)
@@ -187,107 +194,91 @@ describe('useDatabaseCopilotStore', () => {
       expect(useDatabaseCopilotStore.getState().messages[0]!.context).toBe('tables')
     })
 
-    it('generates keyword-aware responses for tables', () => {
+    it('generates keyword-aware responses for tables', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().sendMessage('Show me my tables')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useDatabaseCopilotStore.getState().messages[1]!.content
       expect(response).toContain('table')
       expect(response).toContain('field')
     })
 
-    it('generates keyword-aware responses for views', () => {
+    it('generates keyword-aware responses for views', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().sendMessage('What views do I have?')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useDatabaseCopilotStore.getState().messages[1]!.content
       expect(response).toContain('view')
     })
 
-    it('generates keyword-aware responses for automations', () => {
+    it('generates keyword-aware responses for automations', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().sendMessage('Show my automation rules')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useDatabaseCopilotStore.getState().messages[1]!.content
       expect(response).toContain('automation')
       expect(response).toContain('active')
     })
 
-    it('generates keyword-aware responses for rows/records', () => {
+    it('generates keyword-aware responses for rows/records', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().sendMessage('How many rows do I have?')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useDatabaseCopilotStore.getState().messages[1]!.content
       expect(response).toContain('row')
     })
 
-    it('generates keyword-aware responses for relations', () => {
+    it('generates keyword-aware responses for relations', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().sendMessage('Show me relation fields')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useDatabaseCopilotStore.getState().messages[1]!.content
       expect(response).toContain('advanced field')
     })
 
-    it('generates keyword-aware responses for filters', () => {
+    it('generates keyword-aware responses for filters', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().sendMessage('Tell me about filter settings')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useDatabaseCopilotStore.getState().messages[1]!.content
       expect(response).toContain('filter')
     })
 
-    it('generates keyword-aware responses for schema', () => {
+    it('generates keyword-aware responses for schema', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().sendMessage('Show the schema')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useDatabaseCopilotStore.getState().messages[1]!.content
       expect(response).toContain('schema')
     })
 
-    it('generates a fallback response for generic messages', () => {
+    it('generates a fallback response for generic messages', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().sendMessage('Hello there')
       })
 
-      act(() => {
-        vi.advanceTimersByTime(1600)
-      })
+      await act(async () => {})
 
       const response = useDatabaseCopilotStore.getState().messages[1]!.content
       expect(response).toContain('Database Copilot')
@@ -396,7 +387,7 @@ describe('useDatabaseCopilotStore', () => {
   })
 
   describe('analyzeSchema', () => {
-    it('produces lastAnalysis with schema type after delay', () => {
+    it('produces lastAnalysis with schema type', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().analyzeSchema()
       })
@@ -404,9 +395,7 @@ describe('useDatabaseCopilotStore', () => {
       expect(useDatabaseCopilotStore.getState().isAnalyzing).toBe(true)
       expect(useDatabaseCopilotStore.getState().lastAnalysis).toBeNull()
 
-      act(() => {
-        vi.advanceTimersByTime(900)
-      })
+      await act(async () => {})
 
       const state = useDatabaseCopilotStore.getState()
       expect(state.isAnalyzing).toBe(false)
@@ -417,14 +406,12 @@ describe('useDatabaseCopilotStore', () => {
       expect(state.lastAnalysis!.timestamp).toBeTruthy()
     })
 
-    it('generates suggestions for relation fields and empty tables', () => {
+    it('generates suggestions for relation fields and empty tables', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().analyzeSchema()
       })
 
-      act(() => {
-        vi.advanceTimersByTime(900)
-      })
+      await act(async () => {})
 
       const suggestions = useDatabaseCopilotStore.getState().suggestions
       expect(suggestions.length).toBeGreaterThan(0)
@@ -434,16 +421,14 @@ describe('useDatabaseCopilotStore', () => {
   })
 
   describe('reviewAutomations', () => {
-    it('produces lastAnalysis with automations type after delay', () => {
+    it('produces lastAnalysis with automations type', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().reviewAutomations()
       })
 
       expect(useDatabaseCopilotStore.getState().isAnalyzing).toBe(true)
 
-      act(() => {
-        vi.advanceTimersByTime(900)
-      })
+      await act(async () => {})
 
       const state = useDatabaseCopilotStore.getState()
       expect(state.isAnalyzing).toBe(false)
@@ -453,14 +438,12 @@ describe('useDatabaseCopilotStore', () => {
       expect(state.lastAnalysis!.items.length).toBeGreaterThan(0)
     })
 
-    it('detects inactive automations and generates suggestions', () => {
+    it('detects inactive automations and generates suggestions', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().reviewAutomations()
       })
 
-      act(() => {
-        vi.advanceTimersByTime(900)
-      })
+      await act(async () => {})
 
       const items = useDatabaseCopilotStore.getState().lastAnalysis!.items
       const activeItem = items.find((i) => i.includes('active'))
@@ -475,16 +458,14 @@ describe('useDatabaseCopilotStore', () => {
   })
 
   describe('checkDataHealth', () => {
-    it('produces lastAnalysis with data_health type after delay', () => {
+    it('produces lastAnalysis with data_health type', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().checkDataHealth()
       })
 
       expect(useDatabaseCopilotStore.getState().isAnalyzing).toBe(true)
 
-      act(() => {
-        vi.advanceTimersByTime(700)
-      })
+      await act(async () => {})
 
       const state = useDatabaseCopilotStore.getState()
       expect(state.isAnalyzing).toBe(false)
@@ -494,14 +475,12 @@ describe('useDatabaseCopilotStore', () => {
       expect(state.lastAnalysis!.items.length).toBeGreaterThan(0)
     })
 
-    it('includes fill rate and row count in items', () => {
+    it('includes fill rate and row count in items', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().checkDataHealth()
       })
 
-      act(() => {
-        vi.advanceTimersByTime(700)
-      })
+      await act(async () => {})
 
       const items = useDatabaseCopilotStore.getState().lastAnalysis!.items
       const rowItem = items.find((i) => i.includes('row'))
@@ -511,14 +490,12 @@ describe('useDatabaseCopilotStore', () => {
       expect(fillItem).toBeTruthy()
     })
 
-    it('detects missing required fields', () => {
+    it('detects missing required fields', async () => {
       act(() => {
         useDatabaseCopilotStore.getState().checkDataHealth()
       })
 
-      act(() => {
-        vi.advanceTimersByTime(700)
-      })
+      await act(async () => {})
 
       // tbl-2 has a required field (fld-12 Stage) with one empty value
       const items = useDatabaseCopilotStore.getState().lastAnalysis!.items
