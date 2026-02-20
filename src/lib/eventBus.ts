@@ -18,6 +18,8 @@ export const EVENT_TYPES = {
   FLEET_TASK_FAILED: 'fleet:task_failed',
   FLEET_ALERT: 'fleet:alert',
   FLEET_TELEMETRY: 'fleet:telemetry',
+  CHORUS_MESSAGE_SENT: 'chorus:message_sent',
+  CHORUS_MENTION: 'chorus:mention',
 } as const
 
 export type EventType = (typeof EVENT_TYPES)[keyof typeof EVENT_TYPES]

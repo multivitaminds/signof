@@ -1,0 +1,84 @@
+/* ─── Chorus Three-Panel Layout ──────────────────────────────── */
+
+:root {
+  --chorus-sidebar-width: 250px;
+  --chorus-thread-width: 350px;
+  --chorus-message-hover-bg: rgba(124, 92, 252, 0.04);
+  --chorus-active-channel-bg: rgba(124, 92, 252, 0.1);
+  --chorus-typing-dot-color: var(--text-secondary);
+  --chorus-unread-bg: #FF4D35;
+  --chorus-mention-bg: rgba(251, 191, 36, 0.15);
+  --chorus-presence-online: #06D6A0;
+  --chorus-presence-away: #FBBF24;
+  --chorus-presence-dnd: #FF4D35;
+  --chorus-presence-offline: var(--color-gray-400);
+}
+
+[data-theme="dark"] {
+  --chorus-message-hover-bg: rgba(124, 92, 252, 0.08);
+  --chorus-active-channel-bg: rgba(124, 92, 252, 0.15);
+  --chorus-typing-dot-color: var(--text-muted);
+  --chorus-mention-bg: rgba(251, 191, 36, 0.1);
+}
+
+.chorus-layout {
+  display: grid;
+  grid-template-columns: var(--chorus-sidebar-width) 1fr;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.chorus-layout--thread-open {
+  grid-template-columns: var(--chorus-sidebar-width) 1fr var(--chorus-thread-width);
+}
+
+.chorus-layout__main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+}
+
+.chorus-layout__thread {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-left: 1px solid var(--border-color);
+  animation: chorus-slide-in var(--motion-fast, 200ms) ease-out;
+}
+
+@keyframes chorus-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .chorus-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .chorus-layout--thread-open {
+    grid-template-columns: 1fr;
+  }
+
+  .chorus-layout__thread {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal, 50);
+    background: var(--bg-primary);
+  }
+}

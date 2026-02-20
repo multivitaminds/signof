@@ -106,6 +106,14 @@ const RegistryPage = lazy(() => import('./features/clawgpt/pages/RegistryPage'))
 
 const AnalyticsDashboardPage = lazy(() => import('./features/analytics/pages/AnalyticsDashboardPage'))
 
+// Chorus (Messaging)
+const ChorusLayout = lazy(() => import('./features/chorus/pages/ChorusLayout'))
+const ChannelPage = lazy(() => import('./features/chorus/pages/ChannelPage'))
+const DirectMessagePage = lazy(() => import('./features/chorus/pages/DirectMessagePage'))
+const ThreadPage = lazy(() => import('./features/chorus/pages/ThreadPage'))
+const ChannelBrowserPage = lazy(() => import('./features/chorus/pages/ChannelBrowserPage'))
+const SearchResultsPage = lazy(() => import('./features/chorus/pages/SearchResultsPage'))
+
 const DeveloperLayout = lazy(() => import('./features/developer/pages/DeveloperLayout'))
 const ApiDocsPage = lazy(() => import('./features/developer/pages/ApiDocsPage'))
 const CliDocsPage = lazy(() => import('./features/developer/pages/CliDocsPage'))
@@ -318,6 +326,21 @@ createRoot(root).render(
             <Route path="contacts" element={<Suspense fallback={CardFallback}><ContactsPage /></Suspense>} />
             <Route path="payroll" element={<Suspense fallback={TableFallback}><PayrollPage /></Suspense>} />
             <Route path="pricing" element={<Suspense fallback={CardFallback}><AccountingPricingPage /></Suspense>} />
+          </Route>
+
+          {/* Chorus (Messaging) */}
+          <Route path="chorus" element={
+            <ModuleErrorBoundary moduleName="Chorus">
+              <Suspense fallback={CardFallback}><ChorusLayout /></Suspense>
+            </ModuleErrorBoundary>
+          }>
+            <Route index element={<Navigate to="/chorus/channels/general" replace />} />
+            <Route path="channels/:channelId" element={<Suspense fallback={CardFallback}><ChannelPage /></Suspense>} />
+            <Route path="dm/:dmId" element={<Suspense fallback={CardFallback}><DirectMessagePage /></Suspense>} />
+            <Route path="thread/:threadId" element={<Suspense fallback={CardFallback}><ThreadPage /></Suspense>} />
+            <Route path="browse" element={<Suspense fallback={CardFallback}><ChannelBrowserPage /></Suspense>} />
+            <Route path="search" element={<Suspense fallback={CardFallback}><SearchResultsPage /></Suspense>} />
+            <Route path="new" element={<Suspense fallback={CardFallback}><DirectMessagePage /></Suspense>} />
           </Route>
 
           {/* Analytics */}

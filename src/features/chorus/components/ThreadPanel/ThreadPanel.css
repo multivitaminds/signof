@@ -1,0 +1,86 @@
+/* ─── Thread Panel ───────────────────────────────────────── */
+
+.thread-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-primary);
+}
+
+.thread-panel__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.thread-panel__title {
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.thread-panel__count {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.thread-panel__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-md, 0.5rem);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--motion-micro, 100ms);
+}
+
+.thread-panel__close:hover {
+  background: var(--chorus-message-hover-bg);
+}
+
+.thread-panel__messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-3) 0;
+}
+
+.thread-panel__parent {
+  padding-bottom: var(--space-3);
+}
+
+.thread-panel__divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.thread-panel__divider::before,
+.thread-panel__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.thread-panel__replies {
+  display: flex;
+  flex-direction: column;
+}
+
+.thread-panel__composer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border-color);
+  padding: var(--space-3);
+}

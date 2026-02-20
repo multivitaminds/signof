@@ -29,6 +29,7 @@ import {
   ChevronDown,
   Bell,
   BarChart3,
+  Music,
 } from 'lucide-react'
 import { useAppStore } from '../../../stores/useAppStore'
 import { useDocumentStore } from '../../../stores/useDocumentStore'
@@ -42,6 +43,7 @@ import NotificationCenter from '../../../features/notifications/components/Notif
 import PageTree from '../../../features/workspace/components/PageTree/PageTree'
 import RecentsList from '../../../features/home/components/RecentsList/RecentsList'
 import ShortcutHint from '../../ui/ShortcutHint/ShortcutHint'
+import { useChorusStore } from '../../../features/chorus/stores/useChorusStore'
 import { ACTIVE_STATUSES } from '../../../types'
 import type { FavoriteItem } from '../../../types'
 import './Sidebar.css'
@@ -137,6 +139,8 @@ export default function Sidebar() {
     return combined
   }, [favorites, dedicatedFavorites, workspaceFavorites])
 
+  const chorusUnreadCount = useChorusStore((s) => s.getTotalUnreadCount())
+
   const notificationUnreadCount = useNotificationStore((s) => s.getUnreadCount())
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false)
 
@@ -190,6 +194,7 @@ export default function Sidebar() {
     { path: '/calendar', label: 'Calendar', icon: Calendar, shortcutKey: 'mod+5' },
     { path: '/data', label: 'Databases', icon: Database, shortcutKey: 'mod+6' },
     { path: '/inbox', label: 'Inbox', icon: Inbox, badge: unreadCount || undefined, shortcutKey: 'mod+7' },
+    { path: '/chorus', label: 'Chorus', icon: Music, badge: chorusUnreadCount || undefined },
     { path: '/copilot', label: 'Copilot', icon: Sparkles, dataTour: 'copilot', shortcutKey: 'mod+8' },
     { path: '/tax', label: 'Tax', icon: Receipt },
     { path: '/accounting', label: 'Accounting', icon: Calculator },

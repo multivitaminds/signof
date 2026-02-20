@@ -61,6 +61,11 @@ export default defineConfig({
             './src/features/ai/stores/useAgentStore.ts',
             './src/features/ai/stores/useAIChatStore.ts',
           ],
+          'feature-chorus': [
+            './src/features/chorus/stores/useChorusStore.ts',
+            './src/features/chorus/stores/useChorusMessageStore.ts',
+            './src/features/chorus/stores/useChorusPresenceStore.ts',
+          ],
           'feature-clawgpt': [
             './src/features/clawgpt/stores/useChannelStore.ts',
             './src/features/clawgpt/stores/useMessageStore.ts',

@@ -1,0 +1,46 @@
+.unread-banner {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  background-color: var(--color-primary);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  animation: unread-banner-slide-in 200ms ease-out;
+  transition: background-color 150ms ease;
+}
+
+.unread-banner:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.unread-banner:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.unread-banner__text {
+  white-space: nowrap;
+}
+
+.unread-banner__icon {
+  flex-shrink: 0;
+}
+
+@keyframes unread-banner-slide-in {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

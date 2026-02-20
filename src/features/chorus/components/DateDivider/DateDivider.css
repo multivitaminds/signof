@@ -1,0 +1,28 @@
+/* ─── Date Divider ───────────────────────────────────────── */
+
+.chorus-date-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-4, 1rem) var(--space-4, 1rem) var(--space-2, 0.5rem);
+  user-select: none;
+}
+
+.chorus-date-divider__line {
+  flex: 1;
+  border: none;
+  height: 1px;
+  background: var(--border-color);
+  margin: 0;
+}
+
+.chorus-date-divider__label {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-muted);
+  white-space: nowrap;
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  border-radius: var(--radius-full, 9999px);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
