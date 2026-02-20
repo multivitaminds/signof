@@ -1,0 +1,197 @@
+/* ─── Channel Digest Modal ───────────────────────────────── */
+
+.chorus-digest {
+  max-width: 560px;
+  width: 100%;
+}
+
+/* Glass card override for modal-content parent */
+.modal-overlay:has(.chorus-digest) .modal-content {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--chorus-elevation-float);
+}
+
+/* ── Header ──────────────────────────────── */
+
+.chorus-digest__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chorus-digest__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.chorus-digest__title h2 {
+  font-size: var(--text-base, 1rem);
+  font-weight: var(--font-bold, 700);
+  color: var(--text-primary);
+  margin: 0;
+  background: var(--chorus-gradient-active);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.chorus-digest__icon {
+  color: var(--color-primary, #4f46e5);
+  flex-shrink: 0;
+}
+
+.chorus-digest__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-md, 0.5rem);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background var(--motion-micro, 100ms), color 150ms ease, transform 200ms ease;
+}
+
+.chorus-digest__close:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: var(--chorus-glow-danger);
+}
+
+/* ── Body ────────────────────────────────── */
+
+.chorus-digest__body {
+  padding: var(--space-4, 1rem);
+  min-height: 120px;
+}
+
+.chorus-digest__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-4, 1rem);
+  color: var(--text-muted);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.chorus-digest__loading p {
+  margin: 0;
+}
+
+.chorus-digest__spinner {
+  animation: chorus-digest-spin 1s linear infinite;
+  color: var(--color-primary, #4f46e5);
+}
+
+@keyframes chorus-digest-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Summary ─────────────────────────────── */
+
+.chorus-digest__summary {
+  margin-bottom: var(--space-4, 1rem);
+  animation: chorus-stagger-fade 300ms ease-out both;
+}
+
+.chorus-digest__summary p {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Sections with staggered entrance ────── */
+
+.chorus-digest__section {
+  margin-bottom: var(--space-3, 0.75rem);
+  animation: chorus-stagger-fade 300ms ease-out both;
+}
+
+.chorus-digest__section:nth-child(1) {
+  animation-delay: 50ms;
+}
+
+.chorus-digest__section:nth-child(2) {
+  animation-delay: 100ms;
+}
+
+.chorus-digest__section:nth-child(3) {
+  animation-delay: 150ms;
+}
+
+.chorus-digest__section:nth-child(4) {
+  animation-delay: 200ms;
+}
+
+.chorus-digest__section:nth-child(5) {
+  animation-delay: 250ms;
+}
+
+.chorus-digest__section h3 {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-semibold, 600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin: 0 0 var(--space-2, 0.5rem);
+}
+
+.chorus-digest__items {
+  margin: 0;
+  padding-left: var(--space-4, 1rem);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.chorus-digest__items li {
+  margin-bottom: var(--space-1, 0.25rem);
+}
+
+.chorus-digest__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4, 1rem);
+  color: var(--text-muted);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.chorus-digest__empty p {
+  margin: 0;
+}
+
+/* ── Footer ──────────────────────────────── */
+
+.chorus-digest__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  border-top: 1px solid var(--border-color);
+}
+
+.chorus-digest__regenerate {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.chorus-digest__regenerate:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--chorus-glow-primary);
+}
+
+.chorus-digest__regenerate:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

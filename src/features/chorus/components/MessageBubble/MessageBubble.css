@@ -5,7 +5,6 @@
   gap: var(--space-2, 0.5rem);
   padding: var(--space-1, 0.25rem) var(--space-4, 1rem);
   transition: background var(--motion-micro, 100ms), box-shadow var(--motion-micro, 100ms);
-  animation: chorus-message-enter 250ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 .chorus-bubble:hover {
@@ -32,8 +31,7 @@
 
 .chorus-bubble--pinned {
   border-left: 2px solid var(--color-primary, #4f46e5);
-  background: var(--chorus-glass-bg);
-  backdrop-filter: var(--chorus-glass-blur);
+  background: rgba(79, 70, 229, 0.04);
 }
 
 /* ── System message ─────────────────────────── */
@@ -137,7 +135,6 @@
   font-size: var(--text-xs, 0.75rem);
   line-height: 1.6;
   white-space: pre;
-  backdrop-filter: blur(4px);
   transition: border-color var(--motion-micro, 100ms), box-shadow var(--motion-micro, 100ms);
 }
 
@@ -165,12 +162,10 @@
   padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
   font-size: var(--text-xs, 0.75rem);
   color: var(--color-primary, #4f46e5);
-  background: var(--chorus-glass-bg);
+  background: rgba(79, 70, 229, 0.06);
   border: 1px solid rgba(79, 70, 229, 0.15);
   border-radius: var(--radius-sm, 0.375rem);
   text-decoration: none;
-  box-shadow: var(--chorus-elevation-1);
-  backdrop-filter: var(--chorus-glass-blur);
   transition: background var(--motion-micro, 100ms), transform var(--motion-micro, 100ms), box-shadow var(--motion-micro, 100ms);
 }
 

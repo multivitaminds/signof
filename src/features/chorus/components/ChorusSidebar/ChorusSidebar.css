@@ -4,10 +4,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--chorus-glass-bg);
-  backdrop-filter: var(--chorus-glass-blur);
-  -webkit-backdrop-filter: var(--chorus-glass-blur);
-  border-right: 1px solid var(--chorus-glass-border);
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
   overflow: hidden;
 }
 
@@ -54,11 +52,9 @@
   gap: var(--space-2);
   margin: var(--space-2) var(--space-3);
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--chorus-glass-border);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md, 0.5rem);
-  background: var(--chorus-glass-bg);
-  backdrop-filter: var(--chorus-glass-blur);
-  -webkit-backdrop-filter: var(--chorus-glass-blur);
+  background: var(--bg-primary);
   color: var(--text-muted);
   font-size: var(--text-sm);
   cursor: pointer;

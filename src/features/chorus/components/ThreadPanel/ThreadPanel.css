@@ -4,11 +4,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--chorus-glass-bg);
-  backdrop-filter: var(--chorus-glass-blur);
-  -webkit-backdrop-filter: var(--chorus-glass-blur);
-  border-left: 2px solid;
-  border-image: var(--chorus-gradient-thread) 1;
+  background: var(--bg-primary);
+  border-left: 2px solid var(--color-primary);
 }
 
 .thread-panel__header {
@@ -16,11 +13,8 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--chorus-glass-border);
+  border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
-  background: var(--chorus-glass-bg);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 .thread-panel__title {
@@ -98,24 +92,11 @@
 }
 
 .thread-panel__replies > * {
-  animation: chorus-stagger-fade 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* no entrance animation — content is already loaded */
 }
-
-.thread-panel__replies > *:nth-child(1) { animation-delay: 0ms; }
-.thread-panel__replies > *:nth-child(2) { animation-delay: 40ms; }
-.thread-panel__replies > *:nth-child(3) { animation-delay: 80ms; }
-.thread-panel__replies > *:nth-child(4) { animation-delay: 120ms; }
-.thread-panel__replies > *:nth-child(5) { animation-delay: 160ms; }
-.thread-panel__replies > *:nth-child(6) { animation-delay: 200ms; }
-.thread-panel__replies > *:nth-child(7) { animation-delay: 240ms; }
-.thread-panel__replies > *:nth-child(8) { animation-delay: 280ms; }
-.thread-panel__replies > *:nth-child(n+9) { animation-delay: 320ms; }
 
 .thread-panel__composer {
   flex-shrink: 0;
-  border-top: 1px solid var(--chorus-glass-border);
+  border-top: 1px solid var(--border-color);
   padding: var(--space-3);
-  background: var(--chorus-glass-bg);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }

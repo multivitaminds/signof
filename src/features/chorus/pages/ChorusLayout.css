@@ -178,9 +178,8 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  border-left: 1px solid var(--chorus-glass-border);
-  border-right: 1px solid var(--chorus-glass-border);
-  box-shadow: inset 1px 0 0 var(--chorus-glass-border), inset -1px 0 0 var(--chorus-glass-border);
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
 }
 
 .chorus-layout__thread {
@@ -189,7 +188,7 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  border-left: 1px solid var(--chorus-glass-border);
+  border-left: 1px solid var(--border-color);
   box-shadow: -4px 0 16px rgba(0, 0, 0, 0.04);
   animation: chorus-slide-in var(--motion-fast, 200ms) cubic-bezier(0.22, 1, 0.36, 1);
 }

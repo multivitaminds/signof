@@ -7,12 +7,9 @@
 
 /* Glass card override for modal-content parent */
 .modal-overlay:has(.create-channel-modal) .modal-content {
-  background: var(--chorus-glass-bg);
-  backdrop-filter: var(--chorus-glass-blur);
-  -webkit-backdrop-filter: var(--chorus-glass-blur);
-  border: 1px solid var(--chorus-glass-border);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
   box-shadow: var(--chorus-elevation-float);
-  animation: chorus-scale-in 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Close button rotation on hover */

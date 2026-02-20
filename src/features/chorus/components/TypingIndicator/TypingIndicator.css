@@ -28,10 +28,8 @@
   gap: 3px;
   padding: 4px 10px;
   border-radius: var(--radius-full, 9999px);
-  background: var(--chorus-glass-bg);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid var(--chorus-glass-border);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
 }
 
 .typing-indicator__dot {

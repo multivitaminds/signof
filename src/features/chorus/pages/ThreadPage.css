@@ -7,7 +7,7 @@
   background:
     radial-gradient(ellipse at top, rgba(124, 92, 252, 0.02) 0%, transparent 70%),
     var(--bg-primary);
-  animation: chorus-scale-in 250ms cubic-bezier(0.22, 1, 0.36, 1);
+  /* page loads instantly, no entrance animation */
 }
 
 .thread-page--empty {
@@ -22,11 +22,8 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--chorus-glass-border);
+  border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
-  background: var(--chorus-glass-bg);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 .thread-page__back {
@@ -97,9 +94,6 @@
 
 .thread-page__composer {
   flex-shrink: 0;
-  border-top: 1px solid var(--chorus-glass-border);
+  border-top: 1px solid var(--border-color);
   padding: var(--space-3) var(--space-4);
-  background: var(--chorus-glass-bg);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }

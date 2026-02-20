@@ -19,7 +19,7 @@
   height: 100%;
   border-radius: var(--radius-md, 0.5rem);
   object-fit: cover;
-  border: 2px solid var(--chorus-glass-border);
+  border: 2px solid var(--border-color);
 }
 
 .presence-avatar__initials {
@@ -33,7 +33,7 @@
   font-weight: var(--font-semibold);
   user-select: none;
   line-height: 1;
-  border: 2px solid var(--chorus-glass-border);
+  border: 2px solid var(--border-color);
 }
 
 .presence-avatar__dot {

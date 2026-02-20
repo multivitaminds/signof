@@ -20,18 +20,6 @@
     transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.unread-banner::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: var(--chorus-gradient-active);
-  opacity: 0.5;
-  animation: chorus-glow-breathe 2s ease-in-out infinite;
-  z-index: -1;
-  filter: blur(8px);
-}
-
 .unread-banner:hover {
   box-shadow: 0 4px 20px rgba(124, 92, 252, 0.4);
   transform: translateY(-1px);

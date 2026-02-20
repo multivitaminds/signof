@@ -5,10 +5,8 @@
   align-items: center;
   gap: 2px;
   padding: 2px;
-  background: var(--chorus-glass-bg);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--chorus-glass-border);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md, 0.5rem);
   box-shadow: var(--chorus-elevation-float);
   position: absolute;

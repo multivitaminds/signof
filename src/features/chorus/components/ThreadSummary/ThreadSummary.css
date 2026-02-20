@@ -1,0 +1,109 @@
+/* ─── Thread Summary ─────────────────────────────────────── */
+
+.chorus-thread-summary {
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+}
+
+.chorus-thread-summary__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-primary, #4f46e5);
+  background: rgba(79, 70, 229, 0.06);
+  border: 1px solid rgba(79, 70, 229, 0.15);
+  border-radius: var(--radius-md, 0.5rem);
+  cursor: pointer;
+  transition: background var(--motion-micro, 100ms);
+}
+
+.chorus-thread-summary__trigger:hover:not(:disabled) {
+  background: rgba(79, 70, 229, 0.12);
+}
+
+.chorus-thread-summary__trigger:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.chorus-thread-summary__spinner {
+  animation: chorus-thread-summary-spin 1s linear infinite;
+}
+
+.chorus-thread-summary__trigger:disabled .chorus-thread-summary__spinner {
+  animation: chorus-thread-summary-spin 1s linear infinite, chorus-presence-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes chorus-thread-summary-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Result ────────────────────────────────── */
+
+.chorus-thread-summary__result {
+  padding: var(--space-3, 0.75rem);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 0.75rem);
+  box-shadow: var(--chorus-elevation-1);
+  animation: chorus-scale-in 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.chorus-thread-summary__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-semibold, 600);
+  color: var(--color-primary, #4f46e5);
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.chorus-thread-summary__text {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin: 0 0 var(--space-2, 0.5rem);
+  animation: chorus-stagger-fade 300ms cubic-bezier(0.22, 1, 0.36, 1) 100ms backwards;
+}
+
+.chorus-thread-summary__items {
+  margin: 0 0 var(--space-2, 0.5rem);
+  padding-left: var(--space-4, 1rem);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.chorus-thread-summary__items li {
+  margin-bottom: 2px;
+  animation: chorus-stagger-fade 200ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.chorus-thread-summary__items li:nth-child(1) { animation-delay: 150ms; }
+.chorus-thread-summary__items li:nth-child(2) { animation-delay: 200ms; }
+.chorus-thread-summary__items li:nth-child(3) { animation-delay: 250ms; }
+.chorus-thread-summary__items li:nth-child(4) { animation-delay: 300ms; }
+.chorus-thread-summary__items li:nth-child(5) { animation-delay: 350ms; }
+
+.chorus-thread-summary__regenerate {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color var(--motion-micro, 100ms);
+}
+
+.chorus-thread-summary__regenerate:hover:not(:disabled) {
+  color: var(--text-primary);
+}
+
+.chorus-thread-summary__regenerate:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
