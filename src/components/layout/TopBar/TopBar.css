@@ -27,8 +27,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border: none;
   border-radius: var(--radius-md, 8px);
   background: transparent;
@@ -36,6 +36,19 @@
   cursor: pointer;
   transition: all var(--motion-micro, 100ms) ease-out;
   position: relative;
+}
+
+.topbar__theme-btn {
+  width: auto;
+  padding: 0 12px;
+  gap: 6px;
+}
+
+.topbar__icon-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary, #6B7280);
+  white-space: nowrap;
 }
 
 .topbar__icon-btn:hover {
@@ -229,6 +242,10 @@
 
 [data-theme="dark"] .topbar__icon-btn {
   color: var(--text-secondary, #94A3B8);
+}
+
+[data-theme="dark"] .topbar__icon-label {
+  color: var(--text-muted, #64748B);
 }
 
 [data-theme="dark"] .topbar__icon-btn:hover {

@@ -10,8 +10,8 @@ import {
   Inbox,
   Sparkles,
   Settings,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
   Search,
   Plus,
   X,
@@ -313,7 +313,10 @@ export default function Sidebar() {
             aria-label="Toggle notifications"
             title="Notifications"
           >
-            <Bell size={18} />
+            <Bell size={22} />
+            {effectiveExpanded && (
+              <span className="sidebar__notification-label">Notifications</span>
+            )}
             {notificationUnreadCount > 0 && (
               <NotificationBadge count={notificationUnreadCount} />
             )}
@@ -324,7 +327,12 @@ export default function Sidebar() {
             aria-label={sidebarExpanded ? 'Unpin sidebar' : 'Pin sidebar open'}
             title={sidebarExpanded ? 'Unpin sidebar' : 'Pin sidebar open'}
           >
-            {sidebarExpanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+            {sidebarExpanded ? <PanelLeftClose size={22} /> : <PanelLeftOpen size={22} />}
+            {effectiveExpanded && (
+              <span className="sidebar__toggle-label">
+                {sidebarExpanded ? 'Unpin' : 'Pin'}
+              </span>
+            )}
           </button>
         </div>
       </div>
@@ -374,123 +382,123 @@ export default function Sidebar() {
         </div>
       )}
 
-      {/* Favorites */}
-      {effectiveExpanded && (
-        <div className="sidebar__favorites">
-          <button
-            className="sidebar__section-toggle"
-            onClick={() => setFavoritesCollapsed((prev) => !prev)}
-            aria-expanded={!favoritesCollapsed}
-            aria-label={favoritesCollapsed ? 'Expand favorites' : 'Collapse favorites'}
-          >
-            <ChevronDown
-              size={14}
-              className={`sidebar__section-chevron${favoritesCollapsed ? ' sidebar__section-chevron--collapsed' : ''}`}
-            />
-            <Star size={12} className="sidebar__section-star" />
-            <span className="sidebar__section-label-text">Favorites</span>
-          </button>
-          {!favoritesCollapsed && (
-            allFavorites.length > 0 ? (
-              <ul className="sidebar__nav-list">
-                {allFavorites.map((fav, index) => (
-                  <li
-                    key={fav.id}
-                    className={`sidebar__nav-item sidebar__favorite-item ${dragOverIndex === index ? 'sidebar__favorite-item--drag-over' : ''}`}
-                    draggable
-                    onDragStart={() => handleDragStart(index)}
-                    onDragOver={(e) => handleDragOver(e, index)}
-                    onDrop={() => handleDrop(index)}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <NavLink
-                      to={fav.path}
-                      className={`sidebar__nav-link ${location.pathname === fav.path ? 'sidebar__nav-link--active' : ''}`}
-                      onClick={handleNavClick}
-                    >
-                      <Star size={16} className="sidebar__nav-icon sidebar__star-icon" />
-                      <span className="sidebar__nav-label">{fav.label}</span>
-                    </NavLink>
-                    <button
-                      className="sidebar__favorite-remove"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        removeFavorite(fav.id)
-                      }}
-                      aria-label={`Remove ${fav.label} from favorites`}
-                    >
-                      <X size={14} />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="sidebar__favorites-empty">No favorites yet</p>
-            )
-          )}
-        </div>
-      )}
-
-      {/* Recents */}
-      {effectiveExpanded && (
-        <div className="sidebar__recents">
-          <RecentsList />
-        </div>
-      )}
-
-      {/* Navigation */}
-      <nav className="sidebar__nav" data-tour="modules">
+      {/* Scrollable content area — favorites + recents + nav */}
+      <div className="sidebar__scrollable">
+        {/* Favorites */}
         {effectiveExpanded && (
-          <div className="sidebar__section-label">Workspace</div>
-        )}
-        <ul className="sidebar__nav-list">
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon
-            const isActive = location.pathname === item.path ||
-              (item.path !== '/' && location.pathname.startsWith(item.path))
-
-            return (
-              <li key={item.path} className="sidebar__nav-item" data-tour={item.dataTour}>
-                <NavLink
-                  to={item.path}
-                  className={`sidebar__nav-link ${isActive ? 'sidebar__nav-link--active' : ''}`}
-                  title={!effectiveExpanded ? item.label : undefined}
-                  onClick={handleNavClick}
-                >
-                  <Icon size={20} className="sidebar__nav-icon" />
-                  {effectiveExpanded && (
-                    <span className="sidebar__nav-label">{item.label}</span>
-                  )}
-                  {item.badge !== undefined && item.badge > 0 && effectiveExpanded && (
-                    <span className="sidebar__badge">{item.badge}</span>
-                  )}
-                  {item.shortcutKey && !item.badge && effectiveExpanded && (
-                    <ShortcutHint keys={item.shortcutKey} />
-                  )}
-                </NavLink>
-              </li>
-            )
-          })}
-        </ul>
-        {effectiveExpanded && workspacePages.length > 0 && (
-          <div className="sidebar__page-tree">
-            <PageTree
-              pages={workspacePages}
-              selectedPageId={location.pathname.split('/pages/')[1]}
-              onSelectPage={(id) => {
-                navigate(`/pages/${id}`)
-                closeMobileSidebar()
-              }}
-              compact
-              maxItems={5}
-            />
+          <div className="sidebar__favorites">
+            <button
+              className="sidebar__section-toggle"
+              onClick={() => setFavoritesCollapsed((prev) => !prev)}
+              aria-expanded={!favoritesCollapsed}
+              aria-label={favoritesCollapsed ? 'Expand favorites' : 'Collapse favorites'}
+            >
+              <ChevronDown
+                size={14}
+                className={`sidebar__section-chevron${favoritesCollapsed ? ' sidebar__section-chevron--collapsed' : ''}`}
+              />
+              <Star size={12} className="sidebar__section-star" />
+              <span className="sidebar__section-label-text">Favorites</span>
+            </button>
+            {!favoritesCollapsed && (
+              allFavorites.length > 0 ? (
+                <ul className="sidebar__nav-list">
+                  {allFavorites.map((fav, index) => (
+                    <li
+                      key={fav.id}
+                      className={`sidebar__nav-item sidebar__favorite-item ${dragOverIndex === index ? 'sidebar__favorite-item--drag-over' : ''}`}
+                      draggable
+                      onDragStart={() => handleDragStart(index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDrop={() => handleDrop(index)}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <NavLink
+                        to={fav.path}
+                        className={`sidebar__nav-link ${location.pathname === fav.path ? 'sidebar__nav-link--active' : ''}`}
+                        onClick={handleNavClick}
+                      >
+                        <Star size={16} className="sidebar__nav-icon sidebar__star-icon" />
+                        <span className="sidebar__nav-label">{fav.label}</span>
+                      </NavLink>
+                      <button
+                        className="sidebar__favorite-remove"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          removeFavorite(fav.id)
+                        }}
+                        aria-label={`Remove ${fav.label} from favorites`}
+                      >
+                        <X size={14} />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="sidebar__favorites-empty">No favorites yet</p>
+              )
+            )}
           </div>
         )}
-      </nav>
 
-      {/* Divider */}
-      <div className="sidebar__divider" />
+        {/* Recents */}
+        {effectiveExpanded && (
+          <div className="sidebar__recents">
+            <RecentsList />
+          </div>
+        )}
+
+        {/* Navigation */}
+        <nav className="sidebar__nav" data-tour="modules">
+          {effectiveExpanded && (
+            <div className="sidebar__section-label">Workspace</div>
+          )}
+          <ul className="sidebar__nav-list">
+            {NAV_ITEMS.map((item) => {
+              const Icon = item.icon
+              const isActive = location.pathname === item.path ||
+                (item.path !== '/' && location.pathname.startsWith(item.path))
+
+              return (
+                <li key={item.path} className="sidebar__nav-item" data-tour={item.dataTour}>
+                  <NavLink
+                    to={item.path}
+                    className={`sidebar__nav-link ${isActive ? 'sidebar__nav-link--active' : ''}`}
+                    title={!effectiveExpanded ? item.label : undefined}
+                    onClick={handleNavClick}
+                  >
+                    <Icon size={20} className="sidebar__nav-icon" />
+                    {effectiveExpanded && (
+                      <span className="sidebar__nav-label">{item.label}</span>
+                    )}
+                    {item.badge !== undefined && item.badge > 0 && effectiveExpanded && (
+                      <span className="sidebar__badge">{item.badge}</span>
+                    )}
+                    {item.shortcutKey && !item.badge && effectiveExpanded && (
+                      <ShortcutHint keys={item.shortcutKey} />
+                    )}
+                  </NavLink>
+                </li>
+              )
+            })}
+          </ul>
+          {effectiveExpanded && workspacePages.length > 0 && (
+            <div className="sidebar__page-tree">
+              <PageTree
+                pages={workspacePages}
+                selectedPageId={location.pathname.split('/pages/')[1]}
+                onSelectPage={(id) => {
+                  navigate(`/pages/${id}`)
+                  closeMobileSidebar()
+                }}
+                compact
+                maxItems={5}
+              />
+            </div>
+          )}
+        </nav>
+      </div>
 
       {/* Settings at bottom */}
       <div className="sidebar__footer" data-tour="settings">

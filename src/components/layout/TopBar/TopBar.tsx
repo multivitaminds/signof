@@ -115,17 +115,20 @@ export default function TopBar() {
           aria-label="Search"
           title="Search (⌘K)"
         >
-          <Search size={22} />
+          <Search size={24} />
         </button>
 
         {/* Theme Toggle */}
         <button
-          className="topbar__icon-btn"
+          className="topbar__icon-btn topbar__theme-btn"
           onClick={cycleTheme}
           aria-label={THEME_LABEL[theme]}
           title={THEME_LABEL[theme]}
         >
-          <ThemeIcon size={22} />
+          <ThemeIcon size={24} />
+          <span className="topbar__icon-label">
+            {theme === 'light' ? 'Light' : theme === 'dark' ? 'Dark' : 'Auto'}
+          </span>
         </button>
 
         {/* Notifications */}

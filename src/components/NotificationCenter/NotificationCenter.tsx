@@ -230,7 +230,7 @@ export default function NotificationCenter() {
         aria-haspopup="true"
         title="Notifications"
       >
-        <Bell size={20} />
+        <Bell size={24} />
         {unreadCount > 0 && (
           <span className="notification-center__badge" data-testid="notification-badge">
             {unreadCount > 99 ? '99+' : unreadCount}
