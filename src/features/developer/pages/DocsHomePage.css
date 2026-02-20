@@ -1,0 +1,226 @@
+/* ─── DocsHomePage ─────────────────────────────────────────────────────────── */
+
+.docs-home {
+  font-family: var(--font-sans);
+}
+
+/* Hero */
+
+.docs-home__hero {
+  padding-bottom: var(--space-xl, 1.5rem);
+  margin-bottom: var(--space-xl, 1.5rem);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.docs-home__title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm, 0.5rem);
+}
+
+.docs-home__subtitle {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Sections */
+
+.docs-home__section {
+  margin-bottom: 2rem;
+}
+
+.docs-home__section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem;
+}
+
+/* Quick Start Grid */
+
+.docs-home__quick-start-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.docs-home__quick-start-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg, 0.75rem);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  background: var(--bg-primary);
+}
+
+.docs-home__quick-start-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+.docs-home__quick-start-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.docs-home__quick-start-icon {
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+}
+
+.docs-home__quick-start-title {
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+  color: var(--text-primary);
+}
+
+.docs-home__quick-start-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Product APIs Grid */
+
+.docs-home__product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.docs-home__product-card {
+  border: 1px solid var(--border-color);
+  border-left: 4px solid;
+  border-radius: var(--radius-md, 0.5rem);
+  padding: 1.25rem;
+  background: var(--bg-primary);
+}
+
+.docs-home__product-name {
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+  color: var(--text-primary);
+}
+
+.docs-home__product-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.75rem;
+  line-height: 1.5;
+}
+
+.docs-home__product-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+/* Getting Started Steps */
+
+.docs-home__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.docs-home__step {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.docs-home__step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.docs-home__step-content {
+  flex: 1;
+}
+
+.docs-home__step-title {
+  font-weight: 600;
+  margin: 0 0 0.125rem;
+  color: var(--text-primary);
+}
+
+.docs-home__step-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Resources Grid */
+
+.docs-home__resources-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.docs-home__resource-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 0.5rem);
+  padding: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  background: var(--bg-primary);
+  display: block;
+}
+
+.docs-home__resource-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+.docs-home__resource-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.docs-home__resource-title {
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+  color: var(--text-primary);
+}
+
+.docs-home__resource-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .docs-home__quick-start-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .docs-home__product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .docs-home__resources-grid {
+    grid-template-columns: 1fr;
+  }
+}

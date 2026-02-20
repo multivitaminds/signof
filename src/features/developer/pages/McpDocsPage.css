@@ -1,0 +1,346 @@
+/* ─── McpDocsPage ─────────────────────────────────────────────────── */
+
+.mcp-docs__header {
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mcp-docs__title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.mcp-docs__subtitle {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  max-width: 600px;
+  line-height: var(--leading-relaxed);
+}
+
+/* ─── Sections ───────────────────────────────────────────────────── */
+
+.mcp-docs__section {
+  margin-bottom: var(--space-6);
+}
+
+.mcp-docs__section-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.mcp-docs__overview {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+  max-width: 700px;
+}
+
+/* ─── Installation Tabs ──────────────────────────────────────────── */
+
+.mcp-docs__install-tabs {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.mcp-docs__install-tab {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+  transition: all var(--motion-fast) var(--ease-out);
+}
+
+.mcp-docs__install-tab:hover {
+  color: var(--text-primary);
+  border-color: var(--color-primary);
+}
+
+.mcp-docs__install-tab--active {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.mcp-docs__install-note {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* ─── Domain Groups ──────────────────────────────────────────────── */
+
+.mcp-docs__domain-groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.mcp-docs__domain-group {
+  margin-bottom: var(--space-1);
+}
+
+.mcp-docs__domain-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3) var(--space-3);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-out);
+  color: var(--text-muted);
+}
+
+.mcp-docs__domain-header:hover {
+  background: var(--bg-secondary);
+}
+
+.mcp-docs__domain-label {
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+.mcp-docs__domain-count {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  margin-left: auto;
+}
+
+/* ─── Domain Tools ───────────────────────────────────────────────── */
+
+.mcp-docs__domain-tools {
+  padding: var(--space-3) 0 var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.mcp-docs__tool-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  background: var(--bg-primary);
+}
+
+.mcp-docs__tool-name {
+  font-family: var(--font-mono);
+  font-weight: var(--font-semibold);
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+}
+
+.mcp-docs__tool-desc {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+/* ─── Params Table ───────────────────────────────────────────────── */
+
+.mcp-docs__params-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--space-3);
+  font-size: var(--text-xs);
+}
+
+.mcp-docs__params-table th {
+  text-align: left;
+  padding: var(--space-2);
+  border-bottom: 2px solid var(--border-color);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mcp-docs__params-table td {
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.mcp-docs__params-table tr:last-child td {
+  border-bottom: none;
+}
+
+.mcp-docs__params-table code {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.mcp-docs__tool-return {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.mcp-docs__tool-return code {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Resources Grid ─────────────────────────────────────────────── */
+
+.mcp-docs__resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-3);
+}
+
+.mcp-docs__resource-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  background: var(--bg-primary);
+}
+
+.mcp-docs__resource-name {
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+}
+
+.mcp-docs__resource-uri {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+  display: block;
+  margin: var(--space-1) 0;
+}
+
+.mcp-docs__resource-desc {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+/* ─── Config Tabs ────────────────────────────────────────────────── */
+
+.mcp-docs__config-tabs {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.mcp-docs__config-tab {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+  transition: all var(--motion-fast) var(--ease-out);
+}
+
+.mcp-docs__config-tab:hover {
+  color: var(--text-primary);
+  border-color: var(--color-primary);
+}
+
+.mcp-docs__config-tab--active {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+/* ─── Env Table ──────────────────────────────────────────────────── */
+
+.mcp-docs__env-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.mcp-docs__env-table th {
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 2px solid var(--border-color);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mcp-docs__env-table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.mcp-docs__env-table tr:last-child td {
+  border-bottom: none;
+}
+
+.mcp-docs__env-table code {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Security List ──────────────────────────────────────────────── */
+
+.mcp-docs__security-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.mcp-docs__security-list li {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  padding-left: var(--space-4);
+  position: relative;
+}
+
+.mcp-docs__security-list li::before {
+  content: '\2022';
+  position: absolute;
+  left: 0;
+  color: var(--text-muted);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .mcp-docs__resources-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mcp-docs__install-tabs,
+  .mcp-docs__config-tabs {
+    flex-wrap: wrap;
+  }
+}

@@ -200,3 +200,136 @@ export interface SandboxExample {
   name: string
   request: SandboxRequest
 }
+
+// ─── MCP Domain ─────────────────────────────────────────────────────
+
+export const McpDomain = {
+  Documents: 'documents',
+  Projects: 'projects',
+  Scheduling: 'scheduling',
+  Databases: 'databases',
+  Ai: 'ai',
+  Workspace: 'workspace',
+} as const
+
+export type McpDomain = (typeof McpDomain)[keyof typeof McpDomain]
+
+export const MCP_DOMAIN_LABELS: Record<McpDomain, string> = {
+  [McpDomain.Documents]: 'Documents',
+  [McpDomain.Projects]: 'Projects',
+  [McpDomain.Scheduling]: 'Scheduling',
+  [McpDomain.Databases]: 'Databases',
+  [McpDomain.Ai]: 'AI',
+  [McpDomain.Workspace]: 'Workspace',
+}
+
+// ─── Agent Category ─────────────────────────────────────────────────
+
+export const AgentCategory = {
+  Core: 'core',
+  Creative: 'creative',
+  Technical: 'technical',
+  Business: 'business',
+  Legal: 'legal',
+  People: 'people',
+} as const
+
+export type AgentCategory = (typeof AgentCategory)[keyof typeof AgentCategory]
+
+export const AGENT_CATEGORY_LABELS: Record<AgentCategory, string> = {
+  [AgentCategory.Core]: 'Core',
+  [AgentCategory.Creative]: 'Creative',
+  [AgentCategory.Technical]: 'Technical',
+  [AgentCategory.Business]: 'Business',
+  [AgentCategory.Legal]: 'Legal',
+  [AgentCategory.People]: 'People',
+}
+
+// ─── Marketplace Domain ─────────────────────────────────────────────
+
+export const MarketplaceDomain = {
+  WorkProductivity: 'work-productivity',
+  FinanceMoney: 'finance-money',
+  HealthFitness: 'health-fitness',
+  LearningEducation: 'learning-education',
+  RelationshipsSocial: 'relationships-social',
+  HomeHousehold: 'home-household',
+  CreativityContent: 'creativity-content',
+} as const
+
+export type MarketplaceDomain = (typeof MarketplaceDomain)[keyof typeof MarketplaceDomain]
+
+export const MARKETPLACE_DOMAIN_LABELS: Record<MarketplaceDomain, string> = {
+  [MarketplaceDomain.WorkProductivity]: 'Work & Productivity',
+  [MarketplaceDomain.FinanceMoney]: 'Finance & Money',
+  [MarketplaceDomain.HealthFitness]: 'Health & Fitness',
+  [MarketplaceDomain.LearningEducation]: 'Learning & Education',
+  [MarketplaceDomain.RelationshipsSocial]: 'Relationships & Social',
+  [MarketplaceDomain.HomeHousehold]: 'Home & Household',
+  [MarketplaceDomain.CreativityContent]: 'Creativity & Content',
+}
+
+// ─── MCP Tool ───────────────────────────────────────────────────────
+
+export interface McpToolParam {
+  name: string
+  type: string
+  required: boolean
+  description: string
+}
+
+export interface McpTool {
+  id: string
+  name: string
+  domain: McpDomain
+  description: string
+  parameters: McpToolParam[]
+  returnType: string
+  example: string
+}
+
+// ─── MCP Resource ───────────────────────────────────────────────────
+
+export interface McpResource {
+  id: string
+  name: string
+  uri: string
+  domain: McpDomain
+  description: string
+}
+
+// ─── Agent Constraints ──────────────────────────────────────────────
+
+export interface AgentConstraints {
+  costTier: 'low' | 'medium' | 'high'
+  latency: 'fast' | 'moderate' | 'slow'
+  concurrency: number
+  tokenBudget: number
+}
+
+// ─── Agent Entry ────────────────────────────────────────────────────
+
+export interface AgentEntry {
+  id: string
+  name: string
+  type: string
+  category: AgentCategory
+  color: string
+  description: string
+  capabilities: string[]
+  useCases: string[]
+  constraints: AgentConstraints
+}
+
+// ─── Marketplace Agent ──────────────────────────────────────────────
+
+export interface MarketplaceAgent {
+  id: string
+  name: string
+  domain: MarketplaceDomain
+  description: string
+  icon: string
+  author: string
+  installs: number
+  rating: number
+}
