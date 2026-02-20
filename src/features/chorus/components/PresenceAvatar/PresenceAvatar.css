@@ -6,6 +6,12 @@
   flex-shrink: 0;
   border-radius: var(--radius-md, 0.5rem);
   overflow: visible;
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 200ms ease;
+}
+
+.presence-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: var(--chorus-elevation-2);
 }
 
 .presence-avatar__image {
@@ -13,6 +19,7 @@
   height: 100%;
   border-radius: var(--radius-md, 0.5rem);
   object-fit: cover;
+  border: 2px solid var(--chorus-glass-border);
 }
 
 .presence-avatar__initials {
@@ -26,6 +33,7 @@
   font-weight: var(--font-semibold);
   user-select: none;
   line-height: 1;
+  border: 2px solid var(--chorus-glass-border);
 }
 
 .presence-avatar__dot {
@@ -35,6 +43,12 @@
   border-radius: var(--radius-full, 9999px);
   border: 2px solid var(--bg-primary);
   box-sizing: content-box;
+  transition: background-color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.presence-avatar__dot--online {
+  animation: chorus-presence-pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 0 2px var(--bg-primary), var(--chorus-glow-success);
 }
 
 .presence-avatar__dot--dnd {

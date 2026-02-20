@@ -1,11 +1,16 @@
 import { useCallback, useRef, useState } from 'react'
 import { Send } from 'lucide-react'
+import SmartComposeChip from '../SmartComposeChip/SmartComposeChip'
 import './MessageComposer.css'
 
 interface MessageComposerProps {
   onSend: (content: string) => void
   placeholder?: string
   compact?: boolean
+  smartComposeSuggestion?: string | null
+  onAcceptSuggestion?: () => string | null
+  onDismissSuggestion?: () => void
+  onDraftChange?: (draft: string) => void
 }
 
 const MAX_ROWS = 6
@@ -15,6 +20,10 @@ export default function MessageComposer({
   onSend,
   placeholder = 'Type a message...',
   compact = false,
+  smartComposeSuggestion,
+  onAcceptSuggestion,
+  onDismissSuggestion,
+  onDraftChange,
 }: MessageComposerProps) {
   const [content, setContent] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -43,20 +52,36 @@ export default function MessageComposer({
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Tab' && smartComposeSuggestion && onAcceptSuggestion) {
+        e.preventDefault()
+        const accepted = onAcceptSuggestion()
+        if (accepted) {
+          setContent(accepted)
+          adjustHeight()
+        }
+        return
+      }
+      if (e.key === 'Escape' && smartComposeSuggestion && onDismissSuggestion) {
+        e.preventDefault()
+        onDismissSuggestion()
+        return
+      }
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
         handleSend()
       }
     },
-    [handleSend]
+    [handleSend, smartComposeSuggestion, onAcceptSuggestion, onDismissSuggestion, adjustHeight]
   )
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setContent(e.target.value)
+      const value = e.target.value
+      setContent(value)
       adjustHeight()
+      onDraftChange?.(value)
     },
-    [adjustHeight]
+    [adjustHeight, onDraftChange]
   )
 
   const rootClass = compact
@@ -93,6 +118,19 @@ export default function MessageComposer({
           <Send size={18} />
         </button>
       </div>
+      {smartComposeSuggestion && onAcceptSuggestion && onDismissSuggestion && (
+        <SmartComposeChip
+          suggestion={smartComposeSuggestion}
+          onAccept={() => {
+            const accepted = onAcceptSuggestion()
+            if (accepted) {
+              setContent(accepted)
+              adjustHeight()
+            }
+          }}
+          onDismiss={onDismissSuggestion}
+        />
+      )}
     </div>
   )
 }

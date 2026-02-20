@@ -5,7 +5,10 @@
   flex-direction: column;
   gap: var(--space-2, 0.5rem);
   padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
-  background: var(--bg-primary);
+  background: var(--chorus-glass-bg);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--chorus-glass-border);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
 }
 
 .chorus-composer--compact {
@@ -16,12 +19,12 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg, 0.75rem);
   background: var(--bg-secondary);
-  transition: border-color var(--motion-micro, 100ms);
+  transition: border-color var(--motion-micro, 100ms), box-shadow var(--motion-micro, 100ms);
 }
 
 .chorus-composer__input-wrapper:focus-within {
   border-color: var(--color-primary, #4f46e5);
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+  box-shadow: 0 0 0 2px rgba(124, 92, 252, 0.2), var(--chorus-elevation-2);
 }
 
 .chorus-composer__textarea {
@@ -63,14 +66,21 @@
   height: 32px;
   border: none;
   border-radius: var(--radius-md, 0.5rem);
-  background: var(--color-primary, #4f46e5);
+  background: var(--chorus-gradient-send);
   color: #fff;
   cursor: pointer;
-  transition: opacity var(--motion-micro, 100ms);
+  box-shadow: 0 2px 8px rgba(124, 92, 252, 0.25);
+  transition: transform var(--motion-micro, 100ms), box-shadow var(--motion-micro, 100ms), opacity var(--motion-micro, 100ms);
 }
 
 .chorus-composer__send:hover:not(:disabled) {
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 92, 252, 0.35);
+}
+
+.chorus-composer__send:active:not(:disabled) {
+  transform: scale(0.95);
+  box-shadow: 0 1px 4px rgba(124, 92, 252, 0.2);
 }
 
 .chorus-composer__send:disabled {

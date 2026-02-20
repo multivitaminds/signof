@@ -1,0 +1,51 @@
+/* ─── Presence Pulse ─────────────────────────────────────── */
+
+.presence-pulse {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Ring (pseudo-element) ─────────────────── */
+
+.presence-pulse--online::after,
+.presence-pulse--away::after,
+.presence-pulse--dnd::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: var(--radius-full, 9999px);
+  pointer-events: none;
+}
+
+/* Online: green pulse ring */
+.presence-pulse--online::after {
+  border: 2px solid var(--chorus-presence-online, #06D6A0);
+  animation: chorus-presence-pulse 2s ease-in-out infinite;
+}
+
+/* Away: amber slow breathe glow */
+.presence-pulse--away::after {
+  border: 2px solid var(--chorus-presence-away, #FBBF24);
+  animation: chorus-glow-breathe 3s ease-in-out infinite;
+}
+
+/* DND: red static ring, no animation */
+.presence-pulse--dnd::after {
+  border: 2px solid var(--chorus-presence-dnd, #FF4D35);
+}
+
+/* Offline: no ring */
+
+/* ── Size variants ─────────────────────────── */
+
+.presence-pulse--sm::after {
+  inset: -1px;
+  border-width: 1.5px;
+}
+
+.presence-pulse--md::after {
+  inset: -2px;
+  border-width: 2px;
+}

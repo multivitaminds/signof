@@ -1,9 +1,33 @@
+/* ─── New Message Modal ──────────────────────────────────── */
+
 .new-message-modal {
   max-width: 480px;
   display: flex;
   flex-direction: column;
   max-height: 80vh;
 }
+
+/* Glass card override for modal-content parent */
+.modal-overlay:has(.new-message-modal) .modal-content {
+  background: var(--chorus-glass-bg);
+  backdrop-filter: var(--chorus-glass-blur);
+  -webkit-backdrop-filter: var(--chorus-glass-blur);
+  border: 1px solid var(--chorus-glass-border);
+  box-shadow: var(--chorus-elevation-float);
+  animation: chorus-scale-in 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Close button rotation on hover */
+.modal-overlay:has(.new-message-modal) .modal-close {
+  transition: transform 200ms ease, color 150ms ease, background-color 150ms ease;
+}
+
+.modal-overlay:has(.new-message-modal) .modal-close:hover {
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: var(--chorus-glow-danger);
+}
+
+/* ── Search ──────────────────────────────── */
 
 .new-message-modal__search {
   position: relative;
@@ -17,6 +41,7 @@
   transform: translateY(-50%);
   color: var(--text-muted);
   pointer-events: none;
+  transition: color 150ms ease;
 }
 
 .new-message-modal__search-input {
@@ -28,13 +53,20 @@
   color: var(--text-primary);
   font-size: 0.875rem;
   font-family: var(--font-sans);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .new-message-modal__search-input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--alpha-focus);
+  box-shadow: 0 0 0 2px rgba(124, 92, 252, 0.2);
 }
+
+.new-message-modal__search-input:focus ~ .new-message-modal__search-icon {
+  color: var(--color-primary);
+}
+
+/* ── Selected chips ──────────────────────── */
 
 .new-message-modal__selected {
   display: flex;
@@ -48,11 +80,19 @@
   align-items: center;
   gap: 4px;
   padding: 2px var(--space-xs) 2px var(--space-sm);
-  background-color: var(--color-primary-light);
+  background: rgba(124, 92, 252, 0.12);
   color: var(--color-primary-dark);
   border-radius: var(--radius-full, 999px);
   font-size: 0.8125rem;
   font-weight: 500;
+  border: 1px solid rgba(124, 92, 252, 0.15);
+  animation: chorus-badge-pop 250ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background 150ms ease, box-shadow 150ms ease;
+}
+
+.new-message-modal__chip:hover {
+  background: rgba(124, 92, 252, 0.18);
+  box-shadow: var(--chorus-glow-primary);
 }
 
 .new-message-modal__chip-remove {
@@ -67,12 +107,16 @@
   cursor: pointer;
   color: var(--color-primary-dark);
   padding: 0;
+  transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
 }
 
 .new-message-modal__chip-remove:hover {
   background-color: var(--color-primary);
   color: #fff;
+  transform: scale(1.15);
 }
+
+/* ── User list ───────────────────────────── */
 
 .new-message-modal__user-list {
   list-style: none;
@@ -97,7 +141,7 @@
   text-align: left;
   color: var(--text-primary);
   font-family: var(--font-sans);
-  transition: background-color 100ms ease;
+  transition: background-color 150ms ease, transform 100ms ease;
 }
 
 .new-message-modal__user-item:last-child {
@@ -108,13 +152,19 @@
   background-color: var(--bg-tertiary);
 }
 
+.new-message-modal__user-item:active {
+  transform: scale(0.99);
+}
+
 .new-message-modal__user-item--selected {
-  background-color: var(--color-primary-light);
+  background-color: rgba(124, 92, 252, 0.08);
 }
 
 .new-message-modal__user-item--selected:hover {
-  background-color: var(--color-primary-light);
+  background-color: rgba(124, 92, 252, 0.12);
 }
+
+/* ── User info ───────────────────────────── */
 
 .new-message-modal__user-info {
   display: flex;
@@ -151,9 +201,26 @@
   font-size: 0.875rem;
 }
 
+/* ── Footer ──────────────────────────────── */
+
 .new-message-modal__footer {
   display: flex;
   justify-content: flex-end;
   gap: var(--space-sm);
   margin-top: var(--space-lg);
+}
+
+.new-message-modal__footer .btn-primary {
+  background: var(--chorus-gradient-active);
+  border: none;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.new-message-modal__footer .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--chorus-elevation-2), var(--chorus-glow-primary);
+}
+
+.new-message-modal__footer .btn-primary:active {
+  transform: translateY(0);
 }

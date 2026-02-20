@@ -4,6 +4,7 @@ import { useChorusStore } from '../../stores/useChorusStore'
 import { useChorusMessageStore } from '../../stores/useChorusMessageStore'
 import MessageBubble from '../MessageBubble/MessageBubble'
 import MessageComposer from '../MessageComposer/MessageComposer'
+import ThreadSummary from '../ThreadSummary/ThreadSummary'
 import { ConversationType } from '../../types'
 import './ThreadPanel.css'
 
@@ -98,6 +99,14 @@ export default function ThreadPanel() {
             conversationType={activeConversationType ?? ConversationType.Channel}
           />
         </div>
+
+        {activeConversationId && activeThreadId && (
+          <ThreadSummary
+            channelId={activeConversationId}
+            threadId={activeThreadId}
+            replyCount={threadMessages.length}
+          />
+        )}
 
         {threadMessages.length > 0 && (
           <div className="thread-panel__divider">

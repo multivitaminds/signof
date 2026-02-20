@@ -6,10 +6,14 @@
   justify-content: space-between;
   gap: var(--space-3, 0.75rem);
   padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
-  border-bottom: 1px solid var(--border-color);
-  background: var(--bg-primary);
+  border-bottom: 1px solid transparent;
+  border-image: linear-gradient(to right, transparent, var(--border-color), transparent) 1;
+  background: var(--chorus-glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   flex-shrink: 0;
   min-height: 52px;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
 }
 
 .chorus-channel-header__info {
@@ -64,17 +68,31 @@
   background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: background var(--motion-micro, 100ms);
+  transition:
+    background 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
   font-size: var(--text-sm, 0.875rem);
 }
 
 .chorus-channel-header__action-btn:hover {
   background: var(--chorus-message-hover-bg);
   color: var(--text-primary);
+  box-shadow: var(--chorus-glow-primary);
+  transform: translateY(-1px);
 }
 
 .chorus-channel-header__member-count {
   font-size: var(--text-xs, 0.75rem);
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
+}
+
+.chorus-channel-header__action-btn--digest {
+  color: var(--color-primary, #4f46e5);
+}
+
+.chorus-channel-header__action-btn--digest:hover {
+  color: var(--color-primary, #4f46e5);
 }

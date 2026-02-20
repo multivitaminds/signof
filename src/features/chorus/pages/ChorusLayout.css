@@ -1,6 +1,7 @@
 /* ─── Chorus Three-Panel Layout ──────────────────────────────── */
 
 :root {
+  /* ── Existing tokens ──────────────────────── */
   --chorus-sidebar-width: 250px;
   --chorus-thread-width: 350px;
   --chorus-message-hover-bg: rgba(124, 92, 252, 0.04);
@@ -12,6 +13,29 @@
   --chorus-presence-away: #FBBF24;
   --chorus-presence-dnd: #FF4D35;
   --chorus-presence-offline: var(--color-gray-400);
+
+  /* ── Glass effects ────────────────────────── */
+  --chorus-glass-bg: rgba(255, 255, 255, 0.7);
+  --chorus-glass-border: rgba(255, 255, 255, 0.2);
+  --chorus-glass-blur: blur(12px);
+  --chorus-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+
+  /* ── Gradient accents ─────────────────────── */
+  --chorus-gradient-active: linear-gradient(135deg, #7C5CFC 0%, #6366F1 100%);
+  --chorus-gradient-send: linear-gradient(135deg, #7C5CFC 0%, #06D6A0 100%);
+  --chorus-gradient-unread: linear-gradient(135deg, #FF4D35 0%, #F59E0B 100%);
+  --chorus-gradient-thread: linear-gradient(180deg, var(--color-primary) 0%, transparent 100%);
+
+  /* ── Glow effects ─────────────────────────── */
+  --chorus-glow-primary: 0 0 20px rgba(124, 92, 252, 0.15);
+  --chorus-glow-success: 0 0 12px rgba(6, 214, 160, 0.2);
+  --chorus-glow-danger: 0 0 12px rgba(255, 77, 53, 0.2);
+
+  /* ── Elevation progression ────────────────── */
+  --chorus-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --chorus-elevation-2: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --chorus-elevation-3: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --chorus-elevation-float: 0 12px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 [data-theme="dark"] {
@@ -19,7 +43,122 @@
   --chorus-active-channel-bg: rgba(124, 92, 252, 0.15);
   --chorus-typing-dot-color: var(--text-muted);
   --chorus-mention-bg: rgba(251, 191, 36, 0.1);
+
+  /* ── Dark glass overrides ─────────────────── */
+  --chorus-glass-bg: rgba(15, 15, 26, 0.8);
+  --chorus-glass-border: rgba(255, 255, 255, 0.06);
+  --chorus-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  /* ── Dark elevation overrides ─────────────── */
+  --chorus-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.16);
+  --chorus-elevation-2: 0 4px 12px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.12);
+  --chorus-elevation-3: 0 8px 24px rgba(0, 0, 0, 0.24), 0 2px 8px rgba(0, 0, 0, 0.12);
+  --chorus-elevation-float: 0 12px 40px rgba(0, 0, 0, 0.32), 0 4px 12px rgba(0, 0, 0, 0.16);
 }
+
+/* ─── Keyframes ──────────────────────────────────────────── */
+
+@keyframes chorus-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes chorus-message-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes chorus-presence-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(6, 214, 160, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(6, 214, 160, 0);
+  }
+}
+
+@keyframes chorus-glow-breathe {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes chorus-stagger-fade {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes chorus-badge-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes chorus-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes chorus-bounce-in {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(4px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes chorus-scale-in {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ─── Layout ─────────────────────────────────────────────── */
 
 .chorus-layout {
   display: grid;
@@ -39,8 +178,9 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  border-left: 1px solid var(--border-color);
-  border-right: 1px solid var(--border-color);
+  border-left: 1px solid var(--chorus-glass-border);
+  border-right: 1px solid var(--chorus-glass-border);
+  box-shadow: inset 1px 0 0 var(--chorus-glass-border), inset -1px 0 0 var(--chorus-glass-border);
 }
 
 .chorus-layout__thread {
@@ -49,18 +189,24 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  border-left: 1px solid var(--border-color);
-  animation: chorus-slide-in var(--motion-fast, 200ms) ease-out;
+  border-left: 1px solid var(--chorus-glass-border);
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.04);
+  animation: chorus-slide-in var(--motion-fast, 200ms) cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@keyframes chorus-slide-in {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
+/* ─── Reduced Motion ─────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .chorus-layout__thread {
+    animation: none;
   }
-  to {
-    transform: translateX(0);
-    opacity: 1;
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

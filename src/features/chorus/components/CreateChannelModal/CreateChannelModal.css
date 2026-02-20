@@ -5,6 +5,28 @@
   width: 100%;
 }
 
+/* Glass card override for modal-content parent */
+.modal-overlay:has(.create-channel-modal) .modal-content {
+  background: var(--chorus-glass-bg);
+  backdrop-filter: var(--chorus-glass-blur);
+  -webkit-backdrop-filter: var(--chorus-glass-blur);
+  border: 1px solid var(--chorus-glass-border);
+  box-shadow: var(--chorus-elevation-float);
+  animation: chorus-scale-in 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Close button rotation on hover */
+.modal-overlay:has(.create-channel-modal) .modal-close {
+  transition: transform 200ms ease, color 150ms ease, background-color 150ms ease;
+}
+
+.modal-overlay:has(.create-channel-modal) .modal-close:hover {
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: var(--chorus-glow-danger);
+}
+
+/* ── Form ────────────────────────────────── */
+
 .create-channel-modal__form {
   display: flex;
   flex-direction: column;
@@ -29,6 +51,8 @@
   color: var(--text-muted);
 }
 
+/* ── Name input group ────────────────────── */
+
 .create-channel-modal__name-input {
   display: flex;
   align-items: center;
@@ -37,18 +61,23 @@
   border-radius: var(--radius-md, 0.5rem);
   padding: 0 var(--space-3);
   background: var(--bg-primary);
-  transition: border-color var(--motion-micro, 100ms);
+  transition: border-color var(--motion-micro, 100ms), box-shadow 150ms ease;
 }
 
 .create-channel-modal__name-input:focus-within {
   border-color: var(--color-primary);
-  outline: 2px solid rgba(124, 92, 252, 0.2);
-  outline-offset: -1px;
+  box-shadow: 0 0 0 2px rgba(124, 92, 252, 0.2);
+  outline: none;
 }
 
 .create-channel-modal__prefix {
   display: flex;
   color: var(--text-muted);
+  transition: color 150ms ease;
+}
+
+.create-channel-modal__name-input:focus-within .create-channel-modal__prefix {
+  color: var(--color-primary);
 }
 
 .create-channel-modal__input {
@@ -70,6 +99,8 @@
   color: var(--text-muted);
 }
 
+/* ── Textarea ────────────────────────────── */
+
 .create-channel-modal__textarea {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md, 0.5rem);
@@ -79,18 +110,20 @@
   font-size: var(--text-sm);
   color: var(--text-primary);
   resize: vertical;
-  transition: border-color var(--motion-micro, 100ms);
+  transition: border-color var(--motion-micro, 100ms), box-shadow 150ms ease;
 }
 
 .create-channel-modal__textarea:focus {
   border-color: var(--color-primary);
-  outline: 2px solid rgba(124, 92, 252, 0.2);
-  outline-offset: -1px;
+  box-shadow: 0 0 0 2px rgba(124, 92, 252, 0.2);
+  outline: none;
 }
 
 .create-channel-modal__textarea::placeholder {
   color: var(--text-muted);
 }
+
+/* ── Toggle row ──────────────────────────── */
 
 .create-channel-modal__toggle-row {
   display: flex;
@@ -101,11 +134,13 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md, 0.5rem);
   cursor: pointer;
-  transition: background var(--motion-micro, 100ms);
+  transition: background var(--motion-micro, 100ms), border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .create-channel-modal__toggle-row:hover {
   background: var(--chorus-message-hover-bg);
+  border-color: rgba(124, 92, 252, 0.2);
+  box-shadow: var(--chorus-glow-primary);
 }
 
 .create-channel-modal__toggle-label {
@@ -128,7 +163,14 @@
   width: 18px;
   height: 18px;
   accent-color: var(--color-primary);
+  transition: transform 150ms ease;
 }
+
+.create-channel-modal__checkbox:checked {
+  transform: scale(1.1);
+}
+
+/* ── Actions ─────────────────────────────── */
 
 .create-channel-modal__actions {
   display: flex;
@@ -136,4 +178,19 @@
   gap: var(--space-2);
   padding-top: var(--space-2);
   border-top: 1px solid var(--border-color);
+}
+
+.create-channel-modal__actions .btn-primary {
+  background: var(--chorus-gradient-active);
+  border: none;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.create-channel-modal__actions .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--chorus-elevation-2), var(--chorus-glow-primary);
+}
+
+.create-channel-modal__actions .btn-primary:active {
+  transform: translateY(0);
 }

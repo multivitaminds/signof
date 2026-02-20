@@ -7,22 +7,38 @@
   justify-content: center;
   gap: var(--space-xs);
   padding: var(--space-xs) var(--space-md);
-  background-color: var(--color-primary);
+  background: var(--chorus-gradient-active);
   color: #fff;
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
   user-select: none;
-  animation: unread-banner-slide-in 200ms ease-out;
-  transition: background-color 150ms ease;
+  animation: chorus-bounce-in 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 2px 12px rgba(124, 92, 252, 0.3);
+  transition:
+    box-shadow 200ms ease,
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.unread-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--chorus-gradient-active);
+  opacity: 0.5;
+  animation: chorus-glow-breathe 2s ease-in-out infinite;
+  z-index: -1;
+  filter: blur(8px);
 }
 
 .unread-banner:hover {
-  background-color: var(--color-primary-hover);
+  box-shadow: 0 4px 20px rgba(124, 92, 252, 0.4);
+  transform: translateY(-1px);
 }
 
 .unread-banner:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid #fff;
   outline-offset: -2px;
 }
 
@@ -32,15 +48,4 @@
 
 .unread-banner__icon {
   flex-shrink: 0;
-}
-
-@keyframes unread-banner-slide-in {
-  from {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
 }

@@ -5,6 +5,20 @@
   overflow-y: auto;
   position: relative;
   min-height: 0;
+  scroll-behavior: smooth;
+}
+
+.chorus-message-list::before {
+  content: '';
+  position: sticky;
+  top: 0;
+  display: block;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--bg-primary) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+  margin-bottom: -40px;
+  flex-shrink: 0;
 }
 
 .chorus-message-list__content {
@@ -27,16 +41,17 @@
   font-size: var(--text-xs, 0.75rem);
   font-weight: var(--font-semibold, 600);
   color: #fff;
-  background: var(--color-primary, #4f46e5);
+  background: var(--chorus-gradient-active);
   border: none;
   border-radius: var(--radius-full, 9999px);
   cursor: pointer;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--chorus-elevation-2);
   z-index: 5;
-  transition: opacity var(--motion-micro, 100ms);
+  transition: transform var(--motion-micro, 100ms), box-shadow var(--motion-micro, 100ms);
   margin: 0 auto;
 }
 
 .chorus-message-list__new-messages:hover {
-  opacity: 0.9;
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: var(--chorus-elevation-3);
 }

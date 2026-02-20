@@ -4,9 +4,12 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--bg-primary);
-  border-left: 1px solid var(--border-color);
+  background: var(--chorus-glass-bg);
+  backdrop-filter: var(--chorus-glass-blur);
+  -webkit-backdrop-filter: var(--chorus-glass-blur);
+  border-left: 1px solid var(--chorus-glass-border);
   width: 260px;
+  animation: chorus-slide-in 250ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .member-list__header {
@@ -14,7 +17,7 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--chorus-glass-border);
   flex-shrink: 0;
 }
 
@@ -45,11 +48,14 @@
   background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: background var(--motion-micro, 100ms);
+  transition:
+    background var(--motion-micro, 100ms),
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .member-list__close:hover {
   background: var(--chorus-message-hover-bg);
+  transform: rotate(90deg) scale(1.1);
 }
 
 .member-list__summary {
@@ -66,6 +72,7 @@
   height: 8px;
   border-radius: var(--radius-full, 9999px);
   background: var(--chorus-presence-online);
+  animation: chorus-presence-pulse 2s ease-in-out infinite;
 }
 
 .member-list__list {
@@ -81,11 +88,27 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-2) var(--space-4);
-  transition: background var(--motion-micro, 100ms);
+  transition:
+    background var(--motion-micro, 100ms),
+    transform 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 150ms ease;
+  animation: chorus-stagger-fade 250ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+.member-list__item:nth-child(1) { animation-delay: 0ms; }
+.member-list__item:nth-child(2) { animation-delay: 30ms; }
+.member-list__item:nth-child(3) { animation-delay: 60ms; }
+.member-list__item:nth-child(4) { animation-delay: 90ms; }
+.member-list__item:nth-child(5) { animation-delay: 120ms; }
+.member-list__item:nth-child(6) { animation-delay: 150ms; }
+.member-list__item:nth-child(7) { animation-delay: 180ms; }
+.member-list__item:nth-child(8) { animation-delay: 210ms; }
+.member-list__item:nth-child(n+9) { animation-delay: 240ms; }
 
 .member-list__item:hover {
   background: var(--chorus-message-hover-bg);
+  transform: translateX(2px);
+  box-shadow: var(--chorus-elevation-1);
 }
 
 .member-list__info {
