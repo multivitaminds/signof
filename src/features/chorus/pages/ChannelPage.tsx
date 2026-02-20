@@ -1,12 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import ChannelHeader from '../components/ChannelHeader/ChannelHeader'
 import MessageList from '../components/MessageList/MessageList'
 import MessageComposer from '../components/MessageComposer/MessageComposer'
-import ChannelDigest from '../components/ChannelDigest/ChannelDigest'
 import { useChorusStore } from '../stores/useChorusStore'
 import { useChorusMessageStore } from '../stores/useChorusMessageStore'
-import { useSmartCompose } from '../hooks/useSmartCompose'
 import { AUTO_REPLY_MESSAGES } from '../data/mockData'
 import { ConversationType } from '../types'
 import type { ChorusMessage } from '../types'
@@ -28,8 +26,6 @@ export default function ChannelPage() {
   const clearUnreadCount = useChorusStore((s) => s.clearUnreadCount)
   const users = useChorusStore((s) => s.users)
 
-  const [showDigest, setShowDigest] = useState(false)
-
   const channel = useMemo(
     () => channels.find((ch) => ch.name === channelId),
     [channels, channelId]
@@ -41,17 +37,6 @@ export default function ChannelPage() {
     conversationId ? s.messages[conversationId] ?? EMPTY_MESSAGES : EMPTY_MESSAGES
   )
   const sendMessage = useChorusMessageStore((s) => s.sendMessage)
-
-  const recentMessageContents = useMemo(
-    () => messages.slice(-5).map((m) => `${m.senderName}: ${m.content}`),
-    [messages]
-  )
-
-  const smartCompose = useSmartCompose({
-    channelName: channel?.name,
-    recentMessages: recentMessageContents,
-    topic: channel?.topic,
-  })
 
   const autoReplyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -124,14 +109,6 @@ export default function ChannelPage() {
     toggleMembersPanel()
   }, [toggleMembersPanel])
 
-  const handleDigestClick = useCallback(() => {
-    setShowDigest(true)
-  }, [])
-
-  const handleDigestClose = useCallback(() => {
-    setShowDigest(false)
-  }, [])
-
   if (!channel) {
     return (
       <div className="chorus-channel-page chorus-channel-page--empty">
@@ -147,7 +124,6 @@ export default function ChannelPage() {
         memberCount={channel.memberIds.length}
         onToggleMembers={handleToggleMembers}
         onSearchClick={() => {}}
-        onDigestClick={handleDigestClick}
       />
       <MessageList
         messages={messages}
@@ -159,18 +135,7 @@ export default function ChannelPage() {
       <MessageComposer
         onSend={handleSendMessage}
         placeholder={`Message #${channel.name}`}
-        smartComposeSuggestion={smartCompose.suggestion}
-        onAcceptSuggestion={smartCompose.acceptSuggestion}
-        onDismissSuggestion={smartCompose.dismissSuggestion}
-        onDraftChange={smartCompose.onDraftChange}
       />
-      {showDigest && (
-        <ChannelDigest
-          channelId={channel.id}
-          channelName={channel.name}
-          onClose={handleDigestClose}
-        />
-      )}
     </div>
   )
 }

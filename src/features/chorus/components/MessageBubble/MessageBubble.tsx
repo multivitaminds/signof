@@ -1,10 +1,8 @@
 import { useCallback, useMemo } from 'react'
 import { MessageSquare, Pin, ExternalLink } from 'lucide-react'
 import PresenceAvatar from '../PresenceAvatar/PresenceAvatar'
-import MessageCategoryLabel from '../MessageCategoryLabel/MessageCategoryLabel'
 import { useChorusStore } from '../../stores/useChorusStore'
 import { formatMessageTime, formatFullTimestamp } from '../../lib/chorusFormatters'
-import { categorizeMessage } from '../../lib/messageCategorizer'
 import type { ChorusMessage, ConversationType } from '../../types'
 import './MessageBubble.css'
 
@@ -71,11 +69,6 @@ export default function MessageBubble({
   const timeLabel = formatMessageTime(message.timestamp)
   const fullTimestamp = formatFullTimestamp(message.timestamp)
 
-  const messageCategory = useMemo(
-    () => categorizeMessage(message.content),
-    [message.content]
-  )
-
   const handleOpenThread = useCallback(() => {
     onOpenThread?.(message.id)
   }, [onOpenThread, message.id])
@@ -134,9 +127,6 @@ export default function MessageBubble({
             )}
             {message.isPinned && (
               <Pin size={12} className="chorus-bubble__pin-icon" aria-label="Pinned" />
-            )}
-            {messageCategory && (
-              <MessageCategoryLabel category={messageCategory} />
             )}
           </div>
         )}

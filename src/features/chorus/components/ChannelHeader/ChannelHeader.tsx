@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Hash, Lock, Users, Pin, Search, Sparkles } from 'lucide-react'
+import { Hash, Lock, Users, Pin, Search } from 'lucide-react'
 import type { ChorusChannel } from '../../types'
 import './ChannelHeader.css'
 
@@ -10,7 +10,6 @@ interface ChannelHeaderProps {
   onToggleMembers?: () => void
   onTogglePins?: () => void
   onSearchClick?: () => void
-  onDigestClick?: () => void
 }
 
 export default function ChannelHeader({
@@ -20,7 +19,6 @@ export default function ChannelHeader({
   onToggleMembers,
   onTogglePins,
   onSearchClick,
-  onDigestClick,
 }: ChannelHeaderProps) {
   const handleToggleMembers = useCallback(() => {
     onToggleMembers?.()
@@ -33,10 +31,6 @@ export default function ChannelHeader({
   const handleSearchClick = useCallback(() => {
     onSearchClick?.()
   }, [onSearchClick])
-
-  const handleDigestClick = useCallback(() => {
-    onDigestClick?.()
-  }, [onDigestClick])
 
   const isPrivate = channel?.type === 'private'
   const displayName = channel ? channel.displayName : dmName ?? 'Conversation'
@@ -91,17 +85,6 @@ export default function ChannelHeader({
             type="button"
           >
             <Search size={18} />
-          </button>
-        )}
-        {onDigestClick && (
-          <button
-            className="chorus-channel-header__action-btn chorus-channel-header__action-btn--digest"
-            onClick={handleDigestClick}
-            aria-label="Channel digest"
-            type="button"
-            title="AI Channel Digest"
-          >
-            <Sparkles size={18} />
           </button>
         )}
       </div>
