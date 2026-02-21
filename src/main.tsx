@@ -148,12 +148,19 @@ const EditorFallback = <EditorSkeleton />
 const TableFallback = <TableSkeleton />
 const CardFallback = <CardGridSkeleton />
 
-// Register service worker for offline/PWA support
-if ('serviceWorker' in navigator) {
+// Register service worker for offline/PWA support (production only)
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {
       // Service worker registration failed — app works fine without it
     })
+  })
+} else if ('serviceWorker' in navigator) {
+  // In development, unregister any existing service worker to avoid stale caches
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (const registration of registrations) {
+      registration.unregister()
+    }
   })
 }
 

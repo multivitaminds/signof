@@ -1,0 +1,31 @@
+/* ─── Message Category Label ─────────────────────────────── */
+
+.chorus-category-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px var(--space-2, 0.5rem);
+  font-size: 0.65rem;
+  font-weight: var(--font-semibold, 600);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--category-color, var(--color-primary, #4f46e5));
+  background: color-mix(in srgb, var(--category-color, var(--color-primary)) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--category-color, var(--color-primary)) 20%, transparent);
+  border-radius: var(--radius-full, 9999px);
+  white-space: nowrap;
+  line-height: 1.4;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--category-color, var(--color-primary)) 15%, transparent);
+}
+
+.chorus-category-label--new {
+  animation: chorus-category-pulse 2s ease-in-out 1;
+}
+
+@keyframes chorus-category-pulse {
+  0%, 100% {
+    box-shadow: 0 0 8px color-mix(in srgb, var(--category-color, var(--color-primary)) 15%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 16px color-mix(in srgb, var(--category-color, var(--color-primary)) 35%, transparent);
+  }
+}

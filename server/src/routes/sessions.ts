@@ -7,14 +7,14 @@ import { getSessions, getSession, createSession, closeSession, getMessages } fro
 const router = Router();
 
 // GET /api/sessions — List all sessions
-router.get('/sessions', (_req: Request, res: Response) => {
-  res.json({ sessions: getSessions() });
+router.get('/sessions', async (_req: Request, res: Response) => {
+  res.json({ sessions: await getSessions() });
 });
 
 // GET /api/sessions/:id — Get a single session
-router.get('/sessions/:id', (req: Request, res: Response) => {
+router.get('/sessions/:id', async (req: Request, res: Response) => {
   const id = String(req.params.id);
-  const session = getSession(id);
+  const session = await getSession(id);
   if (!session) {
     res.status(404).json({ error: 'Session not found' });
     return;
@@ -23,9 +23,9 @@ router.get('/sessions/:id', (req: Request, res: Response) => {
 });
 
 // POST /api/sessions — Create a new session
-router.post('/sessions', (req: Request, res: Response) => {
+router.post('/sessions', async (req: Request, res: Response) => {
   const body = req.body as Record<string, unknown>;
-  const session = createSession({
+  const session = await createSession({
     channelId: (body.channelId as string) ?? 'webchat',
     channelType: (body.channelType as string) ?? 'webchat',
     contactId: (body.contactId as string) ?? 'anonymous',
@@ -35,20 +35,20 @@ router.post('/sessions', (req: Request, res: Response) => {
 });
 
 // DELETE /api/sessions/:id — Close a session
-router.delete('/sessions/:id', (req: Request, res: Response) => {
-  closeSession(String(req.params.id));
+router.delete('/sessions/:id', async (req: Request, res: Response) => {
+  await closeSession(String(req.params.id));
   res.json({ success: true });
 });
 
 // GET /api/sessions/:id/messages — Get messages for a session
-router.get('/sessions/:id/messages', (req: Request, res: Response) => {
+router.get('/sessions/:id/messages', async (req: Request, res: Response) => {
   const id = String(req.params.id);
-  const session = getSession(id);
+  const session = await getSession(id);
   if (!session) {
     res.status(404).json({ error: 'Session not found' });
     return;
   }
-  res.json({ messages: getMessages(id) });
+  res.json({ messages: await getMessages(id) });
 });
 
 export default router;

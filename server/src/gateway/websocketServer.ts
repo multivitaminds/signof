@@ -187,7 +187,7 @@ async function handleEvent(ws: WebSocket, event: string, data: Record<string, un
     }
 
     case 'session.create': {
-      const session = createSession({
+      const session = await createSession({
         channelId: (data.channelId as string) ?? 'webchat',
         channelType: (data.channelType as string) ?? 'webchat',
         contactId: (data.contactId as string) ?? 'anonymous',
@@ -203,7 +203,7 @@ async function handleEvent(ws: WebSocket, event: string, data: Record<string, un
         send(ws, 'error', { message: 'session.close requires sessionId' });
         return;
       }
-      closeSession(sessionId);
+      await closeSession(sessionId);
       send(ws, 'session.closed', { sessionId });
       break;
     }

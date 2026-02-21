@@ -32,7 +32,21 @@ design-references/
 
 # Logs
 npm-debug.log*
+logs/
+*.log
+
+# PM2
+logs/origina-*.log
+
+# Nginx SSL (local dev certs)
+nginx/*.pem
+nginx/*.key
+nginx/*.crt
+
+# Vercel
 .vercel
+
+# Test output
 test-results/
 playwright-report/
 blob-report/

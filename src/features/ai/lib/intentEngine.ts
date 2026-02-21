@@ -301,6 +301,7 @@ const PATTERNS_BY_FEATURE: Record<FeatureKey, PatternDef[]> = {
   scheduling: SCHEDULING_PATTERNS,
   databases: DATABASES_PATTERNS,
   inbox: INBOX_PATTERNS,
+  chorus: [],
 }
 
 // ─── Fallback responses ─────────────────────────────────────────────
@@ -313,6 +314,7 @@ const FALLBACK_RESPONSES: Record<FeatureKey, string> = {
   scheduling: "I can schedule meetings and manage bookings. Try \"Schedule a meeting for tomorrow\".",
   databases: "I can create databases and add records. Try \"Create database Contacts\".",
   inbox: "I can manage your notifications. Try \"Mark all read\" or \"Clear notifications\".",
+  chorus: "I can help with messaging. Try \"Summarize channel\" or \"Find decisions\".",
 }
 
 // ─── Parse Intent ───────────────────────────────────────────────────

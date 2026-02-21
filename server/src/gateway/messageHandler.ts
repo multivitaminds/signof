@@ -85,7 +85,7 @@ export async function handleChatMessage(msg: IncomingMessage): Promise<{
   const { provider } = providerResult;
 
   // 1. Store the user message
-  addMessage({
+  await addMessage({
     sessionId: msg.sessionId,
     channelId: msg.channelId ?? 'webchat',
     channelType: msg.channelType ?? 'webchat',
@@ -98,7 +98,7 @@ export async function handleChatMessage(msg: IncomingMessage): Promise<{
   const systemPrompt = buildSystemPrompt(msg.soulConfig);
 
   // 3. Get conversation history
-  const storedMessages = getMessages(msg.sessionId);
+  const storedMessages = await getMessages(msg.sessionId);
   const chatHistory: ChatMessage[] = storedMessages
     .filter((m) => m.direction === 'inbound' || m.direction === 'outbound')
     .map((m) => ({
@@ -147,7 +147,7 @@ export async function handleChatMessage(msg: IncomingMessage): Promise<{
     const followUp = await provider.syncChat(followUpRequest);
 
     // 7. Store the AI response
-    addMessage({
+    await addMessage({
       sessionId: msg.sessionId,
       channelId: msg.channelId ?? 'webchat',
       channelType: msg.channelType ?? 'webchat',
@@ -165,7 +165,7 @@ export async function handleChatMessage(msg: IncomingMessage): Promise<{
   }
 
   // 7. Store the AI response (no tool calls)
-  addMessage({
+  await addMessage({
     sessionId: msg.sessionId,
     channelId: msg.channelId ?? 'webchat',
     channelType: msg.channelType ?? 'webchat',

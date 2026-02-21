@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OriginA — Infrastructure Setup Log</title>
+  <style>
+    :root {
+      --navy: #1A1A2E;
+      --indigo: #4F46E5;
+      --indigo-hover: #4338CA;
+      --success: #059669;
+      --warning: #D97706;
+      --danger: #DC2626;
+      --bg: #0F0F1A;
+      --bg-card: #1A1A2E;
+      --bg-code: #111827;
+      --text: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --border: #334155;
+      --font: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--indigo), #818CF8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--indigo), #818CF8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.25rem;
+    }
+
+    /* Section headings */
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 2.5rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin: 1.5rem 0 0.75rem;
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 2rem;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, var(--indigo), var(--success), var(--border));
+    }
+
+    .step {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .step::before {
+      content: '';
+      position: absolute;
+      left: -2.35rem;
+      top: 0.85rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+      border: 2px solid var(--bg);
+    }
+
+    .step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      transition: all 0.2s;
+    }
+
+    .step-card:hover {
+      border-color: var(--indigo);
+      transform: translateX(4px);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .step-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
+    }
+
+    .badge-created {
+      background: rgba(5, 150, 105, 0.15);
+      color: #34D399;
+    }
+
+    .badge-modified {
+      background: rgba(217, 119, 6, 0.15);
+      color: #FBBF24;
+    }
+
+    .badge-verified {
+      background: rgba(79, 70, 229, 0.15);
+      color: #818CF8;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* File tables */
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+    }
+
+    .file-table th {
+      background: var(--bg-code);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.75rem;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .file-table td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+      color: var(--text-secondary);
+    }
+
+    .file-table tr:hover td {
+      background: rgba(79, 70, 229, 0.05);
+    }
+
+    .file-path {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #818CF8;
+    }
+
+    /* Code blocks */
+    .code-block {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 0.75rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      white-space: pre;
+      line-height: 1.6;
+    }
+
+    .code-label {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Diff highlights */
+    .diff-add { color: #34D399; }
+    .diff-remove { color: #F87171; }
+    .diff-context { color: var(--text-muted); }
+
+    /* Status indicators */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .status-pass .status-dot { background: var(--success); }
+    .status-pass { color: #34D399; }
+
+    .status-fail .status-dot { background: var(--danger); }
+    .status-fail { color: #F87171; }
+
+    .status-warn .status-dot { background: var(--warning); }
+    .status-warn { color: #FBBF24; }
+
+    .status-info .status-dot { background: var(--indigo); }
+    .status-info { color: #818CF8; }
+
+    /* Verification panel */
+    .verify-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .verify-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+    }
+
+    .verify-card h4 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .verify-result {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Summary section */
+    .summary-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin: 1.5rem 0;
+    }
+
+    .summary-box ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .summary-box li {
+      padding: 0.3rem 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .summary-box li::before {
+      content: '>';
+      color: var(--indigo);
+      font-weight: 700;
+      margin-right: 0.75rem;
+      font-family: var(--font-mono);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--indigo);
+      text-decoration: none;
+    }
+
+    /* Collapsible sections */
+    details {
+      margin: 0.5rem 0;
+    }
+
+    details summary {
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      padding: 0.4rem 0;
+      user-select: none;
+    }
+
+    details summary:hover {
+      color: var(--text);
+    }
+
+    details[open] summary {
+      color: #818CF8;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Infrastructure Setup Log</h1>
+  <p class="subtitle">Production infrastructure for OriginA — Nginx, PM2, Redis Cloud, SSL, deployment pipeline &bull; Feb 21 2026</p>
+
+  <!-- ─── Stats ──────────────────────────────────────────── -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-value">7</div>
+      <div class="stat-label">Files Created</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">5</div>
+      <div class="stat-label">Files Modified</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">5,291</div>
+      <div class="stat-label">Tests Passing</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Regressions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">7</div>
+      <div class="stat-label">Steps Completed</div>
+    </div>
+  </div>
+
+  <!-- ─── Context ────────────────────────────────────────── -->
+  <h2>Context</h2>
+  <div class="summary-box">
+    <ul>
+      <li>All 6 phases of OriginA are code-complete (59 new server files)</li>
+      <li>Build passing, lint clean, 5,291 tests green</li>
+      <li>Project needs production infrastructure: real secrets, reverse proxy, process manager, deployment docs</li>
+      <li>Target: Redis Cloud auth, Nginx HTTPS, PM2 clustering, CI/CD SSH deploy</li>
+    </ul>
+  </div>
+
+  <!-- ─── Step-by-step Timeline ──────────────────────────── -->
+  <h2>Implementation Timeline</h2>
+
+  <div class="timeline">
+
+    <!-- Step 1 -->
+    <div class="step">
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-title">Step 1 &mdash; Create .env Files</span>
+          <span class="step-badge badge-created">Created</span>
+        </div>
+        <div class="step-desc">
+          Created root <code>.env</code> and <code>server/.env</code> with placeholder credentials for all services.
+          Both files are gitignored &mdash; safe to populate with real API keys.
+        </div>
+        <details>
+          <summary>Files created (2)</summary>
+          <table class="file-table">
+            <tr><th>File</th><th>Purpose</th></tr>
+            <tr>
+              <td class="file-path">.env</td>
+              <td>Vite frontend vars + shared LLM keys</td>
+            </tr>
+            <tr>
+              <td class="file-path">server/.env</td>
+              <td>Full server config — PG, Redis, LLM, Voice, Search, Auth</td>
+            </tr>
+          </table>
+        </details>
+        <details>
+          <summary>server/.env structure</summary>
+          <div class="code-block"><span class="diff-context"># ─── Server ──────────────────</span>
+PORT=3001
+NODE_ENV=development
+CORS_ORIGINS=http://localhost:5173
+
+<span class="diff-context"># ─── Authentication ──────────</span>
+JWT_SECRET=
+ORIGINA_API_KEY=
+
+<span class="diff-context"># ─── PostgreSQL ──────────────</span>
+PG_HOST=localhost
+PG_PORT=5432
+PG_DATABASE=origina
+PG_USER=origina
+PG_PASSWORD=
+
+<span class="diff-context"># ─── Redis ───────────────────</span>
+REDIS_HOST=localhost
+REDIS_PORT=6379
+<span class="diff-add">REDIS_USERNAME=</span>
+REDIS_PASSWORD=
+<span class="diff-add">REDIS_TLS=false</span>
+<span class="diff-add"># REDIS_URL=rediss://user:pass@host:port</span>
+
+<span class="diff-context"># ─── LLM / Voice / Search ────</span>
+ANTHROPIC_API_KEY=
+OPENAI_API_KEY=
+<span class="diff-add">DEEPGRAM_API_KEY=</span>
+<span class="diff-add">ELEVENLABS_API_KEY=</span>
+<span class="diff-add">SEARCH_API_KEY=</span></div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step">
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-title">Step 2 &mdash; Fix Redis Cloud Auth</span>
+          <span class="step-badge badge-modified">Modified</span>
+        </div>
+        <div class="step-desc">
+          Updated <code>server/src/db/redis.ts</code> to support Redis Cloud authentication.
+          Added <code>REDIS_USERNAME</code> for ACL auth, <code>REDIS_URL</code> for full connection strings,
+          and <code>REDIS_TLS</code> for encrypted connections.
+        </div>
+        <details>
+          <summary>Diff: server/src/db/redis.ts</summary>
+          <div class="code-block"><span class="diff-context">interface RedisConfig {</span>
+  host: string;
+  port: number;
+<span class="diff-add">  username?: string;</span>
+  password?: string;
+  db: number;
+  keyPrefix: string;
+<span class="diff-add">  tls?: object;</span>
+  maxRetriesPerRequest: number;
+  lazyConnect: boolean;
+}
+
+function getConfig(): RedisConfig {
+<span class="diff-add">  const useTls = process.env.REDIS_TLS === 'true';</span>
+  return {
+    host: process.env.REDIS_HOST ?? 'localhost',
+    port: parseInt(process.env.REDIS_PORT ?? '6379', 10),
+<span class="diff-add">    username: process.env.REDIS_USERNAME || undefined,</span>
+    password: process.env.REDIS_PASSWORD || undefined,
+    db: parseInt(process.env.REDIS_DB ?? '0', 10),
+    keyPrefix: process.env.REDIS_PREFIX ?? 'oa:',
+<span class="diff-add">    ...(useTls ? { tls: {} } : {}),</span>
+    maxRetriesPerRequest: 3,
+    lazyConnect: true,
+  };
+}
+
+<span class="diff-context">export function getRedis(): Redis {</span>
+  if (client) return client;
+
+<span class="diff-add">  // REDIS_URL takes precedence (full connection string)</span>
+<span class="diff-add">  const redisUrl = process.env.REDIS_URL;</span>
+<span class="diff-add">  if (redisUrl) {</span>
+<span class="diff-add">    client = new Redis(redisUrl, {</span>
+<span class="diff-add">      keyPrefix: process.env.REDIS_PREFIX ?? 'oa:',</span>
+<span class="diff-add">      maxRetriesPerRequest: 3,</span>
+<span class="diff-add">      lazyConnect: true,</span>
+<span class="diff-add">    });</span>
+<span class="diff-add">  } else {</span>
+    const config = getConfig();
+    client = new Redis(config);
+<span class="diff-add">  }</span></div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step">
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-title">Step 3 &mdash; Nginx Reverse Proxy</span>
+          <span class="step-badge badge-created">Created</span>
+        </div>
+        <div class="step-desc">
+          Created full Nginx config with HTTPS termination, WebSocket upgrade headers,
+          static file caching (1yr for hashed Vite assets), security headers (HSTS, CSP, X-Frame-Options),
+          gzip compression, rate limiting (30r/s API, 5r/s auth, 10r/s WS), and proxy buffer tuning for streaming.
+        </div>
+        <details>
+          <summary>Files created (2)</summary>
+          <table class="file-table">
+            <tr><th>File</th><th>Purpose</th></tr>
+            <tr>
+              <td class="file-path">nginx/origina.conf</td>
+              <td>Full reverse proxy &mdash; HTTPS, WS, caching, rate limits, security headers</td>
+            </tr>
+            <tr>
+              <td class="file-path">nginx/ssl-params.conf</td>
+              <td>TLS 1.2+, strong ciphers, OCSP stapling, DH params, session config</td>
+            </tr>
+          </table>
+        </details>
+        <details>
+          <summary>Key features of origina.conf</summary>
+          <div class="code-block"><span class="diff-context"># Rate limiting zones</span>
+limit_req_zone $binary_remote_addr zone=api:10m   rate=30r/s;
+limit_req_zone $binary_remote_addr zone=auth:10m  rate=5r/s;
+limit_req_zone $binary_remote_addr zone=ws:10m    rate=10r/s;
+
+<span class="diff-context"># WebSocket upgrade</span>
+location /ws {
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_read_timeout 86400s;
+}
+
+<span class="diff-context"># Security headers</span>
+Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+X-Frame-Options "SAMEORIGIN"
+X-Content-Type-Options "nosniff"
+Content-Security-Policy "default-src 'self'; connect-src 'self' wss://$host;"
+
+<span class="diff-context"># Static caching (Vite hashes filenames)</span>
+location /assets/ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+}
+
+<span class="diff-context"># Streaming responses</span>
+proxy_buffering off;
+proxy_read_timeout 300s;</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step">
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-title">Step 4 &mdash; PM2 Process Manager</span>
+          <span class="step-badge badge-created">Created</span>
+        </div>
+        <div class="step-desc">
+          Created <code>ecosystem.config.cjs</code> with cluster mode (all CPU cores), auto-restart on crash,
+          512MB memory limit, JSON log rotation, graceful shutdown with SIGINT handling, and separate dev/production environments.
+        </div>
+        <details>
+          <summary>ecosystem.config.cjs highlights</summary>
+          <div class="code-block">apps: [{
+  name: 'origina',
+  script: 'server/dist/index.js',
+  instances: 'max',            <span class="diff-add">// Use all CPU cores</span>
+  exec_mode: 'cluster',
+  max_memory_restart: '512M',  <span class="diff-add">// Auto-restart on memory leak</span>
+  kill_timeout: 5000,          <span class="diff-add">// Graceful shutdown window</span>
+  log_type: 'json',            <span class="diff-add">// Structured logs</span>
+  error_file: 'logs/origina-error.log',
+  out_file: 'logs/origina-out.log',
+  env_production: {
+    NODE_ENV: 'production',
+    PORT: 3001,
+  },
+}]</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step">
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-title">Step 5 &mdash; Production Environment Template</span>
+          <span class="step-badge badge-created">Created</span>
+        </div>
+        <div class="step-desc">
+          Created <code>.env.production.example</code> with every variable documented &mdash; comments for each,
+          required vs optional markers, security warnings for default values, organized by category
+          (Server, Database, Redis, Auth, LLM, Voice, Search, Vite).
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 6 -->
+    <div class="step">
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-title">Step 6 &mdash; Deployment Guide</span>
+          <span class="step-badge badge-created">Created</span>
+        </div>
+        <div class="step-desc">
+          Created comprehensive <code>DEPLOYMENT.md</code> covering:
+        </div>
+        <div class="summary-box" style="margin-top: 0.75rem">
+          <ul>
+            <li>Prerequisites (Node 22, PostgreSQL 17, Redis 7, Nginx)</li>
+            <li>Option A: Docker Compose quick start</li>
+            <li>Option B: Bare metal VPS manual setup</li>
+            <li>SSL setup with Let's Encrypt / Certbot</li>
+            <li>PM2 setup and management commands</li>
+            <li>Database migration commands (all 12 migration files)</li>
+            <li>Automated backup strategy (pg_dump cron, 30-day retention)</li>
+            <li>Monitoring setup (health endpoint + UptimeRobot)</li>
+            <li>Updating / zero-downtime reload procedure</li>
+            <li>Troubleshooting guide (502, Redis, memory, SSL)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 7 -->
+    <div class="step">
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-title">Step 7 &mdash; Update Existing Config Files</span>
+          <span class="step-badge badge-modified">Modified</span>
+        </div>
+        <div class="step-desc">
+          Updated 4 existing files to integrate the new infrastructure.
+        </div>
+        <details>
+          <summary>server/.env.example &mdash; added missing vars</summary>
+          <div class="code-block"><span class="diff-add">+ PG_HOST, PG_PORT, PG_DATABASE, PG_USER, PG_PASSWORD</span>
+<span class="diff-add">+ REDIS_HOST, REDIS_PORT, REDIS_USERNAME, REDIS_PASSWORD</span>
+<span class="diff-add">+ REDIS_DB, REDIS_PREFIX, REDIS_TLS</span>
+<span class="diff-add">+ REDIS_URL (connection string alternative)</span>
+<span class="diff-add">+ DEEPGRAM_API_KEY</span>
+<span class="diff-add">+ ELEVENLABS_API_KEY</span>
+<span class="diff-add">+ SEARCH_API_KEY</span></div>
+        </details>
+        <details>
+          <summary>.gitignore &mdash; added PM2 logs, nginx certs</summary>
+          <div class="code-block"><span class="diff-add">+ logs/</span>
+<span class="diff-add">+ *.log</span>
+<span class="diff-add">+ logs/origina-*.log</span>
+<span class="diff-add">+ nginx/*.pem</span>
+<span class="diff-add">+ nginx/*.key</span>
+<span class="diff-add">+ nginx/*.crt</span></div>
+        </details>
+        <details>
+          <summary>docker-compose.yml &mdash; added Nginx + Redis auth</summary>
+          <div class="code-block"><span class="diff-add">+ nginx service (nginx:1.27-alpine)</span>
+<span class="diff-add">  - Mounts origina.conf, ssl-params.conf, dist/, certbot volumes</span>
+<span class="diff-add">  - Ports 80 + 443</span>
+<span class="diff-add">  - Depends on app service healthy</span>
+<span class="diff-add">+ certbot service (auto-renewal every 12h)</span>
+<span class="diff-add">+ Redis --requirepass and --maxmemory 256mb</span>
+<span class="diff-add">+ REDIS_USERNAME, REDIS_TLS env passthrough to app</span>
+<span class="diff-add">+ DEEPGRAM_API_KEY, ELEVENLABS_API_KEY, SEARCH_API_KEY passthrough</span></div>
+        </details>
+        <details>
+          <summary>.github/workflows/deploy.yml &mdash; added SSH deploy job</summary>
+          <div class="code-block"><span class="diff-add">+ deploy-ssh job (runs after build-and-push)</span>
+<span class="diff-add">  - Triggers when DEPLOY_HOST var is set</span>
+<span class="diff-add">  - Uses appleboy/ssh-action@v1</span>
+<span class="diff-add">  - git pull, npm install --production, build, migrate, pm2 reload</span></div>
+        </details>
+      </div>
+    </div>
+
+  </div><!-- /timeline -->
+
+  <!-- ─── File Manifest ──────────────────────────────────── -->
+  <h2>Complete File Manifest</h2>
+
+  <h3>Created (7 files)</h3>
+  <table class="file-table">
+    <tr><th>File</th><th>Purpose</th><th>Status</th></tr>
+    <tr>
+      <td class="file-path">.env</td>
+      <td>Root env &mdash; Vite + LLM keys (gitignored)</td>
+      <td><span class="status status-pass"><span class="status-dot"></span> Created</span></td>
+    </tr>
+    <tr>
+      <td class="file-path">server/.env</td>
+      <td>Server env &mdash; all credentials (gitignored)</td>
+      <td><span class="status status-pass"><span class="status-dot"></span> Created</span></td>
+    </tr>
+    <tr>
+      <td class="file-path">nginx/origina.conf</td>
+      <td>Nginx reverse proxy &mdash; HTTPS, WS, rate limits</td>
+      <td><span class="status status-pass"><span class="status-dot"></span> Created</span></td>
+    </tr>
+    <tr>
+      <td class="file-path">nginx/ssl-params.conf</td>
+      <td>SSL hardening &mdash; TLS 1.2+, OCSP, ciphers</td>
+      <td><span class="status status-pass"><span class="status-dot"></span> Created</span></td>
+    </tr>
+    <tr>
+      <td class="file-path">ecosystem.config.cjs</td>
+      <td>PM2 cluster config &mdash; all CPUs, 512MB restart</td>
+      <td><span class="status status-pass"><span class="status-dot"></span> Created</span></td>
+    </tr>
+    <tr>
+      <td class="file-path">.env.production.example</td>
+      <td>Documented production template</td>
+      <td><span class="status status-pass"><span class="status-dot"></span> Created</span></td>
+    </tr>
+    <tr>
+      <td class="file-path">DEPLOYMENT.md</td>
+      <td>Full deployment guide &mdash; Docker, VPS, SSL, backups</td>
+      <td><span class="status status-pass"><span class="status-dot"></span> Created</span></td>
+    </tr>
+  </table>
+
+  <h3>Modified (5 files)</h3>
+  <table class="file-table">
+    <tr><th>File</th><th>Change</th><th>Status</th></tr>
+    <tr>
+      <td class="file-path">server/src/db/redis.ts</td>
+      <td>Added REDIS_USERNAME + REDIS_URL + REDIS_TLS support</td>
+      <td><span class="status status-warn"><span class="status-dot"></span> Modified</span></td>
+    </tr>
+    <tr>
+      <td class="file-path">server/.env.example</td>
+      <td>Added PG, Redis Cloud, voice, search vars</td>
+      <td><span class="status status-warn"><span class="status-dot"></span> Modified</span></td>
+    </tr>
+    <tr>
+      <td class="file-path">.gitignore</td>
+      <td>Added PM2 logs, nginx SSL certs</td>
+      <td><span class="status status-warn"><span class="status-dot"></span> Modified</span></td>
+    </tr>
+    <tr>
+      <td class="file-path">docker-compose.yml</td>
+      <td>Added Nginx service, Certbot, Redis auth, env passthrough</td>
+      <td><span class="status status-warn"><span class="status-dot"></span> Modified</span></td>
+    </tr>
+    <tr>
+      <td class="file-path">.github/workflows/deploy.yml</td>
+      <td>Added SSH deploy job with PM2 reload</td>
+      <td><span class="status status-warn"><span class="status-dot"></span> Modified</span></td>
+    </tr>
+  </table>
+
+  <!-- ─── Verification ───────────────────────────────────── -->
+  <h2>Verification Results</h2>
+
+  <div class="verify-grid">
+    <div class="verify-card">
+      <h4><span class="status status-pass"><span class="status-dot"></span> Build</span></h4>
+      <div class="verify-result">
+        tsc -b && vite build<br>
+        2,798 modules transformed<br>
+        Built in 3.46s<br>
+        Zero errors
+      </div>
+    </div>
+    <div class="verify-card">
+      <h4><span class="status status-pass"><span class="status-dot"></span> Lint</span></h4>
+      <div class="verify-result">
+        eslint .<br>
+        Zero warnings<br>
+        Zero errors
+      </div>
+    </div>
+    <div class="verify-card">
+      <h4><span class="status status-pass"><span class="status-dot"></span> Tests</span></h4>
+      <div class="verify-result">
+        487 test files<br>
+        5,291 tests passing<br>
+        5 pre-existing failures (auth tests)<br>
+        43.40s total runtime
+      </div>
+    </div>
+    <div class="verify-card">
+      <h4><span class="status status-pass"><span class="status-dot"></span> No Regressions</span></h4>
+      <div class="verify-result">
+        Stashed changes, ran tests on clean main<br>
+        Same 5,291 pass / 5 fail<br>
+        Confirmed: 0 regressions introduced
+      </div>
+    </div>
+  </div>
+
+  <h3>Pre-existing Test Failures (not caused by this session)</h3>
+  <table class="file-table">
+    <tr><th>File</th><th>Failing Tests</th><th>Root Cause</th></tr>
+    <tr>
+      <td class="file-path">src/features/auth/pages/LoginPage.test.tsx</td>
+      <td>3 tests &mdash; login form, signup link, error display</td>
+      <td>Tests expect "Your name" field on login page (doesn't exist)</td>
+    </tr>
+    <tr>
+      <td class="file-path">src/features/auth/pages/SignupPage.test.tsx</td>
+      <td>2 tests &mdash; signup submission, navigation</td>
+      <td>Mock signup not called (form validation mismatch)</td>
+    </tr>
+  </table>
+
+  <!-- ─── Architecture Diagram ───────────────────────────── -->
+  <h2>Production Architecture</h2>
+
+  <div class="code-block" style="text-align: center; font-size: 0.75rem; line-height: 2;">
+                          <span class="diff-context">┌─────────────────────────────────────────────────────────────┐</span>
+                          <span class="diff-context">│</span>                        <span style="color:#818CF8;font-weight:700">INTERNET</span>                          <span class="diff-context">│</span>
+                          <span class="diff-context">└───────────────────────────┬─────────────────────────────────┘</span>
+                                                      │
+                                               <span style="color:#FBBF24">:443 HTTPS</span>
+                                                      │
+                          <span class="diff-context">┌───────────────────────────┴─────────────────────────────────┐</span>
+                          <span class="diff-context">│</span>  <span style="color:#34D399;font-weight:700">Nginx</span>  <span class="diff-context">│</span>  SSL termination · Rate limiting · Gzip · Static cache  <span class="diff-context">│</span>
+                          <span class="diff-context">└───────┬──────────────────┬──────────────────┬──────────────┘</span>
+                                  │                  │                  │
+                           <span style="color:#FBBF24">/assets/*</span>          <span style="color:#FBBF24">/api/*</span>             <span style="color:#FBBF24">/ws</span>
+                           <span class="diff-context">(static)</span>         <span class="diff-context">(proxy)</span>          <span class="diff-context">(upgrade)</span>
+                                  │                  │                  │
+                          <span class="diff-context">┌───────┴──────────────────┴──────────────────┴──────────────┐</span>
+                          <span class="diff-context">│</span>  <span style="color:#34D399;font-weight:700">PM2 Cluster</span>  <span class="diff-context">│</span>  N workers · 512MB limit · Auto-restart         <span class="diff-context">│</span>
+                          <span class="diff-context">│</span>              <span class="diff-context">│</span>  ecosystem.config.cjs                            <span class="diff-context">│</span>
+                          <span class="diff-context">└───────┬──────────────────┬──────────────────┬──────────────┘</span>
+                                  │                  │                  │
+                          <span class="diff-context">┌───────┴────────┐ ┌───────┴────────┐ ┌───────┴──────────────┐</span>
+                          <span class="diff-context">│</span> <span style="color:#818CF8;font-weight:700">PostgreSQL 17</span> <span class="diff-context">│ │</span> <span style="color:#F87171;font-weight:700">Redis Cloud</span>   <span class="diff-context">│ │</span> <span style="color:#FBBF24;font-weight:700">External APIs</span>       <span class="diff-context">│</span>
+                          <span class="diff-context">│</span> + pgvector     <span class="diff-context">│ │</span> TLS + ACL auth <span class="diff-context">│ │</span> Anthropic · OpenAI  <span class="diff-context">│</span>
+                          <span class="diff-context">│</span> 12 migrations  <span class="diff-context">│ │</span> Sessions/cache <span class="diff-context">│ │</span> Deepgram · 11Labs  <span class="diff-context">│</span>
+                          <span class="diff-context">└────────────────┘ └────────────────┘ └─────────────────────┘</span>
+  </div>
+
+  <!-- ─── Next Steps ─────────────────────────────────────── -->
+  <h2>Remaining Steps</h2>
+  <div class="summary-box">
+    <ul>
+      <li>Fill in real API keys in <code>.env</code> and <code>server/.env</code></li>
+      <li>Generate DH parameters: <code>openssl dhparam -out nginx/dhparam.pem 4096</code></li>
+      <li>Obtain SSL certificate: <code>certbot certonly --webroot -d origina.io</code></li>
+      <li>Run database migrations on production PostgreSQL</li>
+      <li>Set GitHub Actions secrets: DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY</li>
+      <li>Test full docker-compose stack: <code>docker-compose up</code></li>
+      <li>Fix pre-existing LoginPage / SignupPage test failures</li>
+    </ul>
+  </div>
+
+  <!-- ─── Footer ─────────────────────────────────────────── -->
+  <div class="footer">
+    OriginA Infrastructure Setup &bull; Session Feb 21, 2026 &bull; Claude Opus 4.6<br>
+    <em>Build passing &bull; 5,291 tests green &bull; 0 regressions</em>
+  </div>
+
+</body>
+</html>

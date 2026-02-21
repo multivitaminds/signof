@@ -14,6 +14,7 @@ const ROUTE_CONTEXT_HINTS: Record<string, string> = {
   '/projects': 'I can help with this project. Try: suggest priorities, find blockers, estimate',
   '/data': 'I can help with this database. Try: analyze trends, suggest fields, generate report',
   '/calendar': 'I can help with scheduling. Try: find free time, suggest meeting times',
+  '/chorus': 'I can help with messaging. Try: summarize channel, find decisions, digest unread',
 }
 
 export function getContextHintForRoute(pathname: string): string | null {

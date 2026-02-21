@@ -36,6 +36,7 @@ const useAIFeatureChatStore = create<AIFeatureChatState>()(
         scheduling: createEmptySession(),
         databases: createEmptySession(),
         inbox: createEmptySession(),
+        chorus: createEmptySession(),
       },
 
       openChat: (featureKey) => {

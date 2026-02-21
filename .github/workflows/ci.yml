@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Frontend
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Lint frontend
+        run: npm run lint
+
+      - name: Type-check frontend
+        run: npx tsc -b --noEmit
+
+      - name: Test frontend
+        run: npm run test:run
+
+      - name: Build frontend
+        run: npm run build
+
+      # Server
+      - name: Install server dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Build server
+        working-directory: server
+        run: npm run build
+
+      - name: Test server
+        working-directory: server
+        run: npm run test:run

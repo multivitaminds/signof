@@ -6,6 +6,7 @@ export const FeatureKey = {
   Scheduling: 'scheduling',
   Databases: 'databases',
   Inbox: 'inbox',
+  Chorus: 'chorus',
 } as const
 
 export type FeatureKey = (typeof FeatureKey)[keyof typeof FeatureKey]
@@ -107,5 +108,17 @@ export const FEATURE_CONTEXTS: Record<FeatureKey, FeatureContext> = {
       { label: 'Clear all', prompt: 'Clear all notifications' },
     ],
     greeting: 'I can help manage your inbox. Try "Mark all read" or "Clear all notifications".',
+  },
+  chorus: {
+    key: 'chorus',
+    label: 'Chorus',
+    placeholder: 'Ask about messages and channels...',
+    quickActions: [
+      { label: 'Summarize channel', prompt: 'Summarize channel' },
+      { label: 'Show unread', prompt: 'Show unread messages' },
+      { label: 'Find decisions', prompt: 'Find decisions in channel' },
+      { label: 'Channel digest', prompt: 'Generate channel digest' },
+    ],
+    greeting: 'I can help with messaging. Try: summarize channel, find decisions, digest unread.',
   },
 }

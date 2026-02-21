@@ -1,14 +1,31 @@
+// Database layer — PostgreSQL (primary) with SQLite fallback for dev
+
 import Database from 'better-sqlite3';
 import { readFileSync, readdirSync, mkdirSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { logger } from '../lib/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 let db: Database.Database | null = null;
 
+// ─── PostgreSQL support ─────────────────────────────────────────────
+// When PG_HOST is set, the app uses PostgreSQL via postgres.ts.
+// This SQLite module remains as a fallback for local dev without Postgres.
+
+export function isPostgresMode(): boolean {
+  return !!process.env.PG_HOST;
+}
+
 export function getDatabase(): Database.Database {
+  if (isPostgresMode()) {
+    throw new Error(
+      'SQLite getDatabase() called in PostgreSQL mode. Use postgres.ts imports instead.'
+    );
+  }
+
   if (db) return db;
 
   const dataDir = join(__dirname, '..', '..', '..', 'data');
@@ -36,8 +53,11 @@ function runMigrations(database: Database.Database): void {
   const migrationsDir = join(__dirname, 'migrations');
   if (!existsSync(migrationsDir)) return;
 
+  // Only run SQLite-compatible migrations (001, 002)
+  const sqliteMigrations = ['001_initial.sql', '002_users.sql'];
+
   const files = readdirSync(migrationsDir)
-    .filter(f => f.endsWith('.sql'))
+    .filter(f => f.endsWith('.sql') && sqliteMigrations.includes(f))
     .sort();
 
   const applied = new Set(
@@ -59,6 +79,7 @@ function runMigrations(database: Database.Database): void {
       );
     });
     migrate();
+    logger.info('SQLite migration applied', { migration: file });
   }
 }
 

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OriginA Integration into Orchestree — Implementation Plan</title>
+  <style>
+    :root {
+      --navy: #1A1A2E;
+      --indigo: #4F46E5;
+      --indigo-hover: #4338CA;
+      --success: #059669;
+      --warning: #D97706;
+      --danger: #DC2626;
+      --bg: #0F0F1A;
+      --bg-card: #1A1A2E;
+      --bg-code: #111827;
+      --text: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --border: #334155;
+      --font: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--indigo), #818CF8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--indigo);
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #818CF8;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .context-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .context-box strong { color: var(--text); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 2rem;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      background: var(--bg-card);
+      color: #818CF8;
+      font-weight: 600;
+      border-bottom: 2px solid var(--border);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    tr:hover td { background: rgba(79, 70, 229, 0.05); }
+
+    code {
+      font-family: var(--font-mono);
+      background: var(--bg-code);
+      color: #A5B4FC;
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+
+    pre {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      overflow-x: auto;
+      margin: 1rem 0 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #A5B4FC;
+    }
+
+    ul, ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--text-secondary);
+    }
+
+    li { margin-bottom: 0.5rem; }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-active { background: rgba(5, 150, 105, 0.2); color: var(--success); }
+    .badge-pending { background: rgba(217, 119, 6, 0.2); color: var(--warning); }
+    .badge-future { background: rgba(100, 116, 139, 0.2); color: var(--text-muted); }
+
+    .phase-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: border-color 0.2s;
+    }
+
+    .phase-card:hover { border-color: var(--indigo); }
+
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .phase-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--indigo), #818CF8);
+      color: white;
+      font-weight: 800;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--indigo), #818CF8);
+    }
+
+    .decision-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .decision-list li {
+      padding: 0.5rem 0 0.5rem 1.5rem;
+      position: relative;
+    }
+
+    .decision-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--indigo);
+      font-weight: 700;
+    }
+
+    .dep-table td:first-child { font-family: var(--font-mono); color: #A5B4FC; }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 1rem; }
+      h1 { font-size: 1.75rem; }
+      .timeline { grid-template-columns: 1fr; }
+    }
+
+    .footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>OriginA Integration into Orchestree</h1>
+  <p class="subtitle">Dual-track AI platform — consumer messaging bots + enterprise AI backbone — integrated as Orchestree's AI layer.</p>
+
+  <!-- ─── Context ──────────────────────────────────────────────── -->
+  <div class="context-box">
+    <h3>Context</h3>
+    <p>OriginA Enterprise <strong>becomes</strong> Orchestree's AI layer. Consumer distribution (Telegram, WhatsApp, Discord bots) connects via the same API. Rather than building standalone, everything integrates into the existing Orchestree platform.</p>
+    <h4>What Exists Today</h4>
+    <ul>
+      <li>Express.js 5.1 backend at <code>server/</code> with SQLite3, JWT auth, WebSocket, 9 LLM providers</li>
+      <li>Frontend AI module at <code>src/features/ai/</code> with 200+ files, 20 agent types, workflow engine, IndexedDB memory</li>
+      <li>Chorus messaging module (Slack clone) with 44 components, mock data</li>
+      <li>AI types already define agent, memory, governor, connector, and cost tracking interfaces</li>
+    </ul>
+    <h4>What We're Adding</h4>
+    <ul>
+      <li>PostgreSQL + Redis replacing SQLite (production-grade persistence)</li>
+      <li>Server-side AI Kernel (agent routing, model selection, tool execution)</li>
+      <li>4-tier memory system (short-term Redis, long-term pgvector, structured profiles, episodic timeline)</li>
+      <li>Messaging connectors (Telegram, WhatsApp, Discord, Slack)</li>
+      <li>Voice pipeline (Deepgram STT + ElevenLabs TTS)</li>
+      <li>Enterprise governor (approval workflows, budget enforcement, audit logging)</li>
+      <li>Multi-tenancy with Row-Level Security</li>
+      <li>Docker + deployment infrastructure</li>
+    </ul>
+  </div>
+
+  <!-- ─── Phase 1 ──────────────────────────────────────────────── -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-number">1</div>
+      <div>
+        <h2 style="margin:0;border:0;padding:0">Foundation — PostgreSQL + Redis + Multi-Tenancy</h2>
+        <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
+        <small style="color:var(--success)">✓ Implemented</small>
+      </div>
+    </div>
+
+    <p>Replace SQLite with PostgreSQL (+ pgvector for embeddings) and add Redis for caching/sessions. Establish multi-tenant RBAC.</p>
+
+    <h4>Files Created</h4>
+    <table>
+      <tr><th>File</th><th>Purpose</th></tr>
+      <tr><td><code>server/src/db/postgres.ts</code></td><td>PostgreSQL connection pool (pg + pg-pool), RLS setup</td></tr>
+      <tr><td><code>server/src/db/redis.ts</code></td><td>Redis client (ioredis), connection management</td></tr>
+      <tr><td><code>server/src/db/migrations/003_tenants.sql</code></td><td>Tenants table, org settings, RLS policies</td></tr>
+      <tr><td><code>server/src/db/migrations/004_rbac.sql</code></td><td>Roles, permissions, team membership</td></tr>
+      <tr><td><code>server/src/db/migrations/005_audit_log.sql</code></td><td>Audit log table (immutable record)</td></tr>
+      <tr><td><code>server/src/db/migrations/006_sessions_pg.sql</code></td><td>Session tokens table for Redis-backed lookup</td></tr>
+      <tr><td><code>server/src/middleware/tenancy.ts</code></td><td>Extract tenant from JWT/header, set RLS context</td></tr>
+      <tr><td><code>server/src/middleware/rbac.ts</code></td><td>Role-based permission checks with Redis caching</td></tr>
+      <tr><td><code>server/src/lib/audit.ts</code></td><td>Audit logging helper (fire-and-forget)</td></tr>
+      <tr><td><code>server/src/routes/tenants.ts</code></td><td>Tenant CRUD endpoints</td></tr>
+      <tr><td><code>server/src/routes/users.ts</code></td><td>User management, invites, role changes</td></tr>
+    </table>
+
+    <h4>Files Modified</h4>
+    <table>
+      <tr><th>File</th><th>Change</th></tr>
+      <tr><td><code>server/src/db/database.ts</code></td><td>Added PostgreSQL mode detection, SQLite-only migration filter</td></tr>
+      <tr><td><code>server/src/index.ts</code></td><td>PostgreSQL/Redis init, tenancy + RBAC middleware, new routes, graceful shutdown</td></tr>
+      <tr><td><code>server/src/gateway/sessionStore.ts</code></td><td>Dual-mode: PostgreSQL+Redis (primary) or SQLite (fallback)</td></tr>
+      <tr><td><code>server/package.json</code></td><td>Added <code>pg</code>, <code>ioredis</code>, <code>pg-pool</code>, <code>@types/pg</code></td></tr>
+    </table>
+
+    <h4>Key Decisions</h4>
+    <ul class="decision-list">
+      <li><strong>pg</strong> (not Prisma/Drizzle) — minimal ORM overhead, raw SQL for RLS</li>
+      <li><strong>Row-Level Security</strong> — every table gets <code>tenant_id</code>, enforced at DB level</li>
+      <li><strong>ioredis</strong> — battle-tested Redis client, cluster support for production</li>
+      <li>Existing SQLite data is dev/demo only — no migration path needed, SQLite stays as fallback</li>
+    </ul>
+  </div>
+
+  <!-- ─── Phase 2 ──────────────────────────────────────────────── -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-number">2</div>
+      <div>
+        <h2 style="margin:0;border:0;padding:0">AI Kernel — Server-Side Agent Routing + Memory</h2>
+        <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
+        <small style="color:var(--success)">✓ Implemented</small>
+      </div>
+    </div>
+
+    <p>Move agent orchestration to the server. The frontend AI module stays as the UI layer; the server becomes the execution engine.</p>
+
+    <h4>Files Created</h4>
+    <table>
+      <tr><th>File</th><th>Purpose</th></tr>
+      <tr><td><code>server/src/ai/kernel.ts</code></td><td>Core AI kernel — routes requests to agents, manages context, streams responses</td></tr>
+      <tr><td><code>server/src/ai/agentRouter.ts</code></td><td>Maps intent → agent type via pattern matching</td></tr>
+      <tr><td><code>server/src/ai/modelSelector.ts</code></td><td>Model selection logic (cost/capability/latency tradeoffs, plan-based access)</td></tr>
+      <tr><td><code>server/src/ai/toolExecutor.ts</code></td><td>Executes agent tools server-side (DB query, memory search, calculator)</td></tr>
+      <tr><td><code>server/src/ai/memory/shortTerm.ts</code></td><td>Redis-backed conversation buffer (TTL-based)</td></tr>
+      <tr><td><code>server/src/ai/memory/longTerm.ts</code></td><td>pgvector semantic memory (embed + store + retrieve)</td></tr>
+      <tr><td><code>server/src/ai/memory/profile.ts</code></td><td>Structured user/org profiles in PostgreSQL</td></tr>
+      <tr><td><code>server/src/ai/memory/episodic.ts</code></td><td>Timeline-based event memory</td></tr>
+      <tr><td><code>server/src/ai/memory/index.ts</code></td><td>Unified memory interface (query across all 4 tiers)</td></tr>
+      <tr><td><code>server/src/ai/agents/base.ts</code></td><td>Base agent class with tool/memory access</td></tr>
+      <tr><td><code>server/src/ai/agents/researcher.ts</code></td><td>Research agent implementation</td></tr>
+      <tr><td><code>server/src/ai/agents/writer.ts</code></td><td>Content generation agent</td></tr>
+      <tr><td><code>server/src/ai/agents/coder.ts</code></td><td>Code generation agent</td></tr>
+      <tr><td><code>server/src/ai/agents/analyst.ts</code></td><td>Data analysis agent</td></tr>
+      <tr><td><code>server/src/ai/agents/scheduler.ts</code></td><td>Calendar/scheduling agent</td></tr>
+      <tr><td><code>server/src/ai/agents/coordinator.ts</code></td><td>Multi-agent orchestrator</td></tr>
+      <tr><td><code>server/src/db/migrations/007_memory.sql</code></td><td>Memory tables (short_term, long_term with pgvector, profiles, episodes)</td></tr>
+      <tr><td><code>server/src/db/migrations/008_agents.sql</code></td><td>Agent runs, tool calls, cost tracking tables</td></tr>
+      <tr><td><code>server/src/db/migrations/009_conversations.sql</code></td><td>Server-side conversation/message storage</td></tr>
+      <tr><td><code>server/src/routes/ai.ts</code></td><td>AI API endpoints (chat, conversations, runs, costs, memory)</td></tr>
+    </table>
+
+    <h4>Key Decisions</h4>
+    <ul class="decision-list">
+      <li><strong>Server-side execution</strong> — agents run on the server for security, cost control, and access to tools/DB</li>
+      <li><strong>Frontend stays as UI</strong> — chat interface, agent status display, memory browser remain client-side</li>
+      <li><strong>pgvector</strong> — PostgreSQL extension for embedding storage, no separate vector DB needed</li>
+      <li><strong>Cost tracking per-request</strong> — every LLM call logged with token counts and cost</li>
+      <li><strong>4-tier memory</strong> — short-term (Redis), long-term (pgvector), profiles (PostgreSQL), episodic (timeline)</li>
+    </ul>
+  </div>
+
+  <!-- ─── Phase 3 ──────────────────────────────────────────────── -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-number">3</div>
+      <div>
+        <h2 style="margin:0;border:0;padding:0">Messaging Connectors — Telegram, WhatsApp, Discord, Slack</h2>
+        <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
+        <small style="color:var(--success)">✓ Implemented</small>
+      </div>
+    </div>
+
+    <p>Connect OriginA to external messaging platforms. Each connector normalizes messages into a common format, routes through the AI kernel, and sends responses back.</p>
+
+    <h4>Files Created</h4>
+    <table>
+      <tr><th>File</th><th>Purpose</th></tr>
+      <tr><td><code>server/src/connectors/types.ts</code></td><td>Common message format (InboundMessage, OutboundMessage)</td></tr>
+      <tr><td><code>server/src/connectors/manager.ts</code></td><td>Connector lifecycle manager (start/stop/health)</td></tr>
+      <tr><td><code>server/src/connectors/telegram.ts</code></td><td>Telegram bot (Grammy library)</td></tr>
+      <tr><td><code>server/src/connectors/whatsapp.ts</code></td><td>WhatsApp bot (Baileys library)</td></tr>
+      <tr><td><code>server/src/connectors/discord.ts</code></td><td>Discord bot (Discord.js)</td></tr>
+      <tr><td><code>server/src/connectors/slack.ts</code></td><td>Slack bot (Bolt)</td></tr>
+      <tr><td><code>server/src/connectors/webhook.ts</code></td><td>Generic webhook connector for custom integrations</td></tr>
+      <tr><td><code>server/src/db/migrations/010_connectors.sql</code></td><td>Connector configs, channel mappings</td></tr>
+      <tr><td><code>server/src/routes/connectorMgmt.ts</code></td><td>Connector management API (CRUD, enable/disable)</td></tr>
+    </table>
+
+    <h4>Key Decisions</h4>
+    <ul class="decision-list">
+      <li><strong>Grammy</strong> for Telegram — modern, TypeScript-first, middleware-based</li>
+      <li><strong>Baileys</strong> for WhatsApp — no official API needed, multi-device support</li>
+      <li><strong>All connectors are optional</strong> — configured per-tenant, disabled by default, dynamically imported</li>
+      <li><strong>Message normalization</strong> — every platform's messages convert to a common <code>InboundMessage</code> type</li>
+    </ul>
+  </div>
+
+  <!-- ─── Phase 4 ──────────────────────────────────────────────── -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-number">4</div>
+      <div>
+        <h2 style="margin:0;border:0;padding:0">Voice Pipeline — STT + TTS</h2>
+        <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
+        <small style="color:var(--success)">✓ Implemented</small>
+      </div>
+    </div>
+
+    <p>Voice input/output for the AI assistant. Full pipeline: audio in → speech-to-text → AI kernel → text-to-speech → audio out.</p>
+
+    <h4>Files Created</h4>
+    <table>
+      <tr><th>File</th><th>Purpose</th></tr>
+      <tr><td><code>server/src/voice/pipeline.ts</code></td><td>Voice session manager (audio in → text → AI → text → audio out)</td></tr>
+      <tr><td><code>server/src/voice/stt.ts</code></td><td>Speech-to-text (Deepgram API)</td></tr>
+      <tr><td><code>server/src/voice/tts.ts</code></td><td>Text-to-speech (ElevenLabs API, streaming audio)</td></tr>
+      <tr><td><code>server/src/voice/vad.ts</code></td><td>Voice Activity Detection (silence detection for turn-taking)</td></tr>
+      <tr><td><code>server/src/db/migrations/011_voice.sql</code></td><td>Voice session logs, transcripts</td></tr>
+      <tr><td><code>server/src/routes/voice.ts</code></td><td>Voice session endpoints (start/stop/audio)</td></tr>
+    </table>
+
+    <h4>Key Decisions</h4>
+    <ul class="decision-list">
+      <li><strong>Deepgram</strong> for STT — fastest streaming transcription, best price/performance</li>
+      <li><strong>ElevenLabs</strong> for TTS — most natural voices, streaming support</li>
+      <li><strong>Energy-based VAD</strong> — simple RMS-based voice activity detection for server-side use</li>
+      <li><strong>Optional deps</strong> — voice services only activate when API keys are configured</li>
+    </ul>
+  </div>
+
+  <!-- ─── Phase 5 ──────────────────────────────────────────────── -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-number">5</div>
+      <div>
+        <h2 style="margin:0;border:0;padding:0">Enterprise Governor — Approvals, Budget, Compliance</h2>
+        <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
+        <small style="color:var(--success)">✓ Implemented</small>
+      </div>
+    </div>
+
+    <p>Enterprise controls: approval workflows for sensitive agent actions, budget enforcement, and SOC 2-ready audit trail.</p>
+
+    <h4>Files Created</h4>
+    <table>
+      <tr><th>File</th><th>Purpose</th></tr>
+      <tr><td><code>server/src/governor/governor.ts</code></td><td>Central policy engine — checks every agent action against rules</td></tr>
+      <tr><td><code>server/src/governor/approvals.ts</code></td><td>Approval workflow (request → review → approve/deny)</td></tr>
+      <tr><td><code>server/src/governor/budget.ts</code></td><td>Per-tenant/user spend limits, real-time tracking</td></tr>
+      <tr><td><code>server/src/governor/policies.ts</code></td><td>Policy definitions (what needs approval, spend thresholds)</td></tr>
+      <tr><td><code>server/src/db/migrations/012_governor.sql</code></td><td>Policies, approval requests tables</td></tr>
+      <tr><td><code>server/src/routes/governor.ts</code></td><td>Governor management API (approvals, budget, policies, audit)</td></tr>
+    </table>
+
+    <h4>Key Decisions</h4>
+    <ul class="decision-list">
+      <li><strong>Governor wraps the kernel</strong> — every agent action passes through policy checks</li>
+      <li><strong>Async approvals</strong> — sensitive actions pause, notify approver, resume on approval</li>
+      <li><strong>Budget is hard limit</strong> — when budget exhausted, agents stop</li>
+      <li><strong>Audit log is append-only</strong> — immutable record for compliance</li>
+    </ul>
+  </div>
+
+  <!-- ─── Phase 6 ──────────────────────────────────────────────── -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-number">6</div>
+      <div>
+        <h2 style="margin:0;border:0;padding:0">Deployment Infrastructure</h2>
+        <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
+        <small style="color:var(--success)">✓ Implemented</small>
+      </div>
+    </div>
+
+    <p>Containerized deployment with Docker, CI/CD pipelines, and production health checks.</p>
+
+    <h4>Files Created</h4>
+    <table>
+      <tr><th>File</th><th>Purpose</th></tr>
+      <tr><td><code>Dockerfile</code></td><td>Multi-stage build (frontend + server, non-root user, health check)</td></tr>
+      <tr><td><code>docker-compose.yml</code></td><td>Full stack: app + PostgreSQL (pgvector) + Redis</td></tr>
+      <tr><td><code>docker-compose.dev.yml</code></td><td>Dev overrides (hot reload, debug ports)</td></tr>
+      <tr><td><code>.github/workflows/ci.yml</code></td><td>CI pipeline (lint, test, build, type-check)</td></tr>
+      <tr><td><code>.github/workflows/deploy.yml</code></td><td>CD pipeline (build image, push to registry)</td></tr>
+      <tr><td><code>server/src/lib/health.ts</code></td><td>Health check endpoint (DB, Redis, connectors, voice)</td></tr>
+      <tr><td><code>server/src/lib/metrics.ts</code></td><td>Basic metrics (request count, latency, error rate)</td></tr>
+    </table>
+  </div>
+
+  <!-- ─── Dependencies ─────────────────────────────────────────── -->
+  <h2>New Dependencies</h2>
+  <table class="dep-table">
+    <tr><th>Package</th><th>Phase</th><th>Purpose</th></tr>
+    <tr><td>pg + pg-pool</td><td>1</td><td>PostgreSQL client</td></tr>
+    <tr><td>ioredis</td><td>1</td><td>Redis client</td></tr>
+    <tr><td>grammy</td><td>3</td><td>Telegram bot (optional, dynamically imported)</td></tr>
+    <tr><td>@whiskeysockets/baileys</td><td>3</td><td>WhatsApp bot (optional, dynamically imported)</td></tr>
+    <tr><td>discord.js</td><td>3</td><td>Discord bot (optional, dynamically imported)</td></tr>
+    <tr><td>@slack/bolt</td><td>3</td><td>Slack bot (optional, dynamically imported)</td></tr>
+    <tr><td>@deepgram/sdk</td><td>4</td><td>Speech-to-text (optional)</td></tr>
+    <tr><td>elevenlabs</td><td>4</td><td>Text-to-speech (optional)</td></tr>
+  </table>
+
+  <p><em>Phase 3 and 4 dependencies are optional — they're dynamically imported only when connectors/voice are enabled. The app works with just Phase 1+2 deps (pg, ioredis).</em></p>
+
+  <!-- ─── Architecture ─────────────────────────────────────────── -->
+  <h2>Architecture Overview</h2>
+  <pre>
+┌─────────────────────────────────────────────────────────────────┐
+│                        Frontend (React)                          │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐    │
+│  │ AI Chat  │  │ Agents   │  │ Memory   │  │ Connectors   │    │
+│  │ UI       │  │ Panel    │  │ Browser  │  │ Settings     │    │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └──────┬───────┘    │
+└───────┼──────────────┼──────────────┼───────────────┼───────────┘
+        │              │              │               │
+        ▼              ▼              ▼               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     Server (Express.js)                          │
+│                                                                  │
+│  ┌───────────┐  ┌────────────┐  ┌────────────┐  ┌──────────┐   │
+│  │ Auth +    │  │ AI Kernel  │  │ Governor   │  │ Voice    │   │
+│  │ Tenancy   │─▶│ (Agent     │◀─│ (Policies, │  │ Pipeline │   │
+│  │ Middleware│  │  Router,   │  │  Budget,   │  │ (STT +   │   │
+│  └───────────┘  │  Tools,    │  │  Approvals)│  │  TTS)    │   │
+│                 │  Memory)   │  └────────────┘  └──────────┘   │
+│                 └─────┬──────┘                                  │
+│                       │                                          │
+│  ┌──────────────┐  ┌──┴──────────┐  ┌──────────────────────┐   │
+│  │ Connectors   │  │ 4-Tier      │  │ LLM Providers        │   │
+│  │ (Telegram,   │  │ Memory      │  │ (Anthropic, OpenAI,  │   │
+│  │  Discord,    │  │ (Redis STM, │  │  Google, 6 more)     │   │
+│  │  Slack, WA)  │  │  pgvector,  │  └──────────────────────┘   │
+│  └──────────────┘  │  profiles,  │                              │
+│                     │  episodes)  │                              │
+│                     └──────┬──────┘                              │
+└────────────────────────────┼────────────────────────────────────┘
+                             │
+        ┌────────────────────┼────────────────────┐
+        ▼                    ▼                    ▼
+   ┌──────────┐      ┌──────────┐         ┌──────────┐
+   │PostgreSQL│      │  Redis   │         │ pgvector │
+   │(+ RLS)   │      │ (cache,  │         │(semantic │
+   │          │      │  sessions)│         │ search)  │
+   └──────────┘      └──────────┘         └──────────┘
+  </pre>
+
+  <!-- ─── Verification ─────────────────────────────────────────── -->
+  <h2>Verification Checklist</h2>
+  <table>
+    <tr><th>Phase</th><th>Smoke Test</th></tr>
+    <tr><td>1: Foundation</td><td>PostgreSQL connects, migrations run, RLS enforces tenant isolation, Redis caches sessions</td></tr>
+    <tr><td>2: AI Kernel</td><td>Chat message → AI kernel → agent response streams back via WebSocket</td></tr>
+    <tr><td>3: Connectors</td><td>Send Telegram message → bot responds with AI-generated answer</td></tr>
+    <tr><td>4: Voice</td><td>Audio → transcribed → AI responds → audio plays back</td></tr>
+    <tr><td>5: Governor</td><td>Agent attempts sensitive action → approval request created → admin approves → action executes</td></tr>
+    <tr><td>6: Deployment</td><td><code>docker-compose up</code> starts full stack, health endpoint returns 200</td></tr>
+  </table>
+
+  <!-- ─── File Count ───────────────────────────────────────────── -->
+  <h2>Implementation Summary</h2>
+  <table>
+    <tr><th>Category</th><th>Files Created</th><th>Files Modified</th></tr>
+    <tr><td>Database (postgres, redis, migrations)</td><td>12</td><td>1</td></tr>
+    <tr><td>AI Kernel (kernel, agents, memory)</td><td>16</td><td>0</td></tr>
+    <tr><td>Middleware (tenancy, RBAC)</td><td>2</td><td>0</td></tr>
+    <tr><td>Connectors (5 platforms + manager)</td><td>7</td><td>0</td></tr>
+    <tr><td>Voice (pipeline, STT, TTS, VAD)</td><td>4</td><td>0</td></tr>
+    <tr><td>Governor (policies, approvals, budget)</td><td>4</td><td>0</td></tr>
+    <tr><td>Routes (API endpoints)</td><td>7</td><td>0</td></tr>
+    <tr><td>Infrastructure (Docker, CI/CD, health)</td><td>7</td><td>0</td></tr>
+    <tr><td>Existing files modified</td><td>—</td><td>4</td></tr>
+    <tr style="font-weight:700"><td>Total</td><td>59 new files</td><td>5 modified</td></tr>
+  </table>
+
+  <div class="footer">
+    <p>OriginA Integration Plan — Orchestree Platform</p>
+    <p>Generated 2026-02-21</p>
+  </div>
+
+</body>
+</html>

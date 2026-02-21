@@ -12,6 +12,7 @@ describe('useAIFeatureChatStore', () => {
         scheduling: { messages: [], isOpen: false },
         databases: { messages: [], isOpen: false },
         inbox: { messages: [], isOpen: false },
+        chorus: { messages: [], isOpen: false },
       },
     })
   })
@@ -19,7 +20,7 @@ describe('useAIFeatureChatStore', () => {
   describe('initial state', () => {
     it('has sessions for all feature keys', () => {
       const { sessions } = useAIFeatureChatStore.getState()
-      expect(Object.keys(sessions)).toHaveLength(7)
+      expect(Object.keys(sessions)).toHaveLength(8)
       expect(sessions.home.messages).toEqual([])
       expect(sessions.home.isOpen).toBe(false)
     })
