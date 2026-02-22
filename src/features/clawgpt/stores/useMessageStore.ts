@@ -144,7 +144,7 @@ export const useMessageStore = create<MessageState>()(
       },
     }),
     {
-      name: 'orchestree-message-storage',
+      name: 'origina-message-storage',
       partialize: (state) => ({
         messages: state.messages.slice(-1000),
         activeSessionId: state.activeSessionId,

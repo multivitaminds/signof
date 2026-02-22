@@ -59,7 +59,7 @@
 .accounting-layout__year-dropdown:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.12);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
 }
 
 .accounting-layout__year-chevron {
@@ -183,7 +183,7 @@
 }
 
 [data-theme="dark"] .accounting-layout__year-dropdown:focus {
-  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.2);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
 [data-theme="dark"] .accounting-layout__year-chevron {
@@ -195,9 +195,9 @@
 }
 
 [data-theme="dark"] .accounting-layout__tab--active {
-  background-color: rgba(124, 92, 252, 0.12);
+  background-color: rgba(79, 70, 229, 0.12);
 }
 
 [data-theme="dark"] .accounting-layout__tab--active:hover {
-  background-color: rgba(124, 92, 252, 0.12);
+  background-color: rgba(79, 70, 229, 0.12);
 }

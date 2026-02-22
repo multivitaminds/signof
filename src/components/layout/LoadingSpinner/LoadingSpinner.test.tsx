@@ -26,7 +26,7 @@ describe('LoadingSpinner', () => {
   it('renders the animated logo', () => {
     const { container } = render(<LoadingSpinner />)
     expect(container.querySelector('.loading-spinner__logo')).toBeInTheDocument()
-    expect(container.querySelector('.loading-spinner__logo-s')).toHaveTextContent('S')
+    expect(container.querySelector('.loading-spinner__logo-s')).toHaveTextContent('a')
   })
 
   it('marks decorative elements as aria-hidden', () => {

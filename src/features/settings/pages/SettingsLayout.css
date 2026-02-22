@@ -45,7 +45,7 @@
 }
 
 .settings-layout__nav-item--active:hover {
-  background: var(--color-primary-hover, #6A4CE0);
+  background: var(--color-primary-hover, #4338CA);
   color: #fff;
 }
 
@@ -71,12 +71,12 @@
 }
 
 [data-theme="dark"] .settings-layout__nav-item--active {
-  background: var(--color-primary, #7C5CFC);
+  background: var(--color-primary, #4F46E5);
   color: #fff;
 }
 
 [data-theme="dark"] .settings-layout__nav-item--active:hover {
-  background: var(--color-primary-hover, #6A4CE0);
+  background: var(--color-primary-hover, #4338CA);
   color: #fff;
 }
 

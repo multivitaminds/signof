@@ -6,7 +6,7 @@
 
 import type { StateStorage } from 'zustand/middleware'
 
-const KEY_STORAGE_KEY = 'orchestree-ek'
+const KEY_STORAGE_KEY = 'origina-ek'
 const IV_LENGTH = 12
 
 // ─── Key Management ────────────────────────────────────────────────────

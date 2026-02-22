@@ -4,16 +4,16 @@ import { useCallback } from 'react'
 export function usePerformanceMark(name: string) {
   const mark = useCallback(
     (phase: 'start' | 'end') => {
-      const markName = `orchestree-${name}-${phase}`
+      const markName = `origina-${name}-${phase}`
       performance.mark(markName)
       if (phase === 'end') {
         try {
           performance.measure(
-            `orchestree-${name}`,
-            `orchestree-${name}-start`,
+            `origina-${name}`,
+            `origina-${name}-start`,
             markName
           )
-          const entries = performance.getEntriesByName(`orchestree-${name}`)
+          const entries = performance.getEntriesByName(`origina-${name}`)
           const last = entries[entries.length - 1]
           if (last && import.meta.env.DEV) {
             // eslint-disable-next-line no-console

@@ -535,7 +535,7 @@
 }
 
 [data-theme="dark"] .contacts-page__card:hover {
-  border-color: rgba(124, 92, 252, 0.3);
+  border-color: rgba(79, 70, 229, 0.3);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 

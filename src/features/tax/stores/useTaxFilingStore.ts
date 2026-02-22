@@ -1230,7 +1230,7 @@ export const useTaxFilingStore = create<TaxFilingState>()(
         get().checklist.every((item) => item.completed),
     }),
     {
-      name: 'orchestree-tax-filing-storage',
+      name: 'origina-tax-filing-storage',
       storage: createJSONStorage(() => createEncryptedStorage()),
       partialize: (state) => ({
         filings: state.filings,

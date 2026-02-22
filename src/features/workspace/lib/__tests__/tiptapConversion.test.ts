@@ -173,7 +173,7 @@ describe('blocksToTiptapDoc', () => {
     const callout = makeBlock(BlockType.Callout, 'Note text', [], { calloutIcon: '⚠️', color: 'yellow' })
     const doc = blocksToTiptapDoc([callout])
 
-    expect(doc.content![0]!.type).toBe('orchestreeCallout')
+    expect(doc.content![0]!.type).toBe('originaCallout')
     expect(doc.content![0]!.attrs!.icon).toBe('⚠️')
     expect(doc.content![0]!.attrs!.color).toBe('yellow')
   })
@@ -332,7 +332,7 @@ describe('tiptapDocToBlocks', () => {
       type: 'doc',
       content: [
         {
-          type: 'orchestreeCallout',
+          type: 'originaCallout',
           attrs: { icon: '💡', color: 'blue', blockId: 'test-123' },
           content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Note' }] }],
         },

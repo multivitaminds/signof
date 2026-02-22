@@ -64,6 +64,6 @@ export const useDashboardStore = create<DashboardState>()(
 
       resetLayout: () => set({ widgets: DEFAULT_WIDGETS }),
     }),
-    { name: 'orchestree-dashboard-storage' }
+    { name: 'origina-dashboard-storage' }
   )
 )

@@ -38,7 +38,7 @@ const DEFAULT_INTEGRATIONS: IntegrationConfig[] = [
     id: 'github',
     name: 'GitHub',
     icon: '\uD83D\uDC19',
-    description: 'Link issues and pull requests to your Orchestree projects.',
+    description: 'Link issues and pull requests to your OriginA projects.',
     connected: false,
     connectedAt: null,
   },
@@ -54,7 +54,7 @@ const DEFAULT_INTEGRATIONS: IntegrationConfig[] = [
     id: 'zapier',
     name: 'Zapier',
     icon: '\u26A1',
-    description: 'Automate workflows by connecting Orchestree with 5,000+ apps.',
+    description: 'Automate workflows by connecting OriginA with 5,000+ apps.',
     connected: false,
     connectedAt: null,
   },
@@ -93,6 +93,6 @@ export const useIntegrationsStore = create<IntegrationsState>()(
         }))
       },
     }),
-    { name: 'orchestree-integrations-storage' }
+    { name: 'origina-integrations-storage' }
   )
 )

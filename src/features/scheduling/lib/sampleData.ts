@@ -35,7 +35,7 @@ export const SAMPLE_EVENT_TYPES: EventType[] = [
   {
     id: 'et-product-demo',
     name: 'Product Demo',
-    description: 'A 30-minute walkthrough of Orchestree features and capabilities.',
+    description: 'A 30-minute walkthrough of OriginA features and capabilities.',
     slug: 'product-demo',
     category: EventTypeCategory.OneOnOne,
     color: EVENT_TYPE_COLORS[1]!, // Green
@@ -181,9 +181,9 @@ export const SAMPLE_BOOKINGS: Booking[] = [
     timezone: 'America/New_York',
     status: BookingStatus.Completed,
     attendees: [
-      { name: 'Carol Davis', email: 'carol@orchestree.com', timezone: 'America/New_York' },
-      { name: 'Dan Evans', email: 'dan@orchestree.com', timezone: 'America/New_York' },
-      { name: 'Eve Foster', email: 'eve@orchestree.com', timezone: 'Europe/London' },
+      { name: 'Carol Davis', email: 'carol@origina.com', timezone: 'America/New_York' },
+      { name: 'Dan Evans', email: 'dan@origina.com', timezone: 'America/New_York' },
+      { name: 'Eve Foster', email: 'eve@origina.com', timezone: 'Europe/London' },
     ],
     notes: 'Monday standup',
     createdAt: '2026-02-07T08:00:00Z',

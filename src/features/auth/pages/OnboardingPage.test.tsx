@@ -61,7 +61,7 @@ describe('OnboardingPage', () => {
 
   it('renders the welcome step with personalized greeting', () => {
     renderOnboarding()
-    expect(screen.getByText(/Welcome to Orchestree/)).toBeInTheDocument()
+    expect(screen.getByText(/Welcome to OriginA/)).toBeInTheDocument()
     expect(screen.getByText('Step 1 of 8')).toBeInTheDocument()
     expect(screen.getByLabelText('What should we call you?')).toBeInTheDocument()
   })

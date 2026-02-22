@@ -71,7 +71,7 @@ const useRepairStore = create<RepairState>()(
       },
     }),
     {
-      name: 'orchestree-repair-storage',
+      name: 'origina-repair-storage',
     },
   ),
 )

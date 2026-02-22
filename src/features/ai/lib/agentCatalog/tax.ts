@@ -11,7 +11,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Extracts wage, tax withholding, and employer data from W-2 forms using OCR and field mapping with accuracy validation.',
     capabilities: {
       tools: ['analyze_tax_document', 'create_tax_filing', 'explain_tax_field'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['w2-image', 'w2-pdf', 'employer-data'],
       outputTypes: ['w2-data', 'extraction-report', 'validation-results'],
       domains: ['w2', 'wages', 'withholding', 'extraction', 'payroll'],
@@ -44,7 +44,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Processes all 1099 form variants (NEC, INT, DIV, MISC, B, R, S) with automatic form type detection and data extraction.',
     capabilities: {
       tools: ['analyze_tax_document', 'create_tax_filing', 'explain_tax_field'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['1099-document', 'payer-info', 'form-type'],
       outputTypes: ['1099-data', 'form-classification', 'schedule-mapping'],
       domains: ['1099', 'contractor', 'dividends', 'interest', 'income'],
@@ -77,7 +77,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Identifies eligible tax deductions and credits based on taxpayer profile, income sources, and expenses with IRS citation references.',
     capabilities: {
       tools: ['suggest_deductions', 'analyze_tax_document', 'explain_tax_field'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['taxpayer-profile', 'expense-list', 'income-summary'],
       outputTypes: ['deduction-list', 'savings-estimate', 'eligibility-report'],
       domains: ['deductions', 'credits', 'savings', 'itemized', 'standard'],
@@ -110,7 +110,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Validates completed tax forms against IRS specifications, checking field calculations, cross-form consistency, and filing requirements.',
     capabilities: {
       tools: ['review_filing', 'analyze_tax_document', 'explain_tax_field'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['tax-return', 'form-id', 'validation-level'],
       outputTypes: ['validation-report', 'error-list', 'fix-instructions'],
       domains: ['validation', 'errors', 'calculations', 'compliance', 'accuracy'],
@@ -143,7 +143,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Verifies tax filings meet all federal, state, and local compliance requirements including deadlines, required forms, and filing thresholds.',
     capabilities: {
       tools: ['review_filing', 'check_submission_status', 'get_upcoming_deadlines'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['filing-package', 'jurisdiction-list', 'taxpayer-type'],
       outputTypes: ['compliance-report', 'missing-forms', 'deadline-calendar'],
       domains: ['compliance', 'filing', 'deadlines', 'requirements', 'jurisdiction'],
@@ -176,7 +176,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Guides taxpayers through a conversational tax interview to gather all necessary information for accurate return preparation.',
     capabilities: {
       tools: ['explain_tax_field', 'suggest_deductions', 'create_tax_filing'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['taxpayer-responses', 'filing-status', 'prior-year-data'],
       outputTypes: ['interview-summary', 'data-collection', 'missing-info-list'],
       domains: ['interview', 'intake', 'questionnaire', 'onboarding', 'guidance'],
@@ -209,7 +209,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Classifies uploaded tax documents by form type, tax year, and relevance, routing them to the correct processing pipeline.',
     capabilities: {
       tools: ['analyze_tax_document', 'explain_tax_field'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['document-upload', 'classification-hint'],
       outputTypes: ['document-type', 'tax-year', 'routing-decision'],
       domains: ['classification', 'document-type', 'routing', 'sorting', 'triage'],
@@ -242,7 +242,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Calculates quarterly estimated tax payments based on projected income, withholdings, and prior year safe harbor amounts.',
     capabilities: {
       tools: ['create_tax_filing', 'analyze_tax_document', 'get_upcoming_deadlines'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['income-projection', 'withholding-data', 'prior-year-tax'],
       outputTypes: ['estimated-payments', 'quarterly-schedule', 'penalty-analysis'],
       domains: ['estimated-tax', 'quarterly', 'safe-harbor', 'penalties', 'projections'],
@@ -275,7 +275,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Manages multi-state tax filing requirements for taxpayers with income in multiple jurisdictions, handling allocation and credits.',
     capabilities: {
       tools: ['create_tax_filing', 'review_filing', 'check_submission_status'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['state-income-list', 'residency-info', 'w2-state-data'],
       outputTypes: ['state-filing-plan', 'allocation-schedule', 'credit-calculations'],
       domains: ['state-tax', 'multi-state', 'allocation', 'reciprocity', 'nexus'],
@@ -308,7 +308,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Calculates depreciation schedules for business assets using MACRS, Section 179, and bonus depreciation with optimal method selection.',
     capabilities: {
       tools: ['suggest_deductions', 'create_tax_filing', 'explain_tax_field'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['asset-list', 'purchase-dates', 'business-use-pct'],
       outputTypes: ['depreciation-schedule', 'method-comparison', 'form-4562-data'],
       domains: ['depreciation', 'macrs', 'section-179', 'assets', 'amortization'],
@@ -341,7 +341,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Assists sole proprietors with Schedule C preparation including income categorization, expense classification, and home office deduction calculations.',
     capabilities: {
       tools: ['suggest_deductions', 'create_tax_filing', 'explain_tax_field'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['business-income', 'expense-categories', 'home-office-info'],
       outputTypes: ['schedule-c-draft', 'expense-analysis', 'audit-risk-assessment'],
       domains: ['schedule-c', 'self-employment', 'business-expenses', 'sole-proprietor'],
@@ -374,7 +374,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Calculates capital gains and losses from investment transactions with cost basis tracking, wash sale detection, and Schedule D preparation.',
     capabilities: {
       tools: ['analyze_tax_document', 'create_tax_filing', 'explain_tax_field'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['trade-history', 'cost-basis-data', '1099-b-forms'],
       outputTypes: ['gains-summary', 'schedule-d-draft', 'wash-sale-report'],
       domains: ['capital-gains', 'investments', 'cost-basis', 'wash-sale', 'schedule-d'],
@@ -407,7 +407,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Manages tax implications of rental properties including Schedule E preparation, depreciation, passive activity rules, and material participation tests.',
     capabilities: {
       tools: ['suggest_deductions', 'create_tax_filing', 'explain_tax_field'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['rental-income', 'property-expenses', 'ownership-info'],
       outputTypes: ['schedule-e-draft', 'passive-activity-analysis', 'depreciation-schedule'],
       domains: ['rental', 'schedule-e', 'passive-activity', 'real-estate', 'property'],
@@ -440,7 +440,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Explains individual tax form fields, lines, and boxes in plain language with examples and IRS instruction references.',
     capabilities: {
       tools: ['explain_tax_field', 'analyze_tax_document'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['form-id', 'field-id', 'context-question'],
       outputTypes: ['field-explanation', 'examples', 'irs-reference'],
       domains: ['explanation', 'help', 'education', 'fields', 'instructions'],
@@ -473,7 +473,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Prepares Form 1040-X amended returns by identifying changes from the original filing, calculating adjustments, and generating explanations.',
     capabilities: {
       tools: ['create_tax_filing', 'review_filing', 'analyze_tax_document'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['original-return', 'correction-items', 'amendment-reason'],
       outputTypes: ['form-1040x', 'change-explanation', 'refund-or-balance-due'],
       domains: ['amendment', '1040-x', 'correction', 'adjusted-return'],
@@ -506,7 +506,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Assesses audit risk by analyzing return characteristics against known IRS DIF score factors, industry benchmarks, and red flag patterns.',
     capabilities: {
       tools: ['review_filing', 'analyze_tax_document', 'suggest_deductions'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['tax-return', 'industry-code', 'income-level'],
       outputTypes: ['risk-score', 'red-flag-report', 'mitigation-suggestions'],
       domains: ['audit', 'risk', 'dif-score', 'red-flags', 'triggers'],
@@ -539,7 +539,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Prepares and tracks tax extension filings (Form 4868 for individuals, Form 7004 for businesses) with estimated payment calculations.',
     capabilities: {
       tools: ['create_tax_filing', 'check_submission_status', 'get_upcoming_deadlines'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['taxpayer-info', 'estimated-tax-liability', 'filing-type'],
       outputTypes: ['extension-form', 'payment-voucher', 'new-deadline'],
       domains: ['extension', 'form-4868', 'form-7004', 'deadline', 'payment'],
@@ -572,7 +572,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Validates charitable contribution deductions by checking organization eligibility, receipt requirements, and AGI limitation compliance.',
     capabilities: {
       tools: ['suggest_deductions', 'review_filing', 'explain_tax_field'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['donation-list', 'receipt-documents', 'agi-amount'],
       outputTypes: ['validation-report', 'eligible-deductions', 'documentation-gaps'],
       domains: ['charity', 'donations', 'contributions', '501c3', 'receipts'],
@@ -605,7 +605,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Analyzes optimal business entity structure (LLC, S-Corp, C-Corp, partnership) based on tax implications, liability, and growth plans.',
     capabilities: {
       tools: ['suggest_deductions', 'explain_tax_field', 'analyze_tax_document'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['business-profile', 'income-projections', 'ownership-structure'],
       outputTypes: ['entity-comparison', 'tax-impact-analysis', 'recommendation'],
       domains: ['entity', 'llc', 's-corp', 'c-corp', 'partnership', 'structure'],
@@ -638,7 +638,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Calculates employer and employee payroll tax obligations including FICA, FUTA, state unemployment, and additional Medicare tax.',
     capabilities: {
       tools: ['create_tax_filing', 'explain_tax_field', 'get_upcoming_deadlines'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['payroll-data', 'employee-count', 'state-list'],
       outputTypes: ['payroll-tax-summary', 'deposit-schedule', 'form-941-data'],
       domains: ['payroll', 'fica', 'futa', 'unemployment', 'withholding'],
@@ -671,7 +671,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Provides year-round tax planning strategies including income timing, deduction acceleration, retirement contributions, and year-end moves.',
     capabilities: {
       tools: ['suggest_deductions', 'analyze_tax_document', 'explain_tax_field', 'get_upcoming_deadlines'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['financial-snapshot', 'tax-goals', 'life-events'],
       outputTypes: ['planning-recommendations', 'action-timeline', 'savings-projection'],
       domains: ['planning', 'strategy', 'optimization', 'year-end', 'future'],
@@ -704,7 +704,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Tracks e-file submissions, rejection resolution, acceptance confirmations, and refund status across all filed returns.',
     capabilities: {
       tools: ['check_submission_status', 'get_upcoming_deadlines', 'review_filing'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['filing-id', 'tracking-number', 'status-request'],
       outputTypes: ['submission-status', 'rejection-details', 'refund-timeline'],
       domains: ['e-file', 'submission', 'tracking', 'rejection', 'acceptance'],
@@ -737,7 +737,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Optimizes retirement account contributions across 401(k), IRA, SEP, SIMPLE, and HSA accounts for maximum tax benefit.',
     capabilities: {
       tools: ['suggest_deductions', 'explain_tax_field', 'analyze_tax_document'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['income-data', 'account-types', 'contribution-history'],
       outputTypes: ['contribution-plan', 'tax-savings-analysis', 'limit-tracking'],
       domains: ['retirement', '401k', 'ira', 'sep', 'hsa', 'contributions'],
@@ -770,7 +770,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Handles international tax obligations including FBAR, Form 8938, foreign tax credits, tax treaty benefits, and GILTI calculations.',
     capabilities: {
       tools: ['create_tax_filing', 'review_filing', 'explain_tax_field'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['foreign-income', 'foreign-accounts', 'treaty-country'],
       outputTypes: ['fbar-form', 'form-8938', 'foreign-tax-credit', 'treaty-analysis'],
       domains: ['international', 'fbar', 'foreign-income', 'treaty', 'gilti'],
@@ -803,7 +803,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Monitors all tax filing, payment, and compliance deadlines with proactive alerts, calendar integration, and jurisdiction-specific tracking.',
     capabilities: {
       tools: ['get_upcoming_deadlines', 'check_submission_status', 'review_filing'],
-      connectors: ['orchestree-tax', 'orchestree-scheduling'],
+      connectors: ['origina-tax', 'origina-scheduling'],
       inputTypes: ['taxpayer-profile', 'filing-types', 'alert-preferences'],
       outputTypes: ['deadline-calendar', 'alert-schedule', 'compliance-timeline'],
       domains: ['deadlines', 'calendar', 'alerts', 'reminders', 'compliance-dates'],
@@ -836,7 +836,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Calculates sales tax obligations across jurisdictions with nexus determination, exemption handling, and filing schedule management.',
     capabilities: {
       tools: ['create_tax_filing', 'get_upcoming_deadlines', 'explain_tax_field'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['sales-data', 'jurisdiction-list', 'nexus-info'],
       outputTypes: ['sales-tax-summary', 'nexus-analysis', 'filing-schedule'],
       domains: ['sales-tax', 'nexus', 'use-tax', 'exemptions', 'jurisdiction'],
@@ -869,7 +869,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Calculates cryptocurrency tax obligations from trading, staking, mining, and DeFi activities with cost basis tracking across exchanges.',
     capabilities: {
       tools: ['analyze_tax_document', 'create_tax_filing', 'explain_tax_field'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['exchange-history', 'wallet-transactions', 'staking-rewards'],
       outputTypes: ['crypto-tax-report', 'cost-basis-summary', 'schedule-d-data'],
       domains: ['cryptocurrency', 'bitcoin', 'defi', 'staking', 'mining', 'nft'],
@@ -902,7 +902,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Compares current year tax data against prior year returns to identify significant changes, anomalies, and potential audit triggers.',
     capabilities: {
       tools: ['analyze_tax_document', 'review_filing', 'suggest_deductions'],
-      connectors: ['orchestree-tax'],
+      connectors: ['origina-tax'],
       inputTypes: ['current-year-data', 'prior-year-return', 'comparison-config'],
       outputTypes: ['comparison-report', 'variance-analysis', 'anomaly-flags'],
       domains: ['comparison', 'year-over-year', 'variance', 'trends', 'anomaly'],

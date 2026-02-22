@@ -17,7 +17,7 @@ class HttpAdapter implements ConnectorAdapter {
 
   async execute(actionId: string, params: Record<string, unknown>): Promise<ConnectorResult> {
     try {
-      const apiKey = localStorage.getItem('orchestree_api_key')
+      const apiKey = localStorage.getItem('origina_api_key')
       const headers: Record<string, string> = { 'Content-Type': 'application/json' }
       if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`
 

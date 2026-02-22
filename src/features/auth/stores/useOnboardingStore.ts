@@ -81,6 +81,6 @@ export const useOnboardingStore = create<OnboardingState>()(
 
       reset: () => set({ ...INITIAL_STATE }),
     }),
-    { name: 'orchestree-onboarding-storage' }
+    { name: 'origina-onboarding-storage' }
   )
 )

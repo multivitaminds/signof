@@ -134,10 +134,10 @@ describe('DeveloperLayout', () => {
   it('renders external documentation links', () => {
     render(<DeveloperLayout />)
     const docsLink = screen.getByText('Full Documentation')
-    expect(docsLink).toHaveAttribute('href', 'https://docs.orchestree.io')
+    expect(docsLink).toHaveAttribute('href', 'https://docs.origina.io')
     expect(docsLink).toHaveAttribute('target', '_blank')
     const statusLink = screen.getByText('API Status')
-    expect(statusLink).toHaveAttribute('href', 'https://status.orchestree.io')
+    expect(statusLink).toHaveAttribute('href', 'https://status.origina.io')
   })
 
   it('renders DemoVideoSection', () => {

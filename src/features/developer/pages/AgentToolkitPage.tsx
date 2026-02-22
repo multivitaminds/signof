@@ -53,9 +53,9 @@ const BASE_AGENTS: AgentEntry[] = [
 
 const FRAMEWORK_INTEGRATIONS = [
   { id: 'openai', label: 'OpenAI Agents SDK', language: 'python', code: `from agents import Agent, Runner
-from orchestree import OrchestreeToolkit
+from origina import OriginAToolkit
 
-toolkit = OrchestreeToolkit(api_key="sk_live_...")
+toolkit = OriginAToolkit(api_key="sk_live_...")
 
 agent = Agent(
     name="document-processor",
@@ -66,9 +66,9 @@ agent = Agent(
 result = Runner.run_sync(agent, "Send the NDA to john@example.com")
 print(result.final_output)` },
   { id: 'langchain', label: 'LangChain', language: 'python', code: `from langchain.agents import initialize_agent, AgentType
-from orchestree.langchain import OrchestreeTools
+from origina.langchain import OriginATools
 
-tools = OrchestreeTools(api_key="sk_live_...").as_tools()
+tools = OriginATools(api_key="sk_live_...").as_tools()
 
 agent = initialize_agent(
     tools=tools,
@@ -79,9 +79,9 @@ agent = initialize_agent(
 
 agent.run("List all pending documents and summarize their status")` },
   { id: 'crewai', label: 'CrewAI', language: 'python', code: `from crewai import Agent, Task, Crew
-from orchestree.crewai import OrchestreeTools
+from origina.crewai import OriginATools
 
-tools = OrchestreeTools(api_key="sk_live_...")
+tools = OriginATools(api_key="sk_live_...")
 
 researcher = Agent(
     role="Document Analyst",
@@ -93,12 +93,12 @@ task = Task(description="Analyze last month's signing metrics", agent=researcher
 crew = Crew(agents=[researcher], tasks=[task])
 crew.kickoff()` },
   { id: 'autogen', label: 'AutoGen', language: 'python', code: `import autogen
-from orchestree.autogen import OrchestreeTools
+from origina.autogen import OriginATools
 
-tools = OrchestreeTools(api_key="sk_live_...")
+tools = OriginATools(api_key="sk_live_...")
 
 assistant = autogen.AssistantAgent(
-    name="orchestree_assistant",
+    name="origina_assistant",
     llm_config={"model": "gpt-4"},
 )
 
@@ -110,7 +110,7 @@ user_proxy.initiate_chat(assistant, message="Create a new project board")` },
 
 // ─── Team Example ────────────────────────────────────────────────────────
 
-const TEAM_EXAMPLE_CODE = `import { AgentTeam, Planner, Researcher, Writer } from '@orchestree/agent-toolkit'
+const TEAM_EXAMPLE_CODE = `import { AgentTeam, Planner, Researcher, Writer } from '@origina/agent-toolkit'
 
 const team = new AgentTeam({
   name: 'Content Pipeline',
@@ -241,16 +241,16 @@ function AgentToolkitPage() {
       <div className="agent-toolkit__header">
         <h1 className="agent-toolkit__title">Agent Toolkit</h1>
         <p className="agent-toolkit__subtitle">
-          Build, deploy, and orchestrate autonomous AI agents that work across your entire Orchestree workspace.
+          Build, deploy, and orchestrate autonomous AI agents that work across your entire OriginA workspace.
         </p>
       </div>
 
       {/* Quick Start */}
       <div className="agent-toolkit__quick-start">
         <h2 className="agent-toolkit__section-title">Quick Start</h2>
-        <CodeBlock code="npm install @orchestree/agent-toolkit" language="bash" />
+        <CodeBlock code="npm install @origina/agent-toolkit" language="bash" />
         <p className="agent-toolkit__quick-start-subtitle">Get started with a single agent:</p>
-        <CodeBlock code={`import { Researcher } from '@orchestree/agent-toolkit'\n\nconst agent = new Researcher({ apiKey: 'sk_live_...' })\nconst result = await agent.run('Summarize our Q4 revenue trends')\nconsole.log(result.output)`} language="javascript" />
+        <CodeBlock code={`import { Researcher } from '@origina/agent-toolkit'\n\nconst agent = new Researcher({ apiKey: 'sk_live_...' })\nconst result = await agent.run('Summarize our Q4 revenue trends')\nconsole.log(result.output)`} language="javascript" />
       </div>
 
       {/* Agent Categories */}

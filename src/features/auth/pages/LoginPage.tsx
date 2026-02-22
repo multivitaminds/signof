@@ -69,7 +69,7 @@ export default function LoginPage() {
     <div className="auth-page">
       <div className="auth-page__card">
         <div className="auth-page__logo">
-          <span className="auth-page__logo-text">Orchestree</span>
+          <span className="auth-page__logo-text">OriginA</span>
         </div>
         <h1 className="auth-page__title">Welcome back</h1>
         <p className="auth-page__subtitle">Sign in to your workspace</p>

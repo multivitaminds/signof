@@ -74,8 +74,8 @@
 }
 
 .export-dialog__input:focus {
-  border-color: var(--color-primary, #7C5CFC);
-  box-shadow: 0 0 0 3px var(--alpha-focus, rgba(124, 92, 252, 0.16));
+  border-color: var(--color-primary, #4F46E5);
+  box-shadow: 0 0 0 3px var(--alpha-focus, rgba(79, 70, 229, 0.16));
 }
 
 /* ─── Format Radio Cards ──────────────────────────────────────── */
@@ -95,7 +95,7 @@
 
 .export-dialog__radio {
   margin-top: 4px;
-  accent-color: var(--color-primary, #7C5CFC);
+  accent-color: var(--color-primary, #4F46E5);
   flex-shrink: 0;
 }
 

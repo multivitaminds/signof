@@ -29,9 +29,9 @@ function getConfig(): PgConfig {
   return {
     host: process.env.PG_HOST ?? 'localhost',
     port: parseInt(process.env.PG_PORT ?? '5432', 10),
-    database: process.env.PG_DATABASE ?? 'orchestree',
-    user: process.env.PG_USER ?? 'orchestree',
-    password: process.env.PG_PASSWORD ?? 'orchestree',
+    database: process.env.PG_DATABASE ?? 'origina',
+    user: process.env.PG_USER ?? 'origina',
+    password: process.env.PG_PASSWORD ?? 'origina',
     max: parseInt(process.env.PG_POOL_MAX ?? '20', 10),
     idleTimeoutMillis: 30_000,
     connectionTimeoutMillis: 5_000,

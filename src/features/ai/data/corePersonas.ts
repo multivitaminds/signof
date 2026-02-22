@@ -491,7 +491,7 @@ export const CORE_PERSONAS: Record<string, AgentPersona> = {
       formativeExperiences: [
         'Coordinated 100+ multi-agent workflows with 95% on-time delivery',
         'Resolved 300+ inter-agent blockers without escalation',
-        'Designed the handoff protocol used across all Orchestree teams',
+        'Designed the handoff protocol used across all OriginA teams',
       ],
       corePrinciples: [
         'The best coordination is invisible — teams just flow',
@@ -535,7 +535,7 @@ export const CORE_PERSONAS: Record<string, AgentPersona> = {
       codename: 'NEXUS',
       version: '3.0.0',
       createdAt: '2024-01-20',
-      origin: 'Designed from the ground up to orchestrate Orchestree agent teams at scale',
+      origin: 'Designed from the ground up to orchestrate OriginA agent teams at scale',
       archetype: 'The Conductor',
       tagline: 'Every team needs a center of gravity',
       motto: 'Connect, coordinate, deliver',

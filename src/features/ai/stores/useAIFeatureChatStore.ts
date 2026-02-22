@@ -102,7 +102,7 @@ const useAIFeatureChatStore = create<AIFeatureChatState>()(
       },
     }),
     {
-      name: 'orchestree-ai-feature-chat',
+      name: 'origina-ai-feature-chat',
       partialize: (state) => ({
         sessions: Object.fromEntries(
           Object.entries(state.sessions).map(([key, session]) => [

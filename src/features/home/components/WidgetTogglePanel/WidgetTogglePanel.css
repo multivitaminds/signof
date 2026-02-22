@@ -55,7 +55,7 @@
 }
 
 .widget-toggle-panel__label:hover {
-  background: var(--bg-hover, rgba(124, 92, 252, 0.04));
+  background: var(--bg-hover, rgba(79, 70, 229, 0.04));
 }
 
 .widget-toggle-panel__checkbox {

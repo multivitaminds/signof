@@ -11,7 +11,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Automatically triages incoming emails by urgency, topic, and sender importance, routing them to appropriate folders or team members.',
     capabilities: {
       tools: ['mark_all_read', 'send_notification', 'get_workspace_stats'],
-      connectors: ['orchestree-inbox', 'orchestree-notifications'],
+      connectors: ['origina-inbox', 'origina-notifications'],
       inputTypes: ['email-message', 'sender-context', 'triage-rules'],
       outputTypes: ['triage-decision', 'folder-assignment', 'priority-label'],
       domains: ['triage', 'email', 'routing', 'sorting', 'inbox'],
@@ -44,7 +44,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Assigns priority levels to incoming messages based on sender importance, content urgency, deadline mentions, and historical patterns.',
     capabilities: {
       tools: ['send_notification', 'get_workspace_stats', 'get_upcoming_deadlines'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['message-content', 'sender-profile', 'priority-rules'],
       outputTypes: ['priority-level', 'urgency-score', 'classification-reason'],
       domains: ['priority', 'urgency', 'classification', 'importance', 'ranking'],
@@ -77,7 +77,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Drafts context-aware automatic responses for common message types including meeting requests, info queries, and acknowledgments.',
     capabilities: {
       tools: ['send_notification', 'get_workspace_stats'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['incoming-message', 'response-templates', 'user-context'],
       outputTypes: ['draft-response', 'suggested-actions', 'send-confirmation'],
       domains: ['auto-reply', 'response', 'draft', 'acknowledgment', 'reply'],
@@ -110,7 +110,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Summarizes long email threads into concise digests with key decisions, action items, and the current status of discussions.',
     capabilities: {
       tools: ['get_workspace_stats', 'send_notification'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['email-thread', 'summary-length', 'focus-areas'],
       outputTypes: ['thread-summary', 'action-items', 'decision-log'],
       domains: ['summary', 'digest', 'thread', 'recap', 'overview'],
@@ -143,7 +143,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Extracts action items, commitments, and follow-ups from messages and threads, creating tasks with owners and deadlines.',
     capabilities: {
       tools: ['get_workspace_stats', 'get_upcoming_deadlines', 'send_notification'],
-      connectors: ['orchestree-inbox', 'orchestree-projects'],
+      connectors: ['origina-inbox', 'origina-projects'],
       inputTypes: ['message-content', 'thread-context', 'participant-list'],
       outputTypes: ['action-item-list', 'task-assignments', 'deadline-schedule'],
       domains: ['action-items', 'tasks', 'follow-ups', 'commitments', 'todos'],
@@ -176,7 +176,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Identifies spam, phishing attempts, and suspicious messages using content analysis, sender reputation, and link verification.',
     capabilities: {
       tools: ['mark_all_read', 'send_notification'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['email-message', 'sender-data', 'link-list'],
       outputTypes: ['spam-score', 'threat-assessment', 'safe-sender-list'],
       domains: ['spam', 'phishing', 'security', 'threats', 'filtering'],
@@ -209,7 +209,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Handles meeting scheduling requests from emails by checking availability, suggesting times, and sending calendar invitations.',
     capabilities: {
       tools: ['send_notification', 'get_workspace_stats', 'get_upcoming_deadlines'],
-      connectors: ['orchestree-inbox', 'orchestree-scheduling'],
+      connectors: ['origina-inbox', 'origina-scheduling'],
       inputTypes: ['scheduling-request', 'participant-list', 'time-preferences'],
       outputTypes: ['available-slots', 'meeting-invite', 'confirmation'],
       domains: ['meetings', 'scheduling', 'calendar', 'availability', 'invitations'],
@@ -242,7 +242,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Tracks sent messages awaiting responses, reminds users to follow up, and escalates overdue communications.',
     capabilities: {
       tools: ['send_notification', 'get_upcoming_deadlines', 'get_workspace_stats'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['sent-messages', 'follow-up-rules', 'response-deadlines'],
       outputTypes: ['pending-responses', 'follow-up-reminders', 'escalation-alerts'],
       domains: ['follow-up', 'tracking', 'responses', 'reminders', 'escalation'],
@@ -275,7 +275,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Drafts professional emails with appropriate tone, structure, and content based on user intent, recipient context, and communication guidelines.',
     capabilities: {
       tools: ['send_notification', 'get_workspace_stats'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['email-intent', 'recipient-info', 'key-points', 'tone'],
       outputTypes: ['email-draft', 'subject-line-options', 'tone-analysis'],
       domains: ['compose', 'writing', 'drafting', 'email', 'communication'],
@@ -308,7 +308,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Identifies newsletter and marketing subscriptions, helps bulk unsubscribe from unwanted lists, and maintains subscription preferences.',
     capabilities: {
       tools: ['mark_all_read', 'send_notification'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['subscription-list', 'preference-rules', 'keep-list'],
       outputTypes: ['subscription-audit', 'unsubscribe-actions', 'cleaned-inbox-report'],
       domains: ['unsubscribe', 'subscriptions', 'newsletters', 'cleanup', 'preferences'],
@@ -341,7 +341,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Enriches email contact profiles with job titles, company info, social links, and interaction history from inbox conversations.',
     capabilities: {
       tools: ['get_workspace_stats', 'send_notification'],
-      connectors: ['orchestree-inbox', 'enrichment-api'],
+      connectors: ['origina-inbox', 'enrichment-api'],
       inputTypes: ['email-address', 'contact-context', 'enrichment-fields'],
       outputTypes: ['enriched-profile', 'company-info', 'interaction-history'],
       domains: ['contacts', 'enrichment', 'profiles', 'company-data', 'people'],
@@ -374,7 +374,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Analyzes emotional tone and sentiment of incoming messages to flag upset customers, escalation risks, and positive feedback.',
     capabilities: {
       tools: ['send_notification', 'get_workspace_stats'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['message-content', 'sender-history', 'context'],
       outputTypes: ['sentiment-score', 'emotion-labels', 'escalation-risk'],
       domains: ['sentiment', 'emotion', 'tone', 'satisfaction', 'mood'],
@@ -407,7 +407,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Generates daily or weekly inbox digests summarizing key messages, action items, and important updates across all communication channels.',
     capabilities: {
       tools: ['get_workspace_stats', 'get_upcoming_deadlines', 'mark_all_read'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['date-range', 'digest-preferences', 'channel-filter'],
       outputTypes: ['inbox-digest', 'highlight-reel', 'action-summary'],
       domains: ['digest', 'summary', 'daily', 'weekly', 'highlights'],
@@ -440,7 +440,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates, manages, and suggests email templates for common communication patterns like introductions, follow-ups, and status updates.',
     capabilities: {
       tools: ['send_notification', 'get_workspace_stats'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['template-type', 'use-case', 'customization-fields'],
       outputTypes: ['email-template', 'template-library', 'usage-analytics'],
       domains: ['templates', 'canned-responses', 'snippets', 'macros', 'quick-replies'],
@@ -473,7 +473,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Automatically organizes email attachments by file type, sender, and project, saving them to designated workspace folders.',
     capabilities: {
       tools: ['get_workspace_stats', 'send_notification'],
-      connectors: ['orchestree-inbox', 'file-storage'],
+      connectors: ['origina-inbox', 'file-storage'],
       inputTypes: ['attachment-list', 'organization-rules', 'folder-structure'],
       outputTypes: ['organization-report', 'file-index', 'duplicate-detection'],
       domains: ['attachments', 'files', 'organization', 'storage', 'documents'],
@@ -506,7 +506,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Routes incoming messages to the best team member based on expertise, workload, and availability with delegation tracking.',
     capabilities: {
       tools: ['send_notification', 'get_workspace_stats'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['incoming-message', 'team-roster', 'expertise-map'],
       outputTypes: ['routing-decision', 'delegation-record', 'workload-report'],
       domains: ['delegation', 'routing', 'assignment', 'workload', 'team'],
@@ -539,7 +539,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Curates relevant content from subscribed newsletters, extracting key articles, insights, and trends into a personalized reading list.',
     capabilities: {
       tools: ['get_workspace_stats', 'mark_all_read'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['newsletter-emails', 'interest-profile', 'reading-preferences'],
       outputTypes: ['curated-reading-list', 'article-summaries', 'trend-highlights'],
       domains: ['newsletters', 'curation', 'reading', 'articles', 'trends'],
@@ -572,7 +572,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Monitors email response times against SLA targets, alerting when response deadlines approach or are breached.',
     capabilities: {
       tools: ['send_notification', 'get_upcoming_deadlines', 'get_workspace_stats'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['sla-rules', 'message-timestamps', 'team-filter'],
       outputTypes: ['sla-report', 'breach-alerts', 'response-time-analytics'],
       domains: ['sla', 'response-time', 'compliance', 'performance', 'monitoring'],
@@ -605,7 +605,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Coaches users toward inbox zero with actionable suggestions to archive, delegate, respond, or schedule messages for later.',
     capabilities: {
       tools: ['mark_all_read', 'send_notification', 'get_workspace_stats'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['inbox-state', 'user-preferences', 'time-available'],
       outputTypes: ['action-plan', 'batch-suggestions', 'progress-report'],
       domains: ['inbox-zero', 'productivity', 'coaching', 'organization', 'habits'],
@@ -638,7 +638,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Manages out-of-office responses with smart routing, delegation rules, and return-to-work inbox summaries.',
     capabilities: {
       tools: ['send_notification', 'get_workspace_stats', 'get_upcoming_deadlines'],
-      connectors: ['orchestree-inbox', 'orchestree-scheduling'],
+      connectors: ['origina-inbox', 'origina-scheduling'],
       inputTypes: ['ooo-dates', 'delegation-map', 'response-message'],
       outputTypes: ['ooo-config', 'delegation-plan', 'return-summary'],
       domains: ['out-of-office', 'vacation', 'delegation', 'coverage', 'return'],
@@ -671,7 +671,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Generates inbox analytics including message volume trends, response times, top senders, busiest hours, and communication patterns.',
     capabilities: {
       tools: ['get_workspace_stats', 'send_notification'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['date-range', 'metrics-selection', 'team-filter'],
       outputTypes: ['analytics-report', 'trend-charts', 'insights-summary'],
       domains: ['analytics', 'metrics', 'trends', 'reports', 'insights'],
@@ -704,7 +704,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates and maintains a consistent labeling and tagging system for inbox messages with auto-labeling rules and hierarchy management.',
     capabilities: {
       tools: ['mark_all_read', 'get_workspace_stats'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['label-taxonomy', 'auto-label-rules', 'message-sample'],
       outputTypes: ['label-system', 'auto-label-config', 'organization-report'],
       domains: ['labels', 'tags', 'folders', 'organization', 'taxonomy'],
@@ -737,7 +737,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Optimizes notification settings to reduce alert fatigue while ensuring critical messages get immediate attention.',
     capabilities: {
       tools: ['send_notification', 'get_workspace_stats'],
-      connectors: ['orchestree-inbox', 'orchestree-notifications'],
+      connectors: ['origina-inbox', 'origina-notifications'],
       inputTypes: ['notification-preferences', 'importance-rules', 'quiet-hours'],
       outputTypes: ['notification-config', 'filter-rules', 'noise-reduction-report'],
       domains: ['notifications', 'alerts', 'focus', 'do-not-disturb', 'filtering'],
@@ -770,7 +770,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Routes customer inquiries to the appropriate support tier or department based on topic classification, sentiment, and customer value.',
     capabilities: {
       tools: ['send_notification', 'get_workspace_stats', 'get_upcoming_deadlines'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['customer-message', 'routing-rules', 'team-availability'],
       outputTypes: ['routing-decision', 'ticket-creation', 'acknowledgment-draft'],
       domains: ['customer-support', 'routing', 'tickets', 'inquiries', 'helpdesk'],
@@ -803,7 +803,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Intelligently snoozes non-urgent messages and resurfaces them at the optimal time based on context, deadlines, and user work patterns.',
     capabilities: {
       tools: ['get_inbox_items', 'update_inbox_item', 'get_upcoming_deadlines'],
-      connectors: ['orchestree-inbox', 'orchestree-scheduling'],
+      connectors: ['origina-inbox', 'origina-scheduling'],
       inputTypes: ['message-content', 'snooze-preferences', 'calendar-context'],
       outputTypes: ['snooze-schedule', 'resurface-notification', 'timing-recommendation'],
       domains: ['snooze', 'timing', 'inbox', 'scheduling', 'reminders'],
@@ -836,7 +836,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Maintains a dynamic VIP contact list and ensures messages from key stakeholders, executives, and high-value clients always receive priority treatment.',
     capabilities: {
       tools: ['get_inbox_items', 'send_notification', 'get_workspace_stats'],
-      connectors: ['orchestree-inbox', 'orchestree-notifications', 'crm'],
+      connectors: ['origina-inbox', 'origina-notifications', 'crm'],
       inputTypes: ['contact-list', 'vip-criteria', 'relationship-data'],
       outputTypes: ['vip-list', 'priority-override', 'vip-activity-report'],
       domains: ['vip', 'priority', 'contacts', 'filtering', 'relationships'],
@@ -869,7 +869,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Processes bulk inbox operations like mass archiving, labeling, forwarding, and deletion with smart filters and safety checks.',
     capabilities: {
       tools: ['get_inbox_items', 'update_inbox_item', 'mark_all_read'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['filter-criteria', 'bulk-action-type', 'safety-rules'],
       outputTypes: ['action-preview', 'execution-report', 'undo-manifest'],
       domains: ['bulk', 'batch', 'cleanup', 'mass-action', 'processing'],
@@ -902,7 +902,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Reviews and polishes email drafts for clarity, tone, grammar, and professionalism before sending, with style-matched suggestions.',
     capabilities: {
       tools: ['get_inbox_items', 'send_notification'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['draft-content', 'tone-preference', 'recipient-context'],
       outputTypes: ['polished-draft', 'improvement-suggestions', 'tone-analysis'],
       domains: ['writing', 'editing', 'polish', 'grammar', 'tone'],
@@ -935,7 +935,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Analyzes recipient behavior patterns to recommend the optimal send time for maximum open rates, response rates, and engagement.',
     capabilities: {
       tools: ['get_inbox_items', 'get_inbox_analytics', 'send_notification'],
-      connectors: ['orchestree-inbox', 'analytics'],
+      connectors: ['origina-inbox', 'analytics'],
       inputTypes: ['recipient-data', 'historical-engagement', 'timezone-info'],
       outputTypes: ['optimal-send-time', 'engagement-forecast', 'schedule-recommendation'],
       domains: ['timing', 'engagement', 'optimization', 'scheduling', 'analytics'],
@@ -968,7 +968,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Scores incoming messages by reply urgency using deadline detection, sender importance, content analysis, and historical response patterns.',
     capabilities: {
       tools: ['get_inbox_items', 'get_upcoming_deadlines', 'send_notification'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['message-content', 'sender-profile', 'deadline-context'],
       outputTypes: ['urgency-score', 'response-deadline', 'escalation-flag'],
       domains: ['urgency', 'scoring', 'response-time', 'priority', 'deadlines'],
@@ -1001,7 +1001,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Intelligently identifies messages safe to archive based on completion status, age, follow-up state, and content relevance.',
     capabilities: {
       tools: ['get_inbox_items', 'update_inbox_item', 'mark_all_read'],
-      connectors: ['orchestree-inbox'],
+      connectors: ['origina-inbox'],
       inputTypes: ['inbox-state', 'archive-rules', 'retention-policy'],
       outputTypes: ['archive-candidates', 'safety-assessment', 'cleanup-report'],
       domains: ['archive', 'cleanup', 'organization', 'retention', 'storage'],

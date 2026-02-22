@@ -216,6 +216,6 @@ export const usePayrollStore = create<PayrollState>()(
           ],
         })),
     }),
-    { name: 'orchestree-payroll-storage' }
+    { name: 'origina-payroll-storage' }
   )
 )

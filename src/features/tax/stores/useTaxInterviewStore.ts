@@ -477,7 +477,7 @@ export const useTaxInterviewStore = create<TaxInterviewState>()(
         }),
     }),
     {
-      name: 'orchestree-tax-interview-storage',
+      name: 'origina-tax-interview-storage',
       storage: createJSONStorage(() => createEncryptedStorage()),
       partialize: (state) => ({
         sections: state.sections,

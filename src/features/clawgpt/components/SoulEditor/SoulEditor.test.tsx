@@ -8,7 +8,7 @@ const mockConfig: SoulConfig = {
   personality: 'Helpful and professional',
   systemPrompt: 'You are a helpful assistant.',
   rules: ['Be polite', 'Stay on topic'],
-  context: ['Company: Orchestree'],
+  context: ['Company: OriginA'],
   responseStyle: 'professional',
   language: 'English',
   timezone: 'UTC',
@@ -111,7 +111,7 @@ describe('SoulEditor', () => {
 
   it('renders context blocks', () => {
     render(<SoulEditor {...defaultProps} />)
-    expect(screen.getByText('Company: Orchestree')).toBeInTheDocument()
+    expect(screen.getByText('Company: OriginA')).toBeInTheDocument()
   })
 
   it('calls onAddContext when adding context', async () => {
@@ -126,7 +126,7 @@ describe('SoulEditor', () => {
   it('calls onRemoveContext when remove is clicked', async () => {
     const user = userEvent.setup()
     render(<SoulEditor {...defaultProps} />)
-    await user.click(screen.getByLabelText('Remove context: Company: Orchestree'))
+    await user.click(screen.getByLabelText('Remove context: Company: OriginA'))
     expect(defaultProps.onRemoveContext).toHaveBeenCalledWith(0)
   })
 

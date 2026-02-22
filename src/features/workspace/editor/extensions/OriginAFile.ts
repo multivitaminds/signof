@@ -2,8 +2,8 @@ import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import FileNodeView from '../nodeViews/FileNodeView'
 
-export const OrchestreeFile = Node.create({
-  name: 'orchestreeFile',
+export const OriginAFile = Node.create({
+  name: 'originaFile',
   group: 'block',
   atom: true,
 
@@ -16,11 +16,11 @@ export const OrchestreeFile = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: 'div[data-type="orchestree-file"]' }]
+    return [{ tag: 'div[data-type="origina-file"]' }]
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'orchestree-file' })]
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'origina-file' })]
   },
 
   addNodeView() {

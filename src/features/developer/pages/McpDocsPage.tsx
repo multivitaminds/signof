@@ -8,9 +8,9 @@ import './McpDocsPage.css'
 // ─── Install Methods ────────────────────────────────────────────────────
 
 const MCP_INSTALL_METHODS = [
-  { id: 'npx', label: 'npx', command: 'npx @orchestree/mcp-server', note: 'Zero-install. Requires Node.js 18+.' },
-  { id: 'docker', label: 'Docker', command: 'docker run -p 3100:3100 orchestree/mcp-server', note: 'Isolated environment. Auto-restarts.' },
-  { id: 'manual', label: 'Manual', command: 'npm install -g @orchestree/mcp-server\norchestree-mcp start', note: 'Global install. Use for custom configuration.' },
+  { id: 'npx', label: 'npx', command: 'npx @origina/mcp-server', note: 'Zero-install. Requires Node.js 18+.' },
+  { id: 'docker', label: 'Docker', command: 'docker run -p 3100:3100 origina/mcp-server', note: 'Isolated environment. Auto-restarts.' },
+  { id: 'manual', label: 'Manual', command: 'npm install -g @origina/mcp-server\norigina-mcp start', note: 'Global install. Use for custom configuration.' },
 ]
 
 // ─── MCP Tools ──────────────────────────────────────────────────────────
@@ -257,12 +257,12 @@ const MCP_TOOLS: McpTool[] = [
 // ─── MCP Resources ──────────────────────────────────────────────────────
 
 const MCP_RESOURCES: McpResource[] = [
-  { id: 'r1', name: 'Workspace Info', uri: 'orchestree://workspace/info', domain: McpDomain.Workspace, description: 'Current workspace name, plan, and member count' },
-  { id: 'r2', name: 'Document Templates', uri: 'orchestree://documents/templates', domain: McpDomain.Documents, description: 'Available document templates and their fields' },
-  { id: 'r3', name: 'Project List', uri: 'orchestree://projects/list', domain: McpDomain.Projects, description: 'All projects with status and member assignments' },
-  { id: 'r4', name: 'Upcoming Events', uri: 'orchestree://scheduling/upcoming', domain: McpDomain.Scheduling, description: 'Next 30 days of scheduled events and bookings' },
-  { id: 'r5', name: 'Database Schema', uri: 'orchestree://databases/schema', domain: McpDomain.Databases, description: 'All database definitions, fields, and relationships' },
-  { id: 'r6', name: 'Agent Catalog', uri: 'orchestree://ai/agents', domain: McpDomain.Ai, description: 'Available agent types with capabilities and constraints' },
+  { id: 'r1', name: 'Workspace Info', uri: 'origina://workspace/info', domain: McpDomain.Workspace, description: 'Current workspace name, plan, and member count' },
+  { id: 'r2', name: 'Document Templates', uri: 'origina://documents/templates', domain: McpDomain.Documents, description: 'Available document templates and their fields' },
+  { id: 'r3', name: 'Project List', uri: 'origina://projects/list', domain: McpDomain.Projects, description: 'All projects with status and member assignments' },
+  { id: 'r4', name: 'Upcoming Events', uri: 'origina://scheduling/upcoming', domain: McpDomain.Scheduling, description: 'Next 30 days of scheduled events and bookings' },
+  { id: 'r5', name: 'Database Schema', uri: 'origina://databases/schema', domain: McpDomain.Databases, description: 'All database definitions, fields, and relationships' },
+  { id: 'r6', name: 'Agent Catalog', uri: 'origina://ai/agents', domain: McpDomain.Ai, description: 'Available agent types with capabilities and constraints' },
 ]
 
 // ─── Client Configs ─────────────────────────────────────────────────────
@@ -270,22 +270,22 @@ const MCP_RESOURCES: McpResource[] = [
 const CLIENT_CONFIGS = [
   { id: 'claude', label: 'Claude Desktop', language: 'json', code: `{
   "mcpServers": {
-    "orchestree": {
+    "origina": {
       "command": "npx",
-      "args": ["@orchestree/mcp-server"],
+      "args": ["@origina/mcp-server"],
       "env": {
-        "ORCHESTREE_API_KEY": "sk_live_..."
+        "ORIGINA_API_KEY": "sk_live_..."
       }
     }
   }
 }` },
   { id: 'cursor', label: 'Cursor', language: 'json', code: `{
   "mcpServers": {
-    "orchestree": {
+    "origina": {
       "command": "npx",
-      "args": ["@orchestree/mcp-server"],
+      "args": ["@origina/mcp-server"],
       "env": {
-        "ORCHESTREE_API_KEY": "sk_live_..."
+        "ORIGINA_API_KEY": "sk_live_..."
       }
     }
   }
@@ -293,11 +293,11 @@ const CLIENT_CONFIGS = [
   { id: 'vscode', label: 'VS Code', language: 'json', code: `{
   "mcp": {
     "servers": {
-      "orchestree": {
+      "origina": {
         "command": "npx",
-        "args": ["@orchestree/mcp-server"],
+        "args": ["@origina/mcp-server"],
         "env": {
-          "ORCHESTREE_API_KEY": "sk_live_..."
+          "ORIGINA_API_KEY": "sk_live_..."
         }
       }
     }
@@ -308,8 +308,8 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 
 const transport = new StdioClientTransport({
   command: 'npx',
-  args: ['@orchestree/mcp-server'],
-  env: { ORCHESTREE_API_KEY: process.env.ORCHESTREE_API_KEY },
+  args: ['@origina/mcp-server'],
+  env: { ORIGINA_API_KEY: process.env.ORIGINA_API_KEY },
 })
 
 const client = new Client({ name: 'my-app', version: '1.0.0' })
@@ -322,9 +322,9 @@ console.log('Available tools:', tools)` },
 // ─── Environment Variables ──────────────────────────────────────────────
 
 const ENV_VARS = [
-  { name: 'ORCHESTREE_API_KEY', description: 'Your API key for authentication', default: '\u2014' },
-  { name: 'ORCHESTREE_BASE_URL', description: 'API base URL', default: 'https://api.orchestree.io' },
-  { name: 'ORCHESTREE_MCP_PORT', description: 'MCP server port', default: '3100' },
+  { name: 'ORIGINA_API_KEY', description: 'Your API key for authentication', default: '\u2014' },
+  { name: 'ORIGINA_BASE_URL', description: 'API base URL', default: 'https://api.origina.io' },
+  { name: 'ORIGINA_MCP_PORT', description: 'MCP server port', default: '3100' },
 ]
 
 // ─── Component ──────────────────────────────────────────────────────────
@@ -389,7 +389,7 @@ function McpDocsPage() {
       <div className="mcp-docs__header">
         <h1 className="mcp-docs__title">Model Context Protocol (MCP)</h1>
         <p className="mcp-docs__subtitle">
-          Connect AI assistants to every part of your Orchestree workspace through the open Model Context Protocol.
+          Connect AI assistants to every part of your OriginA workspace through the open Model Context Protocol.
         </p>
       </div>
 
@@ -398,7 +398,7 @@ function McpDocsPage() {
         <h2 className="mcp-docs__section-title">Overview</h2>
         <p className="mcp-docs__overview">
           MCP is an open protocol that standardizes how AI assistants interact with external tools and data sources.
-          The Orchestree MCP server exposes all platform capabilities — documents, projects, scheduling, databases,
+          The OriginA MCP server exposes all platform capabilities — documents, projects, scheduling, databases,
           AI agents, and workspace pages — so any MCP-compatible client can read, create, and manage your data
           through natural language.
         </p>

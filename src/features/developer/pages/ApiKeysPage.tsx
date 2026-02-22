@@ -139,7 +139,7 @@ function ApiKeysPage() {
         <div>
           <h1 className="api-keys-page__title">API Keys</h1>
           <p className="api-keys-page__subtitle">
-            Manage your API keys for authenticating requests to the Orchestree API.
+            Manage your API keys for authenticating requests to the OriginA API.
             Keep your keys secure and never share them in public repositories.
           </p>
         </div>

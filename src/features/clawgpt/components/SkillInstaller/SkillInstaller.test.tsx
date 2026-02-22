@@ -9,7 +9,7 @@ const mockSkill: Skill = {
   description: 'Search the web for real-time information',
   category: 'productivity',
   version: '1.2.0',
-  author: 'Orchestree',
+  author: 'OriginA',
   icon: 'S',
   installed: true,
   enabled: true,

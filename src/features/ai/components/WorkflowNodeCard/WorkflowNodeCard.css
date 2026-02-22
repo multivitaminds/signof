@@ -99,5 +99,5 @@
 }
 
 [data-theme="dark"] .wf-node-card--selected {
-  box-shadow: 0 0 0 2px rgba(124, 92, 252, 0.4), var(--shadow-md);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.4), var(--shadow-md);
 }

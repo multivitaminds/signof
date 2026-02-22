@@ -16,7 +16,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     return;
   }
 
-  const apiKey = process.env.ORCHESTREE_API_KEY;
+  const apiKey = process.env.ORIGINA_API_KEY;
   const jwtSecret = process.env.JWT_SECRET;
 
   // Dev mode: if neither API key nor JWT secret configured, allow all requests

@@ -145,7 +145,7 @@ const useCircuitBreakerStore = create<CircuitBreakerState>()(
       },
     }),
     {
-      name: 'orchestree-circuit-breaker-storage',
+      name: 'origina-circuit-breaker-storage',
       partialize: (state) => ({
         breakers: Object.fromEntries(state.breakers),
       }),

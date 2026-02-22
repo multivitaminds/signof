@@ -40,9 +40,9 @@
 /* ─── Pulse Animation ─────────────────────────────────────────────── */
 
 @keyframes scheduling-copilot-pulse {
-  0% { box-shadow: var(--shadow-lg), 0 0 0 0 rgba(124, 92, 252, 0.4); }
-  70% { box-shadow: var(--shadow-lg), 0 0 0 10px rgba(124, 92, 252, 0); }
-  100% { box-shadow: var(--shadow-lg), 0 0 0 0 rgba(124, 92, 252, 0); }
+  0% { box-shadow: var(--shadow-lg), 0 0 0 0 rgba(79, 70, 229, 0.4); }
+  70% { box-shadow: var(--shadow-lg), 0 0 0 10px rgba(79, 70, 229, 0); }
+  100% { box-shadow: var(--shadow-lg), 0 0 0 0 rgba(79, 70, 229, 0); }
 }
 
 .scheduling-copilot-button--pulse {

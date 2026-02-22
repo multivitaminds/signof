@@ -15,7 +15,7 @@ export function buildAutonomousPrompt(
   const lines: string[] = []
 
   // ── Agent Identity ───────────────────────────────────────────────
-  lines.push(`You are the "${agent.name}" autonomous agent in Orchestree.`)
+  lines.push(`You are the "${agent.name}" autonomous agent in OriginA.`)
   lines.push(`Description: ${agent.description}`)
   lines.push(`Integrations: ${agent.integrations}`)
   lines.push('')

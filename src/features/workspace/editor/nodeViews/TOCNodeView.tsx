@@ -32,7 +32,7 @@ export default function TOCNodeView({ editor }: NodeViewProps) {
   }
 
   return (
-    <NodeViewWrapper className="tiptap-toc" data-type="orchestree-toc" contentEditable={false}>
+    <NodeViewWrapper className="tiptap-toc" data-type="origina-toc" contentEditable={false}>
       <div className="tiptap-toc__header">Table of Contents</div>
       {headings.length === 0 ? (
         <div className="tiptap-toc__empty">Add headings to populate the table of contents.</div>

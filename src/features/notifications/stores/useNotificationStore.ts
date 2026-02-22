@@ -159,7 +159,7 @@ function generateSampleNotifications(): Notification[] {
       id: rid(),
       type: NotificationType.SystemAlert,
       title: 'System maintenance scheduled',
-      body: 'Orchestree will undergo maintenance on Sunday 2am-4am UTC',
+      body: 'OriginA will undergo maintenance on Sunday 2am-4am UTC',
       module: 'system',
       entityId: null,
       entityPath: null,
@@ -287,7 +287,7 @@ export const useNotificationStore = create<NotificationState>()(
       },
     }),
     {
-      name: 'orchestree-notification-storage',
+      name: 'origina-notification-storage',
       partialize: (state) => ({
         notifications: state.notifications,
         soundEnabled: state.soundEnabled,

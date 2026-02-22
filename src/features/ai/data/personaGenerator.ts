@@ -314,7 +314,7 @@ export function generateMarketplacePersona(domain: MarketplaceDomain, agent: Mar
       codename: `${pick(CODENAME_PREFIXES, hash)}-${pick(CODENAME_SUFFIXES, hash, 3)}`,
       version: '1.0.0',
       createdAt: '2025-01-01T00:00:00Z',
-      origin: 'Orchestree Marketplace',
+      origin: 'OriginA Marketplace',
       archetype: pick(ARCHETYPES, hash),
       tagline: agent.description.length > 50
         ? agent.description.slice(0, 47) + '...'

@@ -146,7 +146,7 @@ const useCostTrackingStore = create<CostTrackingState>()(
       },
     }),
     {
-      name: 'orchestree-cost-tracking-storage',
+      name: 'origina-cost-tracking-storage',
       partialize: (state) => ({
         budgets: Object.fromEntries(state.budgets),
         costHistory: state.costHistory.slice(-1000),

@@ -4,8 +4,8 @@ describe('useSettingsStore', () => {
   beforeEach(() => {
     useSettingsStore.setState({
       workspace: {
-        name: 'Orchestree Workspace',
-        slug: 'orchestree-workspace',
+        name: 'OriginA Workspace',
+        slug: 'origina-workspace',
         logo: null,
         language: 'en',
         dateFormat: 'MM/DD/YYYY',
@@ -29,8 +29,8 @@ describe('useSettingsStore', () => {
   describe('initial state', () => {
     it('has default workspace settings', () => {
       const { workspace } = useSettingsStore.getState()
-      expect(workspace.name).toBe('Orchestree Workspace')
-      expect(workspace.slug).toBe('orchestree-workspace')
+      expect(workspace.name).toBe('OriginA Workspace')
+      expect(workspace.slug).toBe('origina-workspace')
       expect(workspace.logo).toBeNull()
       expect(workspace.language).toBe('en')
       expect(workspace.dateFormat).toBe('MM/DD/YYYY')
@@ -75,7 +75,7 @@ describe('useSettingsStore', () => {
     it('preserves unupdated workspace fields', () => {
       useSettingsStore.getState().updateWorkspace({ name: 'New Name' })
       const { workspace } = useSettingsStore.getState()
-      expect(workspace.slug).toBe('orchestree-workspace')
+      expect(workspace.slug).toBe('origina-workspace')
       expect(workspace.language).toBe('en')
     })
   })

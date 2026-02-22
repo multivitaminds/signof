@@ -117,7 +117,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'orchestree-auth-storage',
+      name: 'origina-auth-storage',
       partialize: (state) => ({
         status: state.status,
         user: state.user,

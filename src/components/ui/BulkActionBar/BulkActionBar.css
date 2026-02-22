@@ -36,7 +36,7 @@
 .bulk-action-bar__count {
   font-size: var(--text-sm, 0.875rem);
   font-weight: 600;
-  color: var(--color-primary, #7C5CFC);
+  color: var(--color-primary, #4F46E5);
   white-space: nowrap;
   flex-shrink: 0;
 }

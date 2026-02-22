@@ -13,7 +13,7 @@ describe('Goal CRUD', () => {
   it('creates a goal', () => {
     const { createGoal } = useProjectStore.getState()
     const id = createGoal({
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       title: 'Ship MVP',
       description: 'Launch first version',
       targetDate: '2026-03-01',
@@ -28,13 +28,13 @@ describe('Goal CRUD', () => {
     expect(goals[0]!.status).toBe(GoalStatus.NotStarted)
     expect(goals[0]!.progress).toBe(0)
     expect(goals[0]!.issueIds).toEqual([])
-    expect(goals[0]!.projectId).toBe('proj-orchestree')
+    expect(goals[0]!.projectId).toBe('proj-origina')
   })
 
   it('creates a goal with defaults', () => {
     const { createGoal } = useProjectStore.getState()
     createGoal({
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       title: 'Simple Goal',
     })
 
@@ -46,7 +46,7 @@ describe('Goal CRUD', () => {
 
   it('updates a goal', () => {
     const { createGoal, updateGoal } = useProjectStore.getState()
-    const id = createGoal({ projectId: 'proj-orchestree', title: 'Old Title' })
+    const id = createGoal({ projectId: 'proj-origina', title: 'Old Title' })
 
     updateGoal(id, { title: 'New Title', status: GoalStatus.InProgress })
 
@@ -57,7 +57,7 @@ describe('Goal CRUD', () => {
 
   it('deletes a goal', () => {
     const { createGoal, deleteGoal } = useProjectStore.getState()
-    const id = createGoal({ projectId: 'proj-orchestree', title: 'To Delete' })
+    const id = createGoal({ projectId: 'proj-origina', title: 'To Delete' })
 
     expect(useProjectStore.getState().goals).toHaveLength(1)
     deleteGoal(id)
@@ -66,7 +66,7 @@ describe('Goal CRUD', () => {
 
   it('links an issue to a goal', () => {
     const { createGoal, linkIssueToGoal } = useProjectStore.getState()
-    const goalId = createGoal({ projectId: 'proj-orchestree', title: 'Goal' })
+    const goalId = createGoal({ projectId: 'proj-origina', title: 'Goal' })
 
     linkIssueToGoal(goalId, 'issue-so-1')
 
@@ -76,7 +76,7 @@ describe('Goal CRUD', () => {
 
   it('does not duplicate linked issues', () => {
     const { createGoal, linkIssueToGoal } = useProjectStore.getState()
-    const goalId = createGoal({ projectId: 'proj-orchestree', title: 'Goal' })
+    const goalId = createGoal({ projectId: 'proj-origina', title: 'Goal' })
 
     linkIssueToGoal(goalId, 'issue-so-1')
     linkIssueToGoal(goalId, 'issue-so-1')
@@ -87,7 +87,7 @@ describe('Goal CRUD', () => {
 
   it('unlinks an issue from a goal', () => {
     const { createGoal, linkIssueToGoal, unlinkIssueFromGoal } = useProjectStore.getState()
-    const goalId = createGoal({ projectId: 'proj-orchestree', title: 'Goal' })
+    const goalId = createGoal({ projectId: 'proj-origina', title: 'Goal' })
 
     linkIssueToGoal(goalId, 'issue-so-1')
     linkIssueToGoal(goalId, 'issue-so-2')
@@ -102,7 +102,7 @@ describe('Milestone CRUD', () => {
   it('creates a milestone', () => {
     const { createMilestone } = useProjectStore.getState()
     const id = createMilestone({
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       title: 'Beta Release',
       dueDate: '2026-03-15',
     })
@@ -119,7 +119,7 @@ describe('Milestone CRUD', () => {
   it('updates a milestone', () => {
     const { createMilestone, updateMilestone } = useProjectStore.getState()
     const id = createMilestone({
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       title: 'Beta',
       dueDate: '2026-03-15',
     })
@@ -133,7 +133,7 @@ describe('Milestone CRUD', () => {
   it('deletes a milestone', () => {
     const { createMilestone, deleteMilestone } = useProjectStore.getState()
     const id = createMilestone({
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       title: 'To Remove',
       dueDate: '2026-04-01',
     })
@@ -146,7 +146,7 @@ describe('Milestone CRUD', () => {
   it('links and unlinks issues to milestone', () => {
     const { createMilestone, linkIssueToMilestone, unlinkIssueFromMilestone } = useProjectStore.getState()
     const milestoneId = createMilestone({
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       title: 'Milestone',
       dueDate: '2026-05-01',
     })
@@ -165,7 +165,7 @@ describe('Milestone CRUD', () => {
   it('does not duplicate linked issues', () => {
     const { createMilestone, linkIssueToMilestone } = useProjectStore.getState()
     const milestoneId = createMilestone({
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       title: 'Milestone',
       dueDate: '2026-05-01',
     })

@@ -333,5 +333,5 @@
 [data-theme="dark"] .chart-of-accounts__field input:focus,
 [data-theme="dark"] .chart-of-accounts__field select:focus,
 [data-theme="dark"] .chart-of-accounts__field textarea:focus {
-  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.25);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
 }

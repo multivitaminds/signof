@@ -71,7 +71,7 @@ export const useAppearanceStore = create<AppearanceState>()(
       },
     }),
     {
-      name: 'orchestree-appearance-storage',
+      name: 'origina-appearance-storage',
       onRehydrateStorage: () => (state) => {
         if (state) {
           applyTheme(state.theme)

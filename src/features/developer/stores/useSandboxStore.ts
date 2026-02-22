@@ -31,7 +31,7 @@ export function generateCodeExample(
 
   switch (lang) {
     case CodeExampleLang.Curl: {
-      let cmd = `curl -X ${request.method} "https://api.orchestree.io${request.url}"`
+      let cmd = `curl -X ${request.method} "https://api.origina.io${request.url}"`
       if (parsedHeaders) {
         for (const [key, value] of Object.entries(parsedHeaders)) {
           cmd += ` \\\n  -H "${key}: ${value as string}"`
@@ -51,7 +51,7 @@ export function generateCodeExample(
       if (request.body && (request.method === 'POST' || request.method === 'PUT' || request.method === 'PATCH')) {
         opts.push(`  body: JSON.stringify(${request.body.trim()}),`)
       }
-      return `const response = await fetch('https://api.orchestree.io${request.url}', {\n${opts.join('\n')}\n});\n\nconst data = await response.json();\nconsole.log(data);`
+      return `const response = await fetch('https://api.origina.io${request.url}', {\n${opts.join('\n')}\n});\n\nconst data = await response.json();\nconsole.log(data);`
     }
     case CodeExampleLang.Python: {
       let code = `import requests\n\n`
@@ -60,9 +60,9 @@ export function generateCodeExample(
       }
       if (request.body && (request.method === 'POST' || request.method === 'PUT' || request.method === 'PATCH')) {
         code += `payload = ${request.body.trim()}\n\n`
-        code += `response = requests.${request.method.toLowerCase()}(\n    "https://api.orchestree.io${request.url}",\n    headers=headers,\n    json=payload\n)\n`
+        code += `response = requests.${request.method.toLowerCase()}(\n    "https://api.origina.io${request.url}",\n    headers=headers,\n    json=payload\n)\n`
       } else {
-        code += `response = requests.${request.method.toLowerCase()}(\n    "https://api.orchestree.io${request.url}",\n    headers=headers\n)\n`
+        code += `response = requests.${request.method.toLowerCase()}(\n    "https://api.origina.io${request.url}",\n    headers=headers\n)\n`
       }
       code += `\nprint(response.json())`
       return code
@@ -129,7 +129,7 @@ export const useSandboxStore = create<SandboxState>()(
       setActiveCodeLang: (lang) => set({ activeCodeLang: lang }),
     }),
     {
-      name: 'orchestree-sandbox-storage',
+      name: 'origina-sandbox-storage',
       partialize: (state) => ({
         history: state.history,
         activeCodeLang: state.activeCodeLang,

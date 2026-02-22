@@ -26,7 +26,7 @@ export type EventType = (typeof EVENT_TYPES)[keyof typeof EVENT_TYPES]
 
 // ─── Cross-Tab BroadcastChannel ────────────────────────────────────
 
-const CHANNEL_NAME = 'orchestree-eventbus'
+const CHANNEL_NAME = 'origina-eventbus'
 
 interface CrossTabMessage {
   event: EventType

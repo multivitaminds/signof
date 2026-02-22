@@ -142,10 +142,10 @@ export default function DigestPreview() {
           <div className="digest-preview__email">
             <div className="digest-preview__email-header">
               <div className="digest-preview__email-from">
-                <strong>From:</strong> Orchestree Notifications &lt;notifications@orchestree.app&gt;
+                <strong>From:</strong> OriginA Notifications &lt;notifications@origina.app&gt;
               </div>
               <div className="digest-preview__email-subject">
-                <strong>Subject:</strong> Your {digestFrequency === 'daily' ? 'Daily' : 'Weekly'} Orchestree Digest
+                <strong>Subject:</strong> Your {digestFrequency === 'daily' ? 'Daily' : 'Weekly'} OriginA Digest
               </div>
             </div>
 

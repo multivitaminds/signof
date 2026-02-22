@@ -312,7 +312,7 @@ export const useTaxFormStore = create<TaxFormState>()(
         TAXBANDITS_FORM_DEFINITIONS.filter((f) => f.category === category),
     }),
     {
-      name: 'orchestree-tax-form-storage',
+      name: 'origina-tax-form-storage',
       storage: createJSONStorage(() => createEncryptedStorage()),
       partialize: (state) => ({
         entries: state.entries,

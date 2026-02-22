@@ -139,8 +139,8 @@
 }
 
 .chorus-bubble__code-block:hover {
-  border-color: rgba(124, 92, 252, 0.25);
-  box-shadow: 0 0 8px rgba(124, 92, 252, 0.06);
+  border-color: rgba(79, 70, 229, 0.25);
+  box-shadow: 0 0 8px rgba(79, 70, 229, 0.06);
 }
 
 .chorus-bubble__inline-code {
@@ -208,7 +208,7 @@
 }
 
 .chorus-bubble__reaction--active {
-  border-color: rgba(124, 92, 252, 0.5);
+  border-color: rgba(79, 70, 229, 0.5);
   background: rgba(79, 70, 229, 0.08);
   box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.3);
 }

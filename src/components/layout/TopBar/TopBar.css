@@ -68,7 +68,7 @@
   height: 16px;
   padding: 0 4px;
   border-radius: 8px;
-  background: var(--orchestree-coral, #E94560);
+  background: var(--origina-coral, #E94560);
   color: white;
   font-size: 0.625rem;
   font-weight: 600;
@@ -96,7 +96,7 @@
   width: 34px;
   height: 34px;
   border-radius: var(--radius-full, 9999px);
-  background: var(--orchestree-navy, #1A1A2E);
+  background: var(--origina-navy, #1A1A2E);
   color: white;
   display: flex;
   align-items: center;
@@ -141,7 +141,7 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full, 9999px);
-  background: var(--orchestree-navy, #1A1A2E);
+  background: var(--origina-navy, #1A1A2E);
   color: white;
   display: flex;
   align-items: center;

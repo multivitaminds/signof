@@ -115,7 +115,7 @@ function renderWithRouter(initialEntries = ['/']) {
   )
 }
 
-describe('Orchestree App', () => {
+describe('OriginA App', () => {
   beforeEach(() => {
     useAppStore.setState({
       sidebarExpanded: true,
@@ -126,7 +126,8 @@ describe('Orchestree App', () => {
 
   it('renders the sidebar with brand', () => {
     renderWithRouter()
-    expect(screen.getByText('Orchestree')).toBeInTheDocument()
+    const logos = screen.getAllByAltText('OriginA')
+    expect(logos.length).toBeGreaterThan(0)
   })
 
   it('shows the command palette shortcut', () => {

@@ -85,6 +85,6 @@ export const useExpenseStore = create<ExpenseState>()(
           ],
         })),
     }),
-    { name: 'orchestree-expense-storage' }
+    { name: 'origina-expense-storage' }
   )
 )

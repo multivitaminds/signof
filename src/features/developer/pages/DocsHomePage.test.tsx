@@ -5,7 +5,7 @@ import DocsHomePage from './DocsHomePage'
 describe('DocsHomePage', () => {
   it('renders hero title and subtitle', () => {
     render(<DocsHomePage />)
-    expect(screen.getByText('Build with Orchestree')).toBeInTheDocument()
+    expect(screen.getByText('Build with OriginA')).toBeInTheDocument()
     expect(screen.getByText(/Everything you need to integrate/)).toBeInTheDocument()
   })
 
@@ -40,9 +40,9 @@ describe('DocsHomePage', () => {
   it('renders all 4 resource links with correct hrefs', () => {
     render(<DocsHomePage />)
     const statusLink = screen.getByText('API Status').closest('a')
-    expect(statusLink).toHaveAttribute('href', 'https://status.orchestree.io')
+    expect(statusLink).toHaveAttribute('href', 'https://status.origina.io')
     const changelogLink = screen.getByText('Changelog').closest('a')
-    expect(changelogLink).toHaveAttribute('href', 'https://orchestree.io/changelog')
+    expect(changelogLink).toHaveAttribute('href', 'https://origina.io/changelog')
   })
 
   it('calls onNavigate when clicking quick start card', async () => {

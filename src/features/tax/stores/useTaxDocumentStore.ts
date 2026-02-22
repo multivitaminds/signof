@@ -438,7 +438,7 @@ export const useTaxDocumentStore = create<TaxDocumentState>()(
       },
     }),
     {
-      name: 'orchestree-tax-document-storage',
+      name: 'origina-tax-document-storage',
       storage: createJSONStorage(() => createEncryptedStorage()),
       partialize: (state) => ({
         documents: state.documents,

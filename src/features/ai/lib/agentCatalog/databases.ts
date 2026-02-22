@@ -11,7 +11,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Designs optimal database schemas with proper field types, relations, and constraints based on natural language descriptions of your data model.',
     capabilities: {
       tools: ['create_database', 'add_table', 'analyze_database_schema', 'get_relation_map'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['text', 'schema-description', 'erd-diagram'],
       outputTypes: ['database-schema', 'migration-plan', 'erd-diagram'],
       domains: ['schema', 'design', 'modeling', 'relational', 'tables'],
@@ -44,7 +44,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Validates data integrity across tables by checking for orphaned records, type mismatches, duplicate entries, and constraint violations.',
     capabilities: {
       tools: ['analyze_database_schema', 'get_table_stats', 'get_relation_map'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['database-id', 'table-id', 'validation-rules'],
       outputTypes: ['validation-report', 'error-list', 'fix-suggestions'],
       domains: ['validation', 'integrity', 'quality', 'consistency'],
@@ -77,7 +77,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Handles bulk data imports from CSV, JSON, and Excel files with automatic column mapping, type detection, and error handling.',
     capabilities: {
       tools: ['create_database', 'add_table', 'add_row', 'analyze_database_schema'],
-      connectors: ['orchestree-databases', 'file-storage'],
+      connectors: ['origina-databases', 'file-storage'],
       inputTypes: ['csv', 'json', 'xlsx', 'file-upload'],
       outputTypes: ['import-report', 'error-log', 'row-count'],
       domains: ['import', 'csv', 'migration', 'bulk-load', 'etl'],
@@ -110,7 +110,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Exports database views and filtered datasets to CSV, JSON, or Excel formats with configurable column selection and formatting.',
     capabilities: {
       tools: ['analyze_database_schema', 'get_table_stats', 'analyze_views'],
-      connectors: ['orchestree-databases', 'file-storage'],
+      connectors: ['origina-databases', 'file-storage'],
       inputTypes: ['database-id', 'view-id', 'filter-criteria', 'export-config'],
       outputTypes: ['csv', 'json', 'xlsx', 'export-report'],
       domains: ['export', 'download', 'report', 'extract'],
@@ -143,7 +143,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates and manages database automations triggered by row changes, schedules, or external events with conditional logic and multi-step actions.',
     capabilities: {
       tools: ['review_database_automations', 'analyze_database_schema', 'get_table_stats'],
-      connectors: ['orchestree-databases', 'orchestree-workflows'],
+      connectors: ['origina-databases', 'origina-workflows'],
       inputTypes: ['automation-description', 'trigger-config', 'action-config'],
       outputTypes: ['automation-definition', 'test-results', 'execution-log'],
       domains: ['automation', 'trigger', 'workflow', 'rules', 'actions'],
@@ -176,7 +176,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Analyzes and optimizes database views for performance, suggesting better filters, sort orders, groupings, and field selections.',
     capabilities: {
       tools: ['analyze_views', 'get_table_stats', 'analyze_database_schema'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['view-id', 'performance-complaint', 'usage-pattern'],
       outputTypes: ['optimization-report', 'view-config', 'performance-metrics'],
       domains: ['views', 'performance', 'optimization', 'filters', 'sorting'],
@@ -209,7 +209,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Maps and visualizes relationships between database tables, identifies missing links, and suggests new relations to improve data connectivity.',
     capabilities: {
       tools: ['get_relation_map', 'analyze_database_schema', 'add_table'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['database-id', 'table-list', 'relation-question'],
       outputTypes: ['relation-diagram', 'missing-links-report', 'relation-suggestions'],
       domains: ['relations', 'links', 'foreign-keys', 'graph', 'connections'],
@@ -242,7 +242,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Analyzes existing field types and recommends optimal types based on actual data patterns, improving storage efficiency and query performance.',
     capabilities: {
       tools: ['analyze_database_schema', 'get_table_stats'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['table-id', 'field-list', 'data-sample'],
       outputTypes: ['type-recommendations', 'migration-plan'],
       domains: ['field-types', 'columns', 'data-types', 'schema'],
@@ -275,7 +275,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates reusable database templates for common use cases like CRM, inventory, project tracking, and content management.',
     capabilities: {
       tools: ['create_database', 'add_table', 'analyze_database_schema'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['use-case-description', 'industry', 'requirements'],
       outputTypes: ['database-template', 'setup-guide', 'sample-data'],
       domains: ['templates', 'starter', 'boilerplate', 'use-case'],
@@ -308,7 +308,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Writes and debugs computed field formulas for rollups, lookups, conditional formatting, and derived calculations.',
     capabilities: {
       tools: ['analyze_database_schema', 'get_table_stats', 'analyze_views'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['formula-request', 'field-context', 'error-message'],
       outputTypes: ['formula-expression', 'explanation', 'test-results'],
       domains: ['formulas', 'computed', 'calculations', 'rollups', 'lookups'],
@@ -341,7 +341,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Configures kanban board views with optimal column groupings, card layouts, color coding, and swimlanes for project tracking.',
     capabilities: {
       tools: ['analyze_views', 'analyze_database_schema', 'get_table_stats'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['table-id', 'workflow-description', 'status-fields'],
       outputTypes: ['kanban-config', 'column-definitions', 'card-layout'],
       domains: ['kanban', 'board', 'status', 'workflow', 'cards'],
@@ -374,7 +374,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates calendar views from date fields in database tables with event styling, duration handling, and recurring event support.',
     capabilities: {
       tools: ['analyze_views', 'analyze_database_schema', 'get_table_stats'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['table-id', 'date-fields', 'display-preferences'],
       outputTypes: ['calendar-config', 'event-mappings', 'color-rules'],
       domains: ['calendar', 'dates', 'events', 'timeline', 'schedule'],
@@ -407,7 +407,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Configures gallery/card views for visual databases with image thumbnails, cover photos, and rich card layouts.',
     capabilities: {
       tools: ['analyze_views', 'analyze_database_schema', 'get_table_stats'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['table-id', 'image-fields', 'card-layout-preferences'],
       outputTypes: ['gallery-config', 'card-template', 'filter-presets'],
       domains: ['gallery', 'cards', 'images', 'visual', 'thumbnails'],
@@ -440,7 +440,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates data entry forms linked to database tables with field ordering, validation rules, conditional sections, and submission workflows.',
     capabilities: {
       tools: ['analyze_database_schema', 'add_table', 'get_table_stats'],
-      connectors: ['orchestree-databases', 'orchestree-forms'],
+      connectors: ['origina-databases', 'origina-forms'],
       inputTypes: ['table-id', 'form-requirements', 'field-order'],
       outputTypes: ['form-config', 'validation-rules', 'submission-workflow'],
       domains: ['forms', 'input', 'data-entry', 'surveys', 'submissions'],
@@ -473,7 +473,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Identifies and merges duplicate records using fuzzy matching on names, emails, addresses, and other fields with configurable thresholds.',
     capabilities: {
       tools: ['get_table_stats', 'analyze_database_schema', 'add_row'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['table-id', 'match-fields', 'threshold-config'],
       outputTypes: ['duplicate-report', 'merge-candidates', 'merge-results'],
       domains: ['duplicates', 'dedup', 'merge', 'cleanup', 'matching'],
@@ -506,7 +506,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Generates statistical summaries of database tables including row counts, field distributions, null rates, and trend analysis.',
     capabilities: {
       tools: ['get_table_stats', 'analyze_database_schema', 'analyze_views', 'get_workspace_stats'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['database-id', 'table-id', 'date-range'],
       outputTypes: ['stats-report', 'distribution-chart', 'trend-analysis'],
       domains: ['statistics', 'analytics', 'reports', 'metrics', 'trends'],
@@ -539,7 +539,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Plans database schema migrations with step-by-step instructions, data transformation rules, and rollback strategies.',
     capabilities: {
       tools: ['analyze_database_schema', 'get_table_stats', 'get_relation_map'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['current-schema', 'target-schema', 'migration-requirements'],
       outputTypes: ['migration-plan', 'transformation-rules', 'rollback-plan'],
       domains: ['migration', 'schema-change', 'upgrade', 'transformation'],
@@ -572,7 +572,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Manages field-level and row-level access permissions for database tables, ensuring proper data visibility across teams and roles.',
     capabilities: {
       tools: ['analyze_database_schema', 'get_table_stats', 'analyze_views'],
-      connectors: ['orchestree-databases', 'orchestree-auth'],
+      connectors: ['origina-databases', 'origina-auth'],
       inputTypes: ['access-requirements', 'role-list', 'sensitivity-levels'],
       outputTypes: ['permission-matrix', 'access-policy', 'audit-report'],
       domains: ['permissions', 'access', 'security', 'roles', 'visibility'],
@@ -605,7 +605,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Connects external APIs to database tables for automatic data sync, webhook-driven updates, and scheduled pulls.',
     capabilities: {
       tools: ['add_row', 'add_table', 'analyze_database_schema', 'review_database_automations'],
-      connectors: ['orchestree-databases', 'external-api'],
+      connectors: ['origina-databases', 'external-api'],
       inputTypes: ['api-endpoint', 'mapping-config', 'sync-schedule'],
       outputTypes: ['sync-report', 'error-log', 'mapping-preview'],
       domains: ['api', 'sync', 'integration', 'webhook', 'connector'],
@@ -619,7 +619,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
       maxCostUsdBudget: 0.45,
     },
     persona: {
-      systemPromptAddition: 'You are an API integration specialist. Build reliable data pipelines between external services and Orchestree databases.',
+      systemPromptAddition: 'You are an API integration specialist. Build reliable data pipelines between external services and OriginA databases.',
       specialInstructions: [
         'Handle pagination for large API responses',
         'Implement idempotent sync to prevent duplicates',
@@ -638,7 +638,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Enriches database records with additional information by looking up company data, geocoding addresses, and filling in missing fields.',
     capabilities: {
       tools: ['add_row', 'get_table_stats', 'analyze_database_schema'],
-      connectors: ['orchestree-databases', 'enrichment-api'],
+      connectors: ['origina-databases', 'enrichment-api'],
       inputTypes: ['table-id', 'enrichment-fields', 'lookup-config'],
       outputTypes: ['enrichment-report', 'updated-records', 'match-quality'],
       domains: ['enrichment', 'lookup', 'augment', 'company-data', 'geocoding'],
@@ -671,7 +671,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Manages database backups with scheduled snapshots, point-in-time recovery, and cross-workspace replication for disaster recovery.',
     capabilities: {
       tools: ['analyze_database_schema', 'get_table_stats', 'get_workspace_stats'],
-      connectors: ['orchestree-databases', 'backup-storage'],
+      connectors: ['origina-databases', 'backup-storage'],
       inputTypes: ['backup-schedule', 'retention-policy', 'recovery-point'],
       outputTypes: ['backup-report', 'recovery-plan', 'backup-manifest'],
       domains: ['backup', 'recovery', 'snapshot', 'replication', 'disaster-recovery'],
@@ -704,7 +704,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Translates natural language questions into database queries, helping users find specific records and generate filtered views.',
     capabilities: {
       tools: ['analyze_database_schema', 'get_table_stats', 'analyze_views'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['natural-language-query', 'table-context', 'filter-request'],
       outputTypes: ['query-result', 'filter-config', 'view-definition'],
       domains: ['query', 'search', 'filter', 'find', 'lookup'],
@@ -737,7 +737,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Tracks and reports all changes to database records including who changed what, when, and provides diff views for audit compliance.',
     capabilities: {
       tools: ['get_table_stats', 'analyze_database_schema', 'get_workspace_stats'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['table-id', 'date-range', 'user-filter'],
       outputTypes: ['changelog-report', 'diff-view', 'audit-summary'],
       domains: ['changelog', 'audit', 'history', 'tracking', 'diff'],
@@ -770,7 +770,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates pivot table summaries from database tables with configurable row groupings, column groupings, and aggregation functions.',
     capabilities: {
       tools: ['get_table_stats', 'analyze_database_schema', 'analyze_views'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['table-id', 'row-fields', 'column-fields', 'value-fields'],
       outputTypes: ['pivot-table', 'summary-chart', 'aggregate-data'],
       domains: ['pivot', 'summary', 'aggregation', 'grouping', 'cross-tab'],
@@ -803,7 +803,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Automatically categorizes and tags database records using pattern recognition, keyword analysis, and ML-based classification.',
     capabilities: {
       tools: ['get_table_stats', 'add_row', 'analyze_database_schema'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['table-id', 'classification-rules', 'training-examples'],
       outputTypes: ['classification-results', 'confidence-scores', 'category-distribution'],
       domains: ['classification', 'tagging', 'categorization', 'labeling', 'sorting'],
@@ -836,7 +836,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Analyzes cross-table dependencies to identify cascade effects, breaking changes, and safe deletion paths for records and fields.',
     capabilities: {
       tools: ['get_relation_map', 'analyze_database_schema', 'get_table_stats'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['table-id', 'field-id', 'record-id', 'change-proposal'],
       outputTypes: ['dependency-tree', 'impact-analysis', 'safe-path-report'],
       domains: ['dependencies', 'cascade', 'impact', 'breaking-changes', 'references'],
@@ -869,7 +869,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Sets up database change notifications with configurable triggers, recipient rules, and delivery channels for real-time data monitoring.',
     capabilities: {
       tools: ['review_database_automations', 'analyze_database_schema', 'get_table_stats'],
-      connectors: ['orchestree-databases', 'orchestree-notifications'],
+      connectors: ['origina-databases', 'origina-notifications'],
       inputTypes: ['trigger-conditions', 'recipient-rules', 'channel-preferences'],
       outputTypes: ['notification-config', 'trigger-summary', 'delivery-report'],
       domains: ['notifications', 'alerts', 'triggers', 'monitoring', 'subscriptions'],
@@ -902,7 +902,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates timeline/Gantt views from database tables with date ranges, milestones, dependencies, and critical path highlighting.',
     capabilities: {
       tools: ['analyze_views', 'analyze_database_schema', 'get_table_stats'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['table-id', 'date-range-fields', 'dependency-fields'],
       outputTypes: ['timeline-config', 'milestone-markers', 'critical-path'],
       domains: ['timeline', 'gantt', 'milestones', 'schedule', 'project-plan'],
@@ -935,7 +935,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Generates realistic sample data for database tables based on field types, constraints, and relationship patterns for testing and demos.',
     capabilities: {
       tools: ['add_row', 'analyze_database_schema', 'get_relation_map'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['table-id', 'row-count', 'data-profile', 'seed-config'],
       outputTypes: ['generated-rows', 'generation-report', 'data-preview'],
       domains: ['seed-data', 'testing', 'demo', 'sample', 'mock-data'],
@@ -968,7 +968,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Builds custom CRM databases with contact management, deal pipelines, activity tracking, and sales funnel views.',
     capabilities: {
       tools: ['create_database', 'add_table', 'analyze_database_schema', 'get_table_stats'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['crm-requirements', 'pipeline-stages', 'contact-fields'],
       outputTypes: ['crm-database', 'pipeline-view', 'dashboard-config'],
       domains: ['crm', 'sales', 'contacts', 'deals', 'pipeline'],
@@ -1001,7 +1001,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates inventory management databases with stock tracking, reorder points, supplier relations, and warehouse location mapping.',
     capabilities: {
       tools: ['create_database', 'add_table', 'analyze_database_schema', 'get_relation_map'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['inventory-requirements', 'product-categories', 'warehouse-info'],
       outputTypes: ['inventory-database', 'reorder-rules', 'stock-dashboard'],
       domains: ['inventory', 'stock', 'warehouse', 'products', 'supply-chain'],
@@ -1034,7 +1034,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates content calendar databases with editorial workflows, publishing schedules, channel management, and content status tracking.',
     capabilities: {
       tools: ['create_database', 'add_table', 'analyze_database_schema', 'analyze_views'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['content-types', 'channels', 'team-roles', 'publishing-cadence'],
       outputTypes: ['content-database', 'editorial-calendar', 'workflow-config'],
       domains: ['content', 'editorial', 'publishing', 'social-media', 'marketing'],
@@ -1067,7 +1067,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Analyzes database usage patterns across the workspace including most active tables, least used views, and growth projections.',
     capabilities: {
       tools: ['get_workspace_stats', 'get_table_stats', 'analyze_views', 'analyze_database_schema'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['workspace-id', 'date-range', 'usage-type'],
       outputTypes: ['usage-report', 'growth-forecast', 'optimization-suggestions'],
       domains: ['usage', 'analytics', 'growth', 'adoption', 'workspace'],
@@ -1100,7 +1100,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Resolves broken row links and orphaned references across related tables, rebuilding relational integrity after bulk operations.',
     capabilities: {
       tools: ['get_relation_map', 'get_table_stats', 'add_row', 'analyze_database_schema'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['table-id', 'broken-links-report', 'resolution-strategy'],
       outputTypes: ['repair-report', 'resolved-links', 'orphan-list'],
       domains: ['links', 'references', 'orphans', 'integrity', 'repair'],
@@ -1133,7 +1133,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Generates comprehensive documentation for database schemas including field descriptions, relation maps, and usage guides.',
     capabilities: {
       tools: ['analyze_database_schema', 'get_relation_map', 'get_table_stats'],
-      connectors: ['orchestree-databases'],
+      connectors: ['origina-databases'],
       inputTypes: ['database-id', 'documentation-style', 'audience'],
       outputTypes: ['schema-docs', 'data-dictionary', 'erd-diagram'],
       domains: ['documentation', 'data-dictionary', 'schema-docs', 'reference'],

@@ -9,10 +9,10 @@ const sampleTeam: Team = {
   id: 'team-1',
   name: 'Test Workspace',
   members: [
-    { id: 'member-1', name: 'Alex Johnson', email: 'alex@orchestree.com', role: TeamRole.Owner, joinedAt: '2024-01-15T00:00:00Z', lastActiveAt: '2025-01-10T09:30:00Z', status: MemberStatus.Active },
-    { id: 'member-2', name: 'Sarah Chen', email: 'sarah@orchestree.com', role: TeamRole.Admin, joinedAt: '2024-02-20T00:00:00Z', lastActiveAt: '2025-01-09T14:22:00Z', status: MemberStatus.Active },
-    { id: 'member-3', name: 'Mike Rivera', email: 'mike@orchestree.com', role: TeamRole.Member, joinedAt: '2024-03-10T00:00:00Z', lastActiveAt: '2025-01-08T11:45:00Z', status: MemberStatus.Active },
-    { id: 'member-4', name: 'Emma Davis', email: 'emma@orchestree.com', role: TeamRole.Member, joinedAt: '2024-04-05T00:00:00Z', lastActiveAt: '2025-01-07T16:10:00Z', status: MemberStatus.Deactivated },
+    { id: 'member-1', name: 'Alex Johnson', email: 'alex@origina.com', role: TeamRole.Owner, joinedAt: '2024-01-15T00:00:00Z', lastActiveAt: '2025-01-10T09:30:00Z', status: MemberStatus.Active },
+    { id: 'member-2', name: 'Sarah Chen', email: 'sarah@origina.com', role: TeamRole.Admin, joinedAt: '2024-02-20T00:00:00Z', lastActiveAt: '2025-01-09T14:22:00Z', status: MemberStatus.Active },
+    { id: 'member-3', name: 'Mike Rivera', email: 'mike@origina.com', role: TeamRole.Member, joinedAt: '2024-03-10T00:00:00Z', lastActiveAt: '2025-01-08T11:45:00Z', status: MemberStatus.Active },
+    { id: 'member-4', name: 'Emma Davis', email: 'emma@origina.com', role: TeamRole.Member, joinedAt: '2024-04-05T00:00:00Z', lastActiveAt: '2025-01-07T16:10:00Z', status: MemberStatus.Deactivated },
   ],
   invites: [
     { id: 'inv-1', email: 'chris@external.com', role: TeamRole.Guest, invitedBy: 'Alex Johnson', invitedAt: '2025-01-05T10:00:00Z', expiresAt: '2025-01-19T10:00:00Z', status: InviteStatus.Pending },
@@ -36,7 +36,7 @@ describe('MembersSettings', () => {
   it('renders all member names and emails', () => {
     render(<MembersSettings />)
     expect(screen.getByText('Alex Johnson')).toBeInTheDocument()
-    expect(screen.getByText('alex@orchestree.com')).toBeInTheDocument()
+    expect(screen.getByText('alex@origina.com')).toBeInTheDocument()
     expect(screen.getByText('Sarah Chen')).toBeInTheDocument()
     expect(screen.getByText('Mike Rivera')).toBeInTheDocument()
     expect(screen.getByText('Emma Davis')).toBeInTheDocument()

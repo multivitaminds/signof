@@ -91,7 +91,7 @@ export const useTaxStore = create<TaxState>()(
       },
     }),
     {
-      name: 'orchestree-tax-storage',
+      name: 'origina-tax-storage',
       partialize: (state) => ({
         deadlines: state.deadlines,
         activeTaxYear: state.activeTaxYear,

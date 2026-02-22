@@ -1,6 +1,6 @@
 import type { MemoryEntry } from '../types'
 
-const DB_NAME = 'orchestree-ai-memory'
+const DB_NAME = 'origina-ai-memory'
 const DB_VERSION = 2
 const STORE_NAME = 'entries'
 

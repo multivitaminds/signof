@@ -20,8 +20,8 @@ export const actionNodes: WorkflowNodeDefinition[] = [
   {
     type: 'tool_action',
     category: 'action',
-    label: 'Orchestree Tool',
-    description: 'Execute an Orchestree cross-module tool',
+    label: 'OriginA Tool',
+    description: 'Execute an OriginA cross-module tool',
     icon: 'wrench',
     color: '#3B82F6',
     inputs: [{ id: 'in', label: 'Input', type: 'flow' }],

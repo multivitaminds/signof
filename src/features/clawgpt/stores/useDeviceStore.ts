@@ -131,6 +131,6 @@ export const useDeviceStore = create<DeviceState>()(
         return true
       },
     }),
-    { name: 'orchestree-device-storage' }
+    { name: 'origina-device-storage' }
   )
 )

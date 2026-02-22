@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
   <rect width="512" height="512" rx="80" fill="#0F0F1A"/>
   <defs>
-    <linearGradient id="brand" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4F46E5"/>
-      <stop offset="100%" stop-color="#059669"/>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E1B4B"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
     </linearGradient>
   </defs>
-  <text x="256" y="320" font-family="Inter, system-ui, sans-serif" font-size="220" font-weight="700" fill="url(#brand)" text-anchor="middle">S</text>
-  <path d="M320 240 L346 266 L386 218" stroke="#059669" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="256" cy="256" r="160" fill="none" stroke="url(#ring)" stroke-width="20"/>
+  <text x="256" y="304" font-family="Inter, system-ui, sans-serif" font-size="172" font-weight="600" fill="#E8E8F2" text-anchor="middle">a</text>
 </svg>

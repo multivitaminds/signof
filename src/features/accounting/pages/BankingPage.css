@@ -368,7 +368,7 @@
 }
 
 [data-theme="dark"] .banking__select:focus {
-  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.25);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
 }
 
 [data-theme="dark"] .banking__input {
@@ -376,7 +376,7 @@
 }
 
 [data-theme="dark"] .banking__input:focus {
-  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.25);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
 }
 
 [data-theme="dark"] .banking__table-wrapper {

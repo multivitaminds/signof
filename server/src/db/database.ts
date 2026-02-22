@@ -33,7 +33,7 @@ export function getDatabase(): Database.Database {
     mkdirSync(dataDir, { recursive: true });
   }
 
-  db = new Database(join(dataDir, 'orchestree.db'));
+  db = new Database(join(dataDir, 'origina.db'));
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
 

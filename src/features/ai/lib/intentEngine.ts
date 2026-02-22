@@ -423,7 +423,7 @@ export function executeIntent(intent: IntentResult): boolean {
             date: new Date().toISOString().split('T')[0] ?? '',
             startTime: '10:00',
             endTime: '10:30',
-            attendees: [{ name: 'AI Booking', email: 'ai@orchestree.app', timezone: tz }],
+            attendees: [{ name: 'AI Booking', email: 'ai@origina.app', timezone: tz }],
             notes: '',
             status: 'confirmed',
             timezone: tz,

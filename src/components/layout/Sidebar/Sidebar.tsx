@@ -303,12 +303,29 @@ export default function Sidebar() {
       <div className="sidebar__header">
         {effectiveExpanded ? (
           <div className="sidebar__brand">
-            <span className="sidebar__logo">Orchestree</span>
-            <span className="sidebar__logo-check">&#10003;</span>
+            <img
+              src="/logo/origina-wordmark-indigo.png"
+              alt="OriginA"
+              className="sidebar__logo-img sidebar__logo-img--light"
+            />
+            <img
+              src="/logo/origina-wordmark-cyan.png"
+              alt="OriginA"
+              className="sidebar__logo-img sidebar__logo-img--dark"
+            />
           </div>
         ) : (
           <div className="sidebar__brand-collapsed">
-            <span className="sidebar__logo-mini">S&#10003;</span>
+            <img
+              src="/logo/origina-icon-indigo.png"
+              alt="OriginA"
+              className="sidebar__logo-icon sidebar__logo-icon--light"
+            />
+            <img
+              src="/logo/origina-icon-cyan.png"
+              alt="OriginA"
+              className="sidebar__logo-icon sidebar__logo-icon--dark"
+            />
           </div>
         )}
         <div className="sidebar__header-actions">

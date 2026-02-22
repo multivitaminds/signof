@@ -11,7 +11,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Analyzes contracts for key clauses, obligations, deadlines, and risk areas with plain-language summaries of complex legal terms.',
     capabilities: {
       tools: ['search_pages', 'create_page', 'get_workspace_stats'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['contract-pdf', 'contract-text', 'analysis-request'],
       outputTypes: ['clause-summary', 'risk-report', 'obligation-list'],
       domains: ['contracts', 'legal', 'clauses', 'obligations', 'terms'],
@@ -44,7 +44,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Orchestrates multi-party signature workflows with routing rules, sequential/parallel signing, reminders, and completion tracking.',
     capabilities: {
       tools: ['create_template', 'add_contact', 'search_pages', 'get_workspace_stats'],
-      connectors: ['orchestree-documents', 'orchestree-notifications'],
+      connectors: ['origina-documents', 'origina-notifications'],
       inputTypes: ['signer-list', 'routing-rules', 'deadline-config'],
       outputTypes: ['workflow-status', 'completion-report', 'reminder-schedule'],
       domains: ['signatures', 'signing', 'workflow', 'routing', 'approvals'],
@@ -77,7 +77,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Automatically detects and places signature fields, date fields, initials, and text inputs on documents using layout analysis.',
     capabilities: {
       tools: ['create_template', 'search_pages'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['document-pdf', 'field-types', 'signer-assignments'],
       outputTypes: ['field-placement-map', 'annotated-document', 'placement-preview'],
       domains: ['fields', 'placement', 'layout', 'annotations', 'form-fields'],
@@ -110,7 +110,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Generates tamper-evident audit trails for document signing events including timestamps, IP addresses, and certificate of completion.',
     capabilities: {
       tools: ['search_pages', 'create_page', 'get_workspace_stats'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['document-id', 'event-log', 'compliance-requirements'],
       outputTypes: ['audit-trail', 'certificate-of-completion', 'compliance-report'],
       domains: ['audit', 'compliance', 'trail', 'certificate', 'evidence'],
@@ -143,7 +143,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Populates document templates with data from contacts, databases, and form responses, generating ready-to-send documents in bulk.',
     capabilities: {
       tools: ['create_template', 'add_contact', 'search_pages'],
-      connectors: ['orchestree-documents', 'orchestree-databases'],
+      connectors: ['origina-documents', 'origina-databases'],
       inputTypes: ['template-id', 'data-source', 'merge-fields'],
       outputTypes: ['populated-document', 'merge-report', 'error-list'],
       domains: ['templates', 'merge', 'populate', 'bulk', 'mail-merge'],
@@ -176,7 +176,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates professional document templates with branded headers, footers, merge fields, and conditional sections for various document types.',
     capabilities: {
       tools: ['create_template', 'search_pages', 'create_page'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['template-requirements', 'brand-guidelines', 'document-type'],
       outputTypes: ['document-template', 'style-guide', 'field-definitions'],
       domains: ['templates', 'design', 'branding', 'layout', 'formatting'],
@@ -209,7 +209,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Generates non-disclosure agreements with configurable terms, durations, exclusions, and jurisdiction-specific clauses.',
     capabilities: {
       tools: ['create_template', 'add_contact', 'create_page'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['nda-type', 'parties', 'terms-config', 'jurisdiction'],
       outputTypes: ['nda-document', 'clause-options', 'signing-ready-doc'],
       domains: ['nda', 'confidentiality', 'non-disclosure', 'legal'],
@@ -242,7 +242,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates professional business proposals with executive summaries, scope definitions, pricing tables, and terms and conditions.',
     capabilities: {
       tools: ['create_template', 'create_page', 'search_pages'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['proposal-brief', 'pricing-data', 'company-info'],
       outputTypes: ['proposal-document', 'pricing-table', 'executive-summary'],
       domains: ['proposals', 'sales', 'pricing', 'scope', 'rfp'],
@@ -275,7 +275,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Manages a reusable library of legal clauses with version tracking, categorization, and smart clause recommendations for document assembly.',
     capabilities: {
       tools: ['search_pages', 'create_page', 'get_workspace_stats'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['clause-text', 'category', 'version-notes'],
       outputTypes: ['clause-library', 'clause-recommendations', 'version-history'],
       domains: ['clauses', 'library', 'legal-text', 'reusable', 'versions'],
@@ -308,7 +308,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Compares document versions to produce redline markups highlighting additions, deletions, and modifications with change summaries.',
     capabilities: {
       tools: ['search_pages', 'create_page'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['document-v1', 'document-v2', 'comparison-config'],
       outputTypes: ['redline-document', 'change-summary', 'diff-report'],
       domains: ['redline', 'comparison', 'diff', 'versions', 'changes'],
@@ -341,7 +341,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Manages document recipients and signing contacts with deduplication, role assignment, and contact information validation.',
     capabilities: {
       tools: ['add_contact', 'search_pages', 'get_workspace_stats'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['contact-list', 'role-assignments', 'validation-rules'],
       outputTypes: ['contact-directory', 'validation-report', 'dedup-results'],
       domains: ['contacts', 'recipients', 'signers', 'directory', 'people'],
@@ -374,7 +374,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Monitors document expiration dates and renewal deadlines, sending proactive alerts before contracts lapse or require action.',
     capabilities: {
       tools: ['search_pages', 'get_workspace_stats', 'create_page'],
-      connectors: ['orchestree-documents', 'orchestree-notifications'],
+      connectors: ['origina-documents', 'origina-notifications'],
       inputTypes: ['document-list', 'alert-rules', 'date-range'],
       outputTypes: ['expiration-report', 'renewal-calendar', 'alert-schedule'],
       domains: ['expiration', 'renewal', 'deadlines', 'monitoring', 'alerts'],
@@ -407,7 +407,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Sends documents for signature to multiple recipients in bulk with personalized merge fields, staggered delivery, and tracking.',
     capabilities: {
       tools: ['create_template', 'add_contact', 'search_pages', 'get_workspace_stats'],
-      connectors: ['orchestree-documents', 'orchestree-notifications'],
+      connectors: ['origina-documents', 'origina-notifications'],
       inputTypes: ['template-id', 'recipient-list', 'merge-data', 'schedule'],
       outputTypes: ['send-report', 'delivery-status', 'completion-tracker'],
       domains: ['bulk-send', 'mass-signing', 'batch', 'delivery'],
@@ -440,7 +440,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Checks documents against regulatory requirements and internal policies, flagging missing clauses, non-compliant language, and required disclosures.',
     capabilities: {
       tools: ['search_pages', 'create_page', 'get_workspace_stats'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['document-id', 'compliance-framework', 'policy-rules'],
       outputTypes: ['compliance-report', 'missing-items', 'remediation-suggestions'],
       domains: ['compliance', 'regulatory', 'policy', 'requirements', 'disclosure'],
@@ -473,7 +473,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Manages document versions with branching, merging, conflict resolution, and version history navigation for collaborative editing.',
     capabilities: {
       tools: ['search_pages', 'create_page', 'get_workspace_stats'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['document-id', 'version-action', 'merge-config'],
       outputTypes: ['version-tree', 'diff-report', 'merge-result'],
       domains: ['versions', 'history', 'branching', 'merging', 'collaboration'],
@@ -506,7 +506,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Generates statements of work with detailed scope, deliverables, timelines, acceptance criteria, and payment milestones.',
     capabilities: {
       tools: ['create_template', 'create_page', 'search_pages'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['project-brief', 'scope-requirements', 'timeline-constraints'],
       outputTypes: ['sow-document', 'milestone-schedule', 'deliverables-matrix'],
       domains: ['sow', 'scope', 'deliverables', 'milestones', 'services'],
@@ -539,7 +539,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates professional invoices from templates with line items, tax calculations, payment terms, and branded formatting.',
     capabilities: {
       tools: ['create_template', 'add_contact', 'create_page'],
-      connectors: ['orchestree-documents', 'orchestree-accounting'],
+      connectors: ['origina-documents', 'origina-accounting'],
       inputTypes: ['invoice-data', 'template-id', 'tax-config'],
       outputTypes: ['invoice-document', 'payment-link', 'accounting-entry'],
       domains: ['invoices', 'billing', 'payments', 'accounts-receivable'],
@@ -572,7 +572,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Extracts structured data from unstructured documents including dates, amounts, names, addresses, and custom fields using AI parsing.',
     capabilities: {
       tools: ['search_pages', 'create_page', 'get_workspace_stats'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['document-pdf', 'extraction-schema', 'field-definitions'],
       outputTypes: ['extracted-data', 'confidence-scores', 'review-queue'],
       domains: ['extraction', 'parsing', 'ocr', 'structured-data', 'fields'],
@@ -605,7 +605,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Schedules and sends signing reminders with escalating urgency, personalized messages, and configurable frequency to improve completion rates.',
     capabilities: {
       tools: ['search_pages', 'add_contact', 'get_workspace_stats'],
-      connectors: ['orchestree-documents', 'orchestree-notifications'],
+      connectors: ['origina-documents', 'origina-notifications'],
       inputTypes: ['document-id', 'reminder-schedule', 'escalation-rules'],
       outputTypes: ['reminder-plan', 'delivery-report', 'completion-impact'],
       domains: ['reminders', 'follow-up', 'escalation', 'nudges', 'completion'],
@@ -638,7 +638,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Assists legal teams in reviewing documents by flagging ambiguous language, missing definitions, inconsistent terms, and potential issues.',
     capabilities: {
       tools: ['search_pages', 'create_page', 'get_workspace_stats'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['document-text', 'review-checklist', 'legal-standards'],
       outputTypes: ['review-comments', 'issue-list', 'suggestion-markup'],
       domains: ['review', 'legal', 'markup', 'comments', 'issues'],
@@ -671,7 +671,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Generates employment agreements, offer letters, and contractor agreements with jurisdiction-compliant terms and configurable clauses.',
     capabilities: {
       tools: ['create_template', 'add_contact', 'create_page'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['position-details', 'compensation-data', 'jurisdiction', 'employment-type'],
       outputTypes: ['agreement-document', 'clause-selections', 'signing-package'],
       domains: ['employment', 'offer-letter', 'contractor', 'hr', 'hiring'],
@@ -704,7 +704,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Automatically classifies uploaded documents by type (contract, invoice, NDA, proposal) and routes them to appropriate workflows.',
     capabilities: {
       tools: ['search_pages', 'get_workspace_stats'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['document-upload', 'classification-rules'],
       outputTypes: ['document-type', 'confidence-score', 'routing-decision'],
       domains: ['classification', 'routing', 'sorting', 'categorization', 'triage'],
@@ -737,7 +737,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Guides signers through the document signing process with step-by-step instructions, field highlighting, and a progress indicator.',
     capabilities: {
       tools: ['search_pages', 'add_contact'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['document-id', 'signer-id', 'signing-preferences'],
       outputTypes: ['signing-guide', 'progress-status', 'completion-confirmation'],
       domains: ['signing', 'ceremony', 'guide', 'onboarding', 'ux'],
@@ -770,7 +770,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates concise summaries of long documents with key points, action items, and section-by-section breakdowns for quick review.',
     capabilities: {
       tools: ['search_pages', 'create_page', 'get_workspace_stats'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['document-text', 'summary-length', 'focus-areas'],
       outputTypes: ['executive-summary', 'key-points', 'action-items'],
       domains: ['summary', 'abstract', 'overview', 'key-points', 'tldr'],
@@ -803,7 +803,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Checks documents for accessibility compliance including alt text, reading order, color contrast, and screen reader compatibility.',
     capabilities: {
       tools: ['search_pages', 'create_page'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['document-id', 'accessibility-standard'],
       outputTypes: ['accessibility-report', 'remediation-guide', 'compliance-score'],
       domains: ['accessibility', 'a11y', 'wcag', 'screen-reader', 'compliance'],
@@ -836,7 +836,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Coordinates document translations across languages, maintaining formatting, legal precision, and terminology consistency.',
     capabilities: {
       tools: ['create_page', 'search_pages', 'get_workspace_stats'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['source-document', 'target-languages', 'glossary'],
       outputTypes: ['translated-document', 'translation-notes', 'glossary-updates'],
       domains: ['translation', 'localization', 'multilingual', 'languages'],
@@ -869,7 +869,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Generates power of attorney documents with configurable authority scope, duration limits, and jurisdiction-specific requirements.',
     capabilities: {
       tools: ['create_template', 'add_contact', 'create_page'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['poa-type', 'authority-scope', 'parties', 'jurisdiction'],
       outputTypes: ['poa-document', 'authority-matrix', 'signing-requirements'],
       domains: ['power-of-attorney', 'delegation', 'authority', 'legal'],
@@ -902,7 +902,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Archives completed documents with proper retention policies, metadata tagging, searchable indexing, and compliance-grade storage.',
     capabilities: {
       tools: ['search_pages', 'get_workspace_stats', 'create_page'],
-      connectors: ['orchestree-documents', 'archive-storage'],
+      connectors: ['origina-documents', 'archive-storage'],
       inputTypes: ['document-id', 'retention-policy', 'archive-config'],
       outputTypes: ['archive-record', 'retention-schedule', 'retrieval-index'],
       domains: ['archive', 'retention', 'storage', 'records-management'],
@@ -935,7 +935,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Creates interactive pricing tables within documents with optional line items, quantity selectors, discount rules, and total calculations.',
     capabilities: {
       tools: ['create_template', 'create_page', 'search_pages'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['product-catalog', 'pricing-rules', 'discount-tiers'],
       outputTypes: ['pricing-table', 'quote-document', 'pricing-config'],
       domains: ['pricing', 'quotes', 'line-items', 'discounts', 'calculations'],
@@ -968,7 +968,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Coordinates remote online notarization sessions with identity verification, video conferencing, and digital seal application.',
     capabilities: {
       tools: ['add_contact', 'search_pages', 'get_workspace_stats'],
-      connectors: ['orchestree-documents', 'notary-service'],
+      connectors: ['origina-documents', 'notary-service'],
       inputTypes: ['document-id', 'notarization-type', 'party-info'],
       outputTypes: ['notarization-session', 'identity-verification', 'notarized-document'],
       domains: ['notarization', 'ron', 'identity', 'verification', 'seal'],
@@ -1001,7 +1001,7 @@ export const AGENTS: AgentCapabilityManifest[] = [
     description: 'Provides analytics on document performance including time-to-sign, completion rates, bottleneck identification, and engagement metrics.',
     capabilities: {
       tools: ['get_workspace_stats', 'search_pages', 'create_page'],
-      connectors: ['orchestree-documents'],
+      connectors: ['origina-documents'],
       inputTypes: ['date-range', 'document-type-filter', 'team-filter'],
       outputTypes: ['analytics-dashboard', 'performance-report', 'bottleneck-analysis'],
       domains: ['analytics', 'metrics', 'performance', 'insights', 'reporting'],

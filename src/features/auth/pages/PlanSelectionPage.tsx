@@ -73,7 +73,7 @@ export default function PlanSelectionPage() {
       <div className="plan-selection__container">
         <div className="plan-selection__header">
           <div className="plan-selection__logo">
-            <span className="plan-selection__logo-text">Orchestree</span>
+            <span className="plan-selection__logo-text">OriginA</span>
           </div>
           <h1 className="plan-selection__title">Choose your plan</h1>
           <p className="plan-selection__subtitle">
@@ -174,7 +174,7 @@ export default function PlanSelectionPage() {
             <div className="plan-selection__tax-info">
               <h3 className="plan-selection__tax-title">Add Tax Filing</h3>
               <p className="plan-selection__tax-subtitle">
-                Optional: bundle tax preparation with your Orchestree plan.
+                Optional: bundle tax preparation with your OriginA plan.
               </p>
             </div>
             <button

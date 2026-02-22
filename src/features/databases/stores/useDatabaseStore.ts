@@ -391,7 +391,7 @@ export const useDatabaseStore = create<DatabaseState>()(
       getTable: (id) => get().tables[id],
     }),
     {
-      name: 'orchestree-database-storage',
+      name: 'origina-database-storage',
       partialize: (state) => ({
         databases: state.databases,
         tables: state.tables,

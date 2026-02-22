@@ -2,9 +2,9 @@ import { render, screen } from '@testing-library/react'
 import Header from './Header'
 
 describe('Header', () => {
-  it('renders the "Orchestree" brand', () => {
+  it('renders the "OriginA" brand', () => {
     render(<Header />)
-    expect(screen.getByText('Orchestree')).toBeInTheDocument()
+    expect(screen.getByText('OriginA')).toBeInTheDocument()
   })
 
   it('renders the tagline', () => {

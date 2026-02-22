@@ -132,7 +132,7 @@ export const CHANNEL_DEFINITIONS: ChannelDefinition[] = [
     configFields: [
       { key: 'server', label: 'Server', type: 'text', required: true, placeholder: 'irc.libera.chat' },
       { key: 'port', label: 'Port', type: 'text', required: true, placeholder: '6697' },
-      { key: 'nickname', label: 'Nickname', type: 'text', required: true, placeholder: 'orchestree-bot' },
+      { key: 'nickname', label: 'Nickname', type: 'text', required: true, placeholder: 'origina-bot' },
       { key: 'channels', label: 'Channels (comma-separated)', type: 'text', required: true, placeholder: '#general, #support' },
       { key: 'password', label: 'Server Password', type: 'password', required: false },
       { key: 'useSsl', label: 'Use SSL', type: 'checkbox', required: false },
@@ -171,7 +171,7 @@ export const CHANNEL_DEFINITIONS: ChannelDefinition[] = [
     type: ChannelType.Custom,
     name: 'Custom Channel',
     icon: 'puzzle',
-    description: 'Build a custom channel integration using the Orchestree Gateway SDK.',
+    description: 'Build a custom channel integration using the OriginA Gateway SDK.',
     authType: ChannelAuthType.ApiKey,
     configFields: [
       { key: 'channelName', label: 'Channel Name', type: 'text', required: true, placeholder: 'My Custom Channel' },

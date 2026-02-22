@@ -1,5 +1,5 @@
 /* ================================================================
-   PlanSelectionPage — Orchestree Signup Plan Selection
+   PlanSelectionPage — OriginA Signup Plan Selection
    ================================================================ */
 
 /* --- Wrapper (same auth-page gradient background) --- */
@@ -9,7 +9,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  background: linear-gradient(135deg, var(--color-gray-800) 0%, #0F3460 40%, var(--color-primary) 100%);
+  background: linear-gradient(135deg, var(--color-gray-800) 0%, #1E1B4B 40%, var(--color-primary) 100%);
   padding: var(--space-8, 3rem) var(--space-4, 1rem);
   position: relative;
   overflow: hidden;

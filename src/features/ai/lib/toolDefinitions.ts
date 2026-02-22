@@ -33,11 +33,11 @@ export interface ToolDefinition {
 
 // ─── Tool Schemas ───────────────────────────────────────────────────
 
-export const ORCHESTREE_TOOLS: ToolDefinition[] = [
+export const ORIGINA_TOOLS: ToolDefinition[] = [
   // ── Workspace ────────────────────────────────────────────────────
   {
     name: 'create_page',
-    description: 'Create a new workspace page in Orchestree. Returns the page ID.',
+    description: 'Create a new workspace page in OriginA. Returns the page ID.',
     input_schema: {
       type: 'object',
       properties: {
@@ -1768,9 +1768,9 @@ export function getToolsForAgent(agentType: AgentType): ToolDefinition[] {
   const toolNames = AGENT_TOOL_MAP[agentType]
   if (!toolNames) {
     // Default: give read-only tools
-    return ORCHESTREE_TOOLS.filter(
+    return ORIGINA_TOOLS.filter(
       (t) => t.name === 'get_workspace_stats' || t.name === 'get_upcoming_deadlines',
     )
   }
-  return ORCHESTREE_TOOLS.filter((t) => toolNames.includes(t.name))
+  return ORIGINA_TOOLS.filter((t) => toolNames.includes(t.name))
 }

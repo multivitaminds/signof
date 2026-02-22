@@ -110,7 +110,7 @@ function DeveloperLayout() {
 
         <DemoVideoSection videos={[
           { title: 'API Playground Tour', description: 'Test API endpoints interactively in the sandbox.', duration: '4:00' },
-          { title: 'SDK Integration Guide', description: 'Integrate Orchestree into your app with our SDKs.', duration: '5:30' },
+          { title: 'SDK Integration Guide', description: 'Integrate OriginA into your app with our SDKs.', duration: '5:30' },
         ]} />
 
         <nav className="developer-layout__nav">
@@ -139,7 +139,7 @@ function DeveloperLayout() {
         <div className="developer-layout__sidebar-footer">
           <a
             className="developer-layout__footer-link"
-            href="https://docs.orchestree.io"
+            href="https://docs.origina.io"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -147,7 +147,7 @@ function DeveloperLayout() {
           </a>
           <a
             className="developer-layout__footer-link"
-            href="https://status.orchestree.io"
+            href="https://status.origina.io"
             target="_blank"
             rel="noopener noreferrer"
           >

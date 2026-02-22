@@ -69,7 +69,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             </button>
             <a
               className="error-boundary__report"
-              href="mailto:support@orchestree.com?subject=Bug%20Report"
+              href="mailto:support@origina.com?subject=Bug%20Report"
               target="_blank"
               rel="noopener noreferrer"
             >

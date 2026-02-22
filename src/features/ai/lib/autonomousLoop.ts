@@ -8,7 +8,7 @@ import useConnectorStore from '../stores/useConnectorStore'
 import { buildAutonomousPrompt } from './autonomousPromptBuilder'
 import { syncChat } from './llmClient'
 import { classifyError, analyzeError, attemptRepair } from './selfHealingEngine'
-import { executeTool, ORCHESTREE_TOOLS } from './toolDefinitions'
+import { executeTool, ORIGINA_TOOLS } from './toolDefinitions'
 import { triggerWorkflowFromAgent } from './agentWorkflowBridge'
 import { checkActionCircuit, recordActionOutcome } from './circuitBreakerEngine'
 import { acquireActionLock, releaseActionLock } from './governorEngine'
@@ -218,7 +218,7 @@ async function planAction(agentId: string, reasoning: string): Promise<string> {
     .map((id) => useConnectorStore.getState().getConnector(id))
     .filter((c): c is NonNullable<typeof c> => c !== undefined)
 
-  const tools = ORCHESTREE_TOOLS
+  const tools = ORIGINA_TOOLS
 
   const connectorContext = connectors.length > 0
     ? connectors.map((c) => `Connector "${c.name}" (id: ${c.id}, status: ${c.status}): actions=[${c.actions.map((a) => `${a.id}: ${a.name}`).join(', ')}]`).join('\n')

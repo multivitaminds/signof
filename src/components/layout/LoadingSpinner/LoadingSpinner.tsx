@@ -5,7 +5,7 @@ import './LoadingSpinner.css'
  *
  * Features:
  * - Animated gradient bar sliding across the top of the viewport
- * - Pulsing "S" logo mark with brand gradient
+ * - Pulsing "a" logo mark with brand gradient
  * - Subtle "Loading..." text
  * - Dark mode support via [data-theme="dark"]
  * - Reduced motion support
@@ -22,8 +22,7 @@ export default function LoadingSpinner() {
 
       {/* Animated logo */}
       <div className="loading-spinner__logo" aria-hidden="true">
-        <span className="loading-spinner__logo-s">S</span>
-        <span className="loading-spinner__logo-check">{'\u2713'}</span>
+        <span className="loading-spinner__logo-s">a</span>
       </div>
 
       {/* Loading text */}

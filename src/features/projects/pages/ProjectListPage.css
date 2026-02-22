@@ -96,8 +96,8 @@
 
 /* ─── Dark mode ─────────────────────────────────────────────── */
 [data-theme="dark"] .project-list__analytics-toggle--active {
-  background: var(--color-primary, #7C5CFC);
-  border-color: var(--color-primary, #7C5CFC);
+  background: var(--color-primary, #4F46E5);
+  border-color: var(--color-primary, #4F46E5);
 }
 
 /* ─── Responsive ────────────────────────────────────────────── */

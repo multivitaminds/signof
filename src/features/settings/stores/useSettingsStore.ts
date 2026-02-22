@@ -25,8 +25,8 @@ export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
       workspace: {
-        name: 'Orchestree Workspace',
-        slug: 'orchestree-workspace',
+        name: 'OriginA Workspace',
+        slug: 'origina-workspace',
         logo: null,
         language: 'en',
         dateFormat: 'MM/DD/YYYY',
@@ -57,6 +57,6 @@ export const useSettingsStore = create<SettingsState>()(
         }))
       },
     }),
-    { name: 'orchestree-settings-storage' }
+    { name: 'origina-settings-storage' }
   )
 )

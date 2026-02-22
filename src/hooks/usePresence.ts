@@ -23,7 +23,7 @@ interface UsePresenceResult {
   updateCursor: (y: number) => void
 }
 
-const COLORS = ['#7C5CFC', '#F97316', '#06B6D4', '#10B981', '#EF4444']
+const COLORS = ['#4F46E5', '#F97316', '#06B6D4', '#10B981', '#EF4444']
 const FAKE_USERS = [
   { id: 'sim-1', name: 'Alex Kim' },
   { id: 'sim-2', name: 'Maya Chen' },
@@ -78,7 +78,7 @@ export function usePresence(options: UsePresenceOptions): UsePresenceResult {
 
     const simUsers = FAKE_USERS.slice(0, 2 + Math.floor(Math.random() * 3)).map((u, i) => ({
       ...u,
-      color: COLORS[i % COLORS.length] ?? '#7C5CFC',
+      color: COLORS[i % COLORS.length] ?? '#4F46E5',
       cursorY: Math.random() * 600,
       status: 'active' as const,
       lastSeen: Date.now(),

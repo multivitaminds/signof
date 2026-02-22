@@ -21,21 +21,21 @@ const SDK_LANGUAGES: SdkLanguage[] = [
     name: 'JavaScript / TypeScript',
     version: '1.4.0',
     icon: 'JS',
-    installCommand: 'npm install @orchestree/node',
-    repoUrl: 'https://github.com/orchestree-io/orchestree-node',
-    packageUrl: 'https://npmjs.com/package/@orchestree/node',
-    initCode: `import Orchestree from '@orchestree/node';
+    installCommand: 'npm install @origina/node',
+    repoUrl: 'https://github.com/origina-io/origina-node',
+    packageUrl: 'https://npmjs.com/package/@origina/node',
+    initCode: `import OriginA from '@origina/node';
 
-const orchestree = new Orchestree('sk_live_...');
+const origina = new OriginA('sk_live_...');
 
 // Or with options
-const orchestree = new Orchestree({
+const origina = new OriginA({
   apiKey: 'sk_live_...',
-  baseUrl: 'https://api.orchestree.io', // optional
+  baseUrl: 'https://api.origina.io', // optional
   timeout: 30000,                    // optional, ms
 });`,
     exampleCode: `// Create and send a document
-const doc = await orchestree.documents.create({
+const doc = await origina.documents.create({
   name: 'Sales Contract',
   file_url: 'https://files.example.com/contract.pdf',
   signers: [
@@ -45,19 +45,19 @@ const doc = await orchestree.documents.create({
 });
 
 // Send for signing
-await orchestree.documents.send(doc.id, {
+await origina.documents.send(doc.id, {
   subject: 'Contract Ready for Review',
   message: 'Please review and sign at your earliest convenience.',
 });
 
 // List all completed documents
-const completed = await orchestree.documents.list({
+const completed = await origina.documents.list({
   status: 'completed',
   limit: 50,
 });
 
 // Set up webhooks
-const webhook = await orchestree.webhooks.create({
+const webhook = await origina.webhooks.create({
   url: 'https://api.yourapp.com/webhooks',
   events: ['document.completed', 'signer.declined'],
 });`,
@@ -67,17 +67,17 @@ const webhook = await orchestree.webhooks.create({
     name: 'Python',
     version: '1.2.0',
     icon: 'PY',
-    installCommand: 'pip install orchestree',
-    repoUrl: 'https://github.com/orchestree-io/orchestree-python',
-    packageUrl: 'https://pypi.org/project/orchestree/',
-    initCode: `import orchestree
+    installCommand: 'pip install origina',
+    repoUrl: 'https://github.com/origina-io/origina-python',
+    packageUrl: 'https://pypi.org/project/origina/',
+    initCode: `import origina
 
-client = orchestree.Client("sk_live_...")
+client = origina.Client("sk_live_...")
 
 # Or with options
-client = orchestree.Client(
+client = origina.Client(
     api_key="sk_live_...",
-    base_url="https://api.orchestree.io",  # optional
+    base_url="https://api.origina.io",  # optional
     timeout=30,                          # optional, seconds
 )`,
     exampleCode: `# Create and send a document
@@ -114,21 +114,21 @@ webhook = client.webhooks.create(
     name: 'Ruby',
     version: '1.1.0',
     icon: 'RB',
-    installCommand: 'gem install orchestree',
-    repoUrl: 'https://github.com/orchestree-io/orchestree-ruby',
-    packageUrl: 'https://rubygems.org/gems/orchestree',
-    initCode: `require 'orchestree'
+    installCommand: 'gem install origina',
+    repoUrl: 'https://github.com/origina-io/origina-ruby',
+    packageUrl: 'https://rubygems.org/gems/origina',
+    initCode: `require 'origina'
 
-Orchestree.api_key = 'sk_live_...'
+OriginA.api_key = 'sk_live_...'
 
 # Or with a client instance
-client = Orchestree::Client.new(
+client = OriginA::Client.new(
   api_key: 'sk_live_...',
-  base_url: 'https://api.orchestree.io', # optional
+  base_url: 'https://api.origina.io', # optional
   timeout: 30                         # optional, seconds
 )`,
     exampleCode: `# Create and send a document
-doc = Orchestree::Document.create(
+doc = OriginA::Document.create(
   name: 'Sales Contract',
   file_url: 'https://files.example.com/contract.pdf',
   signers: [
@@ -144,13 +144,13 @@ doc.send(
 )
 
 # List all completed documents
-completed = Orchestree::Document.list(
+completed = OriginA::Document.list(
   status: 'completed',
   limit: 50
 )
 
 # Set up webhooks
-webhook = Orchestree::Webhook.create(
+webhook = OriginA::Webhook.create(
   url: 'https://api.yourapp.com/webhooks',
   events: ['document.completed', 'signer.declined']
 )`,
@@ -160,30 +160,30 @@ webhook = Orchestree::Webhook.create(
     name: 'Go',
     version: '1.0.0',
     icon: 'GO',
-    installCommand: 'go get github.com/orchestree-io/orchestree-go',
-    repoUrl: 'https://github.com/orchestree-io/orchestree-go',
-    packageUrl: 'https://pkg.go.dev/github.com/orchestree-io/orchestree-go',
+    installCommand: 'go get github.com/origina-io/origina-go',
+    repoUrl: 'https://github.com/origina-io/origina-go',
+    packageUrl: 'https://pkg.go.dev/github.com/origina-io/origina-go',
     initCode: `package main
 
 import (
-    "github.com/orchestree-io/orchestree-go"
+    "github.com/origina-io/origina-go"
 )
 
 func main() {
-    client := orchestree.NewClient("sk_live_...")
+    client := origina.NewClient("sk_live_...")
 
     // Or with options
-    client := orchestree.NewClient(
+    client := origina.NewClient(
         "sk_live_...",
-        orchestree.WithBaseURL("https://api.orchestree.io"),
-        orchestree.WithTimeout(30 * time.Second),
+        origina.WithBaseURL("https://api.origina.io"),
+        origina.WithTimeout(30 * time.Second),
     )
 }`,
     exampleCode: `// Create and send a document
-doc, err := client.Documents.Create(&orchestree.DocumentCreateParams{
+doc, err := client.Documents.Create(&origina.DocumentCreateParams{
     Name:    "Sales Contract",
     FileURL: "https://files.example.com/contract.pdf",
-    Signers: []orchestree.SignerParams{
+    Signers: []origina.SignerParams{
         {Name: "Alice Lee", Email: "alice@company.com", Order: 1},
         {Name: "Bob Chen", Email: "bob@client.com", Order: 2},
     },
@@ -193,19 +193,19 @@ if err != nil {
 }
 
 // Send for signing
-_, err = client.Documents.Send(doc.ID, &orchestree.DocumentSendParams{
+_, err = client.Documents.Send(doc.ID, &origina.DocumentSendParams{
     Subject: "Contract Ready for Review",
     Message: "Please review and sign at your earliest convenience.",
 })
 
 // List all completed documents
-completed, err := client.Documents.List(&orchestree.DocumentListParams{
-    Status: orchestree.String("completed"),
-    Limit:  orchestree.Int64(50),
+completed, err := client.Documents.List(&origina.DocumentListParams{
+    Status: origina.String("completed"),
+    Limit:  origina.Int64(50),
 })
 
 // Set up webhooks
-webhook, err := client.Webhooks.Create(&orchestree.WebhookCreateParams{
+webhook, err := client.Webhooks.Create(&origina.WebhookCreateParams{
     URL:    "https://api.yourapp.com/webhooks",
     Events: []string{"document.completed", "signer.declined"},
 })`,
@@ -217,31 +217,31 @@ webhook, err := client.Webhooks.Create(&orchestree.WebhookCreateParams{
     icon: 'JV',
     installCommand: `<!-- Maven -->
 <dependency>
-  <groupId>io.orchestree</groupId>
-  <artifactId>orchestree-java</artifactId>
+  <groupId>io.origina</groupId>
+  <artifactId>origina-java</artifactId>
   <version>1.0.0</version>
 </dependency>
 
 // Gradle
-implementation 'io.orchestree:orchestree-java:1.0.0'`,
-    repoUrl: 'https://github.com/orchestree-io/orchestree-java',
-    packageUrl: 'https://central.sonatype.com/artifact/io.orchestree/orchestree-java',
-    initCode: `import io.orchestree.Orchestree;
-import io.orchestree.OrchestreeConfig;
+implementation 'io.origina:origina-java:1.0.0'`,
+    repoUrl: 'https://github.com/origina-io/origina-java',
+    packageUrl: 'https://central.sonatype.com/artifact/io.origina/origina-java',
+    initCode: `import io.origina.OriginA;
+import io.origina.OriginAConfig;
 
 // Simple initialization
-Orchestree orchestree = new Orchestree("sk_live_...");
+OriginA origina = new OriginA("sk_live_...");
 
 // Or with options
-OrchestreeConfig config = OrchestreeConfig.builder()
+OriginAConfig config = OriginAConfig.builder()
     .apiKey("sk_live_...")
-    .baseUrl("https://api.orchestree.io")  // optional
+    .baseUrl("https://api.origina.io")  // optional
     .timeout(30000)                     // optional, ms
     .build();
 
-Orchestree orchestree = new Orchestree(config);`,
+OriginA origina = new OriginA(config);`,
     exampleCode: `// Create and send a document
-Document doc = orchestree.documents().create(
+Document doc = origina.documents().create(
     DocumentCreateParams.builder()
         .name("Sales Contract")
         .fileUrl("https://files.example.com/contract.pdf")
@@ -251,7 +251,7 @@ Document doc = orchestree.documents().create(
 );
 
 // Send for signing
-orchestree.documents().send(doc.getId(),
+origina.documents().send(doc.getId(),
     DocumentSendParams.builder()
         .subject("Contract Ready for Review")
         .message("Please review and sign at your earliest convenience.")
@@ -259,7 +259,7 @@ orchestree.documents().send(doc.getId(),
 );
 
 // List all completed documents
-DocumentList completed = orchestree.documents().list(
+DocumentList completed = origina.documents().list(
     DocumentListParams.builder()
         .status("completed")
         .limit(50)
@@ -267,7 +267,7 @@ DocumentList completed = orchestree.documents().list(
 );
 
 // Set up webhooks
-Webhook webhook = orchestree.webhooks().create(
+Webhook webhook = origina.webhooks().create(
     WebhookCreateParams.builder()
         .url("https://api.yourapp.com/webhooks")
         .addEvent("document.completed")
@@ -289,7 +289,7 @@ const GETTING_STARTED_STEPS: GettingStartedStep[] = [
   {
     number: 1,
     title: 'Create an account',
-    description: 'Sign up at orchestree.io and navigate to Settings > API Keys.',
+    description: 'Sign up at origina.io and navigate to Settings > API Keys.',
   },
   {
     number: 2,
@@ -339,27 +339,27 @@ function SdkPage() {
       case 'javascript':
         return `// Store your API key in an environment variable
 // .env
-ORCHESTREE_API_KEY=${prefix}_your_api_key_here
+ORIGINA_API_KEY=${prefix}_your_api_key_here
 
 // app.js
-import Orchestree from '@orchestree/node';
+import OriginA from '@origina/node';
 
-const orchestree = new Orchestree(process.env.ORCHESTREE_API_KEY);
+const origina = new OriginA(process.env.ORIGINA_API_KEY);
 
 // Verify authentication
-const me = await orchestree.account.retrieve();
+const me = await origina.account.retrieve();
 console.log('Authenticated as:', me.email);
 console.log('Environment: ${envLabel}');`
       case 'python':
         return `# Store your API key in an environment variable
 # .env
-ORCHESTREE_API_KEY=${prefix}_your_api_key_here
+ORIGINA_API_KEY=${prefix}_your_api_key_here
 
 # app.py
 import os
-import orchestree
+import origina
 
-client = orchestree.Client(os.environ["ORCHESTREE_API_KEY"])
+client = origina.Client(os.environ["ORIGINA_API_KEY"])
 
 # Verify authentication
 me = client.account.retrieve()
@@ -368,31 +368,31 @@ print(f"Environment: ${envLabel}")`
       case 'ruby':
         return `# Store your API key in an environment variable
 # .env
-ORCHESTREE_API_KEY=${prefix}_your_api_key_here
+ORIGINA_API_KEY=${prefix}_your_api_key_here
 
 # app.rb
-require 'orchestree'
+require 'origina'
 
-Orchestree.api_key = ENV['ORCHESTREE_API_KEY']
+OriginA.api_key = ENV['ORIGINA_API_KEY']
 
 # Verify authentication
-me = Orchestree::Account.retrieve
+me = OriginA::Account.retrieve
 puts "Authenticated as: #{me.email}"
 puts "Environment: ${envLabel}"`
       case 'go':
         return `// Store your API key in an environment variable
-// export ORCHESTREE_API_KEY=${prefix}_your_api_key_here
+// export ORIGINA_API_KEY=${prefix}_your_api_key_here
 
 package main
 
 import (
     "fmt"
     "os"
-    "github.com/orchestree-io/orchestree-go"
+    "github.com/origina-io/origina-go"
 )
 
 func main() {
-    client := orchestree.NewClient(os.Getenv("ORCHESTREE_API_KEY"))
+    client := origina.NewClient(os.Getenv("ORIGINA_API_KEY"))
 
     // Verify authentication
     me, err := client.Account.Retrieve()
@@ -404,17 +404,17 @@ func main() {
 }`
       case 'java':
         return `// Store your API key in an environment variable
-// export ORCHESTREE_API_KEY=${prefix}_your_api_key_here
+// export ORIGINA_API_KEY=${prefix}_your_api_key_here
 
-import io.orchestree.Orchestree;
-import io.orchestree.model.Account;
+import io.origina.OriginA;
+import io.origina.model.Account;
 
 public class App {
     public static void main(String[] args) {
-        Orchestree orchestree = new Orchestree(System.getenv("ORCHESTREE_API_KEY"));
+        OriginA origina = new OriginA(System.getenv("ORIGINA_API_KEY"));
 
         // Verify authentication
-        Account me = orchestree.account().retrieve();
+        Account me = origina.account().retrieve();
         System.out.println("Authenticated as: " + me.getEmail());
         System.out.println("Environment: ${envLabel}");
     }
@@ -429,7 +429,7 @@ public class App {
       <div className="sdk-page__header">
         <h1 className="sdk-page__title">SDKs</h1>
         <p className="sdk-page__subtitle">
-          Official client libraries for the Orchestree API. Each SDK provides typed methods,
+          Official client libraries for the OriginA API. Each SDK provides typed methods,
           automatic retries, and webhook signature verification.
         </p>
       </div>

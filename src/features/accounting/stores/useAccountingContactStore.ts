@@ -76,6 +76,6 @@ export const useAccountingContactStore = create<AccountingContactState>()(
           ],
         })),
     }),
-    { name: 'orchestree-accounting-contacts-storage' }
+    { name: 'origina-accounting-contacts-storage' }
   )
 )

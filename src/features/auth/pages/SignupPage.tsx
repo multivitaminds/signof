@@ -79,10 +79,10 @@ export default function SignupPage() {
     <div className="auth-page">
       <div className="auth-page__card">
         <div className="auth-page__logo">
-          <span className="auth-page__logo-text">Orchestree</span>
+          <span className="auth-page__logo-text">OriginA</span>
         </div>
         <h1 className="auth-page__title">Create your account</h1>
-        <p className="auth-page__subtitle">Start your free Orchestree workspace</p>
+        <p className="auth-page__subtitle">Start your free OriginA workspace</p>
 
         <form className="auth-page__form" onSubmit={handleSubmit}>
           {error && <div className="auth-page__error">{error}</div>}

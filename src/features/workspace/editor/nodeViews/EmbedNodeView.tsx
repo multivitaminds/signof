@@ -19,7 +19,7 @@ export default function EmbedNodeView({ node, updateAttributes }: NodeViewProps)
 
   if (!url) {
     return (
-      <NodeViewWrapper className="tiptap-embed" data-type="orchestree-embed" contentEditable={false}>
+      <NodeViewWrapper className="tiptap-embed" data-type="origina-embed" contentEditable={false}>
         <form className="tiptap-embed__form" onSubmit={handleSubmit}>
           <input
             className="tiptap-embed__input"
@@ -37,7 +37,7 @@ export default function EmbedNodeView({ node, updateAttributes }: NodeViewProps)
   }
 
   return (
-    <NodeViewWrapper className="tiptap-embed" data-type="orchestree-embed" contentEditable={false}>
+    <NodeViewWrapper className="tiptap-embed" data-type="origina-embed" contentEditable={false}>
       <iframe
         className="tiptap-embed__iframe"
         src={url}

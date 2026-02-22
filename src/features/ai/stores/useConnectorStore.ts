@@ -171,7 +171,7 @@ const useConnectorStore = create<ConnectorState>()(
       },
     }),
     {
-      name: 'orchestree-connector-storage',
+      name: 'origina-connector-storage',
     },
   ),
 )

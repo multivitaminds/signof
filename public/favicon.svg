@@ -1,4 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#1A1A2E"/>
-  <path d="M9 16.5L14 21.5L23 11.5" stroke="#E94560" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <defs>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E1B4B"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+  </defs>
+  <circle cx="16" cy="16" r="14" fill="none" stroke="url(#ring)" stroke-width="3"/>
+  <text x="16" y="21" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="url(#ring)" text-anchor="middle">a</text>
 </svg>

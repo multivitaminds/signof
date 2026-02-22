@@ -107,7 +107,7 @@ export const useAppStore = create<AppState>()(
 
     }),
     {
-      name: 'orchestree-app-storage',
+      name: 'origina-app-storage',
       partialize: (state) => ({
         sidebarExpanded: state.sidebarExpanded,
         sidebarWidth: state.sidebarWidth,

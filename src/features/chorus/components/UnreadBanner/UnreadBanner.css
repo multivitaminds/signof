@@ -14,14 +14,14 @@
   cursor: pointer;
   user-select: none;
   animation: chorus-bounce-in 300ms cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: 0 2px 12px rgba(124, 92, 252, 0.3);
+  box-shadow: 0 2px 12px rgba(79, 70, 229, 0.3);
   transition:
     box-shadow 200ms ease,
     transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .unread-banner:hover {
-  box-shadow: 0 4px 20px rgba(124, 92, 252, 0.4);
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
   transform: translateY(-1px);
 }
 

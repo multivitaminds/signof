@@ -4,7 +4,7 @@ export const MODULE_ADD_ONS: ModuleAddOn[] = [
   {
     id: 'tax-filing',
     name: 'Tax Filing',
-    description: 'File federal and state tax returns directly from Orchestree.',
+    description: 'File federal and state tax returns directly from OriginA.',
     monthlyPrice: 19,
     perUnit: 'per filing',
     includedInPlans: ['business', 'enterprise'],

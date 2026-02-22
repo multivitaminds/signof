@@ -156,7 +156,7 @@ const SAMPLE_NOTIFICATIONS: Notification[] = [
     id: 'notif-10',
     type: NotificationType.System,
     category: NotificationCategory.System,
-    title: 'Welcome to Orchestree!',
+    title: 'Welcome to OriginA!',
     message: 'Get started by creating your first document or exploring the workspace',
     read: true,
     archived: false,
@@ -337,7 +337,7 @@ export const useInboxStore = create<InboxState>()(
       },
     }),
     {
-      name: 'orchestree-inbox-storage',
+      name: 'origina-inbox-storage',
       partialize: (state) => ({
         notifications: state.notifications,
         simulatorEnabled: state.simulatorEnabled,

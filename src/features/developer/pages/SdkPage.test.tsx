@@ -9,7 +9,7 @@ describe('SdkPage', () => {
 
     expect(screen.getByText('SDKs')).toBeInTheDocument()
     expect(
-      screen.getByText(/Official client libraries for the Orchestree API/)
+      screen.getByText(/Official client libraries for the OriginA API/)
     ).toBeInTheDocument()
   })
 

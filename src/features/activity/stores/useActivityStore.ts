@@ -332,7 +332,7 @@ export const useActivityStore = create<ActivityState>()(
       },
     }),
     {
-      name: 'orchestree-activity-storage',
+      name: 'origina-activity-storage',
       partialize: (state) => ({
         activities: state.activities,
       }),

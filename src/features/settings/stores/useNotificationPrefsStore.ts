@@ -90,6 +90,6 @@ export const useNotificationPrefsStore = create<NotificationPrefsState>()(
         }))
       },
     }),
-    { name: 'orchestree-notification-prefs-storage' }
+    { name: 'origina-notification-prefs-storage' }
   )
 )

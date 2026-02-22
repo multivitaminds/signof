@@ -323,7 +323,7 @@ export function buildAgentSystemPrompt(
   }
 
   const lines: string[] = [
-    `You are the ${definition.label} agent for Orchestree.`,
+    `You are the ${definition.label} agent for OriginA.`,
     `Role: ${definition.description}`,
     '',
     'Capabilities:',
@@ -350,7 +350,7 @@ export function buildAgentSystemPrompt(
     '',
     'Instructions:',
     '- Be concise and actionable',
-    '- Use Orchestree workspace context when available',
+    '- Use OriginA workspace context when available',
     '- Return structured data when possible',
     '- If you cannot complete the task, explain what is needed',
   )

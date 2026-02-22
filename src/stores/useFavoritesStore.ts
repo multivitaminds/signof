@@ -123,7 +123,7 @@ export const useFavoritesStore = create<FavoritesState>()(
       clearRecents: () => set({ recents: [] }),
     }),
     {
-      name: 'orchestree-favorites-storage',
+      name: 'origina-favorites-storage',
       partialize: (state) => ({
         favorites: state.favorites,
         recents: state.recents,

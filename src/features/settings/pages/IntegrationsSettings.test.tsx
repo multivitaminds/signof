@@ -29,7 +29,7 @@ describe('IntegrationsSettings', () => {
   it('renders the title and subtitle', () => {
     render(<IntegrationsSettings />)
     expect(screen.getByText('Integrations')).toBeInTheDocument()
-    expect(screen.getByText('Connect your favorite tools to Orchestree')).toBeInTheDocument()
+    expect(screen.getByText('Connect your favorite tools to OriginA')).toBeInTheDocument()
   })
 
   it('renders all integration cards', () => {

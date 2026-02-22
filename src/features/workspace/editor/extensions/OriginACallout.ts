@@ -2,8 +2,8 @@ import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import CalloutNodeView from '../nodeViews/CalloutNodeView'
 
-export const OrchestreeCallout = Node.create({
-  name: 'orchestreeCallout',
+export const OriginACallout = Node.create({
+  name: 'originaCallout',
   group: 'block',
   content: 'block+',
 
@@ -16,11 +16,11 @@ export const OrchestreeCallout = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: 'div[data-type="orchestree-callout"]' }]
+    return [{ tag: 'div[data-type="origina-callout"]' }]
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'orchestree-callout' }), 0]
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'origina-callout' }), 0]
   },
 
   addNodeView() {

@@ -334,7 +334,7 @@ function blockToTiptapNode(
     case BlockType.Toggle:
       return {
         node: {
-          type: 'orchestreeToggle',
+          type: 'originaToggle',
           attrs: {
             blockId: block.id,
           },
@@ -345,7 +345,7 @@ function blockToTiptapNode(
     case BlockType.Callout:
       return {
         node: {
-          type: 'orchestreeCallout',
+          type: 'originaCallout',
           attrs: {
             icon: block.properties.calloutIcon ?? '💡',
             color: block.properties.color ?? 'default',
@@ -361,7 +361,7 @@ function blockToTiptapNode(
     case BlockType.ColumnLayout:
       return {
         node: {
-          type: 'orchestreeColumns',
+          type: 'originaColumns',
           attrs: { blockId: block.id },
           content: columnContent(block, allBlocks),
         },
@@ -370,7 +370,7 @@ function blockToTiptapNode(
     case BlockType.Embed:
       return {
         node: {
-          type: 'orchestreeEmbed',
+          type: 'originaEmbed',
           attrs: {
             url: block.properties.embedUrl ?? '',
             blockId: block.id,
@@ -381,7 +381,7 @@ function blockToTiptapNode(
     case BlockType.Bookmark:
       return {
         node: {
-          type: 'orchestreeBookmark',
+          type: 'originaBookmark',
           attrs: {
             url: block.properties.url ?? '',
             blockId: block.id,
@@ -392,7 +392,7 @@ function blockToTiptapNode(
     case BlockType.FileAttachment:
       return {
         node: {
-          type: 'orchestreeFile',
+          type: 'originaFile',
           attrs: {
             fileName: block.properties.fileName ?? '',
             fileDataUrl: block.properties.fileDataUrl ?? '',
@@ -404,7 +404,7 @@ function blockToTiptapNode(
     case BlockType.Equation:
       return {
         node: {
-          type: 'orchestreeEquation',
+          type: 'originaEquation',
           attrs: {
             content: block.content,
             blockId: block.id,
@@ -415,7 +415,7 @@ function blockToTiptapNode(
     case BlockType.TableOfContents:
       return {
         node: {
-          type: 'orchestreeTOC',
+          type: 'originaTOC',
           attrs: { blockId: block.id },
         },
       }
@@ -523,19 +523,19 @@ function toggleContent(block: Block, allBlocks?: Record<string, Block>): JSONCon
 function columnContent(block: Block, allBlocks?: Record<string, Block>): JSONContent[] {
   if (block.children.length === 0) {
     return [
-      { type: 'orchestreeColumn', content: [{ type: 'paragraph' }] },
-      { type: 'orchestreeColumn', content: [{ type: 'paragraph' }] },
+      { type: 'originaColumn', content: [{ type: 'paragraph' }] },
+      { type: 'originaColumn', content: [{ type: 'paragraph' }] },
     ]
   }
 
   return block.children.map((childId) => {
     const child = allBlocks?.[childId]
     if (!child) {
-      return { type: 'orchestreeColumn', content: [{ type: 'paragraph' }] }
+      return { type: 'originaColumn', content: [{ type: 'paragraph' }] }
     }
     const textContent = inlineMarksToTiptapContent(child.content, child.marks)
     return {
-      type: 'orchestreeColumn',
+      type: 'originaColumn',
       attrs: { blockId: child.id },
       content: [{
         type: 'paragraph',
@@ -610,35 +610,35 @@ function tiptapNodeToBlocks(node: JSONContent): Block[] {
     case 'table':
       return [tableNodeToBlock(node)]
 
-    case 'orchestreeToggle':
+    case 'originaToggle':
       return [toggleNodeToBlock(node)]
 
-    case 'orchestreeCallout':
+    case 'originaCallout':
       return [calloutNodeToBlock(node)]
 
-    case 'orchestreeColumns':
+    case 'originaColumns':
       return [columnsNodeToBlock(node)]
 
-    case 'orchestreeEmbed':
+    case 'originaEmbed':
       return [makeBlock(BlockType.Embed, '', [], {
         embedUrl: String(node.attrs?.url ?? ''),
       }, node.attrs?.blockId as string | undefined)]
 
-    case 'orchestreeBookmark':
+    case 'originaBookmark':
       return [makeBlock(BlockType.Bookmark, '', [], {
         url: String(node.attrs?.url ?? ''),
       }, node.attrs?.blockId as string | undefined)]
 
-    case 'orchestreeFile':
+    case 'originaFile':
       return [makeBlock(BlockType.FileAttachment, '', [], {
         fileName: String(node.attrs?.fileName ?? ''),
         fileDataUrl: String(node.attrs?.fileDataUrl ?? ''),
       }, node.attrs?.blockId as string | undefined)]
 
-    case 'orchestreeEquation':
+    case 'originaEquation':
       return [makeBlock(BlockType.Equation, String(node.attrs?.content ?? ''), [], {}, node.attrs?.blockId as string | undefined)]
 
-    case 'orchestreeTOC':
+    case 'originaTOC':
       return [makeBlock(BlockType.TableOfContents, '', [], {}, node.attrs?.blockId as string | undefined)]
 
     default:
@@ -804,7 +804,7 @@ function columnsNodeToBlock(node: JSONContent): Block {
   if (node.content) {
     const childIds: string[] = []
     for (const col of node.content) {
-      if (col.type === 'orchestreeColumn') {
+      if (col.type === 'originaColumn') {
         const para = col.content?.find((c) => c.type === 'paragraph')
         const { text, marks } = para?.content
           ? tiptapContentToInlineMarks(para.content)

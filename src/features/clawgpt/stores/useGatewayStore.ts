@@ -133,6 +133,6 @@ export const useGatewayStore = create<GatewayState>()(
         _set({ fleetMetrics: metrics })
       },
     }),
-    { name: 'orchestree-gateway-storage' }
+    { name: 'origina-gateway-storage' }
   )
 )

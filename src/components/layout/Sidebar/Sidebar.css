@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   Sidebar — Orchestree brand premium design
+   Sidebar — OriginA brand premium design
    Palette: #4F46E5 (primary), #1A1A2E (navy), #059669 (success),
             #F8FAFC (light bg), #64748B (text secondary)
    ═══════════════════════════════════════════════════════════════ */
@@ -48,28 +48,34 @@
   width: 100%;
 }
 
-.sidebar__logo {
-  font-size: 1.375rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #4F46E5 0%, #059669 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.sidebar__logo-img {
+  height: 28px;
+  width: auto;
+  display: block;
 }
 
-.sidebar__logo-check {
-  font-size: 1rem;
-  color: #059669;
+.sidebar__logo-icon {
+  height: 32px;
+  width: 32px;
+  display: block;
+  object-fit: contain;
 }
 
-.sidebar__logo-mini {
-  font-size: 1.125rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #4F46E5 0%, #059669 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Light theme: show light variants, hide dark */
+.sidebar__logo-img--dark,
+.sidebar__logo-icon--dark {
+  display: none;
+}
+
+/* Dark theme: show dark variants, hide light */
+[data-theme="dark"] .sidebar__logo-img--light,
+[data-theme="dark"] .sidebar__logo-icon--light {
+  display: none;
+}
+
+[data-theme="dark"] .sidebar__logo-img--dark,
+[data-theme="dark"] .sidebar__logo-icon--dark {
+  display: block;
 }
 
 .sidebar__header-actions {
@@ -496,7 +502,7 @@
 }
 
 .sidebar__nav-link:hover {
-  background: rgba(124, 92, 252, 0.08);
+  background: rgba(79, 70, 229, 0.08);
   color: var(--text-primary, #E2E8F0);
   transform: translateX(2px);
 }
@@ -896,7 +902,7 @@
 }
 
 [data-theme="dark"] .sidebar__nav-link:hover {
-  background: rgba(124, 92, 252, 0.08);
+  background: rgba(79, 70, 229, 0.08);
   color: var(--text-primary, #E2E8F0);
 }
 

@@ -194,7 +194,7 @@ export const useChannelStore = create<ChannelState>()(
       },
     }),
     {
-      name: 'orchestree-channel-storage',
+      name: 'origina-channel-storage',
       partialize: (state) => ({
         channels: state.channels,
       }),

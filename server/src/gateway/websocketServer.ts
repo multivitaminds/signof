@@ -80,7 +80,7 @@ export function createWebSocketServer(httpServer: Server): WebSocketServer {
   });
 
   wss.on('connection', (ws) => {
-    const apiKey = process.env.ORCHESTREE_API_KEY;
+    const apiKey = process.env.ORIGINA_API_KEY;
 
     // Send current gateway status on connect
     send(ws, 'gateway.status', { status: 'online', timestamp: Date.now() });

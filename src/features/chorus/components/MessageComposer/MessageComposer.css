@@ -22,7 +22,7 @@
 
 .chorus-composer__input-wrapper:focus-within {
   border-color: var(--color-primary, #4f46e5);
-  box-shadow: 0 0 0 2px rgba(124, 92, 252, 0.2), var(--chorus-elevation-2);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2), var(--chorus-elevation-2);
 }
 
 .chorus-composer__textarea {
@@ -67,18 +67,18 @@
   background: var(--chorus-gradient-send);
   color: #fff;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(124, 92, 252, 0.25);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
   transition: transform var(--motion-micro, 100ms), box-shadow var(--motion-micro, 100ms), opacity var(--motion-micro, 100ms);
 }
 
 .chorus-composer__send:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(124, 92, 252, 0.35);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
 }
 
 .chorus-composer__send:active:not(:disabled) {
   transform: scale(0.95);
-  box-shadow: 0 1px 4px rgba(124, 92, 252, 0.2);
+  box-shadow: 0 1px 4px rgba(79, 70, 229, 0.2);
 }
 
 .chorus-composer__send:disabled {

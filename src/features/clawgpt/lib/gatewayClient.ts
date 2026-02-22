@@ -21,7 +21,7 @@ export function connectGateway(): void {
     maxReconnectAttempts: 10,
     onOpen: () => {
       // Send auth event if API key is configured
-      const apiKey = localStorage.getItem('orchestree_api_key')
+      const apiKey = localStorage.getItem('origina_api_key')
       if (apiKey) {
         wsManager?.send('auth', { token: apiKey })
       }
@@ -199,7 +199,7 @@ export function isGatewayConnected(): boolean {
 
 function getAuthHeaders(): Record<string, string> {
   const headers: Record<string, string> = {}
-  const apiKey = localStorage.getItem('orchestree_api_key')
+  const apiKey = localStorage.getItem('origina_api_key')
   if (apiKey) {
     headers['Authorization'] = `Bearer ${apiKey}`
   }

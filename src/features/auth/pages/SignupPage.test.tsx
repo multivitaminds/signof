@@ -38,9 +38,9 @@ describe('SignupPage', () => {
 
   it('renders branding and signup heading', () => {
     renderSignupPage()
-    expect(screen.getByText('Orchestree')).toBeInTheDocument()
+    expect(screen.getByText('OriginA')).toBeInTheDocument()
     expect(screen.getByText('Create your account')).toBeInTheDocument()
-    expect(screen.getByText('Start your free Orchestree workspace')).toBeInTheDocument()
+    expect(screen.getByText('Start your free OriginA workspace')).toBeInTheDocument()
   })
 
   it('renders full name and work email inputs', () => {

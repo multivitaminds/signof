@@ -354,7 +354,7 @@ export const useChorusMessageStore = create<ChorusMessageState>()(
       },
     }),
     {
-      name: 'orchestree-chorus-messages',
+      name: 'origina-chorus-messages',
     }
   )
 )

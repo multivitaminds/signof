@@ -156,7 +156,7 @@ export default function TopBar() {
                 </div>
                 <div className="topbar__profile-menu-info">
                   <span className="topbar__profile-menu-name">Demo User</span>
-                  <span className="topbar__profile-menu-email">user@orchestree.io</span>
+                  <span className="topbar__profile-menu-email">user@origina.io</span>
                 </div>
               </div>
               <div className="topbar__profile-menu-divider" />

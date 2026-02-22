@@ -17,16 +17,16 @@ import { TableHeader } from '@tiptap/extension-table-header'
 import { useWorkspaceStore } from '../../stores/useWorkspaceStore'
 import { blocksToTiptapDoc } from '../../lib/tiptapConversion'
 import {
-  OrchestreeCallout,
-  OrchestreeToggle,
-  OrchestreeColumns,
-  OrchestreeColumn,
-  OrchestreeEmbed,
-  OrchestreeBookmark,
-  OrchestreeFile,
-  OrchestreeEquation,
-  OrchestreeTOC,
-  OrchestreeMention,
+  OriginACallout,
+  OriginAToggle,
+  OriginAColumns,
+  OriginAColumn,
+  OriginAEmbed,
+  OriginABookmark,
+  OriginAFile,
+  OriginAEquation,
+  OriginATOC,
+  OriginAMention,
 } from '../../editor/extensions'
 import { useTiptapSync } from './useTiptapSync'
 import TiptapBubbleMenu from './TiptapBubbleMenu'
@@ -102,16 +102,16 @@ export default function TiptapBlockEditor({ pageId, blockIds }: TiptapBlockEdito
       TableCell,
       TableHeader,
       // Custom extensions
-      OrchestreeMention,
-      OrchestreeCallout,
-      OrchestreeToggle,
-      OrchestreeColumns,
-      OrchestreeColumn,
-      OrchestreeEmbed,
-      OrchestreeBookmark,
-      OrchestreeFile,
-      OrchestreeEquation,
-      OrchestreeTOC,
+      OriginAMention,
+      OriginACallout,
+      OriginAToggle,
+      OriginAColumns,
+      OriginAColumn,
+      OriginAEmbed,
+      OriginABookmark,
+      OriginAFile,
+      OriginAEquation,
+      OriginATOC,
     ],
     content: initialContent,
     editorProps: {

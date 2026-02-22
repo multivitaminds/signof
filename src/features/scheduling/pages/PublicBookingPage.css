@@ -635,11 +635,11 @@
 }
 
 [data-theme="dark"] .public-booking__cal-cell:hover:not(.public-booking__cal-cell--disabled):not(.public-booking__cal-cell--outside) {
-  background-color: rgba(124, 92, 252, 0.1);
+  background-color: rgba(79, 70, 229, 0.1);
 }
 
 [data-theme="dark"] .public-booking__cal-cell--today {
-  background-color: rgba(124, 92, 252, 0.08);
+  background-color: rgba(79, 70, 229, 0.08);
 }
 
 [data-theme="dark"] .public-booking__form-input,
@@ -649,7 +649,7 @@
 
 [data-theme="dark"] .public-booking__form-input:focus,
 [data-theme="dark"] .public-booking__form-textarea:focus {
-  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.15);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
 }
 
 [data-theme="dark"] .public-booking__time-slot {
@@ -658,7 +658,7 @@
 }
 
 [data-theme="dark"] .public-booking__time-slot:hover {
-  background-color: rgba(124, 92, 252, 0.1);
+  background-color: rgba(79, 70, 229, 0.1);
   border-color: var(--color-primary);
 }
 

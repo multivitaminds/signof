@@ -877,7 +877,7 @@ export const useProjectStore = create<ProjectState>()(
       },
     }),
     {
-      name: 'orchestree-projects-storage',
+      name: 'origina-projects-storage',
       partialize: (state) => ({
         projects: state.projects,
         issues: state.issues,

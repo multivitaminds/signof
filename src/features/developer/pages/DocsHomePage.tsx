@@ -22,16 +22,16 @@ const PRODUCT_API_CARDS = [
 
 const GETTING_STARTED_STEPS = [
   { number: 1, title: 'Get your API keys', description: 'Create a test-mode key in the API Keys dashboard' },
-  { number: 2, title: 'Install an SDK', description: 'npm install @orchestree/sdk or pick your language' },
+  { number: 2, title: 'Install an SDK', description: 'npm install @origina/sdk or pick your language' },
   { number: 3, title: 'Make your first call', description: 'List documents, create a project, or spawn an agent' },
   { number: 4, title: 'Go live', description: 'Switch to live-mode keys and deploy to production' },
 ]
 
 const RESOURCE_LINKS = [
-  { title: 'API Status', href: 'https://status.orchestree.io', description: 'Real-time availability and incident history' },
-  { title: 'Changelog', href: 'https://orchestree.io/changelog', description: 'Latest updates, new endpoints, and breaking changes' },
-  { title: 'Community', href: 'https://community.orchestree.io', description: 'Ask questions, share integrations, and get help' },
-  { title: 'GitHub', href: 'https://github.com/orchestree-io', description: 'Open-source SDKs, examples, and starter kits' },
+  { title: 'API Status', href: 'https://status.origina.io', description: 'Real-time availability and incident history' },
+  { title: 'Changelog', href: 'https://origina.io/changelog', description: 'Latest updates, new endpoints, and breaking changes' },
+  { title: 'Community', href: 'https://community.origina.io', description: 'Ask questions, share integrations, and get help' },
+  { title: 'GitHub', href: 'https://github.com/origina-io', description: 'Open-source SDKs, examples, and starter kits' },
 ]
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -68,7 +68,7 @@ function DocsHomePage({ onNavigate }: DocsHomePageProps) {
     <div className="docs-home">
       {/* Hero */}
       <div className="docs-home__hero">
-        <h1 className="docs-home__title">Build with Orchestree</h1>
+        <h1 className="docs-home__title">Build with OriginA</h1>
         <p className="docs-home__subtitle">
           Everything you need to integrate documents, projects, scheduling, databases, and AI agents into your product.
         </p>

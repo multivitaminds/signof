@@ -124,7 +124,7 @@ export interface EventType {
   brandingLogo?: string            // URL or data URL of logo image
   brandingCompanyName?: string     // Company name shown on booking page
   brandingAccentColor?: string     // Override color (defaults to eventType.color)
-  brandingHideOrchestree?: boolean     // Hide "Powered by Orchestree" footer
+  brandingHideOriginA?: boolean     // Hide "Powered by OriginA" footer
   waitlistEnabled: boolean
   maxWaitlist: number
   isActive: boolean

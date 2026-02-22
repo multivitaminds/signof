@@ -237,7 +237,7 @@ const usePlaygroundStore = create<PlaygroundState>()(
       },
     }),
     {
-      name: 'orchestree-playground',
+      name: 'origina-playground',
       partialize: (state) => ({
         conversations: state.conversations,
         activeConversationId: state.activeConversationId,

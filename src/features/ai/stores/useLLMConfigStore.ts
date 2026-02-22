@@ -149,7 +149,7 @@ const useLLMConfigStore = create<LLMConfigState>()(
       },
     }),
     {
-      name: 'orchestree-llm-config',
+      name: 'origina-llm-config',
       partialize: (state) => ({
         mode: state.mode,
         provider: state.provider,

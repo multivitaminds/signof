@@ -75,7 +75,7 @@
 }
 
 .btn--ghost:hover:not(:disabled) {
-  background-color: var(--bg-hover, rgba(124, 92, 252, 0.04));
+  background-color: var(--bg-hover, rgba(79, 70, 229, 0.04));
   color: var(--text-primary);
 }
 
@@ -89,12 +89,12 @@
 }
 
 .btn--coral {
-  background-color: var(--orchestree-coral);
+  background-color: var(--origina-coral);
   color: white;
 }
 
 .btn--coral:hover:not(:disabled) {
-  background-color: var(--orchestree-coral-hover);
+  background-color: var(--origina-coral-hover);
 }
 
 .btn--outline {
@@ -104,7 +104,7 @@
 }
 
 .btn--outline:hover:not(:disabled) {
-  background-color: var(--bg-hover, rgba(124, 92, 252, 0.04));
+  background-color: var(--bg-hover, rgba(79, 70, 229, 0.04));
   border-color: var(--color-primary-hover);
 }
 
@@ -210,5 +210,5 @@
 }
 
 [data-theme="dark"] .btn--outline:hover:not(:disabled) {
-  background-color: var(--bg-hover, rgba(124, 92, 252, 0.08));
+  background-color: var(--bg-hover, rgba(79, 70, 229, 0.08));
 }

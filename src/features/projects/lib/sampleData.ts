@@ -3,11 +3,11 @@ import { IssueStatus, IssuePriority, CycleStatus, ViewType } from '../types'
 
 export function createSampleMembers(): Member[] {
   return [
-    { id: 'member-1', name: 'Alex Chen', email: 'alex@orchestree.com', avatarUrl: '' },
-    { id: 'member-2', name: 'Sarah Kim', email: 'sarah@orchestree.com', avatarUrl: '' },
-    { id: 'member-3', name: 'Marcus Johnson', email: 'marcus@orchestree.com', avatarUrl: '' },
-    { id: 'member-4', name: 'Priya Patel', email: 'priya@orchestree.com', avatarUrl: '' },
-    { id: 'member-5', name: 'Jordan Lee', email: 'jordan@orchestree.com', avatarUrl: '' },
+    { id: 'member-1', name: 'Alex Chen', email: 'alex@origina.com', avatarUrl: '' },
+    { id: 'member-2', name: 'Sarah Kim', email: 'sarah@origina.com', avatarUrl: '' },
+    { id: 'member-3', name: 'Marcus Johnson', email: 'marcus@origina.com', avatarUrl: '' },
+    { id: 'member-4', name: 'Priya Patel', email: 'priya@origina.com', avatarUrl: '' },
+    { id: 'member-5', name: 'Jordan Lee', email: 'jordan@origina.com', avatarUrl: '' },
   ]
 }
 
@@ -26,10 +26,10 @@ const MKT_LABELS: Label[] = [
 
 export function createSampleProjects(): Record<string, Project> {
   return {
-    'proj-orchestree': {
-      id: 'proj-orchestree',
-      name: 'Orchestree Platform',
-      description: 'Core platform development for the Orchestree everything-app. Includes document signing, workspace, and project management.',
+    'proj-origina': {
+      id: 'proj-origina',
+      name: 'OriginA Platform',
+      description: 'Core platform development for the OriginA everything-app. Includes document signing, workspace, and project management.',
       prefix: 'SO',
       color: '#4F46E5',
       memberIds: ['member-1', 'member-2', 'member-3', 'member-4', 'member-5'],
@@ -59,7 +59,7 @@ export function createSampleIssues(): Record<string, Issue> {
   return {
     'issue-so-1': {
       id: 'issue-so-1',
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       identifier: 'SO-1',
       title: 'Implement multi-signer document flow',
       description: 'Support sending documents to multiple signers with sequential or parallel signing order.',
@@ -76,7 +76,7 @@ export function createSampleIssues(): Record<string, Issue> {
     },
     'issue-so-2': {
       id: 'issue-so-2',
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       identifier: 'SO-2',
       title: 'Add audit trail to document signatures',
       description: 'Track every action (view, sign, decline) with timestamps and IP addresses.',
@@ -93,7 +93,7 @@ export function createSampleIssues(): Record<string, Issue> {
     },
     'issue-so-3': {
       id: 'issue-so-3',
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       identifier: 'SO-3',
       title: 'Fix signature pad not rendering on Safari iOS',
       description: 'Canvas element fails to initialize on Safari mobile. Need to check DPR handling.',
@@ -110,7 +110,7 @@ export function createSampleIssues(): Record<string, Issue> {
     },
     'issue-so-4': {
       id: 'issue-so-4',
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       identifier: 'SO-4',
       title: 'Build workspace block editor',
       description: 'Implement Notion-style block editor with slash commands, inline formatting, and page hierarchy.',
@@ -127,7 +127,7 @@ export function createSampleIssues(): Record<string, Issue> {
     },
     'issue-so-5': {
       id: 'issue-so-5',
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       identifier: 'SO-5',
       title: 'Add dark mode toggle to settings',
       description: 'User-facing toggle for light/dark/system theme preference.',
@@ -144,7 +144,7 @@ export function createSampleIssues(): Record<string, Issue> {
     },
     'issue-so-6': {
       id: 'issue-so-6',
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       identifier: 'SO-6',
       title: 'Write API documentation for signing endpoints',
       description: 'Document all REST endpoints for the signing module with examples.',
@@ -161,7 +161,7 @@ export function createSampleIssues(): Record<string, Issue> {
     },
     'issue-so-7': {
       id: 'issue-so-7',
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       identifier: 'SO-7',
       title: 'Optimize document list rendering for large datasets',
       description: 'Virtual scrolling or pagination for when users have 100+ documents.',
@@ -178,7 +178,7 @@ export function createSampleIssues(): Record<string, Issue> {
     },
     'issue-so-8': {
       id: 'issue-so-8',
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       identifier: 'SO-8',
       title: 'Add email notifications for signing requests',
       description: 'Send email when a document is sent for signature and when signing is complete.',
@@ -268,7 +268,7 @@ export function createSampleCycles(): Record<string, Cycle> {
   return {
     'cycle-so-1': {
       id: 'cycle-so-1',
-      projectId: 'proj-orchestree',
+      projectId: 'proj-origina',
       name: 'Sprint 3',
       startDate: '2026-02-03',
       endDate: '2026-02-14',

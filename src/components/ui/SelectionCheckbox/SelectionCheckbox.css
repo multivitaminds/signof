@@ -35,17 +35,17 @@
 
 .selection-checkbox__input:checked + .selection-checkbox__indicator,
 .selection-checkbox__input:indeterminate + .selection-checkbox__indicator {
-  background: var(--color-primary, #7C5CFC);
-  border-color: var(--color-primary, #7C5CFC);
+  background: var(--color-primary, #4F46E5);
+  border-color: var(--color-primary, #4F46E5);
 }
 
 .selection-checkbox__input:focus-visible + .selection-checkbox__indicator {
-  outline: 2px solid var(--color-primary, #7C5CFC);
+  outline: 2px solid var(--color-primary, #4F46E5);
   outline-offset: 2px;
 }
 
 .selection-checkbox__indicator:hover {
-  border-color: var(--color-primary, #7C5CFC);
+  border-color: var(--color-primary, #4F46E5);
 }
 
 /* ─── Dark Mode ──────────────────────────────────────────────── */
@@ -57,6 +57,6 @@
 
 [data-theme="dark"] .selection-checkbox__input:checked + .selection-checkbox__indicator,
 [data-theme="dark"] .selection-checkbox__input:indeterminate + .selection-checkbox__indicator {
-  background: var(--color-primary, #7C5CFC);
-  border-color: var(--color-primary, #7C5CFC);
+  background: var(--color-primary, #4F46E5);
+  border-color: var(--color-primary, #4F46E5);
 }

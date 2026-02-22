@@ -99,7 +99,7 @@ vi.mock('./selfHealingEngine', () => ({
 
 vi.mock('./toolDefinitions', () => ({
   executeTool: mockExecuteTool,
-  ORCHESTREE_TOOLS: [],
+  ORIGINA_TOOLS: [],
 }))
 
 vi.mock('./agentWorkflowBridge', () => ({

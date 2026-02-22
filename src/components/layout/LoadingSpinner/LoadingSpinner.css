@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   LoadingSpinner — Orchestree brand full-page loading state
+   LoadingSpinner — OriginA brand full-page loading state
    Used as Suspense fallback for lazy-loaded routes
    ═══════════════════════════════════════════════════════════ */
 
@@ -66,7 +66,7 @@
 }
 
 .loading-spinner__logo-check {
-  background: linear-gradient(135deg, #059669 0%, #4F46E5 100%);
+  background: linear-gradient(135deg, #06B6D4 0%, #4F46E5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

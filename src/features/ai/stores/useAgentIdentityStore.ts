@@ -249,7 +249,7 @@ const useAgentIdentityStore = create<AgentIdentityState>()(
       },
     }),
     {
-      name: 'orchestree-agent-identity-storage',
+      name: 'origina-agent-identity-storage',
       partialize: (state) => ({
         identities: Object.fromEntries(state.identities),
       }),

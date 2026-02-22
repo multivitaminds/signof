@@ -279,7 +279,7 @@ const useWorkflowStore = create<WorkflowState>()(
       },
     }),
     {
-      name: 'orchestree-workflow-storage',
+      name: 'origina-workflow-storage',
     },
   ),
 )

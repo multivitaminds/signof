@@ -9,7 +9,7 @@ function Header({ documentCount }: HeaderProps) {
     <header className="header" role="banner">
       <div className="header-content">
         <div className="header-brand">
-          <h1 className="header-logo">Orchestree</h1>
+          <h1 className="header-logo">OriginA</h1>
           <p className="header-tagline">Digital Signatures, Simplified</p>
         </div>
         {documentCount !== undefined && (

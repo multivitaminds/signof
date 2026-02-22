@@ -340,11 +340,11 @@
 }
 
 [data-theme="dark"] .developer-copilot-panel__action-btn {
-  background-color: rgba(124, 92, 252, 0.12);
+  background-color: rgba(79, 70, 229, 0.12);
 }
 
 [data-theme="dark"] .developer-copilot-panel__analysis {
-  background-color: rgba(124, 92, 252, 0.1);
+  background-color: rgba(79, 70, 229, 0.1);
 }
 
 [data-theme="dark"] .developer-copilot-panel__message--assistant {

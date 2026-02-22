@@ -30,7 +30,7 @@ function createSampleData(): { pages: Record<string, Page>; blocks: Record<strin
   const pages: Record<string, Page> = {}
 
   // Page 1: Getting Started
-  const b1 = createBlock(BT.Heading1, 'Welcome to Orchestree Pages')
+  const b1 = createBlock(BT.Heading1, 'Welcome to OriginA Pages')
   const b2 = createBlock(BT.Paragraph, 'This is your workspace for notes, docs, and wikis. Start typing to add content.')
   const b3 = createBlock(BT.Paragraph, 'Try pressing "/" to see the block menu, or use keyboard shortcuts like Cmd+B for bold.')
   blocks[b1.id] = b1
@@ -1131,7 +1131,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       }
     },
     {
-      name: 'orchestree-workspace-storage',
+      name: 'origina-workspace-storage',
       version: 2,
       partialize: (state) => ({
         pages: state.pages,

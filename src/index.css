@@ -1,24 +1,27 @@
 :root {
   /* ═══════════════════════════════════════════════════════════
-     Orchestree Design System Tokens
+     OriginA Design System Tokens
      Based on 680 flows · 1,147 screens · 75 Mobbin patterns
      ═══════════════════════════════════════════════════════════ */
 
-  /* ─── Orchestree Brand Colors ──────────────────────────── */
-  --orchestree-navy: #1A1A2E;
-  --orchestree-coral: #FF4D35;
-  --orchestree-coral-hover: #E6442F;
-  --orchestree-blue: #3B82F6;
-  --orchestree-dark: #050508;
-  --orchestree-accent: #7C5CFC;
-  --orchestree-green: #06D6A0;
-  --orchestree-gold: #FBBF24;
+  /* ─── OriginA Brand Colors ─────────────────────────────── */
+  --origina-navy: #1A1A2E;
+  --origina-coral: #FF4D35;
+  --origina-coral-hover: #E6442F;
+  --origina-blue: #3B82F6;
+  --origina-dark: #050508;
+  --origina-indigo: #4F46E5;
+  --origina-green: #06D6A0;
+  --origina-gold: #FBBF24;
+  --origina-deep: #1E1B4B;
+  --origina-cyan: #06B6D4;
+  --origina-accent: #818CF8;
 
-  /* ─── Primary Colors (Orchestree Purple) ─────────────────── */
-  --color-primary: #7C5CFC;
-  --color-primary-hover: #6A4CE0;
-  --color-primary-light: #EDE9FF;
-  --color-primary-dark: #5A3FD6;
+  /* ─── Primary Colors (OriginA Indigo) ────────────────────── */
+  --color-primary: #4F46E5;
+  --color-primary-hover: #4338CA;
+  --color-primary-light: #EEF2FF;
+  --color-primary-dark: #3730A3;
 
   /* ─── Semantic Colors ──────────────────────────────────── */
   --color-success: #06D6A0;
@@ -167,19 +170,19 @@
   /* ─── Premium Surface Colors ─────────────────────────────── */
   --bg-elevated: #FFFFFF;
   --bg-sunken: #F1F3F5;
-  --bg-hover: rgba(124, 92, 252, 0.04);
-  --bg-active: rgba(124, 92, 252, 0.08);
+  --bg-hover: rgba(79, 70, 229, 0.04);
+  --bg-active: rgba(79, 70, 229, 0.08);
 
   /* ─── Alpha Channel Tokens ──────────────────────────────── */
-  --alpha-hover: rgba(124, 92, 252, 0.06);
-  --alpha-active: rgba(124, 92, 252, 0.10);
-  --alpha-focus: rgba(124, 92, 252, 0.16);
+  --alpha-hover: rgba(79, 70, 229, 0.06);
+  --alpha-active: rgba(79, 70, 229, 0.10);
+  --alpha-focus: rgba(79, 70, 229, 0.16);
   --alpha-border-subtle: rgba(0, 0, 0, 0.06);
 
   /* ─── Premium Gradient Tokens ───────────────────────────── */
-  --gradient-primary: linear-gradient(135deg, #7C5CFC 0%, #6366F1 100%);
-  --gradient-accent: linear-gradient(135deg, #06D6A0 0%, #059669 100%);
-  --gradient-hero: linear-gradient(135deg, #1A1A2E 0%, #2D1B69 50%, #1A1A2E 100%);
+  --gradient-primary: linear-gradient(135deg, #4F46E5 0%, #818CF8 100%);
+  --gradient-accent: linear-gradient(135deg, #06B6D4 0%, #4F46E5 100%);
+  --gradient-hero: linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #1E1B4B 100%);
   --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
 
   /* ─── Focus Ring ────────────────────────────────────────── */
@@ -208,11 +211,11 @@
   --canvas-dot-color: rgba(255, 255, 255, 0.06);
   --bg-elevated: #0F0F1E;
   --bg-sunken: #050508;
-  --bg-hover: rgba(124, 92, 252, 0.08);
-  --bg-active: rgba(124, 92, 252, 0.14);
-  --alpha-hover: rgba(124, 92, 252, 0.10);
-  --alpha-active: rgba(124, 92, 252, 0.16);
-  --alpha-focus: rgba(124, 92, 252, 0.24);
+  --bg-hover: rgba(79, 70, 229, 0.08);
+  --bg-active: rgba(79, 70, 229, 0.14);
+  --alpha-hover: rgba(79, 70, 229, 0.10);
+  --alpha-active: rgba(79, 70, 229, 0.16);
+  --alpha-focus: rgba(79, 70, 229, 0.24);
   --alpha-border-subtle: rgba(255, 255, 255, 0.06);
 }
 

@@ -266,7 +266,7 @@
 }
 
 [data-theme="dark"] .payroll-page__badge--info {
-  background-color: rgba(124, 92, 252, 0.12);
+  background-color: rgba(79, 70, 229, 0.12);
 }
 
 [data-theme="dark"] .payroll-page__badge--muted {
@@ -278,7 +278,7 @@
 }
 
 [data-theme="dark"] .payroll-page__icon-btn:hover {
-  background-color: rgba(124, 92, 252, 0.12);
+  background-color: rgba(79, 70, 229, 0.12);
 }
 
 [data-theme="dark"] .payroll-page__icon-btn--danger:hover {

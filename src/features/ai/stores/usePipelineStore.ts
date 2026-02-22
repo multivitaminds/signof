@@ -180,7 +180,7 @@ const usePipelineStore = create<PipelineState>()(
       },
     }),
     {
-      name: 'orchestree-ai-pipelines',
+      name: 'origina-ai-pipelines',
       partialize: (state) => ({
         pipelines: state.pipelines,
       }),

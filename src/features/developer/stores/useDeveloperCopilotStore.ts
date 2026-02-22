@@ -40,11 +40,11 @@ function generateResponse(userMessage: string): string {
   }
 
   if (msg.includes('endpoint') || msg.includes('rest') || msg.includes('api')) {
-    return 'Orchestree REST API overview:\n\n**Documents**\n- `GET /api/v1/documents` — List documents\n- `POST /api/v1/documents` — Create document\n- `POST /api/v1/documents/:id/send` — Send for signing\n\n**Contacts**\n- `GET /api/v1/contacts` — List contacts\n- `POST /api/v1/contacts` — Create contact\n\n**Templates**\n- `GET /api/v1/templates` — List templates\n- `POST /api/v1/templates/:id/send` — Send from template\n\nAll endpoints accept JSON, return JSON, and require Bearer token authentication. Rate limit: 1000 req/min.'
+    return 'OriginA REST API overview:\n\n**Documents**\n- `GET /api/v1/documents` — List documents\n- `POST /api/v1/documents` — Create document\n- `POST /api/v1/documents/:id/send` — Send for signing\n\n**Contacts**\n- `GET /api/v1/contacts` — List contacts\n- `POST /api/v1/contacts` — Create contact\n\n**Templates**\n- `GET /api/v1/templates` — List templates\n- `POST /api/v1/templates/:id/send` — Send from template\n\nAll endpoints accept JSON, return JSON, and require Bearer token authentication. Rate limit: 1000 req/min.'
   }
 
   if (msg.includes('sdk') || msg.includes('library') || msg.includes('package')) {
-    return 'Official Orchestree SDKs:\n\n**JavaScript/TypeScript** (npm)\n```\nnpm install @orchestree/sdk\n```\n\n**Python** (pip)\n```\npip install orchestree\n```\n\n**Ruby** (gem)\n```\ngem install orchestree\n```\n\nAll SDKs provide typed clients, error handling, pagination helpers, and webhook signature verification. See the SDK Reference tab for usage examples.'
+    return 'Official OriginA SDKs:\n\n**JavaScript/TypeScript** (npm)\n```\nnpm install @origina/sdk\n```\n\n**Python** (pip)\n```\npip install origina\n```\n\n**Ruby** (gem)\n```\ngem install origina\n```\n\nAll SDKs provide typed clients, error handling, pagination helpers, and webhook signature verification. See the SDK Reference tab for usage examples.'
   }
 
   if (msg.includes('rate limit') || msg.includes('throttl') || msg.includes('quota')) {

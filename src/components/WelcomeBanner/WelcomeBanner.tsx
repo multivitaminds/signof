@@ -5,7 +5,7 @@ import { useSchedulingStore } from '../../features/scheduling/stores/useScheduli
 import { ACTIVE_STATUSES } from '../../types'
 import './WelcomeBanner.css'
 
-const DISMISSED_KEY = 'orchestree-welcome-banner-dismissed'
+const DISMISSED_KEY = 'origina-welcome-banner-dismissed'
 
 function getGreeting(): string {
   const hour = new Date().getHours()

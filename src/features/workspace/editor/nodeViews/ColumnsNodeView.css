@@ -7,7 +7,7 @@
   gap: var(--space-md, 1rem);
 }
 
-.tiptap-columns__inner > [data-type="orchestree-column"] {
+.tiptap-columns__inner > [data-type="origina-column"] {
   flex: 1;
   min-width: 0;
   padding: var(--space-xs, 0.25rem);
@@ -15,6 +15,6 @@
   border-radius: var(--radius-sm, 0.25rem);
 }
 
-[data-theme="dark"] .tiptap-columns__inner > [data-type="orchestree-column"] {
+[data-theme="dark"] .tiptap-columns__inner > [data-type="origina-column"] {
   border-color: var(--border-color, #334155);
 }

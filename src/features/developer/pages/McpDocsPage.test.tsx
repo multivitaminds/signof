@@ -76,9 +76,9 @@ describe('McpDocsPage', () => {
 
   it('renders env vars table', () => {
     render(<McpDocsPage />)
-    expect(screen.getByText('ORCHESTREE_API_KEY')).toBeInTheDocument()
-    expect(screen.getByText('ORCHESTREE_BASE_URL')).toBeInTheDocument()
-    expect(screen.getByText('ORCHESTREE_MCP_PORT')).toBeInTheDocument()
+    expect(screen.getByText('ORIGINA_API_KEY')).toBeInTheDocument()
+    expect(screen.getByText('ORIGINA_BASE_URL')).toBeInTheDocument()
+    expect(screen.getByText('ORIGINA_MCP_PORT')).toBeInTheDocument()
   })
 
   it('renders security section', () => {
@@ -89,6 +89,6 @@ describe('McpDocsPage', () => {
   it('renders MCP resources', () => {
     render(<McpDocsPage />)
     expect(screen.getByText('Workspace Info')).toBeInTheDocument()
-    expect(screen.getByText('orchestree://workspace/info')).toBeInTheDocument()
+    expect(screen.getByText('origina://workspace/info')).toBeInTheDocument()
   })
 })

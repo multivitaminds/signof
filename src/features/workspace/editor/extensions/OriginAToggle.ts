@@ -2,8 +2,8 @@ import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import ToggleNodeView from '../nodeViews/ToggleNodeView'
 
-export const OrchestreeToggle = Node.create({
-  name: 'orchestreeToggle',
+export const OriginAToggle = Node.create({
+  name: 'originaToggle',
   group: 'block',
   content: 'block+',
 
@@ -14,11 +14,11 @@ export const OrchestreeToggle = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: 'div[data-type="orchestree-toggle"]' }]
+    return [{ tag: 'div[data-type="origina-toggle"]' }]
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'orchestree-toggle' }), 0]
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'origina-toggle' }), 0]
   },
 
   addNodeView() {

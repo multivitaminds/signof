@@ -349,7 +349,7 @@
 }
 
 [data-theme="dark"] .bookings-page__search-input:focus {
-  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.15);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
 }
 
 [data-theme="dark"] .bookings-page__reschedule-input {
@@ -357,7 +357,7 @@
 }
 
 [data-theme="dark"] .bookings-page__reschedule-input:focus {
-  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.15);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
 }
 
 [data-theme="dark"] .bookings-page__reschedule {
@@ -386,11 +386,11 @@
 }
 
 [data-theme="dark"] .bookings-page__action-btn--download:hover {
-  background: rgba(124, 92, 252, 0.12);
+  background: rgba(79, 70, 229, 0.12);
 }
 
 [data-theme="dark"] .bookings-page__action-btn--reschedule:hover {
-  background: rgba(124, 92, 252, 0.12);
+  background: rgba(79, 70, 229, 0.12);
 }
 
 [data-theme="dark"] .bookings-page__action-btn--cancel:hover {

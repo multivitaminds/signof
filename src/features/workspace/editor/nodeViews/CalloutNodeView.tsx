@@ -9,7 +9,7 @@ export default function CalloutNodeView({ node }: NodeViewProps) {
   const color = (node.attrs.color as string) ?? 'default'
 
   return (
-    <NodeViewWrapper className={`tiptap-callout tiptap-callout--${color}`} data-type="orchestree-callout">
+    <NodeViewWrapper className={`tiptap-callout tiptap-callout--${color}`} data-type="origina-callout">
       <span className="tiptap-callout__icon" contentEditable={false} aria-hidden="true">
         {isEmojiIcon(icon) ? icon : <MappedIcon name={icon} size={18} />}
       </span>

@@ -116,6 +116,6 @@ export const useBillingStore = create<BillingState>()(
           activeAddOns: [],
         }),
     }),
-    { name: 'orchestree-billing-storage' }
+    { name: 'origina-billing-storage' }
   )
 )

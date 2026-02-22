@@ -52,7 +52,8 @@ describe('Sidebar', () => {
 
   it('renders the brand logo', () => {
     renderSidebar()
-    expect(screen.getByText('Orchestree')).toBeInTheDocument()
+    const logos = screen.getAllByAltText('OriginA')
+    expect(logos.length).toBeGreaterThan(0)
   })
 
   it('renders navigation items', () => {
@@ -161,7 +162,8 @@ describe('Sidebar', () => {
 
     // Should now show expanded content
     expect(screen.getByText('Workspace')).toBeInTheDocument()
-    expect(screen.getByText('Orchestree')).toBeInTheDocument()
+    const logos = screen.getAllByAltText('OriginA')
+    expect(logos.length).toBeGreaterThan(0)
 
     vi.useRealTimers()
   })

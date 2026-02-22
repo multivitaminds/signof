@@ -21,9 +21,9 @@ const INSTALL_METHODS: {
   command: string
   note: string
 }[] = [
-  { id: InstallMethod.Npm, label: 'npm', command: 'npm install -g @orchestree/cli', note: 'Requires Node.js 18 or later.' },
-  { id: InstallMethod.Homebrew, label: 'Homebrew', command: 'brew tap orchestree-io/tap && brew install orchestree', note: 'macOS and Linux. Auto-updates with brew upgrade.' },
-  { id: InstallMethod.Pip, label: 'pip', command: 'pip install orchestree-cli', note: 'Requires Python 3.9 or later.' },
+  { id: InstallMethod.Npm, label: 'npm', command: 'npm install -g @origina/cli', note: 'Requires Node.js 18 or later.' },
+  { id: InstallMethod.Homebrew, label: 'Homebrew', command: 'brew tap origina-io/tap && brew install origina', note: 'macOS and Linux. Auto-updates with brew upgrade.' },
+  { id: InstallMethod.Pip, label: 'pip', command: 'pip install origina-cli', note: 'Requires Python 3.9 or later.' },
 ]
 
 // ─── Command Categories ─────────────────────────────────────────────────
@@ -60,82 +60,82 @@ const CLI_COMMANDS: CategorizedCommand[] = [
   {
     name: 'login',
     category: CommandCategory.Auth,
-    description: 'Authenticate with your Orchestree account. Opens a browser window for OAuth or accepts an API key directly.',
-    usage: 'orchestree login [--key <api-key>]',
+    description: 'Authenticate with your OriginA account. Opens a browser window for OAuth or accepts an API key directly.',
+    usage: 'origina login [--key <api-key>]',
     flags: [
       { name: '--key', alias: '-k', description: 'Authenticate with an API key instead of browser OAuth', required: false },
       { name: '--env', alias: '-e', description: 'Environment to authenticate against (live, test)', required: false },
     ],
     examples: [
-      'orchestree login',
-      'orchestree login --key sk_live_abc123...',
-      'orchestree login --env test',
+      'origina login',
+      'origina login --key sk_live_abc123...',
+      'origina login --env test',
     ],
   },
   {
     name: 'logout',
     category: CommandCategory.Auth,
     description: 'Remove stored credentials and clear the current session.',
-    usage: 'orchestree logout',
+    usage: 'origina logout',
     flags: [
       { name: '--all', alias: '-a', description: 'Remove all stored credentials across environments', required: false },
     ],
     examples: [
-      'orchestree logout',
-      'orchestree logout --all',
+      'origina logout',
+      'origina logout --all',
     ],
   },
   {
     name: 'documents list',
     category: CommandCategory.Documents,
     description: 'List documents in your workspace. Supports filtering by status and pagination.',
-    usage: 'orchestree documents list [flags]',
+    usage: 'origina documents list [flags]',
     flags: [
       { name: '--status', alias: '-s', description: 'Filter by status (draft, pending, completed, voided)', required: false },
       { name: '--limit', alias: '-l', description: 'Number of results to return (default: 25)', required: false },
       { name: '--format', alias: '-f', description: 'Output format: table, json, csv (default: table)', required: false },
     ],
     examples: [
-      'orchestree documents list',
-      'orchestree documents list --status pending --limit 10',
-      'orchestree documents list --format json',
+      'origina documents list',
+      'origina documents list --status pending --limit 10',
+      'origina documents list --format json',
     ],
   },
   {
     name: 'documents create',
     category: CommandCategory.Documents,
     description: 'Create a new document from a local file or URL.',
-    usage: 'orchestree documents create <file> [flags]',
+    usage: 'origina documents create <file> [flags]',
     flags: [
       { name: '--name', alias: '-n', description: 'Document name (defaults to filename)', required: false },
       { name: '--signer', alias: '-s', description: 'Add a signer (format: "Name <email>"). Can be repeated.', required: false },
       { name: '--send', alias: null, description: 'Send immediately after creation', required: false },
     ],
     examples: [
-      'orchestree documents create ./contract.pdf',
-      'orchestree documents create ./nda.pdf --name "NDA Agreement" --signer "John <john@example.com>"',
-      'orchestree documents create ./offer.pdf --signer "Alice <alice@co.com>" --signer "Bob <bob@co.com>" --send',
+      'origina documents create ./contract.pdf',
+      'origina documents create ./nda.pdf --name "NDA Agreement" --signer "John <john@example.com>"',
+      'origina documents create ./offer.pdf --signer "Alice <alice@co.com>" --signer "Bob <bob@co.com>" --send',
     ],
   },
   {
     name: 'documents send',
     category: CommandCategory.Documents,
     description: 'Send a draft document for signing. Notifies all signers via email.',
-    usage: 'orchestree documents send <document-id> [flags]',
+    usage: 'origina documents send <document-id> [flags]',
     flags: [
       { name: '--message', alias: '-m', description: 'Custom message to include in the signing email', required: false },
       { name: '--subject', alias: '-s', description: 'Custom email subject line', required: false },
     ],
     examples: [
-      'orchestree documents send doc_abc123',
-      'orchestree documents send doc_abc123 --message "Please review and sign by Friday."',
+      'origina documents send doc_abc123',
+      'origina documents send doc_abc123 --message "Please review and sign by Friday."',
     ],
   },
   {
     name: 'filings list',
     category: CommandCategory.Filings,
     description: 'List all tax filings. Filter by year, type, or status.',
-    usage: 'orchestree filings list [flags]',
+    usage: 'origina filings list [flags]',
     flags: [
       { name: '--year', alias: '-y', description: 'Tax year to filter by', required: false },
       { name: '--type', alias: '-t', description: 'Form type (1099-NEC, W-9, etc.)', required: false },
@@ -143,58 +143,58 @@ const CLI_COMMANDS: CategorizedCommand[] = [
       { name: '--format', alias: '-f', description: 'Output format: table, json, csv (default: table)', required: false },
     ],
     examples: [
-      'orchestree filings list',
-      'orchestree filings list --year 2025 --type 1099-NEC',
-      'orchestree filings list --status submitted --format json',
+      'origina filings list',
+      'origina filings list --year 2025 --type 1099-NEC',
+      'origina filings list --status submitted --format json',
     ],
   },
   {
     name: 'filings submit',
     category: CommandCategory.Filings,
     description: 'Submit a draft filing to the IRS. Validates all required fields before submission.',
-    usage: 'orchestree filings submit <filing-id> [flags]',
+    usage: 'origina filings submit <filing-id> [flags]',
     flags: [
       { name: '--dry-run', alias: null, description: 'Validate without actually submitting', required: false },
       { name: '--confirm', alias: '-y', description: 'Skip confirmation prompt', required: false },
     ],
     examples: [
-      'orchestree filings submit fil_001',
-      'orchestree filings submit fil_001 --dry-run',
-      'orchestree filings submit fil_001 --confirm',
+      'origina filings submit fil_001',
+      'origina filings submit fil_001 --dry-run',
+      'origina filings submit fil_001 --confirm',
     ],
   },
   {
     name: 'webhooks list',
     category: CommandCategory.Webhooks,
     description: 'List all configured webhooks with their status and subscribed events.',
-    usage: 'orchestree webhooks list [flags]',
+    usage: 'origina webhooks list [flags]',
     flags: [
       { name: '--format', alias: '-f', description: 'Output format: table, json (default: table)', required: false },
     ],
     examples: [
-      'orchestree webhooks list',
-      'orchestree webhooks list --format json',
+      'origina webhooks list',
+      'origina webhooks list --format json',
     ],
   },
   {
     name: 'webhooks create',
     category: CommandCategory.Webhooks,
     description: 'Create a new webhook endpoint.',
-    usage: 'orchestree webhooks create <url> [flags]',
+    usage: 'origina webhooks create <url> [flags]',
     flags: [
       { name: '--event', alias: '-e', description: 'Event to subscribe to. Can be repeated. Defaults to all events.', required: false },
       { name: '--secret', alias: '-s', description: 'Custom signing secret (auto-generated if omitted)', required: false },
     ],
     examples: [
-      'orchestree webhooks create https://api.example.com/hooks',
-      'orchestree webhooks create https://api.example.com/hooks --event document.created --event document.completed',
+      'origina webhooks create https://api.example.com/hooks',
+      'origina webhooks create https://api.example.com/hooks --event document.created --event document.completed',
     ],
   },
   {
     name: 'deploy',
     category: CommandCategory.Deploy,
-    description: 'Deploy your Orchestree project to production. Pushes configuration, templates, and webhook endpoints to the live environment.',
-    usage: 'orchestree deploy [flags]',
+    description: 'Deploy your OriginA project to production. Pushes configuration, templates, and webhook endpoints to the live environment.',
+    usage: 'origina deploy [flags]',
     flags: [
       { name: '--env', alias: '-e', description: 'Target environment: live, staging (default: live)', required: false },
       { name: '--dry-run', alias: null, description: 'Preview changes without deploying', required: false },
@@ -203,61 +203,61 @@ const CLI_COMMANDS: CategorizedCommand[] = [
       { name: '--rollback', alias: null, description: 'Roll back to the previous deployment', required: false },
     ],
     examples: [
-      'orchestree deploy',
-      'orchestree deploy --env staging --dry-run',
-      'orchestree deploy --force --message "Release v2.1.0"',
-      'orchestree deploy --rollback',
+      'origina deploy',
+      'origina deploy --env staging --dry-run',
+      'origina deploy --force --message "Release v2.1.0"',
+      'origina deploy --rollback',
     ],
   },
   {
     name: 'deploy status',
     category: CommandCategory.Deploy,
     description: 'Show the current deployment status and recent deployment history.',
-    usage: 'orchestree deploy status [flags]',
+    usage: 'origina deploy status [flags]',
     flags: [
       { name: '--env', alias: '-e', description: 'Environment to check (default: live)', required: false },
       { name: '--format', alias: '-f', description: 'Output format: table, json (default: table)', required: false },
     ],
     examples: [
-      'orchestree deploy status',
-      'orchestree deploy status --env staging --format json',
+      'origina deploy status',
+      'origina deploy status --env staging --format json',
     ],
   },
   {
     name: 'config set',
     category: CommandCategory.Config,
-    description: 'Set a CLI configuration value. Stored in ~/.orchestree/config.json.',
-    usage: 'orchestree config set <key> <value>',
+    description: 'Set a CLI configuration value. Stored in ~/.origina/config.json.',
+    usage: 'origina config set <key> <value>',
     flags: [],
     examples: [
-      'orchestree config set default_env test',
-      'orchestree config set output_format json',
-      'orchestree config set editor vim',
+      'origina config set default_env test',
+      'origina config set output_format json',
+      'origina config set editor vim',
     ],
   },
   {
     name: 'config get',
     category: CommandCategory.Config,
     description: 'Read a CLI configuration value.',
-    usage: 'orchestree config get <key>',
+    usage: 'origina config get <key>',
     flags: [],
     examples: [
-      'orchestree config get default_env',
-      'orchestree config get output_format',
+      'origina config get default_env',
+      'origina config get output_format',
     ],
   },
   {
     name: 'init',
     category: CommandCategory.Project,
-    description: 'Initialize a new Orchestree project in the current directory. Creates a orchestree.config.json file.',
-    usage: 'orchestree init [flags]',
+    description: 'Initialize a new OriginA project in the current directory. Creates a origina.config.json file.',
+    usage: 'origina init [flags]',
     flags: [
       { name: '--template', alias: '-t', description: 'Project template (default, react, node, python)', required: false },
       { name: '--name', alias: '-n', description: 'Project name', required: false },
     ],
     examples: [
-      'orchestree init',
-      'orchestree init --template react --name "My App"',
+      'origina init',
+      'origina init --template react --name "My App"',
     ],
   },
 ]
@@ -328,7 +328,7 @@ function CliDocsPage() {
       <div className="cli-docs-page__header">
         <h1 className="cli-docs-page__title">CLI Reference</h1>
         <p className="cli-docs-page__subtitle">
-          The Orchestree CLI lets you manage documents, filings, webhooks, deployments, and more from your terminal.
+          The OriginA CLI lets you manage documents, filings, webhooks, deployments, and more from your terminal.
         </p>
       </div>
 
@@ -349,7 +349,7 @@ function CliDocsPage() {
         </div>
         <CodeBlock code={activeInstall.command} language="bash" />
         <p className="cli-docs-page__install-note">
-          {activeInstall.note} After installing, run <code>orchestree login</code> to authenticate.
+          {activeInstall.note} After installing, run <code>origina login</code> to authenticate.
         </p>
       </div>
 
@@ -357,14 +357,14 @@ function CliDocsPage() {
       <div className="cli-docs-page__verify">
         <h2 className="cli-docs-page__section-title">Verify Installation</h2>
         <CodeBlock
-          code={`$ orchestree --version
-@orchestree/cli v1.0.0
+          code={`$ origina --version
+@origina/cli v1.0.0
 
-$ orchestree --help
-Usage: orchestree <command> [options]
+$ origina --help
+Usage: origina <command> [options]
 
 Commands:
-  login          Authenticate with Orchestree
+  login          Authenticate with OriginA
   logout         Clear stored credentials
   documents      Manage documents
   filings        Manage tax filings
@@ -442,7 +442,7 @@ Commands:
                         >
                           <div className="cli-docs-page__command-left">
                             {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                            <code className="cli-docs-page__command-name">orchestree {cmd.name}</code>
+                            <code className="cli-docs-page__command-name">origina {cmd.name}</code>
                           </div>
                           <span className="cli-docs-page__command-desc">{cmd.description.split('.')[0]}</span>
                         </button>

@@ -1,9 +1,9 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
-import EmbedNodeView from '../nodeViews/EmbedNodeView'
+import BookmarkNodeView from '../nodeViews/BookmarkNodeView'
 
-export const OrchestreeEmbed = Node.create({
-  name: 'orchestreeEmbed',
+export const OriginABookmark = Node.create({
+  name: 'originaBookmark',
   group: 'block',
   atom: true,
 
@@ -15,14 +15,14 @@ export const OrchestreeEmbed = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: 'div[data-type="orchestree-embed"]' }]
+    return [{ tag: 'div[data-type="origina-bookmark"]' }]
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'orchestree-embed' })]
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'origina-bookmark' })]
   },
 
   addNodeView() {
-    return ReactNodeViewRenderer(EmbedNodeView)
+    return ReactNodeViewRenderer(BookmarkNodeView)
   },
 })

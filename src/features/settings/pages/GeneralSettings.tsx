@@ -73,7 +73,7 @@ export default function GeneralSettings() {
         </p>
         <div className="general-settings__field">
           <div className="general-settings__url-field">
-            <span className="general-settings__url-prefix">orchestree.com/</span>
+            <span className="general-settings__url-prefix">origina.com/</span>
             <input
               className="general-settings__input general-settings__input--slug"
               type="text"

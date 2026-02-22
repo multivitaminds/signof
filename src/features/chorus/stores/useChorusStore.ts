@@ -319,7 +319,7 @@ export const useChorusStore = create<ChorusState>()(
       },
     }),
     {
-      name: 'orchestree-chorus-storage',
+      name: 'origina-chorus-storage',
       partialize: (state) => ({
         activeConversationId: state.activeConversationId,
         channels: state.channels.map((ch) => ({

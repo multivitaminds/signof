@@ -4,10 +4,10 @@ import { MemoryRouter } from 'react-router-dom'
 import SkillsPage from './SkillsPage'
 
 const mockSkills = [
-  { id: 'sk-1', name: 'Smart Reply', description: 'AI-powered replies', category: 'communication', version: '2.1.0', author: 'Orchestree', installed: true, enabled: true, config: {}, icon: 'message-square', triggers: [], actions: [] },
-  { id: 'sk-2', name: 'Sentiment Analysis', description: 'Detect sentiment', category: 'data', version: '1.4.0', author: 'Orchestree', installed: true, enabled: true, config: {}, icon: 'activity', triggers: [], actions: [] },
-  { id: 'sk-3', name: 'Calendar Sync', description: 'Book meetings from chat', category: 'productivity', version: '1.1.0', author: 'Orchestree', installed: false, enabled: false, config: {}, icon: 'calendar', triggers: [], actions: [] },
-  { id: 'sk-4', name: 'Report Generator', description: 'Create data reports', category: 'data', version: '2.0.0', author: 'Orchestree', installed: false, enabled: false, config: {}, icon: 'bar-chart', triggers: [], actions: [] },
+  { id: 'sk-1', name: 'Smart Reply', description: 'AI-powered replies', category: 'communication', version: '2.1.0', author: 'OriginA', installed: true, enabled: true, config: {}, icon: 'message-square', triggers: [], actions: [] },
+  { id: 'sk-2', name: 'Sentiment Analysis', description: 'Detect sentiment', category: 'data', version: '1.4.0', author: 'OriginA', installed: true, enabled: true, config: {}, icon: 'activity', triggers: [], actions: [] },
+  { id: 'sk-3', name: 'Calendar Sync', description: 'Book meetings from chat', category: 'productivity', version: '1.1.0', author: 'OriginA', installed: false, enabled: false, config: {}, icon: 'calendar', triggers: [], actions: [] },
+  { id: 'sk-4', name: 'Report Generator', description: 'Create data reports', category: 'data', version: '2.0.0', author: 'OriginA', installed: false, enabled: false, config: {}, icon: 'bar-chart', triggers: [], actions: [] },
 ]
 
 const mockInstallSkill = vi.fn()

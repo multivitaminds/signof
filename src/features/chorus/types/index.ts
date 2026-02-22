@@ -1,5 +1,5 @@
 // ─── Chorus Module Types ────────────────────────────────────────────
-// Slack-like messaging for Orchestree. Uses const object + type extraction pattern.
+// Slack-like messaging for OriginA. Uses const object + type extraction pattern.
 
 // ─── Channel Type ──────────────────────────────────────────────────
 

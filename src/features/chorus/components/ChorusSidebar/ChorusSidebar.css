@@ -68,7 +68,7 @@
 
 .chorus-sidebar__search:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.15), var(--chorus-elevation-1);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15), var(--chorus-elevation-1);
   background: var(--bg-primary);
 }
 

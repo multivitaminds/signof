@@ -1141,7 +1141,7 @@ function SigningCeremony({
         <div className="signing-ceremony-v2__top-bar-left">
           <span className="signing-ceremony-v2__logo">
             <PenTool className="signing-ceremony-v2__logo-icon" />
-            Orchestree
+            OriginA
           </span>
           <span className="signing-ceremony-v2__doc-name">{doc.name}</span>
         </div>

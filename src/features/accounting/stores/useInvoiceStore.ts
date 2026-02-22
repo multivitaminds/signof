@@ -182,6 +182,6 @@ export const useInvoiceStore = create<InvoiceState>()(
         }))
       },
     }),
-    { name: 'orchestree-invoice-storage' }
+    { name: 'origina-invoice-storage' }
   )
 )

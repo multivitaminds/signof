@@ -167,7 +167,7 @@ const useAIChatStore = create<AIChatState>()(
         if (isLLMAvailable()) {
           const { messages: allMessages, contextLabel, currentRoute } = get()
           const history = allMessages.slice(-10).map(m => ({ role: m.role as 'user' | 'assistant', content: m.content }))
-          const systemPrompt = `You are the Orchestree Copilot on the ${contextLabel} page (${currentRoute}). Be concise and helpful.`
+          const systemPrompt = `You are the OriginA Copilot on the ${contextLabel} page (${currentRoute}). Be concise and helpful.`
 
           syncChat({ messages: history, systemPrompt })
             .then(response => {
@@ -212,7 +212,7 @@ const useAIChatStore = create<AIChatState>()(
       },
     }),
     {
-      name: 'orchestree-ai-chat',
+      name: 'origina-ai-chat',
       partialize: (state) => ({
         messages: state.messages,
         contextLabel: state.contextLabel,

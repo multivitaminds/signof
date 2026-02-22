@@ -237,6 +237,6 @@ export const useAccountingStore = create<AccountingState>()(
           ],
         })),
     }),
-    { name: 'orchestree-accounting-storage' }
+    { name: 'origina-accounting-storage' }
   )
 )

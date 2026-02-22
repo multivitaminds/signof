@@ -1,6 +1,6 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 
-export const OrchestreeMention = Node.create({
+export const OriginAMention = Node.create({
   name: 'mention',
   group: 'inline',
   inline: true,

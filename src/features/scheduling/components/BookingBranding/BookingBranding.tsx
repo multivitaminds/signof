@@ -71,9 +71,9 @@ export default function BookingBranding({ eventType, onUpdate }: BookingBranding
     }
   }, [onUpdate])
 
-  const handleHideOrchestreeChange = useCallback(
+  const handleHideOriginAChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      onUpdate({ brandingHideOrchestree: e.target.checked })
+      onUpdate({ brandingHideOriginA: e.target.checked })
     },
     [onUpdate]
   )
@@ -181,15 +181,15 @@ export default function BookingBranding({ eventType, onUpdate }: BookingBranding
         />
       </div>
 
-      {/* Hide Orchestree branding */}
+      {/* Hide OriginA branding */}
       <div className="booking-branding__field">
         <label className="booking-branding__checkbox-label">
           <input
             type="checkbox"
-            checked={eventType.brandingHideOrchestree ?? false}
-            onChange={handleHideOrchestreeChange}
+            checked={eventType.brandingHideOriginA ?? false}
+            onChange={handleHideOriginAChange}
           />
-          Hide &quot;Powered by Orchestree&quot; footer
+          Hide &quot;Powered by OriginA&quot; footer
         </label>
       </div>
 
@@ -221,10 +221,10 @@ export default function BookingBranding({ eventType, onUpdate }: BookingBranding
               {eventType.name || 'Event Name'}
             </span>
           </div>
-          {!eventType.brandingHideOrchestree && (
+          {!eventType.brandingHideOriginA && (
             <div className="booking-branding__preview-footer">
               <span>Powered by</span>
-              <strong>Orchestree</strong>
+              <strong>OriginA</strong>
             </div>
           )}
         </div>

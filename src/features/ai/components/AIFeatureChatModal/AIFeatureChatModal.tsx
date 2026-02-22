@@ -4,7 +4,7 @@ import { FEATURE_CONTEXTS, type FeatureKey } from '../../lib/featureContexts'
 import useAIFeatureChatStore from '../../stores/useAIFeatureChatStore'
 import { parseIntent, executeIntent } from '../../lib/intentEngine'
 import { isLLMAvailable, syncChat } from '../../lib/llmClient'
-import { ORCHESTREE_TOOLS, executeTool } from '../../lib/toolDefinitions'
+import { ORIGINA_TOOLS, executeTool } from '../../lib/toolDefinitions'
 import type { AIChatToolResult } from '../../types'
 import ToolResultCard from '../ToolResultCard/ToolResultCard'
 import VoiceInputButton from '../VoiceInputButton/VoiceInputButton'
@@ -74,7 +74,7 @@ export default function AIFeatureChatModal({ featureKey, isOpen, onClose }: AIFe
       // Low confidence — try LLM if available
       if (isLLMAvailable()) {
         const systemPrompt = [
-          `You are the Orchestree Copilot for the ${context.label} module.`,
+          `You are the OriginA Copilot for the ${context.label} module.`,
           `Help the user with their request. Be concise and helpful.`,
           `You have access to tools to create pages, issues, bookings, templates, contacts, and databases.`,
           `You can also read workspace stats and upcoming deadlines.`,
@@ -89,7 +89,7 @@ export default function AIFeatureChatModal({ featureKey, isOpen, onClose }: AIFe
         syncChat({
           messages: [...history, { role: 'user', content: text }],
           systemPrompt,
-          tools: ORCHESTREE_TOOLS,
+          tools: ORIGINA_TOOLS,
         }).then(response => {
           const toolResults: AIChatToolResult[] = []
 

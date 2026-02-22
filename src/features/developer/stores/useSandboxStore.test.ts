@@ -127,7 +127,7 @@ describe('useSandboxStore', () => {
 
       const code = generateCodeExample(CodeExampleLang.Curl, req)
       expect(code).toContain('curl -X GET')
-      expect(code).toContain('https://api.orchestree.io/v1/documents')
+      expect(code).toContain('https://api.origina.io/v1/documents')
       expect(code).toContain('Authorization: Bearer sk_test_123')
     })
 
@@ -152,7 +152,7 @@ describe('useSandboxStore', () => {
       })
 
       const code = generateCodeExample(CodeExampleLang.JavaScript, req)
-      expect(code).toContain("await fetch('https://api.orchestree.io/v1/documents'")
+      expect(code).toContain("await fetch('https://api.origina.io/v1/documents'")
       expect(code).toContain("method: 'GET'")
       expect(code).toContain('await response.json()')
     })
@@ -180,7 +180,7 @@ describe('useSandboxStore', () => {
       const code = generateCodeExample(CodeExampleLang.Python, req)
       expect(code).toContain('import requests')
       expect(code).toContain('requests.get(')
-      expect(code).toContain('https://api.orchestree.io/v1/documents')
+      expect(code).toContain('https://api.origina.io/v1/documents')
       expect(code).toContain('print(response.json())')
     })
 

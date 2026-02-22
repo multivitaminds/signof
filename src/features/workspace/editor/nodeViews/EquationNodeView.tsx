@@ -15,7 +15,7 @@ export default function EquationNodeView({ node, updateAttributes }: NodeViewPro
 
   if (editing) {
     return (
-      <NodeViewWrapper className="tiptap-equation" data-type="orchestree-equation" contentEditable={false}>
+      <NodeViewWrapper className="tiptap-equation" data-type="origina-equation" contentEditable={false}>
         <div className="tiptap-equation__editor">
           <input
             className="tiptap-equation__input"
@@ -38,7 +38,7 @@ export default function EquationNodeView({ node, updateAttributes }: NodeViewPro
   }
 
   return (
-    <NodeViewWrapper className="tiptap-equation" data-type="orchestree-equation" contentEditable={false}>
+    <NodeViewWrapper className="tiptap-equation" data-type="origina-equation" contentEditable={false}>
       <div
         className="tiptap-equation__display"
         onClick={() => setEditing(true)}

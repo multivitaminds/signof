@@ -8,7 +8,7 @@ describe('CliDocsPage', () => {
 
     expect(screen.getByText('CLI Reference')).toBeInTheDocument()
     expect(
-      screen.getByText(/The Orchestree CLI lets you manage documents/)
+      screen.getByText(/The OriginA CLI lets you manage documents/)
     ).toBeInTheDocument()
   })
 
@@ -82,25 +82,25 @@ describe('CliDocsPage', () => {
       })
       .filter(Boolean)
 
-    expect(deployNames).toContain('orchestree deploy')
-    expect(deployNames).toContain('orchestree deploy status')
+    expect(deployNames).toContain('origina deploy')
+    expect(deployNames).toContain('origina deploy status')
   })
 
   it('expands a command when clicked', async () => {
     const user = userEvent.setup()
     render(<CliDocsPage />)
 
-    // Find the button for "orchestree init" (simple, unique name)
+    // Find the button for "origina init" (simple, unique name)
     const initButtons = screen.getAllByRole('button', { expanded: false })
     const initBtn = initButtons.find(btn => {
       const code = btn.querySelector('.cli-docs-page__command-name')
-      return code?.textContent === 'orchestree init'
+      return code?.textContent === 'origina init'
     })!
 
     await user.click(initBtn)
 
     // The description appears twice (short in header + full in details), so use getAllByText
-    const matches = screen.getAllByText(/Initialize a new Orchestree project/)
+    const matches = screen.getAllByText(/Initialize a new OriginA project/)
     expect(matches.length).toBeGreaterThanOrEqual(2) // header desc + full desc
     // Use heading role to distinguish from code block tokens
     expect(screen.getByRole('heading', { name: 'Usage' })).toBeInTheDocument()
@@ -115,7 +115,7 @@ describe('CliDocsPage', () => {
     const initButtons = screen.getAllByRole('button', { expanded: false })
     const initBtn = initButtons.find(btn => {
       const code = btn.querySelector('.cli-docs-page__command-name')
-      return code?.textContent === 'orchestree init'
+      return code?.textContent === 'origina init'
     })!
 
     await user.click(initBtn)

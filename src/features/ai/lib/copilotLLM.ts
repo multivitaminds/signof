@@ -9,7 +9,7 @@ export async function copilotChat(
   if (!isLLMAvailable()) return fallbackFn()
 
   const systemPrompt = [
-    `You are the Orchestree ${moduleName} Copilot.`,
+    `You are the OriginA ${moduleName} Copilot.`,
     `Help the user with their request. Be concise and actionable.`,
     `Current context: ${contextSummary}`,
   ].join('\n')
@@ -35,7 +35,7 @@ export async function copilotAnalysis(
   if (!isLLMAvailable()) return fallbackFn()
 
   const systemPrompt = [
-    `You are the Orchestree ${moduleName} Copilot performing a ${analysisType} analysis.`,
+    `You are the OriginA ${moduleName} Copilot performing a ${analysisType} analysis.`,
     `Analyze the following data and return a JSON object: { "summary": "one line", "items": ["bullet 1", "bullet 2", ...] }`,
     `Data:\n${dataContext}`,
   ].join('\n')

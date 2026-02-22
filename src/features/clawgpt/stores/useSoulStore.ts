@@ -15,11 +15,11 @@ const DEFAULT_SOUL: SoulConfig = {
     'Respect user privacy and data boundaries',
   ],
   context: [
-    'Company: Orchestree - unified work platform',
+    'Company: OriginA - unified work platform',
     'Workspace tools: Pages, Projects, Documents, Calendar, Databases',
     'Support hours: Monday-Friday 9am-6pm EST',
   ],
-  systemPrompt: 'You are Atlas, an AI assistant for the Orchestree workspace platform. Help users with their work tasks efficiently and professionally.',
+  systemPrompt: 'You are Atlas, an AI assistant for the OriginA workspace platform. Help users with their work tasks efficiently and professionally.',
   language: 'English',
   timezone: 'UTC',
 }
@@ -205,6 +205,6 @@ export const useSoulStore = create<SoulState>()(
         }
       },
     }),
-    { name: 'orchestree-soul-storage' }
+    { name: 'origina-soul-storage' }
   )
 )

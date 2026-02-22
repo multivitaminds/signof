@@ -2,7 +2,7 @@ import { createEncryptedStorage, _resetKeyCache } from './encryptedStorage'
 
 // Provide a minimal Web Crypto polyfill for the test environment
 // (jsdom has no crypto.subtle by default).
-const KEY_STORAGE_KEY = 'orchestree-ek'
+const KEY_STORAGE_KEY = 'origina-ek'
 
 // Track localStorage calls so we can assert on encrypted values
 const getItemSpy = vi.spyOn(Storage.prototype, 'getItem')

@@ -605,7 +605,7 @@ const useAgentStore = create<AgentState>()(
       },
     }),
     {
-      name: 'orchestree-agent-storage',
+      name: 'origina-agent-storage',
       partialize: (state) => ({
         teams: state.teams,
         activeTeamId: state.activeTeamId,

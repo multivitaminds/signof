@@ -9,7 +9,7 @@ const mockSkill: Skill = {
   description: 'Search the web for real-time information',
   category: 'productivity',
   version: '1.2.0',
-  author: 'Orchestree',
+  author: 'OriginA',
   icon: 'S',
   installed: false,
   enabled: false,
@@ -43,7 +43,7 @@ describe('SkillCard', () => {
 
   it('renders author', () => {
     render(<SkillCard {...defaultProps} />)
-    expect(screen.getByText('by Orchestree')).toBeInTheDocument()
+    expect(screen.getByText('by OriginA')).toBeInTheDocument()
   })
 
   it('renders category pill', () => {

@@ -63,7 +63,7 @@
 
 .create-channel-modal__name-input:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(124, 92, 252, 0.2);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
   outline: none;
 }
 
@@ -112,7 +112,7 @@
 
 .create-channel-modal__textarea:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(124, 92, 252, 0.2);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
   outline: none;
 }
 
@@ -136,7 +136,7 @@
 
 .create-channel-modal__toggle-row:hover {
   background: var(--chorus-message-hover-bg);
-  border-color: rgba(124, 92, 252, 0.2);
+  border-color: rgba(79, 70, 229, 0.2);
   box-shadow: var(--chorus-glow-primary);
 }
 

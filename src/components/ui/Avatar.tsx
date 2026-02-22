@@ -50,7 +50,7 @@ export default function Avatar({
 }: AvatarProps) {
   const classes = ['avatar', `avatar--${size}`, className].filter(Boolean).join(' ')
   const initials = name ? getInitials(name) : ''
-  const bgColor = name ? getColorFromName(name) : 'var(--orchestree-navy)'
+  const bgColor = name ? getColorFromName(name) : 'var(--origina-navy)'
 
   return (
     <div className={classes}>
