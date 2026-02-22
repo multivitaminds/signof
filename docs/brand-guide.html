@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OriginA — Brand Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --deep:#0A0A1A;--surface:#111127;--card:#1A1A36;--border:#2A2A4A;
+  --indigo-950:#1E1B4B;--indigo-600:#4F46E5;--indigo-400:#818CF8;--indigo-300:#A5B4FC;--indigo-200:#C7D2FE;
+  --cyan:#06B6D4;--sky:#38BDF8;
+  --text:#F1F5F9;--text-2:#94A3B8;--text-3:#64748B;
+}
+html{font-family:'Inter',system-ui,sans-serif;background:var(--deep);color:var(--text);scroll-behavior:smooth}
+body{min-height:100vh;overflow-x:hidden}
+
+/* ─── Hero ─── */
+.hero{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:4rem 2rem;overflow:hidden}
+.hero::before{content:'';position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(79,70,229,.12),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;animation:pulse 6s ease-in-out infinite}
+.hero::after{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.06),transparent 70%);top:40%;left:55%;transform:translate(-50%,-50%);pointer-events:none;animation:pulse 8s ease-in-out infinite reverse}
+@keyframes pulse{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}}
+
+.hero-logo{width:480px;max-width:90vw;margin-bottom:1rem;animation:float 5s ease-in-out infinite;filter:drop-shadow(0 0 80px rgba(79,70,229,.25))}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hero p{font-size:1.25rem;color:var(--text-2);font-weight:400;letter-spacing:-.01em;max-width:480px;text-align:center;line-height:1.6;margin-top:1.5rem}
+.hero .tagline{font-size:.875rem;color:var(--text-3);margin-top:2rem;letter-spacing:.15em;text-transform:uppercase}
+
+/* ─── Sections ─── */
+section{max-width:1100px;margin:0 auto;padding:6rem 2rem}
+.section-label{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--indigo-400);font-weight:600;margin-bottom:.75rem}
+.section-title{font-size:2rem;font-weight:700;letter-spacing:-.03em;margin-bottom:1rem}
+.section-desc{color:var(--text-2);max-width:600px;line-height:1.7;margin-bottom:3rem}
+
+/* ─── Logo Grid ─── */
+.logo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
+.logo-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem 2rem;display:flex;flex-direction:column;align-items:center;gap:1.25rem;transition:all .3s ease}
+.logo-card:hover{border-color:var(--indigo-600);transform:translateY(-4px);box-shadow:0 20px 60px rgba(79,70,229,.15)}
+.logo-card.dark-bg{background:var(--deep)}
+.logo-card.light-bg{background:#F8FAFC}
+.logo-card.navy-bg{background:var(--indigo-950)}
+.logo-card.gradient-bg{background:linear-gradient(135deg,var(--indigo-950),#2D2B6B)}
+.logo-card img{max-width:100%;height:auto;border-radius:4px}
+.logo-card .card-label{font-size:.75rem;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;font-weight:500;text-align:center}
+.logo-card.light-bg .card-label{color:#64748B}
+
+.mark-display{width:160px;height:auto}
+.wordmark-display{width:320px;max-width:100%;height:auto}
+
+/* ─── Colors ─── */
+.color-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem}
+.color-swatch{border-radius:12px;overflow:hidden;border:1px solid var(--border);transition:transform .2s}
+.color-swatch:hover{transform:scale(1.03)}
+.swatch-block{height:90px}
+.swatch-info{padding:.75rem 1rem;background:var(--card)}
+.swatch-name{font-size:.8rem;font-weight:600;margin-bottom:.25rem}
+.swatch-hex{font-size:.75rem;color:var(--text-3);font-family:'SF Mono','Fira Code',monospace}
+
+/* ─── Typography ─── */
+.type-row{margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid var(--border)}
+.type-row:last-child{border:none}
+.type-sample{font-family:'Inter',sans-serif;margin-bottom:.5rem;line-height:1.2}
+.type-meta{font-size:.75rem;color:var(--text-3);letter-spacing:.05em}
+.w-300{font-weight:300}.w-400{font-weight:400}.w-600{font-weight:600}.w-700{font-weight:700}.w-800{font-weight:800}.w-900{font-weight:900}
+
+/* ─── Usage Rules ─── */
+.rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem}
+.rule-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.75rem}
+.rule-card h3{font-size:1rem;font-weight:600;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+.rule-card p{font-size:.875rem;color:var(--text-2);line-height:1.6}
+.do{color:#34D399}.dont{color:#F87171}
+
+/* ─── Assets Table ─── */
+.assets-table{width:100%;border-collapse:collapse}
+.assets-table th{text-align:left;font-size:.75rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.1em;padding:.75rem 1rem;border-bottom:1px solid var(--border)}
+.assets-table td{padding:.75rem 1rem;border-bottom:1px solid rgba(42,42,74,.4);font-size:.875rem;vertical-align:middle}
+.assets-table tr:hover td{background:rgba(79,70,229,.04)}
+.assets-table .file-name{font-family:'SF Mono','Fira Code',monospace;font-size:.8rem;color:var(--indigo-300)}
+.assets-table .file-use{color:var(--text-2)}
+.assets-table .badge{display:inline-block;padding:.15em .5em;border-radius:4px;font-size:.7rem;font-weight:600;letter-spacing:.05em}
+.badge-icon{background:rgba(6,182,212,.15);color:var(--cyan)}
+.badge-word{background:rgba(79,70,229,.15);color:var(--indigo-400)}
+
+/* ─── Footer ─── */
+footer{text-align:center;padding:4rem 2rem;border-top:1px solid var(--border);color:var(--text-3);font-size:.8rem}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ HERO ════════════════ -->
+<section class="hero">
+  <img class="hero-logo" src="../public/logo/origina-wordmark-cyan.png" alt="OriginA">
+  <p>The unified intelligence platform. One origin point for every workflow, every decision, every team.</p>
+  <span class="tagline">Brand Identity System &middot; 2026</span>
+</section>
+
+<!-- ════════════════ THE MARK ════════════════ -->
+<section>
+  <div class="section-label">01 — Logo Icon</div>
+  <h2 class="section-title">The Circled "a" Mark</h2>
+  <p class="section-desc">A bold lowercase "a" nestled inside a two-tone circular ring. The outer ring gradient shifts from deep indigo to a secondary accent, creating depth and dimension. The "a" connects to the ring at the top, forming a single continuous glyph — the origin point of intelligence.</p>
+
+  <div class="logo-grid">
+    <div class="logo-card light-bg">
+      <img class="mark-display" src="../public/logo/origina-icon-indigo.png" alt="OriginA icon — indigo">
+      <span class="card-label" style="color:#64748B">Indigo — Primary</span>
+    </div>
+    <div class="logo-card light-bg">
+      <img class="mark-display" src="../public/logo/origina-icon-cyan.png" alt="OriginA icon — cyan">
+      <span class="card-label" style="color:#64748B">Indigo / Cyan</span>
+    </div>
+    <div class="logo-card light-bg">
+      <img class="mark-display" src="../public/logo/origina-icon-purple.png" alt="OriginA icon — purple">
+      <span class="card-label" style="color:#64748B">Purple / Periwinkle</span>
+    </div>
+    <div class="logo-card light-bg">
+      <img class="mark-display" src="../public/logo/origina-icon-gradient.png" alt="OriginA icon — gradient">
+      <span class="card-label" style="color:#64748B">Purple / Periwinkle (alt)</span>
+    </div>
+    <div class="logo-card navy-bg">
+      <img class="mark-display" src="../public/logo/origina-icon-dark-bg.png" alt="OriginA icon — dark bg">
+      <span class="card-label">On dark background</span>
+    </div>
+    <div class="logo-card navy-bg">
+      <img class="mark-display" src="../public/logo/origina-icon-reversed.png" alt="OriginA icon — reversed">
+      <span class="card-label">White reversed</span>
+    </div>
+    <div class="logo-card light-bg">
+      <img class="mark-display" src="../public/logo/origina-icon-mono.png" alt="OriginA icon — mono">
+      <span class="card-label" style="color:#64748B">Black mono</span>
+    </div>
+    <div class="logo-card light-bg">
+      <img class="mark-display" src="../public/logo/origina-icon-primary.png" alt="OriginA icon — primary">
+      <span class="card-label" style="color:#64748B">Navy / Indigo</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ FULL WORDMARK ════════════════ -->
+<section>
+  <div class="section-label">02 — Full Wordmark</div>
+  <h2 class="section-title">Horizontal Lockup</h2>
+  <p class="section-desc">"Origin" in a heavy rounded sans-serif paired with the circled "a" mark. The wordmark and icon are optically balanced — the "a" circle sits slightly above and overlaps the baseline to maintain visual alignment with the text.</p>
+
+  <div class="logo-grid" style="grid-template-columns:1fr">
+    <div class="logo-card light-bg" style="padding:3rem">
+      <img class="wordmark-display" src="../public/logo/origina-wordmark-indigo.png" alt="OriginA wordmark — indigo">
+      <span class="card-label" style="color:#64748B">Primary — Indigo on white</span>
+    </div>
+    <div class="logo-card light-bg" style="padding:3rem">
+      <img class="wordmark-display" src="../public/logo/origina-wordmark-cyan.png" alt="OriginA wordmark — cyan accent">
+      <span class="card-label" style="color:#64748B">Indigo + Cyan accent</span>
+    </div>
+    <div class="logo-card light-bg" style="padding:3rem">
+      <img class="wordmark-display" src="../public/logo/origina-wordmark-purple.png" alt="OriginA wordmark — purple">
+      <span class="card-label" style="color:#64748B">Purple / Periwinkle</span>
+    </div>
+    <div class="logo-card navy-bg" style="padding:3rem">
+      <img class="wordmark-display" src="../public/logo/origina-wordmark-dark-bg.png" alt="OriginA wordmark — dark bg">
+      <span class="card-label">On dark background</span>
+    </div>
+    <div class="logo-card navy-bg" style="padding:3rem">
+      <img class="wordmark-display" src="../public/logo/origina-wordmark-reversed.png" alt="OriginA wordmark — reversed">
+      <span class="card-label">White reversed</span>
+    </div>
+    <div class="logo-card light-bg" style="padding:3rem">
+      <img class="wordmark-display" src="../public/logo/origina-wordmark-mono.png" alt="OriginA wordmark — mono">
+      <span class="card-label" style="color:#64748B">Black mono — print / legal</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ COLORS ════════════════ -->
+<section>
+  <div class="section-label">03 — Color Palette</div>
+  <h2 class="section-title">Brand Colors</h2>
+  <p class="section-desc">Extracted from the logo system. A spectrum from deep navy through electric indigo to luminous cyan. Engineered for WCAG AAA contrast on both light and dark surfaces.</p>
+
+  <div class="color-grid">
+    <div class="color-swatch"><div class="swatch-block" style="background:#0A0A1A"></div><div class="swatch-info"><div class="swatch-name">Void</div><div class="swatch-hex">#0A0A1A</div></div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#1A1A40"></div><div class="swatch-info"><div class="swatch-name">Navy</div><div class="swatch-hex">#1A1A40</div></div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#1E1B4B"></div><div class="swatch-info"><div class="swatch-name">Deep Indigo</div><div class="swatch-hex">#1E1B4B</div></div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#4F46E5"></div><div class="swatch-info"><div class="swatch-name">Brand Indigo</div><div class="swatch-hex">#4F46E5</div></div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#6C63FF"></div><div class="swatch-info"><div class="swatch-name">Bright Indigo</div><div class="swatch-hex">#6C63FF</div></div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#818CF8"></div><div class="swatch-info"><div class="swatch-name">Periwinkle</div><div class="swatch-hex">#818CF8</div></div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#A5B4FC"></div><div class="swatch-info"><div class="swatch-name">Lavender</div><div class="swatch-hex">#A5B4FC</div></div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#7C3AED"></div><div class="swatch-info"><div class="swatch-name">Purple</div><div class="swatch-hex">#7C3AED</div></div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#06B6D4"></div><div class="swatch-info"><div class="swatch-name">Cyan Accent</div><div class="swatch-hex">#06B6D4</div></div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#38BDF8"></div><div class="swatch-info"><div class="swatch-name">Sky Glow</div><div class="swatch-hex">#38BDF8</div></div></div>
+  </div>
+</section>
+
+<!-- ════════════════ TYPOGRAPHY ════════════════ -->
+<section>
+  <div class="section-label">04 — Typography</div>
+  <h2 class="section-title">Inter Typeface</h2>
+  <p class="section-desc">Inter is the primary typeface — variable weight, designed for screens, optimized for legibility at every size. Tight letter-spacing on headings, relaxed on body.</p>
+
+  <div class="type-row"><div class="type-sample w-900" style="font-size:3rem">OriginA Intelligence</div><div class="type-meta">Inter Black (900) · -0.04em · Hero / Display</div></div>
+  <div class="type-row"><div class="type-sample w-800" style="font-size:2.25rem">OriginA Intelligence</div><div class="type-meta">Inter ExtraBold (800) · -0.03em · Headings</div></div>
+  <div class="type-row"><div class="type-sample w-700" style="font-size:1.75rem">OriginA Intelligence</div><div class="type-meta">Inter Bold (700) · -0.02em · Subheadings</div></div>
+  <div class="type-row"><div class="type-sample w-600" style="font-size:1.25rem">OriginA Intelligence</div><div class="type-meta">Inter SemiBold (600) · -0.01em · Labels &amp; Nav</div></div>
+  <div class="type-row"><div class="type-sample w-400" style="font-size:1rem">OriginA builds the unified intelligence platform that replaces seven tools with one.</div><div class="type-meta">Inter Regular (400) · 0em · Body</div></div>
+  <div class="type-row"><div class="type-sample w-300" style="font-size:.875rem;color:var(--text-2)">Built for teams who refuse to context-switch between a dozen apps.</div><div class="type-meta">Inter Light (300) · 0em · Captions &amp; Meta</div></div>
+</section>
+
+<!-- ════════════════ USAGE ════════════════ -->
+<section>
+  <div class="section-label">05 — Usage Guidelines</div>
+  <h2 class="section-title">Dos and Don'ts</h2>
+  <p class="section-desc">Protect the brand by following these guidelines in every context.</p>
+
+  <div class="rules-grid">
+    <div class="rule-card"><h3><span class="do">&#10003;</span> Clear Space</h3><p>Maintain minimum clear space equal to the height of the inner "a" on all sides of the mark.</p></div>
+    <div class="rule-card"><h3><span class="do">&#10003;</span> Minimum Size</h3><p>Never render the icon smaller than 24x24px. Use the primary indigo version for most contexts.</p></div>
+    <div class="rule-card"><h3><span class="do">&#10003;</span> Approved Variants</h3><p>Use only the provided color variants. Indigo is primary, cyan-accent for marketing, mono for print/legal.</p></div>
+    <div class="rule-card"><h3><span class="do">&#10003;</span> Background Contrast</h3><p>Use color variants on white/light. Use reversed (white) on dark backgrounds. Use navy bg for app icons.</p></div>
+    <div class="rule-card"><h3><span class="dont">&#10007;</span> Stretch or Skew</h3><p>Never distort the proportions. Always scale uniformly. The circle must remain a perfect circle.</p></div>
+    <div class="rule-card"><h3><span class="dont">&#10007;</span> Add Effects</h3><p>No drop shadows, outlines, bevels, or glows beyond what's defined in the provided assets.</p></div>
+    <div class="rule-card"><h3><span class="dont">&#10007;</span> Recolor</h3><p>Don't apply arbitrary colors. Only use the provided variants — indigo, cyan, purple, white, black.</p></div>
+    <div class="rule-card"><h3><span class="dont">&#10007;</span> Separate Elements</h3><p>Don't use the "a" without its ring, or detach the "a" connection point from the outer circle.</p></div>
+  </div>
+</section>
+
+<!-- ════════════════ ASSETS ════════════════ -->
+<section>
+  <div class="section-label">06 — Asset Library</div>
+  <h2 class="section-title">All Logo Files</h2>
+  <p class="section-desc">All assets are in <code style="background:var(--card);padding:.15em .4em;border-radius:4px;font-size:.85em">public/logo/</code> — PNG format, white background, ready for production use.</p>
+
+  <table class="assets-table">
+    <thead>
+      <tr><th>File</th><th>Type</th><th>Use Case</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="file-name">origina-icon-indigo.png</td><td><span class="badge badge-icon">ICON</span></td><td class="file-use">Primary icon — app, favicon, social</td></tr>
+      <tr><td class="file-name">origina-icon-cyan.png</td><td><span class="badge badge-icon">ICON</span></td><td class="file-use">Marketing, landing pages, CTAs</td></tr>
+      <tr><td class="file-name">origina-icon-purple.png</td><td><span class="badge badge-icon">ICON</span></td><td class="file-use">Alternative branding, presentations</td></tr>
+      <tr><td class="file-name">origina-icon-gradient.png</td><td><span class="badge badge-icon">ICON</span></td><td class="file-use">Alternate purple/periwinkle gradient</td></tr>
+      <tr><td class="file-name">origina-icon-primary.png</td><td><span class="badge badge-icon">ICON</span></td><td class="file-use">Navy/indigo — high contrast</td></tr>
+      <tr><td class="file-name">origina-icon-dark-bg.png</td><td><span class="badge badge-icon">ICON</span></td><td class="file-use">On navy/dark backgrounds (app icon)</td></tr>
+      <tr><td class="file-name">origina-icon-reversed.png</td><td><span class="badge badge-icon">ICON</span></td><td class="file-use">White on navy — dark UI, overlays</td></tr>
+      <tr><td class="file-name">origina-icon-mono.png</td><td><span class="badge badge-icon">ICON</span></td><td class="file-use">Black mono — print, fax, legal</td></tr>
+      <tr><td class="file-name">origina-wordmark-indigo.png</td><td><span class="badge badge-word">WORDMARK</span></td><td class="file-use">Primary full logo — website header</td></tr>
+      <tr><td class="file-name">origina-wordmark-cyan.png</td><td><span class="badge badge-word">WORDMARK</span></td><td class="file-use">Marketing hero, splash screens</td></tr>
+      <tr><td class="file-name">origina-wordmark-purple.png</td><td><span class="badge badge-word">WORDMARK</span></td><td class="file-use">Alternate branding, pitch decks</td></tr>
+      <tr><td class="file-name">origina-wordmark-primary.png</td><td><span class="badge badge-word">WORDMARK</span></td><td class="file-use">Navy/indigo — formal contexts</td></tr>
+      <tr><td class="file-name">origina-wordmark-dark-bg.png</td><td><span class="badge badge-word">WORDMARK</span></td><td class="file-use">Purple on navy banner</td></tr>
+      <tr><td class="file-name">origina-wordmark-reversed.png</td><td><span class="badge badge-word">WORDMARK</span></td><td class="file-use">White on navy — dark landing pages</td></tr>
+      <tr><td class="file-name">origina-wordmark-mono.png</td><td><span class="badge badge-word">WORDMARK</span></td><td class="file-use">Black mono — print, contracts</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  <p>&copy; 2026 OriginA &middot; origina.io &middot; All rights reserved</p>
+</footer>
+
+</body>
+</html>
